@@ -12,7 +12,7 @@ export type TransactionDisplay = {
 };
 
 export type Transaction = {
-  active: boolean;
+  running: boolean;
   minimized: boolean;
   lastEventKind: CrossChainEventKind;
   // TODO: think if this is needed
@@ -37,9 +37,9 @@ export const useTransactions = () => {
     [getTransaction],
   );
 
-  const transactionActive = useCallback(
+  const transactionRunning = useCallback(
     (txHash: string | undefined) =>
-      Boolean(txHash && getTransaction(txHash).active),
+      Boolean(txHash && getTransaction(txHash).running),
     [getTransaction],
   );
 
@@ -86,11 +86,11 @@ export const useTransactions = () => {
     [transactions],
   );
 
-  const minimizeAndDeactivateAll = useCallback(() => {
+  const minimizeAndStopAll = useCallback(() => {
     transactions.forEach((tx) =>
       updateTransaction(tx.receipt.transactionHash, {
         minimized: true,
-        active: false,
+        running: false,
       }),
     );
   }, [transactions, updateTransaction]);
@@ -102,8 +102,8 @@ export const useTransactions = () => {
     removeTransaction,
     transactionExists,
     updateTransaction,
-    minimizeAndDeactivateAll,
+    minimizeAndStopAll,
     minimizedTransactions,
-    transactionActive,
+    transactionRunning,
   };
 };

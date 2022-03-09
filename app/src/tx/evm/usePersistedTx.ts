@@ -54,21 +54,21 @@ export const usePersistedTx = <TxParams, TxResult>(
 
   const onTxEvent = useCallback(
     (event: CrossChainEvent<ContractReceipt>, txParams: TxParams) => {
+      if (event.payload) {
+        setTxHash(event.payload.tx.transactionHash);
+      }
+
       // first event with tx in it
-      // TODO: check if it can be returned earlier
       if (event.kind === CrossChainEventKind.RemoteChainTxExecuted) {
         const payload =
           event.payload as RemoteChainTxExecutedPayload<ContractReceipt>;
-        if (!Boolean(txHash)) {
-          setTxHash(payload.tx.transactionHash);
-          saveTransaction({
-            active: true,
-            receipt: payload.tx,
-            lastEventKind: event.kind,
-            minimized: false,
-            display: displayTx(txParams),
-          });
-        }
+        saveTransaction({
+          running: true,
+          receipt: payload.tx,
+          lastEventKind: event.kind,
+          minimized: false,
+          display: displayTx(txParams),
+        });
         return;
       }
 
@@ -86,7 +86,6 @@ export const usePersistedTx = <TxParams, TxResult>(
         handleEvent: TxEventHandler<TxParams>,
       ) => {
         try {
-          // add sendTx promise from state
           const resp = await sendTx(txParams, renderTxResults, handleEvent);
           const tx = parseTx(resp);
           removeTransaction(tx.transactionHash);
