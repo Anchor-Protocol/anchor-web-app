@@ -13,7 +13,7 @@ export enum Chain {
 export const DEPLOYMENT_TARGETS = [
   {
     chain: Chain.Terra,
-    icon: '/assets/terra-luna-luna-logo.svg',
+    icon: '/assets/terra-network-logo.png',
     isNative: true,
     isEVM: false,
   },

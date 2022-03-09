@@ -39,7 +39,7 @@ export const ChainButton = styled(ChainButtonBase)`
     flex-wrap: nowrap;
   }
   .button-logo {
-    height: 18px;
+    height: 14px;
     padding-left: 5px;
   }
 `;
