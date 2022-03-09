@@ -120,7 +120,7 @@ jobs:
               VERSION=latest
             fi
           fi
-          IMAGE=${REGISTRY}/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME}
+          IMAGE=$(echo ${REGISTRY}/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME} | tr '[:upper:]' '[:lower:]')
           TAGS="${IMAGE}:${VERSION}"
           TAGS="$TAGS,${IMAGE}:$(git rev-parse --short HEAD)"
           if [[ $VERSION =~ ^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
