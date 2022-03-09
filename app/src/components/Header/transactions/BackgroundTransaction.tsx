@@ -4,7 +4,7 @@ import { Snackbar, useSnackbar } from '@libs/snackbar';
 import { LinearProgress } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useBackgroundTx } from 'tx/evm';
+//import { useBackgroundTx } from 'tx/evm';
 import { useTransaction } from 'tx/evm/storage/useTransaction';
 import { Transaction } from 'tx/evm/storage/useTransactions';
 import { txResultMessage } from 'tx/evm/utils';
@@ -38,14 +38,14 @@ const TxSnackbarBase = ({
   className?: string;
   txHash: string;
 }) => {
-  const tx = useTransaction(txHash)!;
-  const backgroundTx = useBackgroundTx(tx);
-  const [execute] = backgroundTx?.stream ?? [null, null];
+  //const tx = useTransaction(txHash)!;
+  //const backgroundTx = useBackgroundTx(tx);
+  //const [execute] = backgroundTx?.stream ?? [null, null];
 
   useEffect(() => {
-    if (!tx.active) {
-      execute!({});
-    }
+    // if (!tx.active) {
+    //   execute!({});
+    // }
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
