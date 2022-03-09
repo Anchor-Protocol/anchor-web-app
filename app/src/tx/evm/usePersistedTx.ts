@@ -15,7 +15,7 @@ type TxRender<TxResult> = TxResultRendering<TxResult>;
 
 export type PersistedTxUtils = {
   minimizeTx: () => void;
-  isTxPersisted: boolean;
+  isTxMinimizable: boolean;
 };
 
 export type PersistedTxResult<TxParams, TxResult> = {
@@ -41,15 +41,16 @@ export const usePersistedTx = <TxParams, TxResult>(
     transactionExists,
   } = useTransactions();
 
-  const isTxPersisted = useMemo(
+  const isTxMinimizable = useMemo(
     () => transactionExists(txHash),
     [transactionExists, txHash],
   );
+
   const minimizeTx = useCallback(() => {
-    if (isTxPersisted) {
+    if (isTxMinimizable) {
       updateTransaction(txHash!, { minimized: true });
     }
-  }, [updateTransaction, isTxPersisted, txHash]);
+  }, [updateTransaction, isTxMinimizable, txHash]);
 
   const onTxEvent = useCallback(
     (event: CrossChainEvent<ContractReceipt>, txParams: TxParams) => {
@@ -61,6 +62,7 @@ export const usePersistedTx = <TxParams, TxResult>(
         if (!Boolean(txHash)) {
           setTxHash(payload.tx.transactionHash);
           saveTransaction({
+            active: true,
             receipt: payload.tx,
             lastEventKind: event.kind,
             minimized: false,
@@ -83,15 +85,23 @@ export const usePersistedTx = <TxParams, TxResult>(
         renderTxResults: Subject<TxRender<TxResult>>,
         handleEvent: TxEventHandler<TxParams>,
       ) => {
-        const resp = await sendTx(txParams, renderTxResults, handleEvent);
-        const tx = parseTx(resp);
-        removeTransaction(tx.transactionHash);
-        return resp;
+        try {
+          // add sendTx promise from state
+          const resp = await sendTx(txParams, renderTxResults, handleEvent);
+          const tx = parseTx(resp);
+          removeTransaction(tx.transactionHash);
+          return resp;
+        } catch (err) {
+          if (txHash) {
+            removeTransaction(txHash);
+          }
+          throw err;
+        }
       },
       parseTx,
       emptyTxResult,
       onTxEvent,
     ),
-    utils: { minimizeTx, isTxPersisted },
+    utils: { minimizeTx, isTxMinimizable },
   };
 };

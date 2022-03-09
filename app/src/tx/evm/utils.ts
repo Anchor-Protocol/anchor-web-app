@@ -21,7 +21,7 @@ export const txResult = (
 ) => {
   return {
     value: null,
-    message: txResultMessage(event, connnectType, chainId, action),
+    message: txResultMessage(event.kind, connnectType, chainId, action),
     phase: TxStreamPhase.BROADCAST,
     receipts: [
       //{ name: "Status", value: txResultMessage(event, connnectType, chainId, action) }
@@ -29,13 +29,13 @@ export const txResult = (
   };
 };
 
-const txResultMessage = (
-  event: CrossChainEvent<ContractReceipt>,
+export const txResultMessage = (
+  eventKind: CrossChainEventKind,
   connnectType: ConnectType,
   chainId: EvmChainId,
   action: string,
 ) => {
-  switch (event.kind) {
+  switch (eventKind) {
     case CrossChainEventKind.CrossChainTxCompleted:
       return `Cross chain transaction completed.`;
     case CrossChainEventKind.RemoteChainTxRequested:

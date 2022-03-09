@@ -9,6 +9,7 @@ import { ProvideCollateralFormParams } from '../types';
 import { useERC20Balance } from '@libs/app-provider/queries/erc20/balanceOf';
 import { normalize } from '@anchor-protocol/formatter';
 import { useERC20Decimals } from '@libs/app-provider/queries/erc20/decimals';
+import { EvmTxResultRenederer } from 'components/tx/EvmTxResultRenderer';
 
 export const EvmProvideCollateralDialog = (
   props: DialogProps<ProvideCollateralFormParams>,
@@ -28,7 +29,7 @@ export const EvmProvideCollateralDialog = (
   );
 
   const provideCollateralTx = useProvideCollateralTx(erc20Decimals);
-
+  const { minimizeTx, isTxMinimizable } = provideCollateralTx?.utils ?? {};
   const [postTx, txResult] = provideCollateralTx?.stream ?? [null, null];
 
   const proceed = useCallback(
@@ -51,6 +52,14 @@ export const EvmProvideCollateralDialog = (
       uTokenBalance={uTokenBalance}
       proceedable={postTx !== undefined}
       onProceed={proceed}
+      renderBroadcastTxResult={
+        <EvmTxResultRenederer
+          onExit={props.closeDialog}
+          txStreamResult={txResult}
+          onMinimize={minimizeTx}
+          minimizable={isTxMinimizable}
+        />
+      }
     />
   );
 };

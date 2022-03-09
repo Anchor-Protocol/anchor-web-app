@@ -25,6 +25,7 @@ import { AmountSlider } from './AmountSlider';
 import { TxResultRendering } from '@libs/app-fns';
 import { UIElementProps } from '@libs/ui';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
+import { BroadcastTxStreamResult } from './types';
 
 interface WithdrawDialogParams extends UIElementProps, EarnWithdrawFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
@@ -35,7 +36,9 @@ type WithdrawDialogReturn = void;
 type WithdrawDialogProps = DialogProps<
   WithdrawDialogParams,
   WithdrawDialogReturn
->;
+> & {
+  renderBroadcastTxResult?: JSX.Element;
+};
 
 function WithdrawDialogBase(props: WithdrawDialogProps) {
   const {
@@ -49,6 +52,7 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
     invalidTxFee,
     invalidWithdrawAmount,
     updateWithdrawAmount,
+    renderBroadcastTxResult,
   } = props;
 
   const { connected } = useAccount();
@@ -67,18 +71,26 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
     };
   }, [data?.moneyMarketEpochState, uaUST]);
 
+  const renderBroadcastTx = useMemo(() => {
+    if (renderBroadcastTxResult) {
+      return renderBroadcastTxResult;
+    }
+
+    return (
+      <TxResultRenderer
+        resultRendering={(txResult as BroadcastTxStreamResult).value}
+        onExit={closeDialog}
+      />
+    );
+  }, [renderBroadcastTxResult, closeDialog, txResult]);
+
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
     txResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
-        <Dialog className={className}>
-          <TxResultRenderer
-            resultRendering={txResult.value}
-            onExit={closeDialog}
-          />
-        </Dialog>
+        <Dialog className={className}>{renderBroadcastTx}</Dialog>
       </Modal>
     );
   }

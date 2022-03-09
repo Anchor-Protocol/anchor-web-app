@@ -23,7 +23,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import React, { ChangeEvent, useCallback } from 'react';
+import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { LTVGraph } from './LTVGraph';
 import { RedeemCollateralFormParams } from './types';
@@ -33,6 +33,7 @@ import {
   demicrofy,
   useFormatters,
 } from '@anchor-protocol/formatter';
+import { BroadcastTxStreamResult } from 'pages/earn/components/types';
 
 export interface RedeemCollateralDialogParams
   extends UIElementProps,
@@ -44,7 +45,9 @@ export interface RedeemCollateralDialogParams
 }
 
 export type RedeemCollateralDialogProps =
-  DialogProps<RedeemCollateralDialogParams>;
+  DialogProps<RedeemCollateralDialogParams> & {
+    renderBroadcastTxResult?: JSX.Element;
+  };
 
 function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
   const {
@@ -58,6 +61,7 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
     tokenDisplay,
     proceedable,
     onProceed,
+    renderBroadcastTxResult,
   } = props;
 
   const { availablePost, connected } = useAccount();
@@ -102,18 +106,26 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
     [input, states.ltvToAmount, decimals],
   );
 
+  const renderBroadcastTx = useMemo(() => {
+    if (renderBroadcastTxResult) {
+      return renderBroadcastTxResult;
+    }
+
+    return (
+      <TxResultRenderer
+        resultRendering={(txResult as BroadcastTxStreamResult).value}
+        onExit={closeDialog}
+      />
+    );
+  }, [renderBroadcastTxResult, closeDialog, txResult]);
+
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
     txResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
-        <Dialog className={className}>
-          <TxResultRenderer
-            resultRendering={txResult.value}
-            onExit={closeDialog}
-          />
-        </Dialog>
+        <Dialog className={className}>{renderBroadcastTx}</Dialog>
       </Modal>
     );
   }

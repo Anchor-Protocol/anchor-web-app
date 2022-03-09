@@ -3,10 +3,10 @@ import { useTransactions } from 'tx/evm/storage/useTransactions';
 import { BackgroundTransaction } from './BackgroundTransaction';
 
 export const BackgroundTransactions = () => {
-  const { minimizeAll, minimizedTransactions } = useTransactions();
+  const { minimizedTransactions, minimizeAndDeactivateAll } = useTransactions();
 
   useEffect(() => {
-    minimizeAll();
+    minimizeAndDeactivateAll();
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

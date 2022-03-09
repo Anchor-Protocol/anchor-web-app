@@ -28,12 +28,13 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import type { ChangeEvent, ReactNode } from 'react';
+import { ChangeEvent, ReactNode, useMemo } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
+import { BroadcastTxStreamResult } from 'pages/earn/components/types';
 
 export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   txResult: StreamResult<TxResultRendering> | null;
@@ -41,7 +42,9 @@ export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   onProceed: (borrowAmount: UST, txFee: u<UST>) => void;
 }
 
-export type BorrowDialogProps = DialogProps<BorrowDialogParams>;
+export type BorrowDialogProps = DialogProps<BorrowDialogParams> & {
+  renderBroadcastTxResult?: JSX.Element;
+};
 
 function BorrowDialogBase(props: BorrowDialogProps) {
   const {
@@ -52,6 +55,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     txResult,
     proceedable,
     onProceed,
+    renderBroadcastTxResult,
   } = props;
 
   const { availablePost, connected } = useAccount();
@@ -108,18 +112,26 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     [input, states.ltvToAmount],
   );
 
+  const renderBroadcastTx = useMemo(() => {
+    if (renderBroadcastTxResult) {
+      return renderBroadcastTxResult;
+    }
+
+    return (
+      <TxResultRenderer
+        resultRendering={(txResult as BroadcastTxStreamResult).value}
+        onExit={closeDialog}
+      />
+    );
+  }, [renderBroadcastTxResult, closeDialog, txResult]);
+
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
     txResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
-        <Dialog className={className}>
-          <TxResultRenderer
-            resultRendering={txResult.value}
-            onExit={closeDialog}
-          />
-        </Dialog>
+        <Dialog className={className}>{renderBroadcastTx}</Dialog>
       </Modal>
     );
   }
