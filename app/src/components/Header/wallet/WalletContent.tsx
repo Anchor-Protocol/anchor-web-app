@@ -6,7 +6,6 @@ import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
 import { UIElementProps } from '@libs/ui';
 import { ConnectionIcons } from './ConnectionIcons';
-import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 
 interface WalletContentProps extends UIElementProps {
   walletAddress: string;
@@ -30,9 +29,6 @@ export function WalletContentBase(props: WalletContentProps) {
   const [isCopied, setCopied] = useClipboard(walletAddress, {
     successDuration: 1000 * 5,
   });
-  const {
-    target: { icon },
-  } = useDeploymentTarget();
 
   return (
     <div className={className}>
@@ -43,13 +39,10 @@ export function WalletContentBase(props: WalletContentProps) {
           icon={connectionIcon}
           readonly={readonly}
         />
-        <div className="wallet-container">
-          <img className="wallet-logo" src={icon} alt="chain-logo" />
-          <h2 className="wallet-address">{truncate(walletAddress)}</h2>
-          <button className="copy-wallet-address" onClick={setCopied}>
-            <IconSpan>COPY ADDRESS {isCopied && <Check />}</IconSpan>
-          </button>
-        </div>
+        <h2 className="wallet-address">{truncate(walletAddress)}</h2>
+        <button className="copy-wallet-address" onClick={setCopied}>
+          <IconSpan>COPY ADDRESS {isCopied && <Check />}</IconSpan>
+        </button>
       </section>
       <section className="children">{children}</section>
       <button className="disconnect" onClick={onDisconnectWallet}>
@@ -116,16 +109,5 @@ export const WalletContent = styled(WalletContentBase)`
 
     border-bottom-left-radius: 14px;
     border-bottom-right-radius: 14px;
-  }
-
-  .wallet-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-  }
-  .wallet-logo {
-    height: 18px;
-    margin-top: 15px;
-    margin-right: 7px;
   }
 `;
