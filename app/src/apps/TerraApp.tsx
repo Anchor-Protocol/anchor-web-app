@@ -124,7 +124,7 @@ export function TerraApp() {
               path={`/${ancGovernancePathname}`}
               element={<RewardsAncGovernance />}
             />
-            <Route path={`/claim/all`} element={ClaimAll} />
+            <Route path={`/claim/all`} element={<ClaimAll />} />
             <Route
               path={`/claim/${ancUstLpPathname}`}
               element={<ClaimAncUstLp />}

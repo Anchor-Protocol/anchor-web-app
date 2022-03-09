@@ -1,7 +1,6 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
-  CW20TokenDisplayInfo,
   pickAttributeValueByKey,
   pickEvent,
   pickRawLogs,
@@ -32,7 +31,7 @@ import { Observable } from 'rxjs';
 type RewardLogWithDisplay = {
   rewards: string;
   contract: string;
-  tokenDisplay: CW20TokenDisplayInfo;
+  symbol: string;
 };
 
 export function bAssetClaimTx($: {
@@ -90,8 +89,7 @@ export function bAssetClaimTx($: {
               {
                 rewards,
                 contract,
-                tokenDisplay:
-                  rewardBreakdownByRewardContract[contract].tokenDisplay,
+                symbol: rewardBreakdownByRewardContract[contract].symbol,
               },
             ];
           }
@@ -111,7 +109,7 @@ export function bAssetClaimTx($: {
           phase: TxStreamPhase.SUCCEED,
           receipts: [
             ...rewardLogsWithDisplay.map((rewardLog) => ({
-              name: `${rewardLog.tokenDisplay.symbol ?? '???'} Reward`,
+              name: `${rewardLog.symbol ?? '???'} Reward`,
               value:
                 formatUSTWithPostfixUnits(
                   demicrofy(rewardLog.rewards as u<UST>),
