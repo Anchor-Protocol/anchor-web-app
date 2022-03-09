@@ -13,21 +13,26 @@ import { StreamResult, StreamStatus } from '@rx-stream/react';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useMemo } from 'react';
 import styled from 'styled-components';
 import { useAccount } from 'contexts/account';
 import { AmountSlider } from './AmountSlider';
 import { UIElementProps } from '@libs/ui';
 import { TxResultRendering } from '@libs/app-fns';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
+import { BroadcastTxStreamResult } from './types';
 
 interface DepositDialogParams extends UIElementProps, EarnDepositFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
 }
 
 type DepositDialogReturn = void;
-
-type DepositDialogProps = DialogProps<DepositDialogParams, DepositDialogReturn>;
+type DepositDialogProps = DialogProps<
+  DepositDialogParams,
+  DepositDialogReturn
+> & {
+  renderBroadcastTxResult?: JSX.Element;
+};
 
 function DepositDialogBase(props: DepositDialogProps) {
   const {
@@ -43,6 +48,7 @@ function DepositDialogBase(props: DepositDialogProps) {
     invalidNextTxFee,
     invalidDepositAmount,
     updateDepositAmount,
+    renderBroadcastTxResult,
   } = props;
 
   const account = useAccount();
@@ -51,18 +57,26 @@ function DepositDialogBase(props: DepositDialogProps) {
     ust: { formatOutput, formatInput, demicrofy, symbol },
   } = useFormatters();
 
+  const renderBroadcastTx = useMemo(() => {
+    if (renderBroadcastTxResult) {
+      return renderBroadcastTxResult;
+    }
+
+    return (
+      <TxResultRenderer
+        resultRendering={(txResult as BroadcastTxStreamResult).value}
+        onExit={closeDialog}
+      />
+    );
+  }, [renderBroadcastTxResult, closeDialog, txResult]);
+
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
     txResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
-        <Dialog className={className}>
-          <TxResultRenderer
-            resultRendering={txResult.value}
-            onExit={closeDialog}
-          />
-        </Dialog>
+        <Dialog className={className}>{renderBroadcastTx}</Dialog>
       </Modal>
     );
   }

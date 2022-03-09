@@ -1,46 +1,60 @@
+import { useEvmWallet } from '@libs/evm-wallet';
 import { SnackbarContent } from '@libs/neumorphism-ui/components/Snackbar';
 import { Snackbar, useSnackbar } from '@libs/snackbar';
 import { LinearProgress } from '@material-ui/core';
-import { StreamResult, StreamStatus } from '@rx-stream/react';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { BackgroundTxRender, useBackgroundTx } from 'tx/evm';
+import { useBackgroundTx } from 'tx/evm';
+import { useTransaction } from 'tx/evm/storage/useTransaction';
 import { Transaction } from 'tx/evm/storage/useTransactions';
+import { txResultMessage } from 'tx/evm/utils';
 import { TransactionDisplay } from './TransactionDisplay';
 
 export type BackgroundTransactionProps = { tx: Transaction };
 
 export const BackgroundTransaction = ({ tx }: BackgroundTransactionProps) => {
-  const backgroundTx = useBackgroundTx(tx);
   const { addSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    if (backgroundTx) {
-      const [execute, txResult] = backgroundTx.stream;
-      execute({});
-      addSnackbar(<TxSnackbar tx={tx} txResult={txResult} />);
-    }
+  useEffect(
+    () => {
+      const snackbarControl = addSnackbar(
+        <TxSnackbar txHash={tx.receipt.transactionHash} />,
+      );
+      return function cleanup() {
+        snackbarControl?.close();
+      };
+    },
     //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    [],
+  );
 
   return <React.Fragment />;
 };
 
 const TxSnackbarBase = ({
-  txResult,
   className,
-  tx,
+  txHash,
 }: {
-  txResult: StreamResult<BackgroundTxRender>;
   className?: string;
-  tx: Transaction;
+  txHash: string;
 }) => {
+  const tx = useTransaction(txHash)!;
+  const backgroundTx = useBackgroundTx(tx);
+  const [execute] = backgroundTx?.stream ?? [null, null];
+
+  useEffect(() => {
+    if (!tx.active) {
+      execute!({});
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Snackbar autoClose={false}>
       <div className={className}>
         <LinearProgress className="tx-progress" />
         <SnackbarContent
-          message={<TxMessage txResult={txResult} tx={tx} />}
+          message={<TxMessage txHash={txHash} />}
           action={
             [
               //   <Button key="undo" color="inherit" size="small">
@@ -73,19 +87,27 @@ const TxSnackbar = styled(TxSnackbarBase)`
 `;
 
 const TxMessageBase = ({
-  txResult,
   className,
-  tx,
+  txHash,
 }: {
-  txResult: StreamResult<BackgroundTxRender>;
   className?: string;
-  tx: Transaction;
+  txHash: string;
 }) => {
+  const tx = useTransaction(txHash)!;
+  const { connectType, chainId } = useEvmWallet();
+
   return (
     <div className={className}>
       <div className="tx-content">
         <TransactionDisplay tx={tx} />
-        <div className="tx-message">{txMessage(txResult)}</div>
+        <div className="tx-message">
+          {txResultMessage(
+            tx.lastEventKind,
+            connectType!,
+            chainId!,
+            tx.display.action,
+          )}
+        </div>
       </div>
     </div>
   );
@@ -105,16 +127,3 @@ const TxMessage = styled(TxMessageBase)`
     margin-left: 10px;
   }
 `;
-
-const txMessage = (txResult: StreamResult<BackgroundTxRender>) => {
-  if (
-    txResult?.status === StreamStatus.IN_PROGRESS ||
-    txResult?.status === StreamStatus.DONE
-  ) {
-    return (
-      txResult.value.message ?? (txResult.value.failedReason?.error as string)
-    );
-  }
-
-  return 'Processing transaction...';
-};

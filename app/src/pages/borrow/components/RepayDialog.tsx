@@ -23,7 +23,8 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import React, { ChangeEvent, useCallback } from 'react';
+import { BroadcastTxStreamResult } from 'pages/earn/components/types';
+import React, { ChangeEvent, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
@@ -35,7 +36,9 @@ export interface RepayDialogParams extends UIElementProps, RepayFormParams {
   onProceed: (repayAmount: UST, txFee: u<UST>) => void;
 }
 
-export type RepayDialogProps = DialogProps<RepayDialogParams>;
+export type RepayDialogProps = DialogProps<RepayDialogParams> & {
+  renderBroadcastTxResult?: JSX.Element;
+};
 
 function RepayDialogBase(props: RepayDialogProps) {
   const {
@@ -46,6 +49,7 @@ function RepayDialogBase(props: RepayDialogProps) {
     txResult,
     proceedable,
     onProceed,
+    renderBroadcastTxResult,
   } = props;
 
   const { availablePost, connected } = useAccount();
@@ -75,18 +79,26 @@ function RepayDialogBase(props: RepayDialogProps) {
     [input, states.ltvToAmount],
   );
 
+  const renderBroadcastTx = useMemo(() => {
+    if (renderBroadcastTxResult) {
+      return renderBroadcastTxResult;
+    }
+
+    return (
+      <TxResultRenderer
+        resultRendering={(txResult as BroadcastTxStreamResult).value}
+        onExit={closeDialog}
+      />
+    );
+  }, [renderBroadcastTxResult, closeDialog, txResult]);
+
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
     txResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
-        <Dialog className={className}>
-          <TxResultRenderer
-            resultRendering={txResult.value}
-            onExit={closeDialog}
-          />
-        </Dialog>
+        <Dialog className={className}>{renderBroadcastTx}</Dialog>
       </Modal>
     );
   }

@@ -6,6 +6,7 @@ import { DepositDialog } from '../DepositDialog';
 import { DialogProps } from '@libs/use-dialog';
 import { useDepositUstTx } from 'tx/evm';
 import { Container } from 'components/primitives/Container';
+import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
 
 export function EvmDepositDialog(props: DialogProps<{}, void>) {
   const account = useAccount();
@@ -16,9 +17,22 @@ export function EvmDepositDialog(props: DialogProps<{}, void>) {
 
   const depositUstTx = useDepositUstTx();
   const [deposit, depositTxResult] = depositUstTx?.stream ?? [null, null];
+  const { minimizeTx, isTxMinimizable } = depositUstTx?.utils ?? {};
 
   return (
-    <DepositDialog {...props} {...state} txResult={depositTxResult}>
+    <DepositDialog
+      {...props}
+      {...state}
+      txResult={depositTxResult}
+      renderBroadcastTxResult={
+        <EvmTxResultRenderer
+          onExit={props.closeDialog}
+          txStreamResult={depositTxResult}
+          onMinimize={minimizeTx}
+          minimizable={isTxMinimizable}
+        />
+      }
+    >
       <>
         <Container direction="row" gap={10}>
           <ActionButton

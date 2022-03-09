@@ -41,7 +41,7 @@ export const useTx = <TxParams, TxResult>(
               sdkEvents.complete();
 
               return {
-                value: emptyTxResult,
+                value: txResult,
                 phase: TxStreamPhase.SUCCEED,
                 receipts: [txReceipt(parseTx(txResult!))],
               };

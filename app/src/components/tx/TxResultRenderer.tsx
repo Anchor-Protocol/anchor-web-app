@@ -4,19 +4,24 @@ import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/Horizontal
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { AccessTime, Close, Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { GuardSpinner, PushSpinner } from 'react-spinners-kit';
 import styled, { useTheme } from 'styled-components';
 import { renderTxFailedReason } from './renderTxFailedReason';
+import { Container } from 'components/primitives/Container';
 
 export interface TxResultRendererProps {
   resultRendering: TxResultRendering;
   onExit?: () => void;
+  onMinimize?: () => void;
+  minimizable?: boolean;
 }
 
 export function TxResultRenderer({
   resultRendering,
   onExit,
+  minimizable,
+  onMinimize,
 }: TxResultRendererProps) {
   const {
     dimTextColor,
@@ -29,6 +34,11 @@ export function TxResultRenderer({
     description = 'Transaction broadcasted. There is no need to send another until it has been complete.',
     failedReason,
   } = resultRendering;
+
+  const handleMinimize = useCallback(() => {
+    onMinimize?.();
+    onExit?.();
+  }, [onExit, onMinimize]);
 
   switch (phase) {
     case TxStreamPhase.POST:
@@ -61,6 +71,16 @@ export function TxResultRenderer({
             </h2>
 
             <Receipts resultRendering={resultRendering} />
+            {minimizable && onMinimize && (
+              <Container direction="row" gap={10}>
+                <ActionButton
+                  className="minimize-button"
+                  onClick={handleMinimize}
+                >
+                  Run in background
+                </ActionButton>
+              </Container>
+            )}
           </article>
         </Layout>
       );
@@ -148,6 +168,14 @@ const SubmitButton = styled(ActionButton)`
 `;
 
 const Layout = styled.section`
+  .minimize-button {
+    margin-top: 45px;
+
+    width: 100%;
+    height: 60px;
+    border-radius: 30px;
+  }
+
   > article {
     div,
     p,

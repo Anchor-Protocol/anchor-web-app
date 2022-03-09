@@ -7,6 +7,7 @@ import { BorrowDialog } from '../BorrowDialog';
 import { BorrowFormParams } from '../types';
 import { useBorrowUstTx } from 'tx/evm';
 import { useEvmTerraAddressQuery } from 'queries';
+import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
 
 export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   const { connected, nativeWalletAddress } = useAccount();
@@ -15,6 +16,7 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   console.log('addr2', addr2);
 
   const borrowUstTx = useBorrowUstTx();
+  const { minimizeTx, isTxMinimizable } = borrowUstTx?.utils ?? {};
   const [postTx, txResult] = borrowUstTx?.stream ?? [null, null];
 
   const proceed = useCallback(
@@ -32,6 +34,14 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
       txResult={txResult}
       proceedable={postTx !== undefined}
       onProceed={proceed}
+      renderBroadcastTxResult={
+        <EvmTxResultRenderer
+          onExit={props.closeDialog}
+          txStreamResult={txResult}
+          onMinimize={minimizeTx}
+          minimizable={isTxMinimizable}
+        />
+      }
     />
   );
 };
