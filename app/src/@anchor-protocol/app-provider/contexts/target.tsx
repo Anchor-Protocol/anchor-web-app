@@ -13,7 +13,7 @@ export enum Chain {
 export const DEPLOYMENT_TARGETS = [
   {
     chain: Chain.Terra,
-    icon: 'https://assets.terra.money/icon/wallet-provider/walletconnect.svg',
+    icon: '/assets/terra-luna-luna-logo.svg',
     isNative: true,
     isEVM: false,
   },
@@ -25,7 +25,7 @@ export const DEPLOYMENT_TARGETS = [
   // },
   {
     chain: Chain.Avalanche,
-    icon: 'https://assets.terra.money/icon/wallet-provider/walletconnect.svg',
+    icon: '/assets/avalanche-avax-logo.svg',
     isNative: false,
     isEVM: true,
   },

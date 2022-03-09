@@ -10,11 +10,14 @@ interface ChainButtonProps
 const ChainButtonBase = (props: ChainButtonProps) => {
   const { className, onClick } = props;
   const {
-    target: { chain },
+    target: { chain, icon },
   } = useDeploymentTarget();
   return (
     <button className={className} onClick={onClick}>
-      <div className="chain-name">{chain}</div>
+      <div className="button-nowrap">
+        <div className="chain-name">{chain}</div>
+        <img className="button-logo" src={icon} alt="chain-logo" />
+      </div>
     </button>
   );
 };
@@ -30,4 +33,13 @@ export const ChainButton = styled(ChainButtonBase)`
   border: 1px solid ${({ theme }) => theme.colors.secondary};
   outline: none;
   background-color: transparent;
+  .button-nowrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+  .button-logo {
+    height: 18px;
+    padding-left: 5px;
+  }
 `;
