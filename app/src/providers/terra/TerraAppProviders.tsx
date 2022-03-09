@@ -14,6 +14,7 @@ import { TerraBalancesProvider } from './TerraBalancesProvider';
 import { TerraNetworkProvider } from './TerraNetworkProvider';
 import { ThemeProvider } from 'contexts/theme';
 import { lightTheme, darkTheme } from 'themes/terra';
+import { QueryProvider } from 'providers/QueryProvider';
 
 export function TerraAppProviders({
   children,
@@ -40,20 +41,22 @@ export function TerraAppProviders({
       createReadonlyWalletSession={createReadonlyWalletSession}
     >
       <TerraNetworkProvider>
-        <TerraAccountProvider>
-          <ThemeProvider
-            initialTheme="light"
-            lightTheme={lightTheme}
-            darkTheme={darkTheme}
-          >
-            <AppProviders dialogs={readonlyWalletSelectorElement}>
-              <TerraBalancesProvider>
-                <RouterWalletStatusRecheck />
-                {children}
-              </TerraBalancesProvider>
-            </AppProviders>
-          </ThemeProvider>
-        </TerraAccountProvider>
+        <QueryProvider>
+          <TerraAccountProvider>
+            <ThemeProvider
+              initialTheme="light"
+              lightTheme={lightTheme}
+              darkTheme={darkTheme}
+            >
+              <AppProviders dialogs={readonlyWalletSelectorElement}>
+                <TerraBalancesProvider>
+                  <RouterWalletStatusRecheck />
+                  {children}
+                </TerraBalancesProvider>
+              </AppProviders>
+            </ThemeProvider>
+          </TerraAccountProvider>
+        </QueryProvider>
       </TerraNetworkProvider>
     </WalletProvider>
   );

@@ -6,9 +6,13 @@ import { useCallback } from 'react';
 import { BorrowDialog } from '../BorrowDialog';
 import { BorrowFormParams } from '../types';
 import { useBorrowUstTx } from 'tx/evm';
+import { useEvmTerraAddressQuery } from 'queries';
 
 export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
-  const { connected } = useAccount();
+  const { connected, nativeWalletAddress } = useAccount();
+
+  const { data: addr2 } = useEvmTerraAddressQuery(nativeWalletAddress);
+  console.log('addr2', addr2);
 
   const borrowUstTx = useBorrowUstTx();
   const [postTx, txResult] = borrowUstTx?.stream ?? [null, null];

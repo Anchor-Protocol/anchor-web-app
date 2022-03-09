@@ -3,12 +3,12 @@ import { UIElementProps } from '@libs/ui';
 import { AccountContext, Account } from 'contexts/account';
 import { HumanAddr } from '@libs/types';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { useEvmTerraAddress } from 'crossanchor/useEvmTerraAddress';
+import { useEvmTerraAddressQuery } from 'queries';
 
 const EvmAccountProvider = ({ children }: UIElementProps) => {
   const { address, status } = useEvmWallet();
 
-  const terraWalletAddress = useEvmTerraAddress();
+  const { data: terraWalletAddress } = useEvmTerraAddressQuery(address);
 
   const account = useMemo<Account>(() => {
     if (status !== 'connected') {
