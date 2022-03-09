@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 import { RepayFormParams } from '../types';
 import { useRepayUstTx } from 'tx/evm';
 import { RepayDialog } from '../RepayDialog';
-import { EvmTxResultRenederer } from 'components/tx/EvmTxResultRenderer';
+import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
 
 export const EvmRepayDialog = (props: DialogProps<RepayFormParams>) => {
   const { connected } = useAccount();
@@ -31,7 +31,7 @@ export const EvmRepayDialog = (props: DialogProps<RepayFormParams>) => {
       proceedable={postTx !== undefined}
       onProceed={proceed}
       renderBroadcastTxResult={
-        <EvmTxResultRenederer
+        <EvmTxResultRenderer
           onExit={props.closeDialog}
           txStreamResult={txResult}
           onMinimize={minimizeTx}

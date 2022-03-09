@@ -9,7 +9,7 @@ import { RedeemCollateralFormParams } from '../types';
 import { useERC20Balance } from '@libs/app-provider/queries/erc20/balanceOf';
 import { normalize } from '@anchor-protocol/formatter';
 import { useERC20Decimals } from '@libs/app-provider/queries/erc20/decimals';
-import { EvmTxResultRenederer } from 'components/tx/EvmTxResultRenderer';
+import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
 
 export const EvmRedeemCollateralDialog = (
   props: DialogProps<RedeemCollateralFormParams>,
@@ -55,7 +55,7 @@ export const EvmRedeemCollateralDialog = (
       proceedable={postTx !== undefined}
       onProceed={proceed}
       renderBroadcastTxResult={
-        <EvmTxResultRenederer
+        <EvmTxResultRenderer
           onExit={props.closeDialog}
           txStreamResult={txResult}
           onMinimize={minimizeTx}

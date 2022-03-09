@@ -11,7 +11,7 @@ import { Big } from 'big.js';
 import { useWithdrawUstTx } from 'tx/evm';
 import { DialogProps } from '@libs/use-dialog';
 import { Container } from 'components/primitives/Container';
-import { EvmTxResultRenederer } from 'components/tx/EvmTxResultRenderer';
+import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
 
 export function EvmWithdrawDialog(props: DialogProps<{}, void>) {
   const { connected } = useAccount();
@@ -32,7 +32,7 @@ export function EvmWithdrawDialog(props: DialogProps<{}, void>) {
       {...state}
       txResult={withdrawTxResult}
       renderBroadcastTxResult={
-        <EvmTxResultRenederer
+        <EvmTxResultRenderer
           onExit={props.closeDialog}
           txStreamResult={withdrawTxResult}
           onMinimize={minimizeTx}

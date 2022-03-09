@@ -7,19 +7,19 @@ import { TxResultRenderer } from './TxResultRenderer';
 
 type Tx = CrossChainTxResponse<ContractReceipt> | null;
 
-type EvmTxResultRenedererProps = {
+type EvmTxResultRendererProps = {
   txStreamResult: StreamResult<TxResultRendering<Tx>> | null;
   onExit: () => void;
   onMinimize?: () => void;
   minimizable?: boolean;
 };
 
-export function EvmTxResultRenederer({
+export function EvmTxResultRenderer({
   onExit,
   txStreamResult,
   onMinimize,
   minimizable,
-}: EvmTxResultRenedererProps) {
+}: EvmTxResultRendererProps) {
   if (
     !txStreamResult ||
     !(
