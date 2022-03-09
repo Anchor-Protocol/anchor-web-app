@@ -10,13 +10,13 @@ interface ChainButtonProps
 const ChainButtonBase = (props: ChainButtonProps) => {
   const { className, onClick } = props;
   const {
-    target: { chain, icon },
+    target: { chain },
   } = useDeploymentTarget();
   return (
     <button className={className} onClick={onClick}>
       <div className="button-nowrap">
         <div className="chain-name">{chain}</div>
-        <img className="button-logo" src={icon} alt="chain-logo" />
+        {/* <img className="button-logo" src={icon} alt="chain-logo" /> */}
       </div>
     </button>
   );
