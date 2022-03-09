@@ -74,6 +74,7 @@ jobs:
         run: |
           yarn run app:build
           echo "::set-output name=hash::${{ runner.os }}-app-$(git rev-parse --short HEAD)"
+          sed -i '/build/d' ./app/.gitignore
 
       - name: Store build artifacts
         uses: actions/cache@v1
