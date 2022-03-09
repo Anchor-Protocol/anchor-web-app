@@ -81,23 +81,12 @@ export function CollateralList({ className }: CollateralListProps) {
         ([collateralToken]) => collateral_token === collateralToken,
       );
 
-      const tmpTokenDisplay = {
-        protocol: 'avalanche',
-        symbol: 'SAVAX',
-        token: collateral_token,
-        icon: 'test',
-        decimals: 8,
-      };
-
-      tokenDisplay = tokenDisplay ?? tmpTokenDisplay;
-
       return {
-        icon:
-          tokenDisplay && tokenDisplay !== tmpTokenDisplay ? (
-            <TokenIcon tokenDisplay={tokenDisplay} />
-          ) : (
-            <TokenIcon token="bluna" />
-          ),
+        icon: tokenDisplay ? (
+          <TokenIcon tokenDisplay={tokenDisplay} />
+        ) : (
+          <TokenIcon token="bluna" />
+        ),
         tokenDisplay,
         collateralToken: collateral_token,
         token: bridgeAssets.get(collateral_token)!,
