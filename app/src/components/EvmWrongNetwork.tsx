@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { Modal } from '@material-ui/core';
 import {
   chainConfigurations,
-  supportedChainIds,
   useEvmWallet,
   EvmChainId,
 } from '@libs/evm-wallet';
@@ -17,20 +16,21 @@ import {
   useDeploymentTarget,
 } from '@anchor-protocol/app-provider';
 import { FlatButton } from '../@libs/neumorphism-ui/components/FlatButton';
+import { ButtonList } from './Header/shared';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 
 function EvmWrongNetworkBase({ className }: UIElementProps) {
-  const { chainId, provider } = useEvmWallet();
-  const isSupportedChain = chainId ? supportedChainIds.includes(chainId) : true;
+  const { provider } = useEvmWallet();
 
   const { updateTarget } = useDeploymentTarget();
 
   const onClick = useCallback(
     (target: DeploymentTarget) => {
       if (target.isEVM && provider?.provider?.isMetaMask) {
-        let targetChainId = EvmChainId.ETHEREUM_ROPSTEN;
+        let targetChainId = EvmChainId.ETHEREUM;
 
         if (target.chain === Chain.Avalanche) {
-          targetChainId = EvmChainId.AVALANCHE_FUJI_TESTNET;
+          targetChainId = EvmChainId.AVALANCHE;
         }
 
         if (targetChainId && provider?.provider?.request) {
@@ -66,42 +66,39 @@ function EvmWrongNetworkBase({ className }: UIElementProps) {
     [provider, updateTarget],
   );
 
-  return isSupportedChain ? null : (
-    <Modal className={className} open disableBackdropClick disableEnforceFocus>
-      <Dialog>
-        <h3>You’re connected to the wrong network.</h3>
-        <div className="title">Switch to Network:</div>
-        <div className="buttons">
+  return (
+    <Modal open disableBackdropClick disableEnforceFocus>
+      <Dialog className={className}>
+        <h3>You're connected to the wrong network.</h3>
+        <ButtonList title="Switch network">
           {DEPLOYMENT_TARGETS.map((target) => (
             <FlatButton
               key={target.chain}
               className="button"
               onClick={() => onClick(target)}
             >
-              {target.chain}
+              <IconSpan>
+                {target.chain}
+                <img src={target.icon} alt={target.chain} />
+              </IconSpan>
             </FlatButton>
           ))}
-        </div>
+        </ButtonList>
       </Dialog>
     </Modal>
   );
 }
 
 export const EvmWrongNetwork = styled(EvmWrongNetworkBase)`
+  background-color: white;
+
   .title {
     margin: 2rem 0 1rem;
   }
 
-  .buttons {
-    display: flex;
-    flex-direction: column;
-  }
-
   .button {
-    width: 100%;
-    height: 32px;
-    font-size: 12px;
-    font-weight: 500;
-    margin-bottom: 8px;
+    background-color: ${({ theme }) =>
+      theme.palette.type === 'light' ? '#f4f4f5' : '#2a2a46'};
+    color: ${({ theme }) => theme.textColor};
   }
 `;

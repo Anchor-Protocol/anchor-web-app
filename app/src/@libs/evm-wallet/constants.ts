@@ -45,6 +45,6 @@ export const chainConfigurations: { [K in EvmChainId]?: ChainConfiguration } = {
 export const supportedChainIds: number[] = [
   EvmChainId.ETHEREUM,
   EvmChainId.ETHEREUM_ROPSTEN,
-  // EvmChainId.AVALANCHE, // Just for test "EvmWrongNetwork.tsx"
+  EvmChainId.AVALANCHE,
   EvmChainId.AVALANCHE_FUJI_TESTNET,
 ];

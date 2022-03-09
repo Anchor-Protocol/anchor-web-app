@@ -18,7 +18,11 @@ export type EvmWallet = {
 
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
 
-export function EvmWalletProvider({ children }: { children: ReactNode }) {
+interface EvmWalletProviderProps {
+  children: ReactNode;
+}
+
+export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
   const [connectType, setConnectType] = useLocalStorage<ConnectType | null>(
     '__anchor_evm_wallet_connect_type__',
     null,

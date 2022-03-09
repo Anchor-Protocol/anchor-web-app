@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 interface ButtonListProps {
   className?: string;
-  title: string;
+  title?: string;
   footer?: ReactNode;
   children: ReactNode;
 }
@@ -12,7 +12,7 @@ function ButtonListBase(props: ButtonListProps) {
   const { className, title, footer, children } = props;
   return (
     <section className={className}>
-      <h1>{title}</h1>
+      {title && <h1>{title}</h1>}
       {children}
       {footer && <hr />}
       {footer}

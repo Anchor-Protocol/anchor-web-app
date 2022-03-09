@@ -1,5 +1,4 @@
 import React from 'react';
-import { EvmWrongNetwork } from 'components/EvmWrongNetwork';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { Dashboard } from 'pages/dashboard';
@@ -19,7 +18,6 @@ export function EvmApp() {
     <EvmAppProviders>
       <div>
         <GlobalStyle />
-        <EvmWrongNetwork />
         <Header />
         <Routes>
           <Route path="/" element={<Dashboard />} />
