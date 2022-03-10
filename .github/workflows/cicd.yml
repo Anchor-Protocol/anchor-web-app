@@ -77,17 +77,15 @@ jobs:
           sed -i '/build/d' ./app/.gitignore
 
       - name: Store build artifacts
-        uses: actions/cache@v1
+        uses: actions/upload-artifact@v3
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
+          name: ${{ steps.build.outputs.hash }}
           path: app/build
-          key: ${{ steps.build.outputs.hash }}
-          restore-keys: |
-            ${{ runner.os }}-app-
 
     outputs:
+      artifactName: ${{ steps.build.outputs.hash }}
       artifactPath: app/build
-      artifactKey: ${{ steps.build.outputs.hash }}
 
   release:
     name: Release
@@ -102,12 +100,10 @@ jobs:
           fetch-depth: 0
 
       - name: Restore build artifacts
-        uses: actions/cache@v2
+        uses: actions/download-artifact@v3
         with:
+          name: ${{ needs.test.outputs.artifactName }}
           path: ${{ needs.test.outputs.artifactPath }}
-          key: ${{ needs.test.outputs.artifactKey }}
-          restore-keys: |
-            ${{ runner.os }}-app-
 
       - name: Prepare
         id: prep
