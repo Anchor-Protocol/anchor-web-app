@@ -30,19 +30,23 @@ const TransactionWidgetBase = (props: UIElementProps) => {
         {open && (
           <DropdownContainer>
             <DropdownBox>
-              <TransactionList onClose={() => setOpen((v) => !v)} />
-              <div className="restore-tx">
-                <div className="restore-tx-inner">
-                  <span>Having transaction issues?</span>
-                  <Link
-                    className="link"
-                    to="/bridge/restore"
-                    onClick={() => setOpen(false)}
-                  >
-                    Restore transaction
-                  </Link>
-                </div>
-              </div>
+              <TransactionList
+                onClose={() => setOpen((v) => !v)}
+                footer={
+                  <div className="restore-tx">
+                    <div className="restore-tx-inner">
+                      <p>Having transaction issues?</p>
+                      <Link
+                        className="link"
+                        to="/bridge/restore"
+                        onClick={() => setOpen(false)}
+                      >
+                        Restore transaction
+                      </Link>
+                    </div>
+                  </div>
+                }
+              />
             </DropdownBox>
           </DropdownContainer>
         )}
@@ -57,24 +61,26 @@ export const TransactionWidget = styled(TransactionWidgetBase)`
   text-align: left;
 
   .restore-tx {
+    margin-top: 1em;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 500;
     color: ${({ theme }) => theme.dimTextColor};
-    margin-bottom: 10px;
-  }
 
-  .restore-tx-inner {
-    width: auto;
-    display: flex;
-  }
+    .restore-tx-inner {
+      width: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-  .link {
-    margin-left: 5px;
-    cursor: pointer;
-    color: ${({ theme }) => theme.colors.secondaryDark};
+    .link {
+      margin-top: 5px;
+      cursor: pointer;
+      color: ${({ theme }) => theme.colors.secondaryDark};
+    }
   }
 `;

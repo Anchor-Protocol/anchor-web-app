@@ -13,7 +13,7 @@ function ButtonListBase(props: ButtonListProps) {
   return (
     <section className={className}>
       {title && <h1>{title}</h1>}
-      {children}
+      <div className="children">{children}</div>
       {footer && <hr />}
       {footer}
     </section>
@@ -32,35 +32,37 @@ export const ButtonList = styled(ButtonListBase)`
     margin-bottom: 16px;
   }
 
-  button,
-  a {
-    width: 100%;
-    height: 32px;
-    font-size: 12px;
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: ${({ theme }) => theme.textColor};
-
-    &:hover {
-      background-color: ${({ theme }) =>
-        theme.palette.type === 'light' ? '#f4f4f5' : '#2a2a46'};
-      color: ${({ theme }) => theme.textColor};
-    }
-
-    > span {
+  .children {
+    button,
+    a {
       width: 100%;
-      padding: 0 15px 1px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      img {
-        transform: scale(1.1);
-      }
-    }
+      height: 32px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: ${({ theme }) => theme.textColor};
 
-    img {
-      width: 1em;
-      height: 1em;
+      &:hover {
+        background-color: ${({ theme }) =>
+          theme.palette.type === 'light' ? '#f4f4f5' : '#2a2a46'};
+        color: ${({ theme }) => theme.textColor};
+      }
+
+      > span {
+        width: 100%;
+        padding: 0 15px 1px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        img {
+          transform: scale(1.1);
+        }
+      }
+
+      img {
+        width: 1em;
+        height: 1em;
+      }
     }
   }
 
