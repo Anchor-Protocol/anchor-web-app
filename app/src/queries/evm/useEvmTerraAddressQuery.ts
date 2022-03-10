@@ -1,4 +1,3 @@
-import { TERRA_ADDRESS_UNKNOWN } from '@anchor-protocol/app-fns/queries/utils';
 import {
   ANCHOR_QUERY_KEY,
   useAnchorWebapp,
@@ -12,12 +11,12 @@ const evmTerraAddressQuery = async (
   evmAddr: string | undefined,
 ): Promise<string | undefined> => {
   if (evmAddr === undefined) {
-    return TERRA_ADDRESS_UNKNOWN;
+    return undefined;
   }
   try {
     return await sdk.terraAddress(evmAddr);
   } catch (error) {
-    return TERRA_ADDRESS_UNKNOWN;
+    return undefined;
   }
 };
 
