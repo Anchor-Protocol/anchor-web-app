@@ -93,6 +93,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
 
+    permissions:
+      packages: write
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
