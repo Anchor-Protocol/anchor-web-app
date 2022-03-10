@@ -1,7 +1,15 @@
 import { StreamReturn, useStream } from '@rx-stream/react';
 import { ContractReceipt } from 'ethers';
-import { merge, from, map, tap, BehaviorSubject, Subject } from 'rxjs';
-import { useCallback } from 'react';
+import {
+  merge,
+  from,
+  map,
+  tap,
+  BehaviorSubject,
+  Subject,
+  ReplaySubject,
+} from 'rxjs';
+import { useCallback, useMemo } from 'react';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { truncateEvm } from '@libs/formatter';
 import { catchTxError } from './catchTxError';
@@ -13,32 +21,42 @@ export type TxEventHandler<TxParams> = (
   txParams: TxParams,
 ) => void;
 
+export type TxEvent<TxParams> = {
+  event: CrossChainEvent<ContractReceipt>;
+  txParams: TxParams;
+};
+
 export const useTx = <TxParams, TxResult>(
   sendTx: (
     txParams: TxParams,
     renderTxResults: Subject<TxResultRendering<TxResult>>,
-    handleEvent: TxEventHandler<TxParams>,
+    txEvents: Subject<TxEvent<TxParams>>,
   ) => Promise<TxResult>,
   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
   emptyTxResult: TxResult,
-  onTxEvent: TxEventHandler<TxParams> = () => {},
 ): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
   const { txErrorReporter } = useAnchorWebapp();
 
-  const txCallback = useCallback(
-    (txParams: TxParams) => {
-      const sdkEvents = new BehaviorSubject<TxResultRendering<TxResult>>({
+  const txEvents = useMemo(() => new ReplaySubject<TxEvent<TxParams>>(1), []);
+  const renderingEvents = useMemo(
+    () =>
+      new BehaviorSubject<TxResultRendering<TxResult>>({
         value: emptyTxResult,
         message: 'Processing transaction...',
         phase: TxStreamPhase.BROADCAST,
         receipts: [],
-      });
+      }),
+    [emptyTxResult],
+  );
 
+  const txCallback = useCallback(
+    (txParams: TxParams) => {
       return merge(
-        from(sendTx(txParams, sdkEvents, onTxEvent))
+        from(sendTx(txParams, renderingEvents, txEvents))
           .pipe(
             map((txResult) => {
-              sdkEvents.complete();
+              renderingEvents.complete();
+              txEvents.complete();
 
               return {
                 value: txResult,
@@ -48,14 +66,14 @@ export const useTx = <TxParams, TxResult>(
             }),
           )
           .pipe(catchTxError<TxResult>({ txErrorReporter })),
-        sdkEvents,
+        renderingEvents,
       ).pipe(
         tap((tx) => {
           console.log('stream emitted', tx);
         }),
       );
     },
-    [sendTx, emptyTxResult, parseTx, txErrorReporter, onTxEvent],
+    [sendTx, parseTx, txErrorReporter, renderingEvents, txEvents],
   );
 
   return useStream(txCallback);

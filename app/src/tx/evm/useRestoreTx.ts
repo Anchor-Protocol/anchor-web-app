@@ -9,7 +9,7 @@ import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
-import { TxEventHandler, useTx } from './useTx';
+import { TxEvent, useTx } from './useTx';
 import { capitalize, chain } from './utils';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
@@ -27,7 +27,7 @@ export const useRestoreTx = () => {
     async (
       txParams: RestoreTxParams,
       renderTxResults: Subject<TxRender>,
-      handleEvent: TxEventHandler<RestoreTxParams>,
+      txEvents: Subject<TxEvent<RestoreTxParams>>,
     ) => {
       try {
         const tx = await provider!.getTransaction(txParams.txHash);
@@ -36,7 +36,7 @@ export const useRestoreTx = () => {
           console.log(event, 'eventEmitted ');
 
           renderTxResults.next(restoreTxResult(event, connectType, chainId!));
-          handleEvent(event, txParams);
+          txEvents.next({ event, txParams });
         });
         return result;
       } catch (error: any) {

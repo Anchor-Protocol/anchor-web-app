@@ -29,8 +29,8 @@ export function EvmApp() {
           <Route path={`/claim/all`} element={<ClaimAll />} />
           <Route element={<Navigate to="/" replace />} />
         </Routes>
+        <BackgroundTransactions />
       </div>
-      <BackgroundTransactions />
     </EvmAppProviders>
   );
 }

@@ -6,9 +6,9 @@ import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
-import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
+import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy, demicrofy } from '@anchor-protocol/formatter';
-import { TxEventHandler } from './useTx';
+import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
 
 type ProvideCollateralTxResult = OneWayTxResponse<ContractReceipt> | null;
@@ -23,7 +23,7 @@ export interface ProvideCollateralTxParams {
 export function useProvideCollateralTx(
   erc20Decimals: number,
 ):
-  | PersistedTxResult<ProvideCollateralTxParams, ProvideCollateralTxResult>
+  | BackgroundTxResult<ProvideCollateralTxParams, ProvideCollateralTxResult>
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
@@ -32,7 +32,7 @@ export function useProvideCollateralTx(
     async (
       txParams: ProvideCollateralTxParams,
       renderTxResults: Subject<ProvideCollateralTxRender>,
-      handleEvent: TxEventHandler<ProvideCollateralTxParams>,
+      txEvents: Subject<TxEvent<ProvideCollateralTxParams>>,
     ) => {
       try {
         const amount = microfy(txParams.amount, erc20Decimals).toString();
@@ -46,7 +46,7 @@ export function useProvideCollateralTx(
             renderTxResults.next(
               txResult(event, connectType, chainId!, 'lock collateral'),
             );
-            handleEvent(event, txParams);
+            txEvents.next({ event, txParams });
           },
         );
 
@@ -61,7 +61,7 @@ export function useProvideCollateralTx(
             renderTxResults.next(
               txResult(event, connectType, chainId!, 'lock collateral'),
             );
-            handleEvent(event, txParams);
+            txEvents.next({ event, txParams });
           },
         );
       } catch (err) {
@@ -72,7 +72,7 @@ export function useProvideCollateralTx(
     [xAnchor, address, connectType, chainId, erc20Decimals],
   );
 
-  const persistedTxResult = usePersistedTx<
+  const persistedTxResult = useBackgroundTx<
     ProvideCollateralTxParams,
     ProvideCollateralTxResult
   >(

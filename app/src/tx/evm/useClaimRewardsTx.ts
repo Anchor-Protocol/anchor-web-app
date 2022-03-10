@@ -5,8 +5,8 @@ import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
-import { TxEventHandler } from './useTx';
+import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
+import { TxEvent } from './useTx';
 import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 
 type ClaimRewardsTxResult = OneWayTxResponse<ContractReceipt> | null;
@@ -15,7 +15,7 @@ type ClaimRewardsTxRender = TxResultRendering<ClaimRewardsTxResult>;
 export interface ClaimRewardsTxParams {}
 
 export function useClaimRewardsTx():
-  | PersistedTxResult<ClaimRewardsTxParams, ClaimRewardsTxResult>
+  | BackgroundTxResult<ClaimRewardsTxParams, ClaimRewardsTxResult>
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
@@ -24,7 +24,7 @@ export function useClaimRewardsTx():
     (
       txParams: ClaimRewardsTxParams,
       renderTxResults: Subject<ClaimRewardsTxRender>,
-      handleEvent: TxEventHandler<ClaimRewardsTxParams>,
+      txEvents: Subject<TxEvent<ClaimRewardsTxParams>>,
     ) => {
       return xAnchor.claimRewards(address!, TX_GAS_LIMIT, (event) => {
         console.log(event, 'eventEmitted');
@@ -32,13 +32,13 @@ export function useClaimRewardsTx():
         renderTxResults.next(
           txResult(event, connectType, chainId!, 'claim rewards'),
         );
-        handleEvent(event, txParams);
+        txEvents.next({ event, txParams });
       });
     },
     [address, connectType, xAnchor, chainId],
   );
 
-  const persistedTxResult = usePersistedTx<
+  const persistedTxResult = useBackgroundTx<
     ClaimRewardsTxParams,
     ClaimRewardsTxResult
   >(

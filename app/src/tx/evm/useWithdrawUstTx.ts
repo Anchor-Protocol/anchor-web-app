@@ -6,10 +6,10 @@ import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
-import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
+import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { aUST } from '@anchor-protocol/types';
-import { TxEventHandler } from './useTx';
+import { TxEvent } from './useTx';
 
 type WithdrawUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type WithdrawUstTxRender = TxResultRendering<WithdrawUstTxResult>;
@@ -19,7 +19,7 @@ export interface WithdrawUstTxParams {
 }
 
 export function useWithdrawUstTx():
-  | PersistedTxResult<WithdrawUstTxParams, WithdrawUstTxResult>
+  | BackgroundTxResult<WithdrawUstTxParams, WithdrawUstTxResult>
   | undefined {
   const {
     address,
@@ -38,7 +38,7 @@ export function useWithdrawUstTx():
     async (
       txParams: WithdrawUstTxParams,
       renderTxResults: Subject<WithdrawUstTxRender>,
-      handleEvent: TxEventHandler<WithdrawUstTxParams>,
+      txEvents: Subject<TxEvent<WithdrawUstTxParams>>,
     ) => {
       const withdrawAmount = microfy(
         formatInput(txParams.withdrawAmount),
@@ -53,7 +53,7 @@ export function useWithdrawUstTx():
           renderTxResults.next(
             txResult(event, connectType, chainId, 'withdraw'),
           );
-          handleEvent(event, txParams);
+          txEvents.next({ event, txParams });
         },
       );
 
@@ -65,14 +65,14 @@ export function useWithdrawUstTx():
           renderTxResults.next(
             txResult(event, connectType, chainId, 'withdraw'),
           );
-          handleEvent(event, txParams);
+          txEvents.next({ event, txParams });
         },
       );
     },
     [xAnchor, address, connectType, formatInput, microfy, chainId],
   );
 
-  const persistedTxResult = usePersistedTx<
+  const persistedTxResult = useBackgroundTx<
     WithdrawUstTxParams,
     WithdrawUstTxResult
   >(

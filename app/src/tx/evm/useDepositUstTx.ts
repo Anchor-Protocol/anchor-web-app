@@ -6,10 +6,10 @@ import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
-import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
+import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
-import { TxEventHandler } from './useTx';
+import { TxEvent } from './useTx';
 
 type DepositUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type DepositUstTxRender = TxResultRendering<DepositUstTxResult>;
@@ -19,7 +19,7 @@ export interface DepositUstTxParams {
 }
 
 export function useDepositUstTx():
-  | PersistedTxResult<DepositUstTxParams, DepositUstTxResult>
+  | BackgroundTxResult<DepositUstTxParams, DepositUstTxResult>
   | undefined {
   const {
     address,
@@ -36,7 +36,7 @@ export function useDepositUstTx():
     async (
       txParams: DepositUstTxParams,
       renderTxResults: Subject<DepositUstTxRender>,
-      handleEvent: TxEventHandler<DepositUstTxParams>,
+      txEvents: Subject<TxEvent<DepositUstTxParams>>,
     ) => {
       const depositAmount = microfy(
         formatInput(txParams.depositAmount),
@@ -51,7 +51,7 @@ export function useDepositUstTx():
           renderTxResults.next(
             txResult(event, connectType, chainId, 'deposit'),
           );
-          handleEvent(event, txParams);
+          txEvents.next({ event, txParams });
         },
       );
 
@@ -61,30 +61,29 @@ export function useDepositUstTx():
         TX_GAS_LIMIT,
         (event) => {
           console.log(event, 'eventEmitted');
-
+          txEvents.next({ event, txParams });
           renderTxResults.next(
             txResult(event, connectType, chainId, 'deposit'),
           );
-          handleEvent(event, txParams);
         },
       );
     },
     [address, connectType, xAnchor, chainId, microfy, formatInput],
   );
 
-  const persistedTxResult = usePersistedTx<
-    DepositUstTxParams,
-    DepositUstTxResult
-  >(
-    depositTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => ({
+  const displayTx = useCallback(
+    (txParams: DepositUstTxParams) => ({
       action: 'depositStable',
       amount: `${formatOutput(txParams.depositAmount as UST)} UST`,
       timestamp: Date.now(),
     }),
+    [formatOutput],
   );
+
+  const persistedTxResult = useBackgroundTx<
+    DepositUstTxParams,
+    DepositUstTxResult
+  >(depositTx, (resp) => resp.tx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }

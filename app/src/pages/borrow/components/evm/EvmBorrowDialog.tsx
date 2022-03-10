@@ -6,14 +6,10 @@ import { useCallback } from 'react';
 import { BorrowDialog } from '../BorrowDialog';
 import { BorrowFormParams } from '../types';
 import { useBorrowUstTx } from 'tx/evm';
-import { useEvmTerraAddressQuery } from 'queries';
 import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
 
 export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
-  const { connected, nativeWalletAddress } = useAccount();
-
-  const { data: addr2 } = useEvmTerraAddressQuery(nativeWalletAddress);
-  console.log('addr2', addr2);
+  const { connected } = useAccount();
 
   const borrowUstTx = useBorrowUstTx();
   const { minimizeTx, isTxMinimizable } = borrowUstTx?.utils ?? {};
