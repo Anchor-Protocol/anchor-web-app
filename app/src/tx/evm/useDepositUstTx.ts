@@ -10,7 +10,7 @@ import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
 import { TxEvent } from './useTx';
-import { EvmTxProgressWriter } from './EvmTxProgressWriter';
+//import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
 type DepositUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type DepositUstTxRender = TxResultRendering<DepositUstTxResult>;
@@ -43,12 +43,12 @@ export function useDepositUstTx():
         formatInput(txParams.depositAmount),
       ).toString();
 
-      const writer = new EvmTxProgressWriter(
-        renderTxResults,
-        chainId,
-        connectType,
-      );
-      writer.writeApproval();
+      // const writer = new EvmTxProgressWriter(
+      //   renderTxResults,
+      //   chainId,
+      //   connectType,
+      // );
+      // writer.writeApproval();
 
       await xAnchor.approveLimit(
         { token: 'ust' },
@@ -63,7 +63,7 @@ export function useDepositUstTx():
         },
       );
 
-      writer.writeDeposit();
+      //writer.writeDeposit();
 
       const response = await xAnchor.depositStable(
         depositAmount,
