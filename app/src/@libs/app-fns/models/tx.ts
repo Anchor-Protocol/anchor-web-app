@@ -22,6 +22,8 @@ export interface TxReceipt {
   value: string | { html: string };
 }
 
+export type TxReceiptLike = TxReceipt | undefined | null | false;
+
 export interface TxResultRendering<T = unknown> {
   /**
    * @internal
@@ -52,5 +54,5 @@ export interface TxResultRendering<T = unknown> {
   /**
    * tx receipts
    */
-  receipts: (TxReceipt | undefined | null | false)[];
+  receipts: TxReceiptLike[];
 }

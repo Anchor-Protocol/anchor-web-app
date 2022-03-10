@@ -77,7 +77,7 @@ export function TxResultRenderer({
                   className="minimize-button"
                   onClick={handleMinimize}
                 >
-                  Run in background
+                  Hide
                 </ActionButton>
               </Container>
             )}

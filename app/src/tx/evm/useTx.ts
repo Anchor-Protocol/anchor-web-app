@@ -51,7 +51,7 @@ export const useTx = <TxParams, TxResult>(
         sdkEvents,
       ).pipe(
         tap((tx) => {
-          console.log('stream emitted', tx);
+          //console.log('stream emitted', tx);
         }),
       );
     },
