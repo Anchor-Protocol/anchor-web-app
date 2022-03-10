@@ -19,60 +19,152 @@ import { BackgroundTxRequest, BackgroundTxRequestContext } from './context';
 //  - updateTxHash(id, txHash)
 //    - update request for id and given txHash
 
+// export const BackgroundTxRequestProvider = ({ children }: UIElementProps) => {
+//   const [requests, setRequests] = useState<BackgroundTxRequest[]>([]);
+
+//   const registeredWithTxHash = useCallback(
+//     (txHash?: string) =>
+//       Boolean(txHash && requests.find((r) => r.txHash === txHash)),
+//     [requests],
+//   );
+
+//   const registeredWithTxId = useCallback(
+//     (id: string) => Boolean(requests.find((r) => r.id === id)),
+//     [requests],
+//   );
+
+//   const alreadyRegistered = useCallback(
+//     (request: BackgroundTxRequest) => {
+//       return (
+//         registeredWithTxHash(request.txHash) || registeredWithTxId(request.id)
+//       );
+//     },
+//     [registeredWithTxHash, registeredWithTxId],
+//   );
+
+//   const register = useCallback(
+//     (request: BackgroundTxRequest) => {
+//       if (alreadyRegistered(request)) {
+//         return;
+//       }
+
+//       setRequests([...requests, request]);
+//     },
+//     [setRequests, alreadyRegistered, requests],
+//   );
+
+//   const unregister = useCallback(
+//     (id: string) => {
+//       setRequests(requests.filter((r) => r.id !== id));
+//     },
+//     [setRequests, requests],
+//   );
+
+//   const updateRequest = useCallback(
+//     (id: string, updates: Partial<BackgroundTxRequest>) => {
+//       if (!registeredWithTxId(id)) {
+//         return;
+//       }
+
+//       const request = requests.find((r) => r.id === id)!;
+//       return setRequests([
+//         ...requests.filter((r) => r.id !== id),
+//         { ...request, ...updates },
+//       ]);
+//     },
+//     [setRequests, requests, registeredWithTxId],
+//   );
+
+//   const getRequest = useCallback(
+//     (input: { id: string } | { txHash: string }) => {
+//       if ('id' in input) {
+//         return requests.find((r) => r.id === input.id);
+//       }
+
+//       return requests.find((r) => r.txHash === input.txHash);
+//     },
+//     [requests],
+//   );
+
+//   const value = useMemo(
+//     () => ({ register, getRequest }),
+//     [register, getRequest],
+//   );
+
+//   return (
+//     <BackgroundTxRequestContext.Provider value={value}>
+//       {children}
+//       <>
+//         {requests.map((request) => (
+//           <Request
+//             key={request.id}
+//             {...request}
+//             updateRequest={updateRequest}
+//             unregister={unregister}
+//           />
+//         ))}
+//       </>
+//     </BackgroundTxRequestContext.Provider>
+//   );
+// };
+
+const registeredWithTxHash = (
+  requests: BackgroundTxRequest[],
+  txHash?: string,
+): boolean => {
+  return Boolean(txHash && requests.find((r) => r.txHash === txHash));
+};
+
+const registeredWithTxId = (
+  requests: BackgroundTxRequest[],
+  id: string,
+): boolean => {
+  return Boolean(requests.find((r) => r.id === id));
+};
+
+const alreadyRegistered = (
+  requests: BackgroundTxRequest[],
+  request: BackgroundTxRequest,
+): boolean => {
+  return (
+    registeredWithTxHash(requests, request.txHash) ||
+    registeredWithTxId(requests, request.id)
+  );
+};
+
 export const BackgroundTxRequestProvider = ({ children }: UIElementProps) => {
   const [requests, setRequests] = useState<BackgroundTxRequest[]>([]);
 
-  const registeredWithTxHash = useCallback(
-    (txHash?: string) =>
-      Boolean(txHash && requests.find((r) => r.txHash === txHash)),
-    [requests],
-  );
-
-  const registeredWithTxId = useCallback(
-    (id: string) => Boolean(requests.find((r) => r.id === id)),
-    [requests],
-  );
-
-  const alreadyRegistered = useCallback(
-    (request: BackgroundTxRequest) => {
-      return (
-        registeredWithTxHash(request.txHash) || registeredWithTxId(request.id)
-      );
-    },
-    [registeredWithTxHash, registeredWithTxId],
-  );
-
   const register = useCallback(
     (request: BackgroundTxRequest) => {
-      if (alreadyRegistered(request)) {
-        return;
-      }
-
-      setRequests([...requests, request]);
+      setRequests((prev) => {
+        if (alreadyRegistered(prev, request)) {
+          return prev;
+        }
+        return [...prev, request];
+      });
     },
-    [setRequests, alreadyRegistered, requests],
+    [setRequests],
   );
 
   const unregister = useCallback(
     (id: string) => {
-      setRequests(requests.filter((r) => r.id !== id));
+      setRequests((prev) => prev.filter((r) => r.id !== id));
     },
-    [setRequests, requests],
+    [setRequests],
   );
 
   const updateRequest = useCallback(
     (id: string, updates: Partial<BackgroundTxRequest>) => {
-      if (!registeredWithTxId(id)) {
-        return;
-      }
-
-      const request = requests.find((r) => r.id === id)!;
-      return setRequests([
-        ...requests.filter((r) => r.id !== id),
-        { ...request, ...updates },
-      ]);
+      setRequests((prev) => {
+        if (!registeredWithTxId(prev, id)) {
+          return prev;
+        }
+        const request = prev.find((r) => r.id === id)!;
+        return [...prev.filter((r) => r.id !== id), { ...request, ...updates }];
+      });
     },
-    [setRequests, requests, registeredWithTxId],
+    [setRequests],
   );
 
   const getRequest = useCallback(
@@ -122,6 +214,8 @@ const Request = (
     () => props.unregister(props.id),
     (txHash) => props.updateRequest(props.id, { txHash }),
   );
+
+  //props.updateRequest(props.id, { persistedTxResult });
 
   useInterval(() => {
     props.updateRequest(props.id, { persistedTxResult });
