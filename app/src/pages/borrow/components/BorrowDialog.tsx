@@ -35,6 +35,7 @@ import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
 import { BroadcastTxStreamResult } from 'pages/earn/components/types';
+import big from 'big.js';
 
 export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   txResult: StreamResult<TxResultRendering> | null;
@@ -226,9 +227,11 @@ function BorrowDialogBase(props: BorrowDialogProps) {
 
         {states.txFee && states.receiveAmount && states.receiveAmount.gt(0) && (
           <TxFeeList className="receipt">
-            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(states.txFee))} UST
-            </TxFeeListItem>
+            {big(states.txFee).gt(0) && (
+              <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+                {formatUST(demicrofy(states.txFee))} UST
+              </TxFeeListItem>
+            )}
             <TxFeeListItem label="Receive Amount">
               {formatUST(demicrofy(states.receiveAmount))} UST
             </TxFeeListItem>

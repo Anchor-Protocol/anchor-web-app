@@ -21,6 +21,7 @@ import { UIElementProps } from '@libs/ui';
 import { TxResultRendering } from '@libs/app-fns';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { BroadcastTxStreamResult } from './types';
+import big from 'big.js';
 
 interface DepositDialogParams extends UIElementProps, EarnDepositFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
@@ -141,9 +142,11 @@ function DepositDialogBase(props: DepositDialogProps) {
 
         {txFee && sendAmount && (
           <TxFeeList className="receipt">
-            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {`${formatOutput(demicrofy(txFee))} ${symbol}`}
-            </TxFeeListItem>
+            {big(txFee).gt(0) && (
+              <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+                {`${formatOutput(demicrofy(txFee))} ${symbol}`}
+              </TxFeeListItem>
+            )}
             <TxFeeListItem label="Send Amount">
               {`${formatOutput(demicrofy(sendAmount))} ${symbol}`}
             </TxFeeListItem>

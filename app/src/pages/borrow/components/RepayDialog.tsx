@@ -29,6 +29,7 @@ import styled from 'styled-components';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { RepayFormParams } from './types';
+import big from 'big.js';
 
 export interface RepayDialogParams extends UIElementProps, RepayFormParams {
   txResult: StreamResult<TxResultRendering> | null;
@@ -184,9 +185,11 @@ function RepayDialogBase(props: RepayDialogProps) {
                 : formatUST(demicrofy(states.totalOutstandingLoan))}{' '}
               UST
             </TxFeeListItem>
-            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(states.txFee))} UST
-            </TxFeeListItem>
+            {big(states.txFee).gt(0) && (
+              <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+                {formatUST(demicrofy(states.txFee))} UST
+              </TxFeeListItem>
+            )}
             <TxFeeListItem label="Send Amount">
               {formatUST(demicrofy(states.sendAmount))} UST
             </TxFeeListItem>

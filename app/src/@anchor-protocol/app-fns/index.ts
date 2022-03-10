@@ -55,6 +55,8 @@ export * from './logics/borrow/vectorizeOverseerCollaterals';
 export * from './logics/borrow/vectorizeOverseerWhitelist';
 export * from './logics/borrow/vectorizeVariations';
 export * from './logics/common/validateTxFee';
+export * from './logics/common/computeGasPrice';
+export * from './logics/common/computeGasToUst';
 export * from './logics/earn/computeCurrentAPY';
 export * from './logics/earn/computeTotalDeposit';
 export * from './models/collaterals';

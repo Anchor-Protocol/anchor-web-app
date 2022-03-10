@@ -10,6 +10,8 @@ import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
 import { TxEvent } from './useTx';
+//import { useRefetchQueries } from '@libs/app-provider';
+//import { ANCHOR_TX_KEY } from '@anchor-protocol/app-provider';
 //import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
 type DepositUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
@@ -28,6 +30,7 @@ export function useDepositUstTx():
     connectType,
     chainId = EvmChainId.ETHEREUM_ROPSTEN,
   } = useEvmWallet();
+  //const refetchQueries = useRefetchQueries();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
@@ -77,6 +80,8 @@ export function useDepositUstTx():
           );
         },
       );
+
+      //refetchQueries(ANCHOR_TX_KEY.EARN_DEPOSIT);
 
       return response;
     },

@@ -26,6 +26,7 @@ import { TxResultRendering } from '@libs/app-fns';
 import { UIElementProps } from '@libs/ui';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { BroadcastTxStreamResult } from './types';
+import big from 'big.js';
 
 interface WithdrawDialogParams extends UIElementProps, EarnWithdrawFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
@@ -155,10 +156,12 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
 
         {txFee && receiveAmount && (
           <TxFeeList className="receipt">
-            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatOutput(demicrofy(txFee))}
-              {` ${symbol}`}
-            </TxFeeListItem>
+            {big(txFee).gt(0) && (
+              <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+                {formatOutput(demicrofy(txFee))}
+                {` ${symbol}`}
+              </TxFeeListItem>
+            )}
             <TxFeeListItem label="Receive Amount">
               {formatOutput(demicrofy(receiveAmount))}
               {` ${symbol}`}

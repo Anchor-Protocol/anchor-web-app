@@ -225,7 +225,7 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
           </figure>
         )}
 
-        {states.depositAmount.length > 0 && (
+        {states.depositAmount.length > 0 && big(states.txFee).gt(0) && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {formatUSTOutput(demicrofyUST(states.txFee))} UST

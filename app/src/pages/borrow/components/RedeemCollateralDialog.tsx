@@ -34,6 +34,7 @@ import {
   useFormatters,
 } from '@anchor-protocol/formatter';
 import { BroadcastTxStreamResult } from 'pages/earn/components/types';
+import big from 'big.js';
 
 export interface RedeemCollateralDialogParams
   extends UIElementProps,
@@ -240,7 +241,7 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
           </MessageBox>
         )}
 
-        {states.redeemAmount.length > 0 && (
+        {states.redeemAmount.length > 0 && big(states.txFee).gt(0) && (
           <TxFeeList className="receipt">
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {formatUSTOutput(demicrofyUST(states.txFee))} UST
