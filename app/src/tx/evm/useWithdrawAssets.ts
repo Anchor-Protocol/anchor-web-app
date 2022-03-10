@@ -1,5 +1,5 @@
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
-import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
+import { TxResultRendering } from '@libs/app-fns';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
@@ -13,7 +13,6 @@ type TxRender = TxResultRendering<TxResult>;
 
 export interface WithdrawAssetsTxParams {
   tokenContract: string;
-  tokenDisplay: CW20TokenDisplayInfo;
 }
 
 export const useWithdrawAssetsTx = () => {
