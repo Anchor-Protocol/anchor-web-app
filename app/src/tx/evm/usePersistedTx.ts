@@ -4,13 +4,14 @@ import { Subject, Subscription } from 'rxjs';
 import { TxResultRendering } from '@libs/app-fns';
 import { TxEvent, useTx } from './useTx';
 import {
-  CrossChainEvent,
   CrossChainEventKind,
   RemoteChainTxExecutedPayload,
 } from '@anchor-protocol/crossanchor-sdk';
 import { TransactionDisplay, useTransactions } from './storage/useTransactions';
 import { useCallback, useMemo, useState } from 'react';
 import { useInterval } from 'usehooks-ts';
+import { useRefetchQueries } from '@libs/app-provider';
+import { refetchQueryByTxKind } from './utils';
 
 type TxRender<TxResult> = TxResultRendering<TxResult>;
 
@@ -38,6 +39,7 @@ export const usePersistedTx = <TxParams, TxResult>(
   onRegisterTxHash: (txHash: string) => void,
 ): PersistedTxResult<TxParams, TxResult> => {
   const [txHash, setTxHash] = useState<string>();
+  const refetchQueries = useRefetchQueries();
   const {
     saveTransaction,
     removeTransaction,
@@ -57,7 +59,8 @@ export const usePersistedTx = <TxParams, TxResult>(
   }, [updateTransaction, isTxMinimizable, txHash]);
 
   const onTxEvent = useCallback(
-    (event: CrossChainEvent<ContractReceipt>, txParams: TxParams) => {
+    (txEvent: TxEvent<TxParams>) => {
+      const { event, txParams } = txEvent;
       if (Boolean(event.payload)) {
         setTxHash(event.payload!.tx.transactionHash);
         onRegisterTxHash(event.payload!.tx.transactionHash);
@@ -68,7 +71,6 @@ export const usePersistedTx = <TxParams, TxResult>(
         const payload =
           event.payload as RemoteChainTxExecutedPayload<ContractReceipt>;
         saveTransaction({
-          running: true,
           receipt: payload.tx,
           lastEventKind: event.kind,
           minimized: false,
@@ -106,19 +108,18 @@ export const usePersistedTx = <TxParams, TxResult>(
   const [txEvents, setTxEvents] = useState<Subject<TxEvent<TxParams>>>();
   const [subscription, setSubscription] = useState<Subscription>();
 
-  useInterval(() => {
+  const refreshEventSubscription = useCallback(() => {
     if (txEvents) {
       if (subscription) {
         subscription.unsubscribe();
       }
 
-      const nextSubscription = txEvents.subscribe(({ event, txParams }) => {
-        onTxEvent(event, txParams);
-      });
-
+      const nextSubscription = txEvents.subscribe(onTxEvent);
       setSubscription(nextSubscription);
     }
-  }, 50);
+  }, [txEvents, subscription, setSubscription, onTxEvent]);
+
+  useInterval(refreshEventSubscription, 100);
 
   return {
     stream: useTx(
@@ -130,6 +131,7 @@ export const usePersistedTx = <TxParams, TxResult>(
         try {
           setTxEvents(txEvents);
           const resp = await sendTx(txParams, renderTxResults, txEvents);
+          refetchQueries(refetchQueryByTxKind(displayTx(txParams).txKind));
           const tx = parseTx(resp);
           dismissTx(tx.transactionHash);
           return resp;

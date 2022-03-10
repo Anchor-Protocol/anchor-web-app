@@ -1,7 +1,7 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { txResult, TX_GAS_LIMIT } from './utils';
+import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
@@ -30,7 +30,7 @@ export function useClaimRewardsTx():
         console.log(event, 'eventEmitted');
 
         renderTxResults.next(
-          txResult(event, connectType, chainId!, 'claim rewards'),
+          txResult(event, connectType, chainId!, TxKind.ClaimRewards),
         );
         txEvents.next({ event, txParams });
       });
@@ -45,7 +45,7 @@ export function useClaimRewardsTx():
     claimRewards,
     (resp) => resp.tx,
     null,
-    () => ({ action: 'claimRewards', timestamp: Date.now() }),
+    () => ({ txKind: TxKind.ClaimRewards, timestamp: Date.now() }),
   );
 
   return chainId && connection && address ? persistedTxResult : undefined;

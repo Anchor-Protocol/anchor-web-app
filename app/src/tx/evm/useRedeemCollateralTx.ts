@@ -1,7 +1,7 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
-import { txResult, TX_GAS_LIMIT } from './utils';
+import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
@@ -46,7 +46,7 @@ export function useRedeemCollateralTx(
           console.log(event, 'eventEmitted');
 
           renderTxResults.next(
-            txResult(event, connectType, chainId!, 'unlock collateral'),
+            txResult(event, connectType, chainId!, TxKind.RedeemCollateral),
           );
           txEvents.next({ event, txParams });
         },
@@ -69,7 +69,7 @@ export function useRedeemCollateralTx(
       const symbol = tokenDisplay?.symbol ?? 'UST';
 
       return {
-        action: 'unlockCollateral',
+        txKind: TxKind.RedeemCollateral,
         amount: `${formatOutput(demicrofy(amount, decimals), {
           decimals,
         })} ${symbol}`,

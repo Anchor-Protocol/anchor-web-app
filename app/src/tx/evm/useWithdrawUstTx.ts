@@ -1,7 +1,7 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { txResult, TX_GAS_LIMIT } from './utils';
+import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
@@ -51,7 +51,7 @@ export function useWithdrawUstTx():
         TX_GAS_LIMIT,
         (event) => {
           renderTxResults.next(
-            txResult(event, connectType, chainId, 'withdraw'),
+            txResult(event, connectType, chainId, TxKind.WithdrawUst),
           );
           txEvents.next({ event, txParams });
         },
@@ -63,7 +63,7 @@ export function useWithdrawUstTx():
         TX_GAS_LIMIT,
         (event) => {
           renderTxResults.next(
-            txResult(event, connectType, chainId, 'withdraw'),
+            txResult(event, connectType, chainId, TxKind.WithdrawUst),
           );
           txEvents.next({ event, txParams });
         },
@@ -80,7 +80,7 @@ export function useWithdrawUstTx():
     (resp) => resp.tx,
     null,
     (txParams) => ({
-      action: 'redeemStable',
+      txKind: TxKind.WithdrawUst,
       amount: `${formatOutput(txParams.withdrawAmount as aUST)} aUST`,
       timestamp: Date.now(),
     }),

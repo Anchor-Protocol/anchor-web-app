@@ -85,14 +85,14 @@ const TxMessageBase = ({
 }) => {
   const { connectType, chainId } = useEvmWallet();
   const backgroundTx = useResumeTx(tx);
-  const { dismissTx } = backgroundTx?.utils ?? {};
+  const { dismissTx, alreadyRunning } = backgroundTx?.utils ?? {};
   const [execute] = backgroundTx?.stream ?? [null, null];
 
   useExecuteOnceWhen(
     () => {
       execute!({});
     },
-    () => Boolean(execute && !tx.running),
+    () => Boolean(execute) && !alreadyRunning,
   );
 
   return (
@@ -104,7 +104,7 @@ const TxMessageBase = ({
             tx.lastEventKind,
             connectType!,
             chainId!,
-            tx.display.action,
+            tx.display.txKind,
           )}
         </div>
       </div>

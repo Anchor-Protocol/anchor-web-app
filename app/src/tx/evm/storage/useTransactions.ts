@@ -2,17 +2,17 @@ import { CrossChainEventKind } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
+import { TxKind } from '../utils';
 
 const TRANSACTIONS_STORAGE_KEY = '__anchor_cross_chain_transaction_store';
 
 export type TransactionDisplay = {
-  action: string;
+  txKind: TxKind;
   amount?: string;
   timestamp: number;
 };
 
 export type Transaction = {
-  running: boolean;
   minimized: boolean;
   lastEventKind: CrossChainEventKind;
   // TODO: think if this is needed
@@ -34,12 +34,6 @@ export const useTransactions = () => {
 
   const transactionExists = useCallback(
     (txHash: string | undefined) => Boolean(txHash && getTransaction(txHash)),
-    [getTransaction],
-  );
-
-  const transactionRunning = useCallback(
-    (txHash: string | undefined) =>
-      Boolean(txHash && getTransaction(txHash).running),
     [getTransaction],
   );
 
@@ -88,6 +82,5 @@ export const useTransactions = () => {
     removeTransaction,
     transactionExists,
     updateTransaction,
-    transactionRunning,
   };
 };

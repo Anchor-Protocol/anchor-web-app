@@ -37,6 +37,7 @@ export const useTx = <TxParams, TxResult>(
 ): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
   const { txErrorReporter } = useAnchorWebapp();
 
+  // TODO: represent renderingEvents stream as txEvents.map(render) and remove the need for two subjects
   const txEvents = useMemo(() => new ReplaySubject<TxEvent<TxParams>>(1), []);
   const renderingEvents = useMemo(
     () =>
@@ -69,7 +70,7 @@ export const useTx = <TxParams, TxResult>(
         renderingEvents,
       ).pipe(
         tap((tx) => {
-          //console.log('stream emitted', tx);
+          console.log('stream emitted', tx);
         }),
       );
     },

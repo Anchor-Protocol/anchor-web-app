@@ -13,7 +13,6 @@ export const useBackgroundTransactions = () => {
     transactions.forEach((tx) =>
       updateTransaction(tx.receipt.transactionHash, {
         minimized: true,
-        running: false,
       }),
     );
   }, [transactions, updateTransaction]);

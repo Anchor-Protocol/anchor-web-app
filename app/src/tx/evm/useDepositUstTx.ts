@@ -1,7 +1,7 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { txResult, TX_GAS_LIMIT } from './utils';
+import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
@@ -10,9 +10,6 @@ import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
 import { TxEvent } from './useTx';
-import { useRefetchQueries } from '@libs/app-provider';
-import { ANCHOR_TX_KEY } from '@anchor-protocol/app-provider';
-//import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
 type DepositUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type DepositUstTxRender = TxResultRendering<DepositUstTxResult>;
@@ -30,7 +27,6 @@ export function useDepositUstTx():
     connectType,
     chainId = EvmChainId.ETHEREUM_ROPSTEN,
   } = useEvmWallet();
-  const refetchQueries = useRefetchQueries();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
@@ -46,13 +42,6 @@ export function useDepositUstTx():
         formatInput(txParams.depositAmount),
       ).toString();
 
-      // const writer = new EvmTxProgressWriter(
-      //   renderTxResults,
-      //   chainId,
-      //   connectType,
-      // );
-      // writer.writeApproval();
-
       await xAnchor.approveLimit(
         { token: 'ust' },
         depositAmount,
@@ -60,13 +49,11 @@ export function useDepositUstTx():
         TX_GAS_LIMIT,
         (event) => {
           renderTxResults.next(
-            txResult(event, connectType, chainId, 'deposit'),
+            txResult(event, connectType, chainId, TxKind.DepositUst),
           );
           txEvents.next({ event, txParams });
         },
       );
-
-      //writer.writeDeposit();
 
       const response = await xAnchor.depositStable(
         depositAmount,
@@ -76,30 +63,19 @@ export function useDepositUstTx():
           console.log(event, 'eventEmitted');
           txEvents.next({ event, txParams });
           renderTxResults.next(
-            txResult(event, connectType, chainId, 'deposit'),
+            txResult(event, connectType, chainId, TxKind.DepositUst),
           );
         },
       );
 
-      // this also needs to be called once the tx has been redeemed
-      refetchQueries(ANCHOR_TX_KEY.EARN_DEPOSIT);
-
       return response;
     },
-    [
-      address,
-      connectType,
-      xAnchor,
-      chainId,
-      microfy,
-      formatInput,
-      refetchQueries,
-    ],
+    [address, connectType, xAnchor, chainId, microfy, formatInput],
   );
 
   const displayTx = useCallback(
     (txParams: DepositUstTxParams) => ({
-      action: 'depositStable',
+      txKind: TxKind.DepositUst,
       amount: `${formatOutput(txParams.depositAmount as UST)} UST`,
       timestamp: Date.now(),
     }),

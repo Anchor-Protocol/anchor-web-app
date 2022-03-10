@@ -1,7 +1,7 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { txResult, TX_GAS_LIMIT } from './utils';
+import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
@@ -41,7 +41,9 @@ export function useRepayUstTx():
         address!,
         TX_GAS_LIMIT,
         (event) => {
-          renderTxResults.next(txResult(event, connectType, chainId!, 'repay'));
+          renderTxResults.next(
+            txResult(event, connectType, chainId!, TxKind.RepayUst),
+          );
           txEvents.next({ event, txParams });
         },
       );
@@ -49,7 +51,9 @@ export function useRepayUstTx():
       return xAnchor.repayStable(amount, address!, TX_GAS_LIMIT, (event) => {
         console.log(event, 'eventEmitted ');
 
-        renderTxResults.next(txResult(event, connectType, chainId!, 'repay'));
+        renderTxResults.next(
+          txResult(event, connectType, chainId!, TxKind.RepayUst),
+        );
         txEvents.next({ event, txParams });
       });
     },
@@ -61,7 +65,7 @@ export function useRepayUstTx():
     (resp) => resp.tx,
     null,
     (txParams) => ({
-      action: 'repayStable',
+      txKind: TxKind.RepayUst,
       amount: `${formatOutput(txParams.amount as UST)} UST`,
       timestamp: Date.now(),
     }),

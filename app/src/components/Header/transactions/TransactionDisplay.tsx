@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { formatDistance } from 'date-fns';
 import { truncateEvm } from '@libs/formatter';
 import { Transaction } from 'tx/evm/storage/useTransactions';
+import { formatTxKind } from 'tx/evm/utils';
 
 interface TransactionDisplayProps extends UIElementProps {
   tx: Transaction;
@@ -15,7 +16,7 @@ function TransactionDisplayBase(props: TransactionDisplayProps) {
   return (
     <div className={className} key={tx.receipt.transactionHash}>
       <div className="details">
-        <span className="action">{tx.display.action}</span>
+        <span className="action">{formatTxKind(tx.display.txKind)}</span>
         <span className="tx-hash">
           {truncateEvm(tx.receipt.transactionHash)}
         </span>

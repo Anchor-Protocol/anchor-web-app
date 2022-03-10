@@ -211,11 +211,9 @@ const Request = (
     props.parseTx,
     props.emptyTxResult,
     props.displayTx,
-    () => props.unregister(props.id),
+    () => {},
     (txHash) => props.updateRequest(props.id, { txHash }),
   );
-
-  //props.updateRequest(props.id, { persistedTxResult });
 
   useInterval(() => {
     props.updateRequest(props.id, { persistedTxResult });

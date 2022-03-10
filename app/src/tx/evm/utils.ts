@@ -1,3 +1,4 @@
+import { ANCHOR_TX_KEY } from '@anchor-protocol/app-provider';
 import {
   CrossChainEvent,
   CrossChainEventKind,
@@ -17,11 +18,11 @@ export const txResult = (
   event: CrossChainEvent<ContractReceipt>,
   connnectType: ConnectType,
   chainId: EvmChainId,
-  action: string,
+  txKind: TxKind,
 ) => {
   return {
     value: null,
-    message: txResultMessage(event.kind, connnectType, chainId, action),
+    message: txResultMessage(event.kind, connnectType, chainId, txKind),
     phase: TxStreamPhase.BROADCAST,
     receipts: [
       //{ name: "Status", value: txResultMessage(event, connnectType, chainId, action) }
@@ -33,13 +34,13 @@ export const txResultMessage = (
   eventKind: CrossChainEventKind,
   connnectType: ConnectType,
   chainId: EvmChainId,
-  action: string,
+  txKind: TxKind,
 ) => {
   switch (eventKind) {
     case CrossChainEventKind.CrossChainTxCompleted:
       return `Cross chain transaction completed.`;
     case CrossChainEventKind.RemoteChainTxRequested:
-      return `${capitalize(action)} requested. ${capitalize(
+      return `${capitalize(formatTxKind(txKind))} requested. ${capitalize(
         connnectType,
       )} notification should appear soon...`;
     case CrossChainEventKind.RemoteChainTxExecuted:
@@ -49,11 +50,11 @@ export const txResultMessage = (
     case CrossChainEventKind.RemoteChainWormholeEntered:
       return `Entering Wormhole bridge on ${capitalize(chain(chainId))}...`;
     case CrossChainEventKind.TerraWormholeEntered:
-      return `Entering Terra, executing ${action} action...`;
+      return `Entering Terra, executing ${formatTxKind(txKind)} action...`;
     case CrossChainEventKind.TerraWormholeExited:
       return `Terra action executed, exiting Wormhole bridge on Terra...`;
     case CrossChainEventKind.RemoteChainTxSubmitted:
-      return `Waiting for ${action} transaction on ${capitalize(
+      return `Waiting for ${formatTxKind(txKind)} transaction on ${capitalize(
         chain(chainId),
       )}...`;
     case CrossChainEventKind.RemoteChainApprovalRequested:
@@ -87,5 +88,53 @@ export const chain = (chainId: EvmChainId) => {
       return 'Avalanche';
     default:
       return 'Ethereum';
+  }
+};
+
+export enum TxKind {
+  WithdrawUst,
+  RepayUst,
+  RedeemCollateral,
+  ProvideCollateral,
+  DepositUst,
+  ClaimRewards,
+  BorrowUst,
+}
+
+export const formatTxKind = (txKind: TxKind) => {
+  switch (txKind) {
+    case TxKind.WithdrawUst:
+      return 'withdraw';
+    case TxKind.RepayUst:
+      return 'repay';
+    case TxKind.RedeemCollateral:
+      return 'redeem collateral';
+    case TxKind.ProvideCollateral:
+      return 'provide collateral';
+    case TxKind.DepositUst:
+      return 'deposit';
+    case TxKind.ClaimRewards:
+      return 'claim rewards';
+    case TxKind.BorrowUst:
+      return 'borrow';
+  }
+};
+
+export const refetchQueryByTxKind = (txKind: TxKind): ANCHOR_TX_KEY => {
+  switch (txKind) {
+    case TxKind.WithdrawUst:
+      return ANCHOR_TX_KEY.EARN_WITHDRAW;
+    case TxKind.RepayUst:
+      return ANCHOR_TX_KEY.BORROW_REPAY;
+    case TxKind.RedeemCollateral:
+      return ANCHOR_TX_KEY.BORROW_REDEEM_COLLATERAL;
+    case TxKind.ProvideCollateral:
+      return ANCHOR_TX_KEY.BORROW_PROVIDE_COLLATERAL;
+    case TxKind.DepositUst:
+      return ANCHOR_TX_KEY.EARN_DEPOSIT;
+    case TxKind.ClaimRewards:
+      return ANCHOR_TX_KEY.REWARDS_ALL_CLAIM;
+    case TxKind.BorrowUst:
+      return ANCHOR_TX_KEY.BORROW_BORROW;
   }
 };
