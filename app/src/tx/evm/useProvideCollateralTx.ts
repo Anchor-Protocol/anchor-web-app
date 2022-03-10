@@ -10,6 +10,8 @@ import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy, demicrofy } from '@anchor-protocol/formatter';
 import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
+import { useRefetchQueries } from '@libs/app-provider';
+import { ANCHOR_TX_KEY } from '@anchor-protocol/app-provider';
 
 type ProvideCollateralTxResult = OneWayTxResponse<ContractReceipt> | null;
 type ProvideCollateralTxRender = TxResultRendering<ProvideCollateralTxResult>;
@@ -27,6 +29,7 @@ export function useProvideCollateralTx(
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
+  const refetchQueries = useRefetchQueries();
 
   const provideTx = useCallback(
     async (
@@ -50,7 +53,7 @@ export function useProvideCollateralTx(
           },
         );
 
-        return xAnchor.lockCollateral(
+        const response = xAnchor.lockCollateral(
           { contract: txParams.collateralContract },
           amount,
           address!,
@@ -64,12 +67,16 @@ export function useProvideCollateralTx(
             txEvents.next({ event, txParams });
           },
         );
+
+        refetchQueries(ANCHOR_TX_KEY.BORROW_PROVIDE_COLLATERAL);
+
+        return response;
       } catch (err) {
         console.log(err);
         throw err;
       }
     },
-    [xAnchor, address, connectType, chainId, erc20Decimals],
+    [xAnchor, address, connectType, chainId, erc20Decimals, refetchQueries],
   );
 
   const persistedTxResult = useBackgroundTx<
