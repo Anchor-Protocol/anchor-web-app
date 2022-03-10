@@ -5,9 +5,7 @@ import { BigSource } from 'big.js';
 import { useMemo } from 'react';
 import { useApp } from '../contexts/app';
 
-type Denom = keyof GasPrice;
-
-export function useGasPrice(
+export function useGasPrice<Denom extends keyof GasPrice>(
   gas: Gas<BigSource>,
   denom: Denom,
 ): GasPrice[Denom] {
@@ -15,7 +13,7 @@ export function useGasPrice(
 
   // pretty sure this shouldnt need to be memoized
   return useMemo(() => {
-    return computeGasPrice(gasPrice, gas, denom);
+    return computeGasPrice(gasPrice, gas, denom) as GasPrice[Denom];
   }, [gas, denom, gasPrice]);
 }
 
