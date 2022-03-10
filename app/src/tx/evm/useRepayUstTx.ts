@@ -6,10 +6,10 @@ import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
-import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
+import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
-import { TxEventHandler } from './useTx';
+import { TxEvent } from './useTx';
 
 type RepayUstTxResult = OneWayTxResponse<ContractReceipt> | null;
 type RepayUstTxRender = TxResultRendering<RepayUstTxResult>;
@@ -19,7 +19,7 @@ export interface RepayUstTxParams {
 }
 
 export function useRepayUstTx():
-  | PersistedTxResult<RepayUstTxParams, RepayUstTxResult>
+  | BackgroundTxResult<RepayUstTxParams, RepayUstTxResult>
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
@@ -31,7 +31,7 @@ export function useRepayUstTx():
     async (
       txParams: RepayUstTxParams,
       renderTxResults: Subject<RepayUstTxRender>,
-      handleEvent: TxEventHandler<RepayUstTxParams>,
+      txEvents: Subject<TxEvent<RepayUstTxParams>>,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
@@ -42,7 +42,7 @@ export function useRepayUstTx():
         TX_GAS_LIMIT,
         (event) => {
           renderTxResults.next(txResult(event, connectType, chainId!, 'repay'));
-          handleEvent(event, txParams);
+          txEvents.next({ event, txParams });
         },
       );
 
@@ -50,13 +50,13 @@ export function useRepayUstTx():
         console.log(event, 'eventEmitted ');
 
         renderTxResults.next(txResult(event, connectType, chainId!, 'repay'));
-        handleEvent(event, txParams);
+        txEvents.next({ event, txParams });
       });
     },
     [xAnchor, address, connectType, chainId, formatInput, microfy],
   );
 
-  const persistedTxResult = usePersistedTx<RepayUstTxParams, RepayUstTxResult>(
+  const persistedTxResult = useBackgroundTx<RepayUstTxParams, RepayUstTxResult>(
     repayTx,
     (resp) => resp.tx,
     null,

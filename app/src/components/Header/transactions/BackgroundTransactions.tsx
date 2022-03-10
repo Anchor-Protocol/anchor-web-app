@@ -1,20 +1,25 @@
-import React, { useEffect } from 'react';
-import { useTransactions } from 'tx/evm/storage/useTransactions';
+import { useEvmWallet } from '@libs/evm-wallet';
+import React from 'react';
+import { useBackgroundTransactions } from 'tx/evm/storage/useBackgroundTransactions';
 import { BackgroundTransaction } from './BackgroundTransaction';
+import { useExecuteOnceWhen } from './utils';
 
 export const BackgroundTransactions = () => {
-  const { minimizedTransactions, minimizeAndStopAll } = useTransactions();
+  const { status } = useEvmWallet();
+  const { backgroundTransactions, runInBackgroundAll } =
+    useBackgroundTransactions();
 
-  useEffect(() => {
-    minimizeAndStopAll();
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useExecuteOnceWhen(
+    () => setTimeout(() => runInBackgroundAll(), 2000),
+    () => status === 'connected',
+  );
 
   return (
     <>
-      {minimizedTransactions.map((tx) => (
-        <BackgroundTransaction key={tx.receipt.transactionHash} tx={tx} />
-      ))}
+      {status === 'connected' &&
+        backgroundTransactions.map((tx) => (
+          <BackgroundTransaction key={tx.receipt.transactionHash} tx={tx} />
+        ))}
     </>
   );
 };

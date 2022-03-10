@@ -12,6 +12,7 @@ import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { QueryProvider } from 'providers/QueryProvider';
 import { EvmWrongNetwork } from 'components/EvmWrongNetwork';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
+import { BackgroundTxRequestProvider } from 'tx/evm/background';
 
 const isSupportedChain = (
   chain: Chain,
@@ -52,9 +53,11 @@ const ChainGaurdian = (props: UIElementProps) => {
     <EvmNetworkProvider>
       <QueryProvider>
         <EvmAccountProvider>
-          <AppProviders>
-            <EvmBalancesProvider>{children}</EvmBalancesProvider>
-          </AppProviders>
+          <BackgroundTxRequestProvider>
+            <AppProviders>
+              <EvmBalancesProvider>{children}</EvmBalancesProvider>
+            </AppProviders>
+          </BackgroundTxRequestProvider>
         </EvmAccountProvider>
       </QueryProvider>
     </EvmNetworkProvider>

@@ -1,8 +1,8 @@
 import { StreamReturn } from '@rx-stream/react';
 import { ContractReceipt } from 'ethers';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { TxResultRendering } from '@libs/app-fns';
-import { TxEventHandler, useTx } from './useTx';
+import { TxEvent, useTx } from './useTx';
 import {
   CrossChainEvent,
   CrossChainEventKind,
@@ -10,12 +10,14 @@ import {
 } from '@anchor-protocol/crossanchor-sdk';
 import { TransactionDisplay, useTransactions } from './storage/useTransactions';
 import { useCallback, useMemo, useState } from 'react';
+import { useInterval } from 'usehooks-ts';
 
 type TxRender<TxResult> = TxResultRendering<TxResult>;
 
 export type PersistedTxUtils = {
   minimizeTx: () => void;
   isTxMinimizable: boolean;
+  dismissTx: (txHash?: string) => void;
 };
 
 export type PersistedTxResult<TxParams, TxResult> = {
@@ -27,11 +29,13 @@ export const usePersistedTx = <TxParams, TxResult>(
   sendTx: (
     txParams: TxParams,
     renderTxResults: Subject<TxRender<TxResult>>,
-    handleEvent: TxEventHandler<TxParams>,
+    txEvents: Subject<TxEvent<TxParams>>,
   ) => Promise<NonNullable<TxResult>>,
   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
   emptyTxResult: TxResult,
   displayTx: (txParams: TxParams) => TransactionDisplay,
+  onFinalize: (txHash: string) => void,
+  onRegisterTxHash: (txHash: string) => void,
 ): PersistedTxResult<TxParams, TxResult> => {
   const [txHash, setTxHash] = useState<string>();
   const {
@@ -54,8 +58,9 @@ export const usePersistedTx = <TxParams, TxResult>(
 
   const onTxEvent = useCallback(
     (event: CrossChainEvent<ContractReceipt>, txParams: TxParams) => {
-      if (event.payload) {
-        setTxHash(event.payload.tx.transactionHash);
+      if (Boolean(event.payload)) {
+        setTxHash(event.payload!.tx.transactionHash);
+        onRegisterTxHash(event.payload!.tx.transactionHash);
       }
 
       // first event with tx in it
@@ -73,34 +78,69 @@ export const usePersistedTx = <TxParams, TxResult>(
       }
 
       // update tx for all succeeding events, as txHash is cached
-      updateTransaction(txHash!, { lastEventKind: event.kind });
+      if (txHash) {
+        updateTransaction(txHash, { lastEventKind: event.kind });
+      }
     },
-    [saveTransaction, displayTx, updateTransaction, setTxHash, txHash],
+    [
+      txHash,
+      updateTransaction,
+      onRegisterTxHash,
+      setTxHash,
+      displayTx,
+      saveTransaction,
+    ],
   );
+
+  const dismissTx = useCallback(
+    (hash?: string) => {
+      const h = hash || txHash;
+      if (h) {
+        removeTransaction(h);
+        onFinalize(h);
+      }
+    },
+    [removeTransaction, onFinalize, txHash],
+  );
+
+  const [txEvents, setTxEvents] = useState<Subject<TxEvent<TxParams>>>();
+  const [subscription, setSubscription] = useState<Subscription>();
+
+  useInterval(() => {
+    if (txEvents) {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+
+      const nextSubscription = txEvents.subscribe(({ event, txParams }) => {
+        onTxEvent(event, txParams);
+      });
+
+      setSubscription(nextSubscription);
+    }
+  }, 50);
 
   return {
     stream: useTx(
       async (
         txParams: TxParams,
         renderTxResults: Subject<TxRender<TxResult>>,
-        handleEvent: TxEventHandler<TxParams>,
+        txEvents: Subject<TxEvent<TxParams>>,
       ) => {
         try {
-          const resp = await sendTx(txParams, renderTxResults, handleEvent);
+          setTxEvents(txEvents);
+          const resp = await sendTx(txParams, renderTxResults, txEvents);
           const tx = parseTx(resp);
-          removeTransaction(tx.transactionHash);
+          dismissTx(tx.transactionHash);
           return resp;
         } catch (err) {
-          if (txHash) {
-            removeTransaction(txHash);
-          }
+          dismissTx(txHash);
           throw err;
         }
       },
       parseTx,
       emptyTxResult,
-      onTxEvent,
     ),
-    utils: { minimizeTx, isTxMinimizable },
+    utils: { minimizeTx, isTxMinimizable, dismissTx },
   };
 };

@@ -81,20 +81,6 @@ export const useTransactions = () => {
     [transactionStore],
   );
 
-  const minimizedTransactions = useMemo(
-    () => transactions.filter((tx) => tx.minimized),
-    [transactions],
-  );
-
-  const minimizeAndStopAll = useCallback(() => {
-    transactions.forEach((tx) =>
-      updateTransaction(tx.receipt.transactionHash, {
-        minimized: true,
-        running: false,
-      }),
-    );
-  }, [transactions, updateTransaction]);
-
   return {
     transactions,
     saveTransaction,
@@ -102,8 +88,6 @@ export const useTransactions = () => {
     removeTransaction,
     transactionExists,
     updateTransaction,
-    minimizeAndStopAll,
-    minimizedTransactions,
     transactionRunning,
   };
 };

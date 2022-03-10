@@ -1,32 +1,36 @@
 import { useEvmWallet } from '@libs/evm-wallet';
 import { SnackbarContent } from '@libs/neumorphism-ui/components/Snackbar';
 import { Snackbar, useSnackbar } from '@libs/snackbar';
-import { LinearProgress } from '@material-ui/core';
+import { IconButton, LinearProgress } from '@material-ui/core';
+import { Close } from '@material-ui/icons';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-//import { useBackgroundTx } from 'tx/evm';
+import { useResumeTx } from 'tx/evm';
 import { useTransaction } from 'tx/evm/storage/useTransaction';
 import { Transaction } from 'tx/evm/storage/useTransactions';
 import { txResultMessage } from 'tx/evm/utils';
 import { TransactionDisplay } from './TransactionDisplay';
+import { useExecuteOnceWhen } from './utils';
 
 export type BackgroundTransactionProps = { tx: Transaction };
 
 export const BackgroundTransaction = ({ tx }: BackgroundTransactionProps) => {
   const { addSnackbar } = useSnackbar();
 
-  useEffect(
-    () => {
-      const snackbarControl = addSnackbar(
-        <TxSnackbar txHash={tx.receipt.transactionHash} />,
-      );
-      return function cleanup() {
-        snackbarControl?.close();
-      };
-    },
+  useEffect(() => {
+    const snackbarControl = addSnackbar(
+      <TxSnackbar
+        key={tx.receipt.transactionHash}
+        txHash={tx.receipt.transactionHash}
+      />,
+    );
+
+    return function cleanup() {
+      snackbarControl?.close();
+    };
+
     //eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  }, []);
 
   return <React.Fragment />;
 };
@@ -38,34 +42,16 @@ const TxSnackbarBase = ({
   className?: string;
   txHash: string;
 }) => {
-  //const tx = useTransaction(txHash)!;
-  //const backgroundTx = useBackgroundTx(tx);
-  //const [execute] = backgroundTx?.stream ?? [null, null];
-
-  useEffect(() => {
-    // if (!tx.active) {
-    //   execute!({});
-    // }
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const tx = useTransaction(txHash);
+  if (!tx) {
+    return null;
+  }
 
   return (
     <Snackbar autoClose={false}>
       <div className={className}>
         <LinearProgress className="tx-progress" />
-        <SnackbarContent
-          message={<TxMessage txHash={txHash} />}
-          action={
-            [
-              //   <Button key="undo" color="inherit" size="small">
-              //     UNDO
-              //   </Button>,
-              //   <IconButton key="close" aria-label="close" color="inherit">
-              //     <Close />
-              //   </IconButton>,
-            ]
-          }
-        />
+        <SnackbarContent message={<TxMessage tx={tx} />} />
       </div>
     </Snackbar>
   );
@@ -74,6 +60,10 @@ const TxSnackbarBase = ({
 const TxSnackbar = styled(TxSnackbarBase)`
   display: flex;
   flex-direction: column;
+
+  .MuiSnackbarContent-action {
+    padding-left: 0px;
+  }
 
   .tx-progress {
     transform: translateY(4px);
@@ -88,13 +78,22 @@ const TxSnackbar = styled(TxSnackbarBase)`
 
 const TxMessageBase = ({
   className,
-  txHash,
+  tx,
 }: {
   className?: string;
-  txHash: string;
+  tx: Transaction;
 }) => {
-  const tx = useTransaction(txHash)!;
   const { connectType, chainId } = useEvmWallet();
+  const backgroundTx = useResumeTx(tx);
+  const { dismissTx } = backgroundTx?.utils ?? {};
+  const [execute] = backgroundTx?.stream ?? [null, null];
+
+  useExecuteOnceWhen(
+    () => {
+      execute!({});
+    },
+    () => Boolean(execute && !tx.running),
+  );
 
   return (
     <div className={className}>
@@ -109,11 +108,26 @@ const TxMessageBase = ({
           )}
         </div>
       </div>
+      <IconButton
+        onClick={() => dismissTx?.(tx.receipt.transactionHash)}
+        className="tx-dismiss"
+        key="close"
+        aria-label="close"
+        color="inherit"
+      >
+        <Close />
+      </IconButton>
     </div>
   );
 };
 
 const TxMessage = styled(TxMessageBase)`
+  display: flex;
+
+  .tx-dismiss {
+    padding: 0 10px;
+  }
+
   .tx-content {
     display: flex;
     flex-direction: column;
@@ -125,5 +139,8 @@ const TxMessage = styled(TxMessageBase)`
     align-self: flex-start;
     font-size: 10px;
     margin-left: 10px;
+    max-width: 300px;
+    font-weight: 500;
+    color: ${({ theme }) => theme.dimTextColor};
   }
 `;

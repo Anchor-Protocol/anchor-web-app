@@ -5,28 +5,27 @@ import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
 import { Transaction } from './storage/useTransactions';
-import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
-import { TxEventHandler } from './useTx';
+import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
+import { TxEvent } from './useTx';
 
-export type BackgroundTxResult = CrossChainTxResponse<ContractReceipt> | null;
-export type BackgroundTxRender = TxResultRendering<BackgroundTxResult>;
+export type ResumeTxResult = CrossChainTxResponse<ContractReceipt> | null;
+export type ResumeTxRender = TxResultRendering<ResumeTxResult>;
 
-export interface BackgroundTxParams {}
+export interface ResumeTxParams {}
 
-export const useBackgroundTx = (
+export const useResumeTx = (
   tx: Transaction,
-): PersistedTxResult<BackgroundTxParams, BackgroundTxResult> | undefined => {
+): BackgroundTxResult<ResumeTxParams, ResumeTxResult> | undefined => {
   const xAnchor = useEvmCrossAnchorSdk();
-
   const backgroundTx = useCallback(
     async (
-      _txParams: BackgroundTxParams,
-      _renderTxResults: Subject<BackgroundTxRender>,
-      handleEvent: TxEventHandler<BackgroundTxParams>,
+      txParams: ResumeTxParams,
+      _renderTxResults: Subject<ResumeTxRender>,
+      txEvents: Subject<TxEvent<ResumeTxParams>>,
     ) => {
       try {
         const result = await xAnchor.restoreTx(tx.receipt, (event) => {
-          handleEvent(event, {});
+          txEvents.next({ event, txParams });
         });
         return result;
       } catch (error: any) {
@@ -35,17 +34,17 @@ export const useBackgroundTx = (
         throw error;
       }
     },
-    [xAnchor, tx],
+    [xAnchor, tx.receipt],
   );
 
-  const persistedTxResult = usePersistedTx<
-    BackgroundTxParams,
-    BackgroundTxResult
-  >(
+  const displayTx = useCallback(() => tx.display, [tx.display]);
+
+  const persistedTxResult = useBackgroundTx<ResumeTxParams, ResumeTxResult>(
     backgroundTx,
     (resp) => resp.tx,
     null,
-    () => tx.display,
+    displayTx,
+    tx.receipt.transactionHash,
   );
 
   return persistedTxResult;

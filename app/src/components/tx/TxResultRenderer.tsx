@@ -169,8 +169,7 @@ const SubmitButton = styled(ActionButton)`
 
 const Layout = styled.section`
   .minimize-button {
-    margin-top: 45px;
-
+    margin-top: 20px;
     width: 100%;
     height: 60px;
     border-radius: 30px;

@@ -1,15 +1,15 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { TX_GAS_LIMIT } from './utils';
+import { txResult, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
-import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
+import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
-import { TxEventHandler } from './useTx';
+import { TxEvent } from './useTx';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
 type DepositUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
@@ -20,7 +20,7 @@ export interface DepositUstTxParams {
 }
 
 export function useDepositUstTx():
-  | PersistedTxResult<DepositUstTxParams, DepositUstTxResult>
+  | BackgroundTxResult<DepositUstTxParams, DepositUstTxResult>
   | undefined {
   const {
     address,
@@ -37,7 +37,7 @@ export function useDepositUstTx():
     async (
       txParams: DepositUstTxParams,
       renderTxResults: Subject<DepositUstTxRender>,
-      handleEvent: TxEventHandler<DepositUstTxParams>,
+      txEvents: Subject<TxEvent<DepositUstTxParams>>,
     ) => {
       const depositAmount = microfy(
         formatInput(txParams.depositAmount),
@@ -56,10 +56,10 @@ export function useDepositUstTx():
         address!,
         TX_GAS_LIMIT,
         (event) => {
-          // renderTxResults.next(
-          //   txResult(event, connectType, chainId, 'deposit'),
-          // );
-          handleEvent(event, txParams);
+          renderTxResults.next(
+            txResult(event, connectType, chainId, 'deposit'),
+          );
+          txEvents.next({ event, txParams });
         },
       );
 
@@ -70,8 +70,11 @@ export function useDepositUstTx():
         address!,
         TX_GAS_LIMIT,
         (event) => {
-          writer.writeDeposit(event);
-          handleEvent(event, txParams);
+          console.log(event, 'eventEmitted');
+          txEvents.next({ event, txParams });
+          renderTxResults.next(
+            txResult(event, connectType, chainId, 'deposit'),
+          );
         },
       );
 
@@ -80,19 +83,19 @@ export function useDepositUstTx():
     [address, connectType, xAnchor, chainId, microfy, formatInput],
   );
 
-  const persistedTxResult = usePersistedTx<
-    DepositUstTxParams,
-    DepositUstTxResult
-  >(
-    depositTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => ({
+  const displayTx = useCallback(
+    (txParams: DepositUstTxParams) => ({
       action: 'depositStable',
       amount: `${formatOutput(txParams.depositAmount as UST)} UST`,
       timestamp: Date.now(),
     }),
+    [formatOutput],
   );
+
+  const persistedTxResult = useBackgroundTx<
+    DepositUstTxParams,
+    DepositUstTxResult
+  >(depositTx, (resp) => resp.tx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }

@@ -6,9 +6,9 @@ import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
-import { PersistedTxResult, usePersistedTx } from './usePersistedTx';
+import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy, demicrofy } from '@anchor-protocol/formatter';
-import { TxEventHandler } from './useTx';
+import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
 
 type RedeemCollateralTxResult = TwoWayTxResponse<ContractReceipt> | null;
@@ -24,7 +24,7 @@ export interface RedeemCollateralTxParams {
 export function useRedeemCollateralTx(
   erc20Decimals: number,
 ):
-  | PersistedTxResult<RedeemCollateralTxParams, RedeemCollateralTxResult>
+  | BackgroundTxResult<RedeemCollateralTxParams, RedeemCollateralTxResult>
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
@@ -33,7 +33,7 @@ export function useRedeemCollateralTx(
     async (
       txParams: RedeemCollateralTxParams,
       renderTxResults: Subject<RedeemCollateralTxRender>,
-      handleEvent: TxEventHandler<RedeemCollateralTxParams>,
+      txEvents: Subject<TxEvent<RedeemCollateralTxParams>>,
     ) => {
       const amount = microfy(txParams.amount, erc20Decimals).toString();
 
@@ -48,14 +48,14 @@ export function useRedeemCollateralTx(
           renderTxResults.next(
             txResult(event, connectType, chainId!, 'unlock collateral'),
           );
-          handleEvent(event, txParams);
+          txEvents.next({ event, txParams });
         },
       );
     },
     [xAnchor, address, connectType, chainId, erc20Decimals],
   );
 
-  const persistedTxResult = usePersistedTx<
+  const persistedTxResult = useBackgroundTx<
     RedeemCollateralTxParams,
     RedeemCollateralTxResult
   >(

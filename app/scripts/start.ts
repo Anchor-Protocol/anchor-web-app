@@ -26,11 +26,12 @@ import puppeteer from 'puppeteer';
     `${process.env.HTTPS ? 'https' : 'http'}://localhost:${port}`,
   );
 
-  //await page.waitForFunction(
+  // await page.waitForFunction(
   //  `document.querySelector('#app h1').innerHTML === 'Hello World!'`,
   //  {
   //    timeout: 1000 * 60,
   //    polling: 1000 * 3,
   //  },
-  //);
+  // );
+  
 })();

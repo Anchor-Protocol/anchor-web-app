@@ -6,15 +6,20 @@ import { TransactionButton } from './TransactionButton';
 import { DropdownBox, DropdownContainer } from '../desktop/DropdownContainer';
 import { TransactionList } from './TransactionList';
 import { Link } from 'react-router-dom';
-import { useTransactions } from 'tx/evm/storage/useTransactions';
+import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { useBackgroundTransactions } from 'tx/evm/storage/useBackgroundTransactions';
 
 const TransactionWidgetBase = (props: UIElementProps) => {
   const { className } = props;
 
   const [open, setOpen] = useState(false);
-  const { transactions } = useTransactions();
+  const { backgroundTransactions } = useBackgroundTransactions();
 
-  if (transactions.length === 0) {
+  const {
+    target: { chain },
+  } = useDeploymentTarget();
+
+  if (backgroundTransactions.length === 0 || chain === Chain.Terra) {
     return null;
   }
 

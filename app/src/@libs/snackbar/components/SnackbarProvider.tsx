@@ -114,20 +114,20 @@ export function SnackbarProvider({
         });
       };
 
-      const content = cloneElement(element, {
-        key: primaryId,
-        primaryId,
-        onClose: () => {
-          if (typeof element.props.onClose === 'function') {
-            element.props.onClose();
-          }
-          onClose();
-        },
-        timer,
-      });
+      // const content = cloneElement(element, {
+      //   key: primaryId,
+      //   primaryId,
+      //   onClose: () => {
+      //     if (typeof element.props.onClose === 'function') {
+      //       element.props.onClose();
+      //     }
+      //     onClose();
+      //   },
+      //   timer,
+      // });
 
       setContents((prevContents) => {
-        return [...prevContents, content];
+        return [...prevContents, element];
       });
 
       return { close: onClose, update: onUpdate };
