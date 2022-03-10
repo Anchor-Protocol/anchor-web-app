@@ -99,6 +99,7 @@ export enum TxKind {
   DepositUst,
   ClaimRewards,
   BorrowUst,
+  WithdrawAssets,
 }
 
 export const formatTxKind = (txKind: TxKind) => {
@@ -117,6 +118,8 @@ export const formatTxKind = (txKind: TxKind) => {
       return 'claim rewards';
     case TxKind.BorrowUst:
       return 'borrow';
+    case TxKind.WithdrawAssets:
+      return 'withdraw';
   }
 };
 
@@ -136,5 +139,7 @@ export const refetchQueryByTxKind = (txKind: TxKind): ANCHOR_TX_KEY => {
       return ANCHOR_TX_KEY.REWARDS_ALL_CLAIM;
     case TxKind.BorrowUst:
       return ANCHOR_TX_KEY.BORROW_BORROW;
+    case TxKind.WithdrawAssets:
+      return ANCHOR_TX_KEY.EARN_WITHDRAW;
   }
 };
