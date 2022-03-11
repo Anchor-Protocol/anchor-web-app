@@ -1,4 +1,6 @@
+import { BACKGROUND_TRANSCATION_TAB_ID } from 'components/Header/transactions/BackgroundTransaction';
 import { useCallback, useMemo } from 'react';
+import { Transaction } from '..';
 import { useTransactions } from './useTransactions';
 
 export const useBackgroundTransactions = () => {
@@ -9,26 +11,33 @@ export const useBackgroundTransactions = () => {
     [transactions],
   );
 
-  const resetTabIdAll = useCallback(() => {
-    transactions.forEach((tx) =>
-      updateTransaction(tx.receipt.transactionHash, {
-        backgroundTransactionTabId: undefined,
-      }),
-    );
-  }, [transactions, updateTransaction]);
+  const reserveBackgroundTx = useCallback(
+    (tx: Transaction) => {
+      // can reserve only no-owner tab txes
+      if (tx.backgroundTransactionTabId === null) {
+        updateTransaction(tx.receipt.transactionHash, {
+          backgroundTransactionTabId: BACKGROUND_TRANSCATION_TAB_ID,
+        });
+      }
+    },
+    [updateTransaction],
+  );
 
-  const runInBackgroundAll = useCallback(() => {
-    transactions.forEach((tx) =>
-      updateTransaction(tx.receipt.transactionHash, {
-        minimized: true,
-        backgroundTransactionTabId: undefined,
-      }),
-    );
-  }, [transactions, updateTransaction]);
+  const unReserveBackgroundTx = useCallback(
+    (tx: Transaction) => {
+      // only owner tab can unreserve
+      if (tx.backgroundTransactionTabId === BACKGROUND_TRANSCATION_TAB_ID) {
+        updateTransaction(tx.receipt.transactionHash, {
+          backgroundTransactionTabId: null,
+        });
+      }
+    },
+    [updateTransaction],
+  );
 
   return {
-    runInBackgroundAll,
     backgroundTransactions,
-    resetTabIdAll,
+    reserveBackgroundTx,
+    unReserveBackgroundTx,
   };
 };

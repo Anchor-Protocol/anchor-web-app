@@ -83,7 +83,7 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
 
   .more-details {
     width: 100%;
-    color: gray;
+    color: ${({ theme }) => theme.dimTextColor};
     display: flex;
   }
 

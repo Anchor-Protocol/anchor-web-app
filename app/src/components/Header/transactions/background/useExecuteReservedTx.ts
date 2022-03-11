@@ -4,7 +4,7 @@ import {
   ResumeTxResult,
   Transaction,
 } from 'tx/evm';
-import { backgroundTransactionTabId } from '../BackgroundTransaction';
+import { BACKGROUND_TRANSCATION_TAB_ID } from '../BackgroundTransaction';
 import { useExecuteOnceWhen } from '../utils';
 
 export const useExecuteReservedTx = (
@@ -19,6 +19,6 @@ export const useExecuteReservedTx = (
     () =>
       Boolean(execute) &&
       !alreadyRunning &&
-      tx.backgroundTransactionTabId === backgroundTransactionTabId,
+      tx.backgroundTransactionTabId === BACKGROUND_TRANSCATION_TAB_ID,
   );
 };

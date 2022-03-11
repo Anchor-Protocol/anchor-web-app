@@ -14,7 +14,7 @@ import { useResumeBackgroundTx } from './background/useResumeBackgroundTx';
 
 export type BackgroundTransactionProps = { tx: Transaction };
 
-export const backgroundTransactionTabId = uuid();
+export const BACKGROUND_TRANSCATION_TAB_ID = uuid();
 
 export const BackgroundTransaction = ({ tx }: BackgroundTransactionProps) => {
   const { addSnackbar } = useSnackbar();
@@ -65,6 +65,10 @@ const TxSnackbar = styled(TxSnackbarBase)`
 
   .MuiSnackbarContent-action {
     padding-left: 0px;
+  }
+
+  .MuiSnackbarContent-root {
+    background-color: ${({ theme }) => theme.header.backgroundColor};
   }
 
   .tx-progress {
@@ -135,6 +139,6 @@ const TxMessage = styled(TxMessageBase)`
     margin-left: 10px;
     max-width: 300px;
     font-weight: 500;
-    color: ${({ theme }) => theme.dimTextColor};
+    color: ${({ theme }) => theme.colors.secondary};
   }
 `;

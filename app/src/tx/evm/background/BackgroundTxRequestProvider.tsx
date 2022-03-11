@@ -18,7 +18,6 @@ import { BackgroundTxRequest, BackgroundTxRequestContext } from './context';
 //    - else register new request
 //  - updateTxHash(id, txHash)
 //    - update request for id and given txHash
-
 const registeredWithTxHash = (
   requests: BackgroundTxRequest[],
   txHash?: string,
