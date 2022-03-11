@@ -49,8 +49,6 @@ const TxSnackbarBase = ({
     return null;
   }
 
-  // console.log(tx);
-
   return (
     <Snackbar autoClose={false}>
       <div className={className}>

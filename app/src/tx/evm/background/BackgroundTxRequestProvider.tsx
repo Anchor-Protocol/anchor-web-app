@@ -94,8 +94,6 @@ export const BackgroundTxRequestProvider = ({ children }: UIElementProps) => {
     [register, getRequest],
   );
 
-  useInterval(() => console.log(requests), 10000);
-
   return (
     <BackgroundTxRequestContext.Provider value={value}>
       {children}
