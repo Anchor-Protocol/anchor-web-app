@@ -19,95 +19,6 @@ import { BackgroundTxRequest, BackgroundTxRequestContext } from './context';
 //  - updateTxHash(id, txHash)
 //    - update request for id and given txHash
 
-// export const BackgroundTxRequestProvider = ({ children }: UIElementProps) => {
-//   const [requests, setRequests] = useState<BackgroundTxRequest[]>([]);
-
-//   const registeredWithTxHash = useCallback(
-//     (txHash?: string) =>
-//       Boolean(txHash && requests.find((r) => r.txHash === txHash)),
-//     [requests],
-//   );
-
-//   const registeredWithTxId = useCallback(
-//     (id: string) => Boolean(requests.find((r) => r.id === id)),
-//     [requests],
-//   );
-
-//   const alreadyRegistered = useCallback(
-//     (request: BackgroundTxRequest) => {
-//       return (
-//         registeredWithTxHash(request.txHash) || registeredWithTxId(request.id)
-//       );
-//     },
-//     [registeredWithTxHash, registeredWithTxId],
-//   );
-
-//   const register = useCallback(
-//     (request: BackgroundTxRequest) => {
-//       if (alreadyRegistered(request)) {
-//         return;
-//       }
-
-//       setRequests([...requests, request]);
-//     },
-//     [setRequests, alreadyRegistered, requests],
-//   );
-
-//   const unregister = useCallback(
-//     (id: string) => {
-//       setRequests(requests.filter((r) => r.id !== id));
-//     },
-//     [setRequests, requests],
-//   );
-
-//   const updateRequest = useCallback(
-//     (id: string, updates: Partial<BackgroundTxRequest>) => {
-//       if (!registeredWithTxId(id)) {
-//         return;
-//       }
-
-//       const request = requests.find((r) => r.id === id)!;
-//       return setRequests([
-//         ...requests.filter((r) => r.id !== id),
-//         { ...request, ...updates },
-//       ]);
-//     },
-//     [setRequests, requests, registeredWithTxId],
-//   );
-
-//   const getRequest = useCallback(
-//     (input: { id: string } | { txHash: string }) => {
-//       if ('id' in input) {
-//         return requests.find((r) => r.id === input.id);
-//       }
-
-//       return requests.find((r) => r.txHash === input.txHash);
-//     },
-//     [requests],
-//   );
-
-//   const value = useMemo(
-//     () => ({ register, getRequest }),
-//     [register, getRequest],
-//   );
-
-//   return (
-//     <BackgroundTxRequestContext.Provider value={value}>
-//       {children}
-//       <>
-//         {requests.map((request) => (
-//           <Request
-//             key={request.id}
-//             {...request}
-//             updateRequest={updateRequest}
-//             unregister={unregister}
-//           />
-//         ))}
-//       </>
-//     </BackgroundTxRequestContext.Provider>
-//   );
-// };
-
 const registeredWithTxHash = (
   requests: BackgroundTxRequest[],
   txHash?: string,
@@ -183,7 +94,7 @@ export const BackgroundTxRequestProvider = ({ children }: UIElementProps) => {
     [register, getRequest],
   );
 
-  console.log(requests);
+  useInterval(() => console.log(requests), 10000);
 
   return (
     <BackgroundTxRequestContext.Provider value={value}>

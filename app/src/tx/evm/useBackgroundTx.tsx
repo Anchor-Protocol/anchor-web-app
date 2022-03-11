@@ -4,7 +4,7 @@ import { TxResultRendering } from '@libs/app-fns';
 import { TxEvent } from './useTx';
 import { TransactionDisplay } from './storage/useTransactions';
 import { PersistedTxResult, PersistedTxUtils } from './usePersistedTx';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useBackgroundTxRequest } from './background';
 import { v4 as uuid } from 'uuid';
 import { useEffectOnce } from 'usehooks-ts';
@@ -33,6 +33,8 @@ export const useBackgroundTx = <TxParams, TxResult>(
   displayTx: (txParams: TxParams) => TransactionDisplay,
   txHash?: string,
 ): BackgroundTxResult<TxParams, TxResult> | undefined => {
+  // assume it is running by default, clear the flag if registered
+  const [alreadyRunning, setAlreadyRunning] = useState<boolean>(true);
   const backgroundTxId = useMemo(() => uuid(), []);
   const requestInput = Boolean(txHash)
     ? { txHash: txHash! }
@@ -50,6 +52,7 @@ export const useBackgroundTx = <TxParams, TxResult>(
         emptyTxResult,
         sendTx,
       });
+      setAlreadyRunning(false);
     }
   });
 
@@ -61,7 +64,7 @@ export const useBackgroundTx = <TxParams, TxResult>(
     ...request.persistedTxResult,
     utils: {
       ...request.persistedTxResult?.utils,
-      alreadyRunning: Boolean(request),
+      alreadyRunning,
     },
   } as BackgroundTxResult<TxParams, TxResult>;
 };
