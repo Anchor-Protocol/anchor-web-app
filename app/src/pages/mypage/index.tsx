@@ -1,8 +1,9 @@
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { Borrow } from 'pages/mypage/components/Borrow';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import styled from 'styled-components';
 import { Earn } from './components/Earn';
@@ -21,7 +22,7 @@ interface Item {
   value: string;
 }
 
-const tabItems: Item[] = [
+const TAB_ITEMS: Item[] = [
   { label: 'All', value: 'all' },
   { label: 'Rewards', value: 'rewards' },
   { label: 'Earn', value: 'earn' },
@@ -32,6 +33,17 @@ const tabItems: Item[] = [
 
 function MypageBase({ className }: MypageProps) {
   const isSmallLayout = useMediaQuery({ query: '(max-width: 1000px)' });
+
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
+
+  const tabItems = useMemo(() => {
+    if (isNative === false) {
+      return TAB_ITEMS.filter((item) => item.value !== 'rewards');
+    }
+    return TAB_ITEMS;
+  }, [isNative]);
 
   const [tab, setTab] = useState<Item>(() => tabItems[0]);
 
@@ -57,12 +69,13 @@ function MypageBase({ className }: MypageProps) {
         />
       )}
 
-      {(isSmallLayout || tab.value === 'all' || tab.value === 'rewards') && (
-        <>
-          <h2>REWARDS</h2>
-          <Rewards />
-        </>
-      )}
+      {isNative &&
+        (isSmallLayout || tab.value === 'all' || tab.value === 'rewards') && (
+          <>
+            <h2>REWARDS</h2>
+            <Rewards />
+          </>
+        )}
 
       {(isSmallLayout || tab.value === 'all' || tab.value === 'earn') && (
         <>
