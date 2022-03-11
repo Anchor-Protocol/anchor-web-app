@@ -19,6 +19,7 @@ export type Transaction = {
   // observedEventKinds: CrossChainEventKind[];
   display: TransactionDisplay;
   receipt: ContractReceipt;
+  backgroundTransactionTabId?: string;
 };
 
 type TransactionStore = { [key: string]: Transaction };

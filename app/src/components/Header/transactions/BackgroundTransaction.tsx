@@ -5,14 +5,16 @@ import { IconButton, LinearProgress } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useResumeTx } from 'tx/evm';
 import { useTransaction } from 'tx/evm/storage/useTransaction';
 import { Transaction } from 'tx/evm/storage/useTransactions';
 import { txResultMessage } from 'tx/evm/utils';
 import { TransactionDisplay } from './TransactionDisplay';
-import { useExecuteOnceWhen } from './utils';
+import { v4 as uuid } from 'uuid';
+import { useResumeBackgroundTx } from './background/useResumeBackgroundTx';
 
 export type BackgroundTransactionProps = { tx: Transaction };
+
+export const backgroundTransactionTabId = uuid();
 
 export const BackgroundTransaction = ({ tx }: BackgroundTransactionProps) => {
   const { addSnackbar } = useSnackbar();
@@ -46,6 +48,8 @@ const TxSnackbarBase = ({
   if (!tx) {
     return null;
   }
+
+  // console.log(tx);
 
   return (
     <Snackbar autoClose={false}>
@@ -84,16 +88,8 @@ const TxMessageBase = ({
   tx: Transaction;
 }) => {
   const { connectType, chainId } = useEvmWallet();
-  const backgroundTx = useResumeTx(tx);
-  const { dismissTx, alreadyRunning } = backgroundTx?.utils ?? {};
-  const [execute] = backgroundTx?.stream ?? [null, null];
-
-  useExecuteOnceWhen(
-    () => {
-      execute!({});
-    },
-    () => Boolean(execute) && !alreadyRunning,
-  );
+  const backgroundTx = useResumeBackgroundTx(tx);
+  const { dismissTx } = backgroundTx?.utils ?? {};
 
   return (
     <div className={className}>

@@ -10,6 +10,7 @@ import {
 import { TransactionDisplay, useTransactions } from './storage/useTransactions';
 import { useCallback, useMemo, useState } from 'react';
 import { useInterval } from 'usehooks-ts';
+import { backgroundTransactionTabId } from 'components/Header/transactions/BackgroundTransaction';
 
 type TxRender<TxResult> = TxResultRendering<TxResult>;
 
@@ -72,6 +73,7 @@ export const usePersistedTx = <TxParams, TxResult>(
           lastEventKind: event.kind,
           minimized: false,
           display: displayTx(txParams),
+          backgroundTransactionTabId,
         });
         return;
       }

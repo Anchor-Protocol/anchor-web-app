@@ -9,10 +9,19 @@ export const useBackgroundTransactions = () => {
     [transactions],
   );
 
+  const resetTabIdAll = useCallback(() => {
+    transactions.forEach((tx) =>
+      updateTransaction(tx.receipt.transactionHash, {
+        backgroundTransactionTabId: undefined,
+      }),
+    );
+  }, [transactions, updateTransaction]);
+
   const runInBackgroundAll = useCallback(() => {
     transactions.forEach((tx) =>
       updateTransaction(tx.receipt.transactionHash, {
         minimized: true,
+        backgroundTransactionTabId: undefined,
       }),
     );
   }, [transactions, updateTransaction]);
@@ -20,5 +29,6 @@ export const useBackgroundTransactions = () => {
   return {
     runInBackgroundAll,
     backgroundTransactions,
+    resetTabIdAll,
   };
 };
