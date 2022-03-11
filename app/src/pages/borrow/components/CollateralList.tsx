@@ -43,6 +43,15 @@ interface CollateralInfo {
   tokenDisplay?: CW20TokenDisplayInfo;
 }
 
+const microfyPrice = (price: UST | undefined, decimals: number): UST => {
+  if (price) {
+    return big(price)
+      .mul(Math.pow(10, decimals - 6))
+      .toString() as UST;
+  }
+  return '0' as UST;
+};
+
 export function CollateralList({ className }: CollateralListProps) {
   const { connected } = useAccount();
 
@@ -93,7 +102,7 @@ export function CollateralList({ className }: CollateralListProps) {
         name,
         symbol: tokenDisplay?.symbol ?? symbol,
         decimals: tokenDisplay?.decimals ?? 6,
-        price: oracle?.price ?? ('0' as UST),
+        price: microfyPrice(oracle?.price, tokenDisplay?.decimals ?? 6),
         liquidationPrice:
           borrowBorrower &&
           borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
