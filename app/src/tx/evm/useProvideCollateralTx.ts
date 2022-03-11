@@ -1,7 +1,13 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
-import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
+import {
+  EVM_ANCHOR_TX_REFETCH_MAP,
+  refetchQueryByTxKind,
+  TxKind,
+  txResult,
+  TX_GAS_LIMIT,
+} from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
@@ -11,7 +17,6 @@ import { formatOutput, microfy, demicrofy } from '@anchor-protocol/formatter';
 import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
-import { ANCHOR_TX_KEY } from '@anchor-protocol/app-provider';
 
 type ProvideCollateralTxResult = OneWayTxResponse<ContractReceipt> | null;
 type ProvideCollateralTxRender = TxResultRendering<ProvideCollateralTxResult>;
@@ -29,7 +34,7 @@ export function useProvideCollateralTx(
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
-  const refetchQueries = useRefetchQueries();
+  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const provideTx = useCallback(
     async (
@@ -68,7 +73,7 @@ export function useProvideCollateralTx(
           },
         );
 
-        refetchQueries(ANCHOR_TX_KEY.BORROW_PROVIDE_COLLATERAL);
+        refetchQueries(refetchQueryByTxKind(TxKind.ProvideCollateral));
 
         return response;
       } catch (err) {

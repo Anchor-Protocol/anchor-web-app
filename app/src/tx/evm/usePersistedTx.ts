@@ -10,8 +10,6 @@ import {
 import { TransactionDisplay, useTransactions } from './storage/useTransactions';
 import { useCallback, useMemo, useState } from 'react';
 import { useInterval } from 'usehooks-ts';
-import { useRefetchQueries } from '@libs/app-provider';
-import { EVM_ANCHOR_TX_REFETCH_MAP, refetchQueryByTxKind } from './utils';
 
 type TxRender<TxResult> = TxResultRendering<TxResult>;
 
@@ -39,7 +37,6 @@ export const usePersistedTx = <TxParams, TxResult>(
   onRegisterTxHash: (txHash: string) => void,
 ): PersistedTxResult<TxParams, TxResult> => {
   const [txHash, setTxHash] = useState<string>();
-  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
   const {
     saveTransaction,
     removeTransaction,
@@ -131,7 +128,6 @@ export const usePersistedTx = <TxParams, TxResult>(
         try {
           setTxEvents(txEvents);
           const resp = await sendTx(txParams, renderTxResults, txEvents);
-          refetchQueries(refetchQueryByTxKind(displayTx(txParams).txKind));
           const tx = parseTx(resp);
           dismissTx(tx.transactionHash);
           return resp;

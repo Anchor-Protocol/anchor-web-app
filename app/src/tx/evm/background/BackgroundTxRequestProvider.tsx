@@ -183,6 +183,8 @@ export const BackgroundTxRequestProvider = ({ children }: UIElementProps) => {
     [register, getRequest],
   );
 
+  console.log(requests);
+
   return (
     <BackgroundTxRequestContext.Provider value={value}>
       {children}

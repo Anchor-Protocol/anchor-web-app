@@ -53,11 +53,11 @@ const ChainGaurdian = (props: UIElementProps) => {
     <EvmNetworkProvider>
       <QueryProvider>
         <EvmAccountProvider>
-          <AppProviders>
-            <BackgroundTxRequestProvider>
+          <BackgroundTxRequestProvider>
+            <AppProviders>
               <EvmBalancesProvider>{children}</EvmBalancesProvider>
-            </BackgroundTxRequestProvider>
-          </AppProviders>
+            </AppProviders>
+          </BackgroundTxRequestProvider>
         </EvmAccountProvider>
       </QueryProvider>
     </EvmNetworkProvider>

@@ -1,7 +1,13 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
+import {
+  EVM_ANCHOR_TX_REFETCH_MAP,
+  refetchQueryByTxKind,
+  TxKind,
+  txResult,
+  TX_GAS_LIMIT,
+} from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
@@ -10,6 +16,7 @@ import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
 import { TxEvent } from './useTx';
+import { useRefetchQueries } from '@libs/app-provider';
 
 type DepositUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type DepositUstTxRender = TxResultRendering<DepositUstTxResult>;
@@ -31,6 +38,7 @@ export function useDepositUstTx():
   const {
     ust: { microfy, formatInput, formatOutput },
   } = useFormatters();
+  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const depositTx = useCallback(
     async (
@@ -68,9 +76,19 @@ export function useDepositUstTx():
         },
       );
 
+      refetchQueries(refetchQueryByTxKind(TxKind.DepositUst));
+
       return response;
     },
-    [address, connectType, xAnchor, chainId, microfy, formatInput],
+    [
+      address,
+      connectType,
+      xAnchor,
+      chainId,
+      microfy,
+      formatInput,
+      refetchQueries,
+    ],
   );
 
   const displayTx = useCallback(

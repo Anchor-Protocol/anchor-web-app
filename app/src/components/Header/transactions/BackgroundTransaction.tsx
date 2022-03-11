@@ -90,6 +90,11 @@ const TxMessageBase = ({
 
   useExecuteOnceWhen(
     () => {
+      console.log(
+        'TxMessageBase.useExecuteOnceWhen.alreadyRunning',
+        alreadyRunning,
+      );
+
       execute!({});
     },
     () => Boolean(execute) && !alreadyRunning,

@@ -1,7 +1,13 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
-import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
+import {
+  EVM_ANCHOR_TX_REFETCH_MAP,
+  refetchQueryByTxKind,
+  TxKind,
+  txResult,
+  TX_GAS_LIMIT,
+} from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
@@ -10,6 +16,7 @@ import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy, demicrofy } from '@anchor-protocol/formatter';
 import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
+import { useRefetchQueries } from '@libs/app-provider';
 
 type RedeemCollateralTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type RedeemCollateralTxRender = TxResultRendering<RedeemCollateralTxResult>;
@@ -28,6 +35,7 @@ export function useRedeemCollateralTx(
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
+  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const redeemTx = useCallback(
     async (
@@ -37,7 +45,7 @@ export function useRedeemCollateralTx(
     ) => {
       const amount = microfy(txParams.amount, erc20Decimals).toString();
 
-      return xAnchor.unlockCollateral(
+      const result = await xAnchor.unlockCollateral(
         { contract: txParams.collateralContractTerra },
         amount,
         address!,
@@ -51,8 +59,11 @@ export function useRedeemCollateralTx(
           txEvents.next({ event, txParams });
         },
       );
+
+      refetchQueries(refetchQueryByTxKind(TxKind.RedeemCollateral));
+      return result;
     },
-    [xAnchor, address, connectType, chainId, erc20Decimals],
+    [xAnchor, address, connectType, chainId, erc20Decimals, refetchQueries],
   );
 
   const persistedTxResult = useBackgroundTx<

@@ -1,7 +1,13 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
+import {
+  EVM_ANCHOR_TX_REFETCH_MAP,
+  refetchQueryByTxKind,
+  TxKind,
+  txResult,
+  TX_GAS_LIMIT,
+} from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
@@ -10,6 +16,7 @@ import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { aUST } from '@anchor-protocol/types';
 import { TxEvent } from './useTx';
+import { useRefetchQueries } from '@libs/app-provider';
 
 type WithdrawUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type WithdrawUstTxRender = TxResultRendering<WithdrawUstTxResult>;
@@ -29,6 +36,7 @@ export function useWithdrawUstTx():
   } = useEvmWallet();
 
   const xAnchor = useEvmCrossAnchorSdk();
+  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const {
     aUST: { formatInput, microfy, formatOutput },
@@ -57,7 +65,7 @@ export function useWithdrawUstTx():
         },
       );
 
-      return await xAnchor.redeemStable(
+      const result = await xAnchor.redeemStable(
         withdrawAmount,
         address!,
         TX_GAS_LIMIT,
@@ -68,8 +76,20 @@ export function useWithdrawUstTx():
           txEvents.next({ event, txParams });
         },
       );
+
+      refetchQueries(refetchQueryByTxKind(TxKind.WithdrawUst));
+
+      return result;
     },
-    [xAnchor, address, connectType, formatInput, microfy, chainId],
+    [
+      xAnchor,
+      address,
+      connectType,
+      formatInput,
+      microfy,
+      chainId,
+      refetchQueries,
+    ],
   );
 
   const persistedTxResult = useBackgroundTx<

@@ -1,7 +1,13 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
+import {
+  EVM_ANCHOR_TX_REFETCH_MAP,
+  refetchQueryByTxKind,
+  TxKind,
+  txResult,
+  TX_GAS_LIMIT,
+} from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
@@ -10,6 +16,7 @@ import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
 import { TxEvent } from './useTx';
+import { useRefetchQueries } from '@libs/app-provider';
 
 type RepayUstTxResult = OneWayTxResponse<ContractReceipt> | null;
 type RepayUstTxRender = TxResultRendering<RepayUstTxResult>;
@@ -26,6 +33,7 @@ export function useRepayUstTx():
   const {
     ust: { microfy, formatInput, formatOutput },
   } = useFormatters();
+  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const repayTx = useCallback(
     async (
@@ -48,16 +56,33 @@ export function useRepayUstTx():
         },
       );
 
-      return xAnchor.repayStable(amount, address!, TX_GAS_LIMIT, (event) => {
-        console.log(event, 'eventEmitted ');
+      const result = await xAnchor.repayStable(
+        amount,
+        address!,
+        TX_GAS_LIMIT,
+        (event) => {
+          console.log(event, 'eventEmitted ');
 
-        renderTxResults.next(
-          txResult(event, connectType, chainId!, TxKind.RepayUst),
-        );
-        txEvents.next({ event, txParams });
-      });
+          renderTxResults.next(
+            txResult(event, connectType, chainId!, TxKind.RepayUst),
+          );
+          txEvents.next({ event, txParams });
+        },
+      );
+
+      refetchQueries(refetchQueryByTxKind(TxKind.RepayUst));
+
+      return result;
     },
-    [xAnchor, address, connectType, chainId, formatInput, microfy],
+    [
+      xAnchor,
+      address,
+      connectType,
+      chainId,
+      formatInput,
+      microfy,
+      refetchQueries,
+    ],
   );
 
   const persistedTxResult = useBackgroundTx<RepayUstTxParams, RepayUstTxResult>(

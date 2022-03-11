@@ -1,12 +1,19 @@
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { TxResultRendering } from '@libs/app-fns';
+import { useRefetchQueries } from '@libs/app-provider';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
 import { TxEvent, useTx } from './useTx';
-import { TxKind, txResult, TX_GAS_LIMIT } from './utils';
+import {
+  EVM_ANCHOR_TX_REFETCH_MAP,
+  refetchQueryByTxKind,
+  TxKind,
+  txResult,
+  TX_GAS_LIMIT,
+} from './utils';
 
 type TxResult = TwoWayTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -20,6 +27,7 @@ export const useWithdrawAssetsTx = () => {
     useEvmWallet();
 
   const xAnchor = useEvmCrossAnchorSdk();
+  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const withdrawTx = useCallback(
     async (
@@ -41,13 +49,14 @@ export const useWithdrawAssetsTx = () => {
             txEvents.next({ event, txParams });
           },
         );
+        refetchQueries(refetchQueryByTxKind(TxKind.WithdrawAssets));
         return result;
       } catch (error: any) {
         console.log(error);
         throw error;
       }
     },
-    [xAnchor, chainId, connectType, address],
+    [xAnchor, chainId, connectType, address, refetchQueries],
   );
 
   const withdrawAssetsTx = useTx(withdrawTx, (resp) => resp.tx, null);
