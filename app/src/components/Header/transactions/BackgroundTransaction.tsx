@@ -77,7 +77,7 @@ const TxSnackbar = styled(TxSnackbarBase)`
     background-color: inherit;
 
     .MuiLinearProgress-barColorPrimary {
-      background-color: ${({ theme }) => theme.colors.secondary};
+      background-color: ${({ theme }) => theme.colors.primary};
     }
   }
 `;
@@ -139,6 +139,6 @@ const TxMessage = styled(TxMessageBase)`
     margin-left: 10px;
     max-width: 300px;
     font-weight: 500;
-    color: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;

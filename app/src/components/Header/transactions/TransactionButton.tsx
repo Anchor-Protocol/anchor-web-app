@@ -17,7 +17,7 @@ const TransactionButtonBase = (props: TransactionButtonProps) => {
   return (
     <button className={className} onClick={onClick}>
       <div className="note">{backgroundTransactions.length} transaction</div>
-      <CircleSpinner size={15} color={theme.colors.secondary} />
+      <CircleSpinner size={15} color={theme.header.textColor} />
     </button>
   );
 };
@@ -29,8 +29,8 @@ export const TransactionButton = styled(TransactionButtonBase)`
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.secondary};
-  border: 1px solid ${({ theme }) => theme.colors.secondary};
+  color: ${({ theme }) => theme.header.textColor};
+  border: 1px solid ${({ theme }) => theme.header.textColor};
   outline: none;
   background-color: transparent;
   display: flex;
