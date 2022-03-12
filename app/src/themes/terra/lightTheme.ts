@@ -1,6 +1,8 @@
 import { muiThemeBase } from '@libs/neumorphism-ui/themes/muiThemeBase';
 import { createMuiTheme } from '@material-ui/core/styles';
 import type { DefaultTheme } from 'styled-components';
+import { themeBuilder, Mode } from '../themeHelper';
+import { Chain } from '@anchor-protocol/app-provider';
 
 const BASE_GRAY_100 = '#EFEFEF';
 const BASE_GRAY_200 = '#F4F4F5';
@@ -33,6 +35,8 @@ export const lightTheme: DefaultTheme = {
       type: 'light',
     },
   }),
+
+  ...themeBuilder(Chain.Terra, Mode.Light),
 
   intensity: 0.1,
 

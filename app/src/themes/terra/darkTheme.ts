@@ -1,6 +1,8 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import type { DefaultTheme } from 'styled-components';
 import { muiThemeBase } from '@libs/neumorphism-ui/themes/muiThemeBase';
+import { themeBuilder, Mode } from '../themeHelper';
+import { Chain } from '@anchor-protocol/app-provider';
 
 export const darkTheme: DefaultTheme = {
   ...createMuiTheme({
@@ -18,6 +20,8 @@ export const darkTheme: DefaultTheme = {
       },
     },
   }),
+
+  ...themeBuilder(Chain.Terra, Mode.Dark),
 
   intensity: 0.45,
 
