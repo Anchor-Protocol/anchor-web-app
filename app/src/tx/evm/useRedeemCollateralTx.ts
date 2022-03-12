@@ -13,7 +13,7 @@ import { useCallback } from 'react';
 import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
-import { formatOutput, microfy, demicrofy } from '@anchor-protocol/formatter';
+import { formatOutput, microfy } from '@anchor-protocol/formatter';
 import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
@@ -76,14 +76,11 @@ export function useRedeemCollateralTx(
     (txParams) => {
       const { amount, tokenDisplay } = txParams;
 
-      const decimals = tokenDisplay?.decimals ?? 6;
       const symbol = tokenDisplay?.symbol ?? 'UST';
 
       return {
         txKind: TxKind.RedeemCollateral,
-        amount: `${formatOutput(demicrofy(amount, decimals), {
-          decimals,
-        })} ${symbol}`,
+        amount: `${formatOutput(amount)} ${symbol}`,
         timestamp: Date.now(),
       };
     },

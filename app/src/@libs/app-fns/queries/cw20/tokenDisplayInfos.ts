@@ -29,7 +29,7 @@ export async function cw20TokenDisplayInfosQuery(): Promise<CW20TokenDisplayInfo
     `https://assets.terra.money/cw20/tokens.json`,
   )
     .then((res) => res.json())
-    .then(trimWormholeSymbolsAll);
+    .then(trimWormholeSymbols);
 
   console.log(data);
 
@@ -38,20 +38,20 @@ export async function cw20TokenDisplayInfosQuery(): Promise<CW20TokenDisplayInfo
   return data;
 }
 
-const trimWormholeSymbolsAll = (infos: CW20TokenDisplayInfos) => {
+const trimWormholeSymbols = (infos: CW20TokenDisplayInfos) => {
   return Object.entries(infos)
-    .map(trimWormholeSymbols)
+    .map(trimWormholeSymbolsPrefix)
     .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {} as CW20TokenDisplayInfos);
 };
 
-const trimWormholeSymbols = ([network, tokenDisplayInfos]: [
+const trimWormholeSymbolsPrefix = ([network, tokenDisplayInfos]: [
   string,
   CW20NetworkTokenDisplayInfos,
 ]): [string, CW20NetworkTokenDisplayInfos] => {
   return [
     network,
     Object.entries(tokenDisplayInfos)
-      .map(trimWormholeSymbol)
+      .map(trimWormholeSymbolPrefix)
       .reduce(
         (acc, [k, v]) => ({ ...acc, [k]: v }),
         {} as CW20NetworkTokenDisplayInfos,
@@ -59,10 +59,10 @@ const trimWormholeSymbols = ([network, tokenDisplayInfos]: [
   ];
 };
 
-const trimWormholeSymbol = ([contract, info]: [string, CW20TokenDisplayInfo]): [
+const trimWormholeSymbolPrefix = ([contract, info]: [
   string,
   CW20TokenDisplayInfo,
-] => {
+]): [string, CW20TokenDisplayInfo] => {
   if (info.protocol.includes('Wormhole')) {
     // remove first two characters, example:
     // - wasAVAX (Wormhole Avalanche) -> sAVAX
