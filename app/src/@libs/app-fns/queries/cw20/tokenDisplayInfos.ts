@@ -2,6 +2,7 @@ import { CW20Addr } from '@libs/types';
 
 export type CW20TokenDisplayInfo = {
   protocol: string;
+  name: string;
   symbol: string;
   token: CW20Addr;
   icon: string;

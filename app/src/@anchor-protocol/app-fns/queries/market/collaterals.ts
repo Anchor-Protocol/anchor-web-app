@@ -4,7 +4,12 @@ import { dedupeTimestamp } from './utils/dedupeTimestamp';
 export interface MarketCollateralsHistory {
   timestamp: JSDateTime;
   total_value: u<UST>;
-  collaterals: Array<{ symbol: string; collateral: u<bAsset>; price: UST }>;
+  collaterals: Array<{
+    token: string;
+    symbol: string;
+    collateral: u<bAsset>;
+    price: UST;
+  }>;
 }
 
 export interface MarketCollateralsData {
@@ -20,7 +25,7 @@ export async function marketCollateralsQuery({
   endpoint,
 }: MarketCollateralsQueryParams): Promise<MarketCollateralsData> {
   const now: MarketCollateralsHistory = await fetch(
-    `${endpoint}/v1/collaterals`,
+    `${endpoint}/v2/collaterals`,
   )
     .then((res) => res.json())
     .then((data: MarketCollateralsHistory) => ({
@@ -29,7 +34,7 @@ export async function marketCollateralsQuery({
     }));
 
   const history: MarketCollateralsHistory[] = await fetch(
-    `${endpoint}/v1/collaterals/1d`,
+    `${endpoint}/v2/collaterals/1d`,
   )
     .then((res) => res.json())
     .then((data: MarketCollateralsHistory[]) => {

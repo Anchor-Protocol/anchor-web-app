@@ -9,7 +9,7 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
-import { useCollateralByTokenAddrQuery } from '@anchor-protocol/app-provider';
+import { useWhitelistCollateralByTokenAddrQuery } from '@anchor-protocol/app-provider';
 
 export interface BorrowProvideCollateralTxParams {
   depositAmount: bAsset;
@@ -24,7 +24,8 @@ export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
   const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
-  const { data: collateral } = useCollateralByTokenAddrQuery(bAssetTokenAddr);
+  const { data: collateral } =
+    useWhitelistCollateralByTokenAddrQuery(bAssetTokenAddr);
 
   const { refetch: borrowMarketQuery } = useBorrowMarketQuery();
   const { refetch: borrowBorrowerQuery } = useBorrowBorrowerQuery();

@@ -1,4 +1,3 @@
-import { CW20TokenDisplayInfo } from '@libs/app-fns';
 import React, { DetailedHTMLProps, ImgHTMLAttributes } from 'react';
 import styled from 'styled-components';
 import akrt from './assets/akrt.svg';
@@ -107,31 +106,31 @@ export interface IconProps
     'src'
   > {
   token?: Tokens;
-  tokenDisplay?: CW20TokenDisplayInfo;
+  symbol?: string;
+  path?: string;
   variant?: IconVariant;
 }
 
-const displayTokenIconAsPredefined = (
-  variant: IconVariant,
-  tokenDisplay?: CW20TokenDisplayInfo,
-) =>
-  tokenDisplay &&
-  tokenDisplay.symbol.toLowerCase() in tokens &&
-  tokenImages[tokenDisplay.symbol.toLowerCase() as Tokens][variant].src;
+const displayTokenIconAsPredefined = (variant: IconVariant, symbol: string) =>
+  symbol.toLowerCase() in tokens
+    ? tokenImages[symbol.toLowerCase() as Tokens][variant].src
+    : undefined;
 
 const displayPredefinedIcon = (token: Tokens, variant: IconVariant) =>
   tokenImages[token][variant].src;
 
 export function TokenIconBase({
-  tokenDisplay,
+  symbol,
+  path,
   token,
   variant = 'svg',
   ...imgProps
 }: IconProps) {
-  const predefinedIcon = token
+  const icon = token
     ? displayPredefinedIcon(token, variant)
-    : displayTokenIconAsPredefined(variant, tokenDisplay);
-  const icon = predefinedIcon || tokenDisplay!.icon;
+    : symbol
+    ? displayTokenIconAsPredefined(variant, symbol) ?? path
+    : path;
 
   return <img alt="" {...imgProps} src={icon} />;
 }

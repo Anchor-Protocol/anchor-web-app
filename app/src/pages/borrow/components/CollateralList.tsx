@@ -92,7 +92,7 @@ export function CollateralList({ className }: CollateralListProps) {
 
       return {
         icon: tokenDisplay ? (
-          <TokenIcon tokenDisplay={tokenDisplay} />
+          <TokenIcon symbol={tokenDisplay?.symbol} path={tokenDisplay?.icon} />
         ) : (
           <TokenIcon token="bluna" />
         ),
