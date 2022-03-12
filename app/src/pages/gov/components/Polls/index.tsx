@@ -2,6 +2,7 @@ import { anchorToken } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
   useAnchorWebapp,
+  useDeploymentTarget,
   useGovPollsQuery,
   useGovStateQuery,
 } from '@anchor-protocol/app-provider';
@@ -38,6 +39,10 @@ const options: Item[] = [
 ];
 
 function PollsBase({ className }: PollsProps) {
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
+
   const navigate = useNavigate();
 
   const { contractAddress } = useAnchorWebapp();
@@ -122,9 +127,11 @@ function PollsBase({ className }: PollsProps) {
           >
             Join Forum
           </BorderButton>
-          <ActionButton component={Link} to={`/poll/create`}>
-            Create Poll
-          </ActionButton>
+          {isNative && (
+            <ActionButton component={Link} to={`/poll/create`}>
+              Create Poll
+            </ActionButton>
+          )}
         </div>
       </SubHeader>
 

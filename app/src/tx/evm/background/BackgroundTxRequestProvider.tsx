@@ -18,7 +18,6 @@ import { BackgroundTxRequest, BackgroundTxRequestContext } from './context';
 //    - else register new request
 //  - updateTxHash(id, txHash)
 //    - update request for id and given txHash
-
 const registeredWithTxHash = (
   requests: BackgroundTxRequest[],
   txHash?: string,
@@ -93,8 +92,6 @@ export const BackgroundTxRequestProvider = ({ children }: UIElementProps) => {
     () => ({ register, getRequest }),
     [register, getRequest],
   );
-
-  useInterval(() => console.log(requests), 10000);
 
   return (
     <BackgroundTxRequestContext.Provider value={value}>

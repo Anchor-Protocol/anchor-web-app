@@ -6,10 +6,11 @@ import { ANC, u } from '@anchor-protocol/types';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import { useAccount } from 'contexts/account';
-import Big from 'big.js';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useClaimRewardsTx } from 'tx/evm/useClaimRewardsTx';
+import { useRewardsClaimableUstBorrowRewardsQuery } from '@anchor-protocol/app-provider';
+import big from 'big.js';
 
 export const EvmClaimAll = () => {
   const { connected, availablePost } = useAccount();
@@ -18,7 +19,10 @@ export const EvmClaimAll = () => {
     anc: { formatOutput, demicrofy, symbol },
   } = useFormatters();
 
-  const anc = Big(1234567800) as u<ANC<Big>>;
+  const { data: { borrowerInfo } = {} } =
+    useRewardsClaimableUstBorrowRewardsQuery();
+
+  const anc = borrowerInfo?.pending_rewards ?? ('0' as u<ANC>);
 
   const claimRewardsTx = useClaimRewardsTx();
   const [claimRewards, claimRewardsTxResult] = claimRewardsTx?.stream ?? [
@@ -40,7 +44,7 @@ export const EvmClaimAll = () => {
           <ActionButton
             className="button"
             disabled={
-              !availablePost || !connected || anc.lt(MINIMUM_CLAIM_BALANCE)
+              !availablePost || !connected || big(anc).lt(MINIMUM_CLAIM_BALANCE)
             }
             onClick={() => claimRewards!({})}
           >

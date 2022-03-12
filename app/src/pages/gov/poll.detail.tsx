@@ -3,6 +3,7 @@ import { Rate } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
   useAnchorWebapp,
+  useDeploymentTarget,
   useGovPollQuery,
   useGovStateQuery,
   useGovVoteAvailableQuery,
@@ -41,6 +42,10 @@ import styled from 'styled-components';
 import { UIElementProps } from '@libs/ui';
 
 function PollDetailBase({ className }: UIElementProps) {
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
+
   const { contractAddress } = useAnchorWebapp();
 
   const { id = '0' } = useParams();
@@ -103,18 +108,20 @@ function PollDetailBase({ className }: UIElementProps) {
             </p>
             <h2>{pollDetail.poll.title}</h2>
           </div>
-          <ActionButton
-            disabled={
-              !canIVote ||
-              !poll ||
-              !lastSyncedHeight ||
-              poll.status !== 'in_progress' ||
-              poll.end_height < lastSyncedHeight
-            }
-            onClick={() => openVoteDialog({ pollId: +id })}
-          >
-            Vote
-          </ActionButton>
+          {isNative && (
+            <ActionButton
+              disabled={
+                !canIVote ||
+                !poll ||
+                !lastSyncedHeight ||
+                poll.status !== 'in_progress' ||
+                poll.end_height < lastSyncedHeight
+              }
+              onClick={() => openVoteDialog({ pollId: +id })}
+            >
+              Vote
+            </ActionButton>
+          )}
         </div>
 
         <HorizontalHeavyRuler />

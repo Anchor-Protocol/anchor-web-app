@@ -19,6 +19,7 @@ export type Transaction = {
   // observedEventKinds: CrossChainEventKind[];
   display: TransactionDisplay;
   receipt: ContractReceipt;
+  backgroundTransactionTabId: string | null;
 };
 
 type TransactionStore = { [key: string]: Transaction };
@@ -50,10 +51,7 @@ export const useTransactions = () => {
   const updateTransaction = useCallback(
     (txHash: string, transaction: Partial<Transaction>) => {
       if (transactionExists(txHash)) {
-        saveTransaction({
-          ...getTransaction(txHash),
-          ...transaction,
-        });
+        saveTransaction({ ...getTransaction(txHash), ...transaction });
       }
     },
     [getTransaction, saveTransaction, transactionExists],

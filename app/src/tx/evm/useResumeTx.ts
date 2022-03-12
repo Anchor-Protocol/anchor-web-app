@@ -49,7 +49,7 @@ export const useResumeTx = (
     (resp) => resp.tx,
     null,
     displayTx,
-    tx.receipt.transactionHash,
+    tx,
   );
 
   return persistedTxResult;

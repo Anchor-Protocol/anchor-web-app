@@ -5,6 +5,9 @@ import { formatDistance } from 'date-fns';
 import { truncateEvm } from '@libs/formatter';
 import { Transaction } from 'tx/evm/storage/useTransactions';
 import { formatTxKind } from 'tx/evm/utils';
+import useClipboard from 'react-use-clipboard';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { Check } from '@material-ui/icons';
 
 interface TransactionDisplayProps extends UIElementProps {
   tx: Transaction;
@@ -13,11 +16,16 @@ interface TransactionDisplayProps extends UIElementProps {
 function TransactionDisplayBase(props: TransactionDisplayProps) {
   const { className, tx } = props;
 
+  const [isCopied, setCopied] = useClipboard(tx.receipt.transactionHash, {
+    successDuration: 2000,
+  });
+
   return (
     <div className={className} key={tx.receipt.transactionHash}>
       <div className="details">
         <span className="action">{formatTxKind(tx.display.txKind)}</span>
-        <span className="tx-hash">
+        <span className="tx-hash" onClick={setCopied}>
+          <IconSpan className="copy">{isCopied && <Check />}</IconSpan>
           {truncateEvm(tx.receipt.transactionHash)}
         </span>
       </div>
@@ -43,6 +51,14 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
   margin: 5px 10px;
   width: 300px;
 
+  .tx-hash {
+    cursor: pointer;
+
+    .copy {
+      margin-right: 5px;
+    }
+  }
+
   .button {
     background-color: ${({ theme }) =>
       theme.palette.type === 'light' ? '#f4f4f5' : '#2a2a46'};
@@ -67,7 +83,7 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
 
   .more-details {
     width: 100%;
-    color: gray;
+    color: ${({ theme }) => theme.dimTextColor};
     display: flex;
   }
 

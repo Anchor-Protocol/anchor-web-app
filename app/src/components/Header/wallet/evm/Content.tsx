@@ -33,7 +33,7 @@ const ContentBase = (props: ContentProps) => {
       <div className="restore-tx">
         <div className="restore-tx-inner">
           <p>Having transaction issues?</p>
-          <Link className="link" to="/bridge/restore">
+          <Link className="link" to="/bridge/restore" onClick={onClose}>
             Restore transaction
           </Link>
         </div>

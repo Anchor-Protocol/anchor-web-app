@@ -2,7 +2,7 @@ import { ContractReceipt } from 'ethers';
 import { Subject } from 'rxjs';
 import { TxResultRendering } from '@libs/app-fns';
 import { TxEvent } from './useTx';
-import { TransactionDisplay } from './storage/useTransactions';
+import { Transaction, TransactionDisplay } from './storage/useTransactions';
 import { PersistedTxResult, PersistedTxUtils } from './usePersistedTx';
 import { useMemo, useState } from 'react';
 import { useBackgroundTxRequest } from './background';
@@ -31,11 +31,14 @@ export const useBackgroundTx = <TxParams, TxResult>(
   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
   emptyTxResult: TxResult,
   displayTx: (txParams: TxParams) => TransactionDisplay,
-  txHash?: string,
+  tx?: Transaction,
 ): BackgroundTxResult<TxParams, TxResult> | undefined => {
   // assume it is running by default, clear the flag if registered
-  const [alreadyRunning, setAlreadyRunning] = useState<boolean>(true);
+  const [alreadyRunning, setAlreadyRunning] = useState<boolean>(
+    !tx || Boolean(tx.backgroundTransactionTabId),
+  );
   const backgroundTxId = useMemo(() => uuid(), []);
+  const txHash = tx?.receipt.transactionHash;
   const requestInput = Boolean(txHash)
     ? { txHash: txHash! }
     : { id: backgroundTxId };
