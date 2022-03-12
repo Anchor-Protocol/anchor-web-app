@@ -128,7 +128,7 @@ const Request = (
   useInterval(() => {
     props.updateRequest(props.id, { persistedTxResult });
     // fucking rx-stream that throws random stream statuses on every render
-  }, 1);
+  }, 100);
 
   return <></>;
 };
