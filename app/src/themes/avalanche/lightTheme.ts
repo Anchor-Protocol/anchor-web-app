@@ -3,16 +3,16 @@ import type { DefaultTheme } from 'styled-components';
 import { muiThemeBase } from '@libs/neumorphism-ui/themes/muiThemeBase';
 
 /* eslint-disable */
-const PRIMARY_1000 = '#130533';
-const PRIMARY_900 = '#21085B';
-const PRIMARY_800 = '#330D87';
-const PRIMARY_700 = '#4111B1';
-const PRIMARY_600 = '#4F13D7';
-const PRIMARY_500 = '#5E17FE';
-const PRIMARY_400 = '#7A40FF';
-const PRIMARY_300 = '#9A6FFF';
-const PRIMARY_200 = '#D2C0FF';
-const PRIMARY_100 = '#F1EBFF';
+const PRIMARY_1000 = '#2F2003';
+const PRIMARY_900 = '#513705';
+const PRIMARY_800 = '#855908';
+const PRIMARY_700 = '#A16C09';
+const PRIMARY_600 = '#B57B0E';
+const PRIMARY_500 = '#F4A81A';
+const PRIMARY_400 = '#F8B22F';
+const PRIMARY_300 = '#F8BB4A';
+const PRIMARY_200 = '#FBC869';
+const PRIMARY_100 = '#FFD890';
 
 const SECONDARY_900 = '#661515';
 const SECONDARY_800 = '#8B1010';
@@ -34,6 +34,27 @@ const GRAY_100 = '#F7F7F7';
 
 const BLACK = '#000000';
 const WHITE = '#FFFFFF';
+
+const BASE_GRAY_100 = '#EFEFEF';
+const BASE_GRAY_200 = '#F4F4F5';
+const BASE_GRAY_300 = '#1F1F1F';
+const BASE_GRAY_400 = '#E8E8E8';
+const BASE_GRAY_500 = '#2c2c2e';
+const BASE_GRAY_600 = '#999999';
+const BASE_GRAY_700 = '#2c2c2c';
+const BASE_GRAY_800 = 'rgba(0, 0, 0, 0.1)';
+const BASE_GRAY_900 = 'rgba(0, 0, 0, 0.15)';
+const BASE_GRAY_1000 = 'rgba(255, 255, 255, 0.8)';
+
+const BASE_BLUE_100 = 'rgba(37, 117, 164, 0.05)';
+const BASE_BLUE_200 = '#5B5E80';
+const BASE_BLUE_300 = '#3867c4';
+const BASE_BLUE_400 = '#3e9bba';
+const BASE_RED_100 = '#ef3158';
+const BASE_GREEN_100 = '#94f3b8';
+const BASE_ORANGE_100 = '#dd8f5c';
+const BASE_YELLOW_100 = '#FF9A63';
+
 /* eslint-enable */
 
 export const lightTheme: DefaultTheme = {
@@ -47,18 +68,18 @@ export const lightTheme: DefaultTheme = {
 
   intensity: 0.1,
 
-  backgroundColor: '#efefef',
-  sectionBackgroundColor: '#f4f4f5',
-  highlightBackgroundColor: '#ffffff',
-  hoverBackgroundColor: 'rgba(37, 117, 164, 0.05)',
+  backgroundColor: BASE_GRAY_100,
+  sectionBackgroundColor: BASE_GRAY_200,
+  highlightBackgroundColor: WHITE,
+  hoverBackgroundColor: BASE_BLUE_100,
 
   textColor: GRAY_700,
   dimTextColor: GRAY_500,
 
   colors: {
-    positive: PRIMARY_500,
-    negative: '#e95979',
-    warning: '#ff9a63',
+    positive: SECONDARY_500,
+    negative: PRIMARY_500,
+    warning: BASE_YELLOW_100,
     primary: PRIMARY_400,
     primaryDark: PRIMARY_500,
     secondary: SECONDARY_500,
@@ -77,124 +98,132 @@ export const lightTheme: DefaultTheme = {
   ],
 
   header: {
-    backgroundColor: '#3E4060',
+    backgroundColor: SECONDARY_500,
+    textColor: WHITE,
+  },
+
+  messageBox: {
+    borderColor: SECONDARY_500,
+    backgroundColor: SECONDARY_100,
+    textColor: SECONDARY_900,
+    linkColor: SECONDARY_500,
   },
 
   label: {
-    backgroundColor: '#ffffff',
-    textColor: '#1f1f1f',
-    borderColor: '#e8e8e8',
+    backgroundColor: WHITE,
+    textColor: BASE_GRAY_300,
+    borderColor: BASE_GRAY_400,
   },
 
   actionButton: {
-    backgroundColor: '#3E4060',
-    backgroundHoverColor: '#5B5E80',
-    textColor: '#ffffff',
-    hoverTextColor: '#ffffff',
+    backgroundColor: GRAY_700,
+    backgroundHoverColor: BASE_BLUE_200,
+    textColor: WHITE,
+    hoverTextColor: WHITE,
   },
 
   textButton: {
-    textColor: '#1f1f1f',
+    textColor: BASE_GRAY_300,
   },
 
   borderButton: {
-    borderColor: '#3E4060',
-    borderHoverColor: '#5B5E80',
-    textColor: '#3E4060',
-    hoverTextColor: '#5B5E80',
+    borderColor: GRAY_700,
+    borderHoverColor: BASE_BLUE_200,
+    textColor: GRAY_700,
+    hoverTextColor: BASE_BLUE_200,
   },
 
   selector: {
-    backgroundColor: '#efefef',
-    textColor: '#2c2c2e',
+    backgroundColor: BASE_GRAY_100,
+    textColor: BASE_GRAY_500,
   },
 
   formControl: {
-    labelColor: '#999999',
-    labelFocusedColor: '#3867c4',
-    labelErrorColor: '#ef3158',
+    labelColor: BASE_GRAY_600,
+    labelFocusedColor: BASE_BLUE_300,
+    labelErrorColor: BASE_RED_100,
   },
 
   textInput: {
-    backgroundColor: '#efefef',
-    textColor: '#2c2c2c',
+    backgroundColor: BASE_GRAY_100,
+    textColor: BASE_GRAY_700,
   },
 
   table: {
     head: {
-      textColor: '#999999',
+      textColor: BASE_GRAY_600,
     },
     body: {
-      textColor: '#2c2c2c',
+      textColor: BASE_GRAY_700,
     },
   },
 
   slider: {
     thumb: {
-      shadowColor: 'rgba(0, 0, 0, 0.1)',
-      thumbColor: '#ffffff',
+      shadowColor: BASE_GRAY_800,
+      thumbColor: WHITE,
     },
   },
 
   skeleton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.15)',
-    lightColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: BASE_GRAY_900,
+    lightColor: BASE_GRAY_1000,
   },
 
   dialog: {
     normal: {
-      backgroundColor: '#f4f4f5',
-      textColor: '#1f1f1f',
+      backgroundColor: BASE_GRAY_200,
+      textColor: BASE_GRAY_300,
     },
     warning: {
-      backgroundColor: '#f4f4f5',
-      textColor: '#dd8f5c',
+      backgroundColor: BASE_GRAY_200,
+      textColor: BASE_ORANGE_100,
     },
     error: {
-      backgroundColor: '#f4f4f5',
-      textColor: '#ef3158',
+      backgroundColor: BASE_GRAY_200,
+      textColor: BASE_RED_100,
     },
     success: {
-      backgroundColor: '#f4f4f5',
-      textColor: '#3e9bba',
+      backgroundColor: BASE_GRAY_200,
+      textColor: BASE_BLUE_400,
     },
   },
 
   tooltip: {
     normal: {
       backgroundColor: PRIMARY_200,
-      textColor: '#1f1f1f',
+      textColor: BASE_GRAY_300,
     },
     warning: {
-      backgroundColor: '#dd8f5c',
-      textColor: '#ffffff',
+      backgroundColor: BASE_ORANGE_100,
+      textColor: WHITE,
     },
     error: {
-      backgroundColor: '#ef3158',
-      textColor: '#ffffff',
+      backgroundColor: BASE_RED_100,
+      textColor: WHITE,
     },
     success: {
-      backgroundColor: '#3e9bba',
-      textColor: '#ffffff',
+      backgroundColor: BASE_BLUE_400,
+      textColor: WHITE,
     },
   },
 
   snackbar: {
     normal: {
-      backgroundColor: '#94f3b8',
-      textColor: '#1f1f1f',
+      backgroundColor: BASE_GREEN_100,
+      textColor: BASE_GRAY_300,
     },
     warning: {
-      backgroundColor: '#dd8f5c',
-      textColor: '#1f1f1f',
+      backgroundColor: BASE_ORANGE_100,
+      textColor: BASE_GRAY_300,
     },
     error: {
-      backgroundColor: '#ef3158',
-      textColor: '#ffffff',
+      backgroundColor: BASE_RED_100,
+      textColor: WHITE,
     },
     success: {
-      backgroundColor: '#3e9bba',
-      textColor: '#ffffff',
+      backgroundColor: BASE_BLUE_400,
+      textColor: WHITE,
     },
   },
 };

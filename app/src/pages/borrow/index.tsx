@@ -199,8 +199,14 @@ export const Borrow = styled(BorrowBase)`
 
   .message-box {
     font-size: 13px;
+    color: ${({ theme }) => theme.messageBox.textColor};
+    svg: {
+      path {
+        fill: ${({ theme }) => theme.messageBox.textColor};
+      }
+    }
     a {
-      color: ${({ theme }) => theme.colors.positive};
+      color: ${({ theme }) => theme.messageBox.linkColor};
       display: inline-flex;
       flex-direction: row;
       align-items: center;

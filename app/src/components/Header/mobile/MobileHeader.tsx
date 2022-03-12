@@ -5,7 +5,10 @@ import { mobileHeaderHeight } from 'env';
 import React, { ReactNode } from 'react';
 import { NavLink, useMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import logoUrl from '../assets/Logo.svg';
+import LogoAvax from '../assets/LogoAvax.svg';
+import LogoEth from '../assets/LogoEth.svg';
+import LogoTerra from '../assets/LogoTerra.svg';
+import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
 
 export interface MobileHeaderProps {
   open: boolean;
@@ -53,7 +56,11 @@ function MobileHeaderBase({
             target="_blank"
             rel="noreferrer"
           >
-            <img src={logoUrl} alt="logo" />
+            <DeploymentSwitch
+              terra={() => <img src={LogoTerra} alt="terraLogo" />}
+              ethereum={() => <img src={LogoEth} alt="ethLogo" />}
+              avalanche={() => <img src={LogoAvax} alt="avaxLogo" />}
+            />
           </a>
 
           <div />
@@ -127,7 +134,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
     align-items: center;
     justify-content: space-between;
 
-    background-color: #101010;
+    background-color: ${({ theme }) => theme.header.backgroundColor};
 
     a {
       text-decoration: none;

@@ -45,15 +45,15 @@ export const NotConnectedButton = styled(NotConnectedButtonBase)`
       top: 1px;
       bottom: 1px;
       right: -11px;
-      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      border-left: 1px solid ${({ theme }) => theme.header.textColor};
     }
   }
 
-  color: ${({ theme }) => theme.colors.secondary};
-  border-color: ${({ theme }) => theme.colors.secondary};
+  color: ${({ theme }) => theme.header.textColor};
+  border-color: ${({ theme }) => theme.header.textColor};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.secondary};
-    border-color: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme }) => theme.header.textColor};
+    border-color: ${({ theme }) => theme.header.textColor};
   }
 `;
