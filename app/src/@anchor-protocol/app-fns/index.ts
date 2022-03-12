@@ -95,8 +95,6 @@ export * from './queries/gov/state';
 export * from './queries/gov/voters';
 export * from './queries/market/anc';
 export * from './queries/market/bAsset';
-export * from './queries/market/bEth';
-export * from './queries/market/bLuna';
 export * from './queries/market/buyback';
 export * from './queries/market/collaterals';
 export * from './queries/market/depositAndBorrow';

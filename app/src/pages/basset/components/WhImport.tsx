@@ -148,7 +148,7 @@ function Component({ className, bAssetInfo }: WhImportProps) {
           toIcon={
             <TokenIcon
               symbol={bAssetInfo.tokenDisplay.anchor.symbol}
-              path={bAssetInfo.tokenDisplay.anchor.path}
+              path={bAssetInfo.tokenDisplay.anchor.icon}
             />
           }
         />
