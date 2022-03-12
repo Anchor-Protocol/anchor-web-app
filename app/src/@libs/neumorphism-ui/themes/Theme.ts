@@ -34,6 +34,7 @@ export interface NeumorphismTheme extends Theme {
 
   header: {
     backgroundColor: string;
+    textColor: string;
   };
 
   // level
@@ -120,6 +121,14 @@ export interface NeumorphismTheme extends Theme {
   skeleton: {
     backgroundColor: string;
     lightColor: string;
+  };
+
+  // message-box
+  messageBox: {
+    borderColor: string;
+    backgroundColor: string;
+    textColor: string;
+    linkColor: string;
   };
 
   // dialog

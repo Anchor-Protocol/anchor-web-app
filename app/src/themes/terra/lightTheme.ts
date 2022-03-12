@@ -2,6 +2,29 @@ import { muiThemeBase } from '@libs/neumorphism-ui/themes/muiThemeBase';
 import { createMuiTheme } from '@material-ui/core/styles';
 import type { DefaultTheme } from 'styled-components';
 
+const BASE_GRAY_100 = '#EFEFEF';
+const BASE_GRAY_200 = '#F4F4F5';
+const BASE_GRAY_300 = '#1F1F1F';
+const BASE_GRAY_400 = '#E8E8E8';
+const BASE_GRAY_500 = '#2c2c2e';
+const BASE_GRAY_600 = '#999999';
+const BASE_GRAY_700 = '#2c2c2c';
+const BASE_GRAY_800 = 'rgba(0, 0, 0, 0.1)';
+const BASE_GRAY_900 = 'rgba(0, 0, 0, 0.15)';
+const BASE_GRAY_1000 = 'rgba(255, 255, 255, 0.8)';
+
+const BASE_BLUE_100 = 'rgba(37, 117, 164, 0.05)';
+// const BASE_BLUE_200 = '#5B5E80';
+const BASE_BLUE_300 = '#3867c4';
+const BASE_BLUE_400 = '#3e9bba';
+const BASE_RED_100 = '#ef3158';
+const BASE_GREEN_100 = '#94f3b8';
+const BASE_ORANGE_100 = '#dd8f5c';
+const BASE_YELLOW_100 = '#FF9A63';
+
+const BLACK = '#000000';
+const WHITE = '#FFFFFF';
+
 export const lightTheme: DefaultTheme = {
   ...createMuiTheme({
     ...muiThemeBase,
@@ -13,18 +36,18 @@ export const lightTheme: DefaultTheme = {
 
   intensity: 0.1,
 
-  backgroundColor: '#efefef',
-  sectionBackgroundColor: '#f4f4f5',
-  highlightBackgroundColor: '#ffffff',
-  hoverBackgroundColor: 'rgba(37, 117, 164, 0.05)',
+  backgroundColor: BASE_GRAY_100,
+  sectionBackgroundColor: BASE_GRAY_200,
+  highlightBackgroundColor: WHITE,
+  hoverBackgroundColor: BASE_BLUE_100,
 
-  textColor: '#1f1f1f',
-  dimTextColor: '#999999',
+  textColor: BASE_GRAY_300,
+  dimTextColor: BASE_GRAY_600,
 
   colors: {
     positive: '#4BDB4B',
     negative: '#e95979',
-    warning: '#ff9a63',
+    warning: BASE_YELLOW_100,
     primary: '#4BDB4B',
     primaryDark: '#4BDB4B',
     secondary: '#4BDB4B',
@@ -47,124 +70,132 @@ export const lightTheme: DefaultTheme = {
   ],
 
   header: {
-    backgroundColor: '#000000',
+    backgroundColor: BLACK,
+    textColor: '#4BDB4B',
+  },
+
+  messageBox: {
+    borderColor: '#4BDB4B',
+    backgroundColor: 'rgba(75, 219, 75, 0.1)',
+    textColor: '#285e28',
+    linkColor: '#4BDB4B',
   },
 
   label: {
-    backgroundColor: '#ffffff',
-    textColor: '#1f1f1f',
-    borderColor: '#e8e8e8',
+    backgroundColor: WHITE,
+    textColor: BASE_GRAY_300,
+    borderColor: BASE_GRAY_400,
   },
 
   actionButton: {
-    backgroundColor: '#2c2c2c',
+    backgroundColor: BASE_GRAY_700,
     backgroundHoverColor: '#1c1c1c',
-    textColor: '#ffffff',
-    hoverTextColor: '#ffffff',
+    textColor: WHITE,
+    hoverTextColor: WHITE,
   },
 
   textButton: {
-    textColor: '#1f1f1f',
+    textColor: BASE_GRAY_300,
   },
 
   borderButton: {
-    borderColor: '#2c2c2c',
+    borderColor: BASE_GRAY_700,
     borderHoverColor: '#1c1c1c',
-    textColor: '#1f1f1f',
-    hoverTextColor: '#ffffff',
+    textColor: BASE_GRAY_300,
+    hoverTextColor: WHITE,
   },
 
   selector: {
-    backgroundColor: '#efefef',
-    textColor: '#2c2c2e',
+    backgroundColor: BASE_GRAY_100,
+    textColor: BASE_GRAY_500,
   },
 
   formControl: {
-    labelColor: '#999999',
-    labelFocusedColor: '#3867c4',
-    labelErrorColor: '#ef3158',
+    labelColor: BASE_GRAY_600,
+    labelFocusedColor: BASE_BLUE_300,
+    labelErrorColor: BASE_RED_100,
   },
 
   textInput: {
-    backgroundColor: '#efefef',
-    textColor: '#2c2c2c',
+    backgroundColor: BASE_GRAY_100,
+    textColor: BASE_GRAY_700,
   },
 
   table: {
     head: {
-      textColor: '#999999',
+      textColor: BASE_GRAY_600,
     },
     body: {
-      textColor: '#2c2c2c',
+      textColor: BASE_GRAY_700,
     },
   },
 
   slider: {
     thumb: {
-      shadowColor: 'rgba(0, 0, 0, 0.1)',
-      thumbColor: '#ffffff',
+      shadowColor: BASE_GRAY_800,
+      thumbColor: WHITE,
     },
   },
 
   skeleton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.15)',
-    lightColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: BASE_GRAY_900,
+    lightColor: BASE_GRAY_1000,
   },
 
   dialog: {
     normal: {
-      backgroundColor: '#f4f4f5',
-      textColor: '#1f1f1f',
+      backgroundColor: BASE_GRAY_200,
+      textColor: BASE_GRAY_300,
     },
     warning: {
-      backgroundColor: '#f4f4f5',
-      textColor: '#dd8f5c',
+      backgroundColor: BASE_GRAY_200,
+      textColor: BASE_ORANGE_100,
     },
     error: {
-      backgroundColor: '#f4f4f5',
-      textColor: '#ef3158',
+      backgroundColor: BASE_GRAY_200,
+      textColor: BASE_RED_100,
     },
     success: {
-      backgroundColor: '#f4f4f5',
-      textColor: '#3e9bba',
+      backgroundColor: BASE_GRAY_200,
+      textColor: BASE_BLUE_400,
     },
   },
 
   tooltip: {
     normal: {
-      backgroundColor: '#94f3b8',
-      textColor: '#1f1f1f',
+      backgroundColor: BASE_GREEN_100,
+      textColor: BASE_GRAY_300,
     },
     warning: {
-      backgroundColor: '#dd8f5c',
-      textColor: '#ffffff',
+      backgroundColor: BASE_ORANGE_100,
+      textColor: WHITE,
     },
     error: {
-      backgroundColor: '#ef3158',
-      textColor: '#ffffff',
+      backgroundColor: BASE_RED_100,
+      textColor: WHITE,
     },
     success: {
-      backgroundColor: '#3e9bba',
-      textColor: '#ffffff',
+      backgroundColor: BASE_BLUE_400,
+      textColor: WHITE,
     },
   },
 
   snackbar: {
     normal: {
-      backgroundColor: '#94f3b8',
-      textColor: '#1f1f1f',
+      backgroundColor: BASE_GREEN_100,
+      textColor: BASE_GRAY_300,
     },
     warning: {
-      backgroundColor: '#dd8f5c',
-      textColor: '#1f1f1f',
+      backgroundColor: BASE_ORANGE_100,
+      textColor: BASE_GRAY_300,
     },
     error: {
-      backgroundColor: '#ef3158',
-      textColor: '#ffffff',
+      backgroundColor: BASE_RED_100,
+      textColor: WHITE,
     },
     success: {
-      backgroundColor: '#3e9bba',
-      textColor: '#ffffff',
+      backgroundColor: BASE_BLUE_400,
+      textColor: WHITE,
     },
   },
 };

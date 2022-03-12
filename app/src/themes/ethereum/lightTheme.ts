@@ -78,6 +78,14 @@ export const lightTheme: DefaultTheme = {
 
   header: {
     backgroundColor: '#3E4060',
+    textColor: PRIMARY_500,
+  },
+
+  messageBox: {
+    borderColor: SECONDARY_500,
+    backgroundColor: SECONDARY_100,
+    textColor: SECONDARY_900,
+    linkColor: SECONDARY_500,
   },
 
   label: {

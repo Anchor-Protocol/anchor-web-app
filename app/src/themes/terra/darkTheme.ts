@@ -41,6 +41,14 @@ export const darkTheme: DefaultTheme = {
 
   header: {
     backgroundColor: '#000000',
+    textColor: '#4BDB4B',
+  },
+
+  messageBox: {
+    borderColor: '#4BDB4B',
+    backgroundColor: 'rgba(75, 219, 75, 0.1)',
+    textColor: '#285e28',
+    linkColor: '#4BDB4B',
   },
 
   chart: [

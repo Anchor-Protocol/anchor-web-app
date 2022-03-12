@@ -4,7 +4,9 @@ import { screen } from 'env';
 import React from 'react';
 import { Link, useMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import logoUrl from './assets/Logo.svg';
+import LogoAvax from './assets/LogoAvax.svg';
+import LogoEth from './assets/LogoEth.svg';
+import LogoTerra from './assets/LogoTerra.svg';
 import { ChainSelector } from './chain/ChainSelector';
 import { DesktopNotification } from './desktop/DesktopNotification';
 import { TransactionWidget } from './transactions/TransactionWidget';
@@ -25,7 +27,11 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
         target="_blank"
         rel="noreferrer"
       >
-        <img src={logoUrl} alt="logo" />
+        <DeploymentSwitch
+          terra={() => <img src={LogoTerra} alt="terraLogo" />}
+          ethereum={() => <img src={LogoEth} alt="ethLogo" />}
+          avalanche={() => <img src={LogoAvax} alt="avaxLogo" />}
+        />
       </a>
 
       <nav className="menu">
