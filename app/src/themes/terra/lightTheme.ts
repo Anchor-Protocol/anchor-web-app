@@ -93,7 +93,7 @@ export const lightTheme: DefaultTheme = {
 
   actionButton: {
     backgroundColor: BASE_GRAY_700,
-    backgroundHoverColor: '#1c1c1c',
+    backgroundHoverColor: '#555555',
     textColor: WHITE,
     hoverTextColor: WHITE,
   },
@@ -106,7 +106,7 @@ export const lightTheme: DefaultTheme = {
     borderColor: BASE_GRAY_700,
     borderHoverColor: '#1c1c1c',
     textColor: BASE_GRAY_300,
-    hoverTextColor: WHITE,
+    hoverTextColor: BASE_GRAY_300,
   },
 
   selector: {
