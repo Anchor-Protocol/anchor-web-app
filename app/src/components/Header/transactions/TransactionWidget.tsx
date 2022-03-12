@@ -26,11 +26,15 @@ const TransactionWidgetBase = (props: UIElementProps) => {
   return (
     <ClickAwayListener onClickAway={() => setOpen(false)}>
       <div className={className}>
-        <TransactionButton onClick={() => setOpen((v) => !v)} />
+        <TransactionButton
+          backgroundTransactions={backgroundTransactions}
+          onClick={() => setOpen((v) => !v)}
+        />
         {open && (
           <DropdownContainer>
             <DropdownBox>
               <TransactionList
+                backgroundTransactions={backgroundTransactions}
                 onClose={() => setOpen((v) => !v)}
                 footer={
                   <div className="restore-tx">

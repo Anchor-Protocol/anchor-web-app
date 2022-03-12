@@ -9,6 +9,7 @@ import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
+import { useTransactions } from './storage';
 import { TxEvent, useTx } from './useTx';
 import { capitalize, chain } from './utils';
 
@@ -22,6 +23,7 @@ export interface RestoreTxParams {
 export const useRestoreTx = () => {
   const { connection, provider, connectType, chainId } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
+  const { removeTransaction } = useTransactions();
 
   const restoreTx = useCallback(
     async (
@@ -38,13 +40,15 @@ export const useRestoreTx = () => {
           renderTxResults.next(restoreTxResult(event, connectType, chainId!));
           txEvents.next({ event, txParams });
         });
+
+        removeTransaction(txParams.txHash);
         return result;
       } catch (error: any) {
         console.log(error);
         throw error;
       }
     },
-    [xAnchor, provider, chainId, connectType],
+    [xAnchor, provider, chainId, connectType, removeTransaction],
   );
 
   const restoreTxStream = useTx(restoreTx, (resp) => resp.tx, null);

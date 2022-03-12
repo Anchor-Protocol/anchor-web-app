@@ -2,20 +2,21 @@ import React, { DOMAttributes } from 'react';
 import { UIElementProps } from '@libs/ui';
 import styled, { useTheme } from 'styled-components';
 import { CircleSpinner } from 'react-spinners-kit';
-import { useTransactions } from 'tx/evm/storage/useTransactions';
+import { Transaction } from 'tx/evm';
 
 interface TransactionButtonProps
   extends UIElementProps,
-    Pick<DOMAttributes<HTMLButtonElement>, 'onClick'> {}
+    Pick<DOMAttributes<HTMLButtonElement>, 'onClick'> {
+  backgroundTransactions: Transaction[];
+}
 
 const TransactionButtonBase = (props: TransactionButtonProps) => {
-  const { className, onClick } = props;
-  const { transactions } = useTransactions();
+  const { className, onClick, backgroundTransactions } = props;
   const theme = useTheme();
 
   return (
     <button className={className} onClick={onClick}>
-      <div className="note">{transactions.length} transaction</div>
+      <div className="note">{backgroundTransactions.length} transaction</div>
       <CircleSpinner size={15} color={theme.colors.secondary} />
     </button>
   );
