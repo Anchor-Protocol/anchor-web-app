@@ -93,6 +93,18 @@ export const chain = (chainId: EvmChainId) => {
   }
 };
 
+export const pluralize = <T>(word: string, arr: T[]) => {
+  if (arr.length === 0) {
+    return null;
+  }
+
+  if (arr.length === 1) {
+    return word;
+  }
+
+  return word + 's';
+};
+
 export enum TxKind {
   WithdrawUst,
   RepayUst,

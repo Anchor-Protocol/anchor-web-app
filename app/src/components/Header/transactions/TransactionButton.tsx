@@ -3,6 +3,7 @@ import { UIElementProps } from '@libs/ui';
 import styled, { useTheme } from 'styled-components';
 import { CircleSpinner } from 'react-spinners-kit';
 import { Transaction } from 'tx/evm';
+import { pluralize } from 'tx/evm/utils';
 
 interface TransactionButtonProps
   extends UIElementProps,
@@ -16,7 +17,10 @@ const TransactionButtonBase = (props: TransactionButtonProps) => {
 
   return (
     <button className={className} onClick={onClick}>
-      <div className="note">{backgroundTransactions.length} transaction</div>
+      <div className="note">
+        {backgroundTransactions.length}{' '}
+        {pluralize('transaction', backgroundTransactions)}
+      </div>
       <CircleSpinner size={15} color={theme.header.textColor} />
     </button>
   );

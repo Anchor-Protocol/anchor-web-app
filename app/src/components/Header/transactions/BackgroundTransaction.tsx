@@ -68,7 +68,7 @@ const TxSnackbar = styled(TxSnackbarBase)`
   }
 
   .MuiSnackbarContent-root {
-    background-color: ${({ theme }) => theme.header.backgroundColor};
+    background-color: ${({ theme }) => theme.colors.secondaryDark};
   }
 
   .tx-progress {
@@ -77,7 +77,7 @@ const TxSnackbar = styled(TxSnackbarBase)`
     background-color: inherit;
 
     .MuiLinearProgress-barColorPrimary {
-      background-color: ${({ theme }) => theme.colors.primary};
+      background-color: ${({ theme }) => theme.colors.primaryDark};
     }
   }
 `;
@@ -139,6 +139,6 @@ const TxMessage = styled(TxMessageBase)`
     margin-left: 10px;
     max-width: 300px;
     font-weight: 500;
-    color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.primaryDark};
   }
 `;
