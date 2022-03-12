@@ -37,6 +37,7 @@ export const useReserveBackgroundTx = (tx: Transaction) => {
       clearTimeout(reservationTimeoutId!);
     },
     () =>
+      // other tab has reserved already
       Boolean(
         reservationTimeoutId &&
           tx.backgroundTransactionTabId &&
