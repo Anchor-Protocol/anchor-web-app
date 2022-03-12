@@ -1,20 +1,17 @@
-import {
-  collateralByTokenAddrQuery,
-  Collateral,
-} from '@anchor-protocol/app-fns';
+import { WhitelistCollateral } from '@anchor-protocol/app-fns/queries/collateral/types';
+import { whitelistCollateralQuery } from '@anchor-protocol/app-fns/queries/collateral/whitelistCollateralQuery';
 import { useNetwork } from '@anchor-protocol/app-provider/contexts/network';
 import { useCW20TokenDisplayInfosQuery } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import { CW20Addr } from '@libs/types';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
-const queryFn = createQueryFn(collateralByTokenAddrQuery);
+const queryFn = createQueryFn(whitelistCollateralQuery);
 
-export function useCollateralByTokenAddrQuery(
-  collateralToken: CW20Addr,
-): UseQueryResult<Collateral | undefined> {
+export function useWhitelistCollateralQuery(): UseQueryResult<
+  WhitelistCollateral[]
+> {
   const { network } = useNetwork();
 
   const { queryClient, queryErrorReporter, contractAddress } =
@@ -24,9 +21,8 @@ export function useCollateralByTokenAddrQuery(
 
   const query = useQuery(
     [
-      ANCHOR_QUERY_KEY.COLLATERAL_BY_TOKEN_ADDR,
+      ANCHOR_QUERY_KEY.WHITELIST_COLLATERAL,
       contractAddress.moneyMarket.overseer,
-      collateralToken,
       tokens && tokens[network.name],
       queryClient,
     ],

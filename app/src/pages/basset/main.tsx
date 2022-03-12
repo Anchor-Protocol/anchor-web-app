@@ -61,7 +61,10 @@ function Component({ className }: BAssetMainProps) {
                 title={`${tokenDisplay.anchor.symbol}/${tokenDisplay.wormhole.symbol}`}
                 bAssetIcon={<TokenIcon token="beth" />}
                 originAssetIcon={
-                  <TokenIcon tokenDisplay={tokenDisplay.anchor} />
+                  <TokenIcon
+                    symbol={tokenDisplay.anchor?.symbol}
+                    path={tokenDisplay.anchor?.icon}
+                  />
                 }
                 hoverText="CONVERT"
               >

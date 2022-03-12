@@ -1,29 +1,21 @@
-import { HumanAddr, CW20Addr, moneyMarket } from '@anchor-protocol/types';
+import { HumanAddr, CW20Addr } from '@anchor-protocol/types';
 import { CW20TokenDisplayInfo } from '@libs/app-fns';
-import { QueryClient, wasmFetch, WasmQuery } from '@libs/query-client';
+import { QueryClient, wasmFetch } from '@libs/query-client';
+import { WhitelistWasmQuery, WhitelistCollateral } from './types';
 
-interface WhitelistWasmQuery {
-  whitelist: WasmQuery<
-    moneyMarket.overseer.Whitelist,
-    moneyMarket.overseer.WhitelistResponse
-  >;
-}
-
-export type Collateral = moneyMarket.overseer.WhitelistResponse['elems'][0];
-
-export async function collateralByTokenAddrQuery(
+export async function whitelistCollateralByTokenAddrQuery(
   overseerContract: HumanAddr,
   collateralToken: CW20Addr | undefined,
   tokenInformation: Record<string, CW20TokenDisplayInfo> | undefined,
   queryClient: QueryClient,
-): Promise<Collateral | undefined> {
+): Promise<WhitelistCollateral | undefined> {
   if (collateralToken === undefined) {
     return undefined;
   }
 
   const { whitelist } = await wasmFetch<WhitelistWasmQuery>({
     ...queryClient,
-    id: `collateral--token=${collateralToken}`,
+    id: `whitelist--collateral--token=${collateralToken}`,
     wasmQuery: {
       whitelist: {
         contractAddress: overseerContract,
@@ -44,9 +36,12 @@ export async function collateralByTokenAddrQuery(
     tokenInformation &&
     tokenInformation[collateral.collateral_token]
   ) {
+    const token = tokenInformation[collateral.collateral_token];
     return {
+      ...token,
       ...collateral,
-      symbol: tokenInformation[collateral.collateral_token].symbol,
+      name: token.name ?? collateral.name,
+      symbol: token.symbol ?? collateral.symbol,
     };
   }
 

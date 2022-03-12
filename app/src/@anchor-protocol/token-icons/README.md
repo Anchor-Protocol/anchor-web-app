@@ -23,7 +23,8 @@ function App() {
 
 ```tsx
 export function TokenIconBase({
-  tokenDisplay,
+  symbol,
+  path,
   token,
   variant = 'svg',
   ...imgProps
@@ -51,7 +52,8 @@ export interface IconProps
     'src'
   > {
   token?: Tokens;
-  tokenDisplay?: CW20TokenDisplayInfo;
+  symbol?: string;
+  path?: string;
   variant?: IconVariant;
 }
 
