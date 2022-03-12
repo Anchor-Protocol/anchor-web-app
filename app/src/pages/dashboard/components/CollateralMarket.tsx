@@ -12,10 +12,10 @@ import { fixHMR } from 'fix-hmr';
 import React, { useMemo } from 'react';
 import { useTheme } from 'styled-components';
 import { CollateralsChart } from './CollateralsChart';
-import { CollateralTable } from './CollateralTable';
+import { CollateralMarketTable } from './CollateralMarketTable';
 import { findPrevDay } from './internal/axisUtils';
 
-function CollateralBase(props: UIElementProps) {
+function CollateralMarketBase(props: UIElementProps) {
   const { className, isMobile } = props;
 
   const theme = useTheme();
@@ -76,13 +76,13 @@ function CollateralBase(props: UIElementProps) {
         </div>
       </figure>
 
-      <CollateralTable
+      <CollateralMarketTable
         className="basset-market"
         whitelistCollateral={whitelistCollateral}
-        collateralData={marketCollaterals}
+        marketData={marketCollaterals?.now}
       />
     </Section>
   );
 }
 
-export const Collateral = fixHMR(CollateralBase);
+export const CollateralMarket = fixHMR(CollateralMarketBase);

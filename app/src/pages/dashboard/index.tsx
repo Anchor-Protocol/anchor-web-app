@@ -37,7 +37,7 @@ import { ANCPriceChart } from './components/ANCPriceChart';
 import { findPrevDay } from './components/internal/axisUtils';
 import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
-import { Collateral } from './components/Collateral';
+import { CollateralMarket } from './components/CollateralMarket';
 
 export interface DashboardProps {
   className?: string;
@@ -513,7 +513,7 @@ function DashboardBase({ className }: DashboardProps) {
             </HorizontalScrollTable>
           </Section>
 
-          <Collateral className="collaterals" />
+          <CollateralMarket className="collaterals" />
         </div>
 
         <Footer style={{ margin: '60px 0' }} />

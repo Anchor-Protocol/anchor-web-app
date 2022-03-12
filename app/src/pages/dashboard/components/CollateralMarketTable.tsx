@@ -1,5 +1,5 @@
 import {
-  MarketCollateralsData,
+  MarketCollateralsHistory,
   WhitelistCollateral,
 } from '@anchor-protocol/app-fns';
 import {
@@ -17,15 +17,41 @@ import { u, UST } from '@libs/types';
 import { AnimateNumber } from '@libs/ui';
 import Big from 'big.js';
 import { UIElementProps } from 'components/layouts/UIElementProps';
-import React from 'react';
+import React, { useMemo } from 'react';
 
-interface CollateralTableProps extends UIElementProps {
+interface CollateralMarketTableProps extends UIElementProps {
   whitelistCollateral: WhitelistCollateral[];
-  collateralData: MarketCollateralsData | undefined;
+  marketData: MarketCollateralsHistory | undefined;
 }
 
-export const CollateralTable = (props: CollateralTableProps) => {
-  const { className, whitelistCollateral, collateralData } = props;
+export const CollateralMarketTable = (props: CollateralMarketTableProps) => {
+  const { className, whitelistCollateral, marketData } = props;
+
+  const collaterals = useMemo(() => {
+    const array = whitelistCollateral.map((collateral) => {
+      const data = marketData?.collaterals.find(
+        (c) => c.token === collateral.collateral_token,
+      );
+
+      const price = data?.price ?? (0 as UST<number>);
+
+      const value = data ? demicrofy(data.collateral) : (0 as bAsset<number>);
+
+      const tvl = data
+        ? demicrofy(Big(data.collateral).mul(data.price).toString() as u<UST>)
+        : (0 as UST<number>);
+
+      return {
+        ...collateral,
+        price,
+        value,
+        tvl,
+      };
+    });
+    return array.sort((a, b) => {
+      return Big(b.tvl).minus(Big(a.tvl)).toNumber();
+    });
+  }, [whitelistCollateral, marketData]);
 
   return (
     <HorizontalScrollTable minWidth={800} className={className}>
@@ -57,11 +83,7 @@ export const CollateralTable = (props: CollateralTableProps) => {
         </tr>
       </thead>
       <tbody>
-        {whitelistCollateral.map((collateral) => {
-          const data = collateralData?.now.collaterals.find(
-            (c) => c.symbol === collateral.symbol,
-          );
-
+        {collaterals.map((collateral) => {
           return (
             <tr key={collateral.symbol}>
               <td>
@@ -82,16 +104,14 @@ export const CollateralTable = (props: CollateralTableProps) => {
                 <div className="value">
                   ${' '}
                   <AnimateNumber format={formatUST}>
-                    {data ? data.price : (0 as UST<number>)}
+                    {collateral.price}
                   </AnimateNumber>
                 </div>
               </td>
               <td>
                 <div className="value">
                   <AnimateNumber format={formatBAssetWithPostfixUnits}>
-                    {data?.collateral
-                      ? demicrofy(data?.collateral)
-                      : (0 as bAsset<number>)}
+                    {collateral.value}
                   </AnimateNumber>
                 </div>
               </td>
@@ -102,13 +122,7 @@ export const CollateralTable = (props: CollateralTableProps) => {
                     format={formatUSTWithPostfixUnits}
                     id="collateral-value"
                   >
-                    {data?.collateral
-                      ? demicrofy(
-                          Big(data.collateral)
-                            .mul(data.price)
-                            .toString() as u<UST>,
-                        )
-                      : (0 as UST<number>)}
+                    {collateral.tvl}
                   </AnimateNumber>
                 </div>
               </td>
