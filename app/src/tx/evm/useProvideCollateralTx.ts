@@ -57,7 +57,7 @@ export function useProvideCollateralTx():
           },
         );
 
-        const response = xAnchor.lockCollateral(
+        const response = await xAnchor.lockCollateral(
           { contract: collateralContract },
           microfy(amount, erc20Decimals),
           address!,
