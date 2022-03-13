@@ -1,5 +1,5 @@
 import React from 'react';
-import { bAsset, ERC20Addr, NoMicro } from '@anchor-protocol/types';
+import { bAsset, ERC20Addr, NoMicro, u } from '@anchor-protocol/types';
 import type { DialogProps } from '@libs/use-dialog';
 import { useAccount } from 'contexts/account';
 import { useCallback } from 'react';
@@ -22,27 +22,26 @@ export const EvmProvideCollateralDialog = (
 
   const erc20Decimals = useERC20Decimals(token);
 
-  const uTokenBalance = normalize(
-    erc20TokenBalance,
-    erc20Decimals,
-    tokenDisplay?.decimals ?? 6,
-  );
+  const uTokenBalance = erc20Decimals
+    ? normalize(erc20TokenBalance, erc20Decimals, tokenDisplay?.decimals ?? 6)
+    : ('0' as u<bAsset>);
 
-  const provideCollateralTx = useProvideCollateralTx(erc20Decimals);
+  const provideCollateralTx = useProvideCollateralTx();
   const { minimizeTx, isTxMinimizable } = provideCollateralTx?.utils ?? {};
   const [postTx, txResult] = provideCollateralTx?.stream ?? [null, null];
 
   const proceed = useCallback(
     (amount: bAsset & NoMicro) => {
-      if (connected && postTx) {
+      if (connected && postTx && erc20Decimals) {
         postTx({
           collateralContract: token,
           amount,
+          erc20Decimals,
           tokenDisplay,
         });
       }
     },
-    [connected, postTx, token, tokenDisplay],
+    [connected, postTx, token, tokenDisplay, erc20Decimals],
   );
 
   return (
@@ -50,7 +49,7 @@ export const EvmProvideCollateralDialog = (
       {...props}
       txResult={txResult}
       uTokenBalance={uTokenBalance}
-      proceedable={postTx !== undefined}
+      proceedable={postTx !== undefined && erc20Decimals !== undefined}
       onProceed={proceed}
       renderBroadcastTxResult={
         <EvmTxResultRenderer

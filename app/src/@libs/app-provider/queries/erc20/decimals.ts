@@ -1,10 +1,8 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEffect, useState } from 'react';
 
-export const DEFAULT_ERC20_DECIMALS = 18;
-
 export const useERC20Decimals = (tokenContract: string) => {
-  const [decimals, setDecimals] = useState<number>(DEFAULT_ERC20_DECIMALS);
+  const [decimals, setDecimals] = useState<number | undefined>(undefined);
   const xAnchor = useEvmCrossAnchorSdk();
 
   useEffect(() => {

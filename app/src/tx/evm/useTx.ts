@@ -70,7 +70,7 @@ export const useTx = <TxParams, TxResult>(
         renderingEvents,
       ).pipe(
         tap((tx) => {
-          console.log('stream emitted', tx);
+          //console.log('stream emitted', tx);
         }),
       );
     },

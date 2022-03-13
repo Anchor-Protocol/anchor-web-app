@@ -24,12 +24,11 @@ type ProvideCollateralTxRender = TxResultRendering<ProvideCollateralTxResult>;
 export interface ProvideCollateralTxParams {
   collateralContract: string;
   amount: bAsset & NoMicro;
+  erc20Decimals: number;
   tokenDisplay?: CW20TokenDisplayInfo;
 }
 
-export function useProvideCollateralTx(
-  erc20Decimals: number,
-):
+export function useProvideCollateralTx():
   | BackgroundTxResult<ProvideCollateralTxParams, ProvideCollateralTxResult>
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
@@ -42,12 +41,12 @@ export function useProvideCollateralTx(
       renderTxResults: Subject<ProvideCollateralTxRender>,
       txEvents: Subject<TxEvent<ProvideCollateralTxParams>>,
     ) => {
-      try {
-        const amount = microfy(txParams.amount, erc20Decimals).toString();
+      const { collateralContract, amount, erc20Decimals } = txParams;
 
+      try {
         await xAnchor.approveLimit(
-          { contract: txParams.collateralContract },
-          amount,
+          { contract: collateralContract },
+          microfy(amount, erc20Decimals),
           address!,
           TX_GAS_LIMIT,
           (event) => {
@@ -59,8 +58,8 @@ export function useProvideCollateralTx(
         );
 
         const response = xAnchor.lockCollateral(
-          { contract: txParams.collateralContract },
-          amount,
+          { contract: collateralContract },
+          microfy(amount, erc20Decimals),
           address!,
           TX_GAS_LIMIT,
           (event) => {
@@ -81,7 +80,7 @@ export function useProvideCollateralTx(
         throw err;
       }
     },
-    [xAnchor, address, connectType, chainId, erc20Decimals, refetchQueries],
+    [xAnchor, address, connectType, chainId, refetchQueries],
   );
 
   const persistedTxResult = useBackgroundTx<

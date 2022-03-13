@@ -25,12 +25,11 @@ export interface RedeemCollateralTxParams {
   collateralContractEvm: string;
   collateralContractTerra: string;
   amount: bAsset & NoMicro;
+  erc20Decimals: number;
   tokenDisplay?: CW20TokenDisplayInfo;
 }
 
-export function useRedeemCollateralTx(
-  erc20Decimals: number,
-):
+export function useRedeemCollateralTx():
   | BackgroundTxResult<RedeemCollateralTxParams, RedeemCollateralTxResult>
   | undefined {
   const { address, connection, connectType, chainId } = useEvmWallet();
@@ -43,11 +42,11 @@ export function useRedeemCollateralTx(
       renderTxResults: Subject<RedeemCollateralTxRender>,
       txEvents: Subject<TxEvent<RedeemCollateralTxParams>>,
     ) => {
-      const amount = microfy(txParams.amount, erc20Decimals).toString();
+      const { collateralContractTerra, amount, erc20Decimals } = txParams;
 
       const result = await xAnchor.unlockCollateral(
-        { contract: txParams.collateralContractTerra },
-        amount,
+        { contract: collateralContractTerra },
+        microfy(amount, erc20Decimals),
         address!,
         TX_GAS_LIMIT,
         (event) => {
@@ -63,7 +62,7 @@ export function useRedeemCollateralTx(
       refetchQueries(refetchQueryByTxKind(TxKind.RedeemCollateral));
       return result;
     },
-    [xAnchor, address, connectType, chainId, erc20Decimals, refetchQueries],
+    [xAnchor, address, connectType, chainId, refetchQueries],
   );
 
   const persistedTxResult = useBackgroundTx<

@@ -35,14 +35,21 @@ class TxProgressTimer<T extends TxResultRendering> {
 
   private tick() {
     const ellapsed = new Date().getTime() - this._epoch;
+
     this._writer.write((current) => {
-      return {
-        ...current,
-        receipts: [
-          ...current.receipts.slice(0, current.receipts.length - 1),
-          { name: 'Time Taken', value: formatEllapsed(ellapsed) },
-        ],
+      const receipts = [...current.receipts];
+
+      const index = receipts.findIndex(
+        (receipt) =>
+          receipt && 'name' in receipt && receipt.name === 'Time Taken',
+      );
+
+      receipts[index < 0 ? receipts.length : index] = {
+        name: 'Time Taken',
+        value: formatEllapsed(ellapsed),
       };
+
+      return { ...current, receipts };
     });
   }
 
@@ -62,15 +69,16 @@ class TxProgressTimer<T extends TxResultRendering> {
       };
     });
 
-    this._timer = setInterval(this.tick, ms);
+    this._timer = setInterval(() => {
+      this.tick();
+    }, ms);
   }
 
   public reset() {
-    this._epoch = new Date().getTime();
-
     if (this._timer === undefined) {
-      this.start();
+      throw Error('The timer must be started before it can be reset.');
     }
+    this._epoch = new Date().getTime();
   }
 
   public stop() {
