@@ -12,7 +12,7 @@ import puppeteer from 'puppeteer';
     userDataDir: process.env.CHROMIUM_USER_DATA_DEBUG,
     headless: false,
     defaultViewport: null,
-    // ignoreHTTPSErrors: true,
+    ignoreHTTPSErrors: true,
     args: [
       '--start-fullscreen',
       `--remote-debugging-port=${remoteDebuggingPort}`,

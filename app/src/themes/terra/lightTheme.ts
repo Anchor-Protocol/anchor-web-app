@@ -92,10 +92,10 @@ export const lightTheme: DefaultTheme = {
   },
 
   actionButton: {
-    backgroundColor: BASE_GRAY_700,
-    backgroundHoverColor: '#555555',
-    textColor: WHITE,
-    hoverTextColor: WHITE,
+    backgroundColor: '#2c2c2c',
+    backgroundHoverColor: '#1c1c1c',
+    textColor: '#ffffff',
+    hoverTextColor: '#ffffff',
   },
 
   textButton: {
@@ -103,10 +103,10 @@ export const lightTheme: DefaultTheme = {
   },
 
   borderButton: {
-    borderColor: BASE_GRAY_700,
+    borderColor: '#2c2c2c',
     borderHoverColor: '#1c1c1c',
-    textColor: BASE_GRAY_300,
-    hoverTextColor: BASE_GRAY_300,
+    textColor: '#1f1f1f',
+    hoverTextColor: '#2c2c2c',
   },
 
   selector: {
