@@ -40,12 +40,12 @@ export const useTransactions = () => {
 
   const saveTransaction = useCallback(
     (transaction: Transaction) => {
-      setTransactionStore({
+      setTransactionStore((transactionStore) => ({
         ...transactionStore,
         [transaction.receipt.transactionHash]: transaction,
-      });
+      }));
     },
-    [transactionStore, setTransactionStore],
+    [setTransactionStore],
   );
 
   const updateTransaction = useCallback(
@@ -59,11 +59,17 @@ export const useTransactions = () => {
 
   const removeTransaction = useCallback(
     (transactionHash: string) => {
-      const { [transactionHash]: omit, ...rest } = transactionStore;
-      setTransactionStore(rest);
+      setTransactionStore((transactionStore) => {
+        const { [transactionHash]: omit, ...rest } = transactionStore;
+        return rest;
+      });
     },
-    [transactionStore, setTransactionStore],
+    [setTransactionStore],
   );
+
+  const removeAll = useCallback(() => {
+    setTransactionStore({});
+  }, [setTransactionStore]);
 
   const transactions = useMemo(
     () =>
@@ -80,5 +86,6 @@ export const useTransactions = () => {
     removeTransaction,
     transactionExists,
     updateTransaction,
+    removeAll,
   };
 };

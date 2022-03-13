@@ -34,7 +34,14 @@ export const useResumeTx = (
         refetchQueries(refetchQueryByTxKind(tx.display.txKind));
         return result;
       } catch (error: any) {
-        // TODO: capture sequence already processed
+        // if already processed, return success
+        if (
+          String(error?.data?.message).includes(
+            'execution reverted: transfer info already processed',
+          )
+        ) {
+          return { tx: tx.receipt };
+        }
         console.log(error);
         throw error;
       }

@@ -1,13 +1,16 @@
 import React from 'react';
 import { UIElementProps } from '@libs/ui';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { formatDistance } from 'date-fns';
 import { truncateEvm } from '@libs/formatter';
 import { Transaction } from 'tx/evm/storage/useTransactions';
-import { formatTxKind } from 'tx/evm/utils';
+import { formatTxKind, txResultMessage } from 'tx/evm/utils';
 import useClipboard from 'react-use-clipboard';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Check } from '@material-ui/icons';
+import { useResumeBackgroundTx } from './background/useResumeBackgroundTx';
+import { useEvmWallet } from '@libs/evm-wallet';
+import { CircleSpinner } from 'react-spinners-kit';
 
 interface TransactionDisplayProps extends UIElementProps {
   tx: Transaction;
@@ -20,13 +23,20 @@ function TransactionDisplayBase(props: TransactionDisplayProps) {
     successDuration: 2000,
   });
 
+  useResumeBackgroundTx(tx);
+  const { connectType, chainId } = useEvmWallet();
+  const theme = useTheme();
+
   return (
     <div className={className} key={tx.receipt.transactionHash}>
       <div className="details">
         <span className="action">{formatTxKind(tx.display.txKind)}</span>
         <span className="tx-hash" onClick={setCopied}>
           <IconSpan className="copy">{isCopied && <Check />}</IconSpan>
-          {truncateEvm(tx.receipt.transactionHash)}
+          <span className="hash">
+            {truncateEvm(tx.receipt.transactionHash)}
+          </span>
+          <CircleSpinner size={8} color={theme.colors.secondary} />
         </span>
       </div>
 
@@ -38,6 +48,14 @@ function TransactionDisplayBase(props: TransactionDisplayProps) {
           })}
         </div>
       </div>
+      <div className="tx-message">
+        {txResultMessage(
+          tx.lastEventKind,
+          connectType!,
+          chainId!,
+          tx.display.txKind,
+        )}
+      </div>
     </div>
   );
 }
@@ -48,15 +66,29 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
   align-items: flex-start;
   font-weight: 500;
   font-size: 10px;
-  margin: 5px 10px;
+  margin: 10px;
   width: 300px;
 
   .tx-hash {
     cursor: pointer;
+    display: flex;
+    align-items: center;
 
     .copy {
       margin-right: 5px;
     }
+
+    .hash {
+      margin-right: 5px;
+    }
+  }
+
+  .tx-message {
+    margin-top: 5px;
+    align-self: flex-start;
+    font-size: 10px;
+    max-width: 300px;
+    color: ${({ theme }) => theme.colors.secondary};
   }
 
   .button {

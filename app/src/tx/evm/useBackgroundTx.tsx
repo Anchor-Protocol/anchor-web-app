@@ -7,12 +7,13 @@ import { PersistedTxResult, PersistedTxUtils } from './usePersistedTx';
 import { useMemo, useState } from 'react';
 import { useBackgroundTxRequest } from './background';
 import { v4 as uuid } from 'uuid';
-import { useEffectOnce } from 'usehooks-ts';
+import { useTimeout } from 'usehooks-ts';
 
 type TxRender<TxResult> = TxResultRendering<TxResult>;
 
 type BackgroundTxUtils = PersistedTxUtils & {
   alreadyRunning: boolean;
+  dismissTx: (txHash?: string) => void;
 };
 
 export type BackgroundTxResult<TxParams, TxResult> = PersistedTxResult<
@@ -38,6 +39,7 @@ export const useBackgroundTx = <TxParams, TxResult>(
     !tx || Boolean(tx.backgroundTransactionTabId),
   );
   const backgroundTxId = useMemo(() => uuid(), []);
+  const registerAfter = useMemo(() => Math.random() * 200, []);
   const txHash = tx?.receipt.transactionHash;
   const requestInput = Boolean(txHash)
     ? { txHash: txHash! }
@@ -45,7 +47,7 @@ export const useBackgroundTx = <TxParams, TxResult>(
   const { register, getRequest } = useBackgroundTxRequest();
   const request = getRequest(requestInput);
 
-  useEffectOnce(() => {
+  useTimeout(() => {
     if (!request) {
       register({
         id: backgroundTxId,
@@ -57,7 +59,7 @@ export const useBackgroundTx = <TxParams, TxResult>(
       });
       setAlreadyRunning(false);
     }
-  });
+  }, registerAfter);
 
   if (!request) {
     return undefined;

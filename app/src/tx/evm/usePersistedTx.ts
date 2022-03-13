@@ -71,7 +71,7 @@ export const usePersistedTx = <TxParams, TxResult>(
         saveTransaction({
           receipt: payload.tx,
           lastEventKind: event.kind,
-          minimized: false,
+          minimized: true,
           display: displayTx(txParams),
           backgroundTransactionTabId: BACKGROUND_TRANSCATION_TAB_ID,
         });

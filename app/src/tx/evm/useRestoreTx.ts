@@ -45,6 +45,21 @@ export const useRestoreTx = () => {
         return result;
       } catch (error: any) {
         console.log(error);
+
+        if (String(error.message).includes('invalid hash')) {
+          throw error;
+        }
+
+        // if already processed, return success
+        if (
+          String(error?.data?.message).includes(
+            'execution reverted: transfer info already processed',
+          )
+        ) {
+          removeTransaction(txParams.txHash);
+          return null;
+        }
+
         throw error;
       }
     },
