@@ -82,11 +82,10 @@ class TxProgressTimer<T extends TxResultRendering> {
   }
 
   public stop() {
-    if (this._timer === undefined) {
-      throw Error('The timer must be started before it can be stopped.');
+    if (this._timer) {
+      clearInterval(this._timer);
+      this._timer = undefined;
     }
-    clearInterval(this._timer);
-    this._timer = undefined;
   }
 }
 

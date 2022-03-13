@@ -5,7 +5,6 @@ import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  txResult,
   TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
@@ -17,6 +16,7 @@ import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { aUST } from '@anchor-protocol/types';
 import { TxEvent } from './useTx';
 import { useRefetchQueries } from '@libs/app-provider';
+import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
 type WithdrawUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type WithdrawUstTxRender = TxResultRendering<WithdrawUstTxResult>;
@@ -52,30 +52,44 @@ export function useWithdrawUstTx():
         formatInput(txParams.withdrawAmount),
       ).toString();
 
+      const writer = new EvmTxProgressWriter(
+        renderTxResults,
+        chainId,
+        connectType,
+      );
+      writer.approveUST();
+      writer.timer.start();
+
       await xAnchor.approveLimit(
         { token: 'aust' },
         withdrawAmount,
         address!,
         TX_GAS_LIMIT,
         (event) => {
-          renderTxResults.next(
-            txResult(event, connectType, chainId, TxKind.WithdrawUst),
-          );
+          // renderTxResults.next(
+          //   txResult(event, connectType, chainId, TxKind.WithdrawUst),
+          // );
           txEvents.next({ event, txParams });
         },
       );
+
+      writer.withdrawUST();
+      writer.timer.reset();
 
       const result = await xAnchor.redeemStable(
         withdrawAmount,
         address!,
         TX_GAS_LIMIT,
         (event) => {
-          renderTxResults.next(
-            txResult(event, connectType, chainId, TxKind.WithdrawUst),
-          );
+          // renderTxResults.next(
+          //   txResult(event, connectType, chainId, TxKind.WithdrawUst),
+          // );
+          writer.withdrawUST(event);
           txEvents.next({ event, txParams });
         },
       );
+
+      writer.timer.stop();
 
       refetchQueries(refetchQueryByTxKind(TxKind.WithdrawUst));
 

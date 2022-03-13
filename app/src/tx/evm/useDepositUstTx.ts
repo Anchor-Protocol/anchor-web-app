@@ -5,7 +5,6 @@ import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  txResult,
   TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
@@ -17,7 +16,7 @@ import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
 import { TxEvent } from './useTx';
 import { useRefetchQueries } from '@libs/app-provider';
-//import { EvmTxProgressWriter } from './EvmTxProgressWriter';
+import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
 type DepositUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type DepositUstTxRender = TxResultRendering<DepositUstTxResult>;
@@ -51,18 +50,29 @@ export function useDepositUstTx():
         formatInput(txParams.depositAmount),
       ).toString();
 
+      const writer = new EvmTxProgressWriter(
+        renderTxResults,
+        chainId,
+        connectType,
+      );
+      writer.approveUST();
+      writer.timer.start();
+
       await xAnchor.approveLimit(
         { token: 'ust' },
         depositAmount,
         address!,
         TX_GAS_LIMIT,
         (event) => {
-          renderTxResults.next(
-            txResult(event, connectType, chainId, TxKind.DepositUst),
-          );
+          // renderTxResults.next(
+          //   txResult(event, connectType, chainId, TxKind.DepositUst),
+          // );
           txEvents.next({ event, txParams });
         },
       );
+
+      writer.depositUST();
+      writer.timer.reset();
 
       const response = await xAnchor.depositStable(
         depositAmount,
@@ -71,11 +81,14 @@ export function useDepositUstTx():
         (event) => {
           console.log(event, 'eventEmitted');
           txEvents.next({ event, txParams });
-          renderTxResults.next(
-            txResult(event, connectType, chainId, TxKind.DepositUst),
-          );
+          // renderTxResults.next(
+          //   txResult(event, connectType, chainId, TxKind.DepositUst),
+          // );
+          writer.depositUST(event);
         },
       );
+
+      writer.timer.stop();
 
       refetchQueries(refetchQueryByTxKind(TxKind.DepositUst));
 

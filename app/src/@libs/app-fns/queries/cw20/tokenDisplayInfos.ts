@@ -31,8 +31,6 @@ export async function cw20TokenDisplayInfosQuery(): Promise<CW20TokenDisplayInfo
     .then((res) => res.json())
     .then(trimWormholeSymbols);
 
-  console.log(data);
-
   cache = data;
 
   return data;
