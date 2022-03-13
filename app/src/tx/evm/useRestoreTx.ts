@@ -32,9 +32,7 @@ export const useRestoreTx = () => {
       txEvents: Subject<TxEvent<RestoreTxParams>>,
     ) => {
       try {
-        const tx = await provider!.getTransaction(txParams.txHash);
-        const receipt = await tx.wait();
-        const result = await xAnchor.restoreTx(receipt, (event) => {
+        const result = await xAnchor.restoreTx(txParams.txHash, (event) => {
           console.log(event, 'eventEmitted ');
 
           renderTxResults.next(restoreTxResult(event, connectType, chainId!));
@@ -63,7 +61,7 @@ export const useRestoreTx = () => {
         throw error;
       }
     },
-    [xAnchor, provider, chainId, connectType, removeTransaction],
+    [xAnchor, chainId, connectType, removeTransaction],
   );
 
   const restoreTxStream = useTx(restoreTx, (resp) => resp.tx, null);

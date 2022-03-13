@@ -1,14 +1,6 @@
 import { StreamReturn, useStream } from '@rx-stream/react';
 import { ContractReceipt } from 'ethers';
-import {
-  merge,
-  from,
-  map,
-  tap,
-  BehaviorSubject,
-  Subject,
-  ReplaySubject,
-} from 'rxjs';
+import { merge, from, map, tap, BehaviorSubject, Subject } from 'rxjs';
 import { useCallback, useMemo } from 'react';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { truncateEvm } from '@libs/formatter';
@@ -31,14 +23,14 @@ export const useTx = <TxParams, TxResult>(
     txParams: TxParams,
     renderTxResults: Subject<TxResultRendering<TxResult>>,
     txEvents: Subject<TxEvent<TxParams>>,
-  ) => Promise<TxResult>,
+  ) => Promise<TxResult | null>,
   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
   emptyTxResult: TxResult,
 ): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
   const { txErrorReporter } = useAnchorWebapp();
 
   // TODO: represent renderingEvents stream as txEvents.map(render) and remove the need for two subjects
-  const txEvents = useMemo(() => new ReplaySubject<TxEvent<TxParams>>(1), []);
+  const txEvents = useMemo(() => new Subject<TxEvent<TxParams>>(), []);
   const renderingEvents = useMemo(
     () =>
       new BehaviorSubject<TxResultRendering<TxResult>>({
@@ -49,6 +41,9 @@ export const useTx = <TxParams, TxResult>(
       }),
     [emptyTxResult],
   );
+
+  // TODO: add synchronized closure hooks with subjects + sendTx fn args (onTxEvent example, but for each tx)
+  // then add removeTransaction after usePersisted and see if it works...
 
   const txCallback = useCallback(
     (txParams: TxParams) => {
@@ -62,11 +57,13 @@ export const useTx = <TxParams, TxResult>(
               return {
                 value: txResult,
                 phase: TxStreamPhase.SUCCEED,
-                receipts: [txReceipt(parseTx(txResult!))],
+                receipts: Boolean(txResult)
+                  ? [txReceipt(parseTx(txResult!))]
+                  : [],
               };
             }),
           )
-          .pipe(catchTxError<TxResult>({ txErrorReporter })),
+          .pipe(catchTxError<TxResult | null>({ txErrorReporter })),
         renderingEvents,
       ).pipe(
         tap((tx) => {

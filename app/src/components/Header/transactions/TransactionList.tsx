@@ -18,7 +18,7 @@ function TransactionListBase(props: TransactionListProps) {
   return (
     <ButtonList className={className} title="Transactions" footer={footer}>
       {props.backgroundTransactions.map((tx) => (
-        <TransactionDisplay key={tx.receipt.transactionHash} tx={tx} />
+        <TransactionDisplay key={tx.txHash} tx={tx} />
       ))}
       <div className="clear-all" onClick={removeAll}>
         Clear all
@@ -31,6 +31,9 @@ export const TransactionList = styled(TransactionListBase)`
   padding: 32px 28px 32px 28px;
 
   .clear-all {
+    margin-left: auto;
+    margin-right: auto;
+    width: 60px;
     display: flex;
     font-size: 12px;
     font-weight: 500;

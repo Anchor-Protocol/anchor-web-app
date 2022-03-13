@@ -123,6 +123,7 @@ const Request = (
     props.displayTx,
     () => {},
     (txHash) => props.updateRequest(props.id, { txHash }),
+    props.txHash,
   );
 
   useInterval(() => {

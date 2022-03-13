@@ -5,7 +5,7 @@ export const useTransaction = (txHash: string) => {
   const { transactions } = useTransactions();
 
   return useMemo(
-    () => transactions.find((tx) => tx.receipt.transactionHash === txHash),
+    () => transactions.find((tx) => tx.txHash === txHash),
     [transactions, txHash],
   );
 };

@@ -28,7 +28,7 @@ export const useBackgroundTx = <TxParams, TxResult>(
     txParams: TxParams,
     renderTxResults: Subject<TxRender<TxResult>>,
     txEvents: Subject<TxEvent<TxParams>>,
-  ) => Promise<NonNullable<TxResult>>,
+  ) => Promise<TxResult>,
   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
   emptyTxResult: TxResult,
   displayTx: (txParams: TxParams) => TransactionDisplay,
@@ -39,8 +39,8 @@ export const useBackgroundTx = <TxParams, TxResult>(
     !tx || Boolean(tx.backgroundTransactionTabId),
   );
   const backgroundTxId = useMemo(() => uuid(), []);
-  const registerAfter = useMemo(() => Math.random() * 200, []);
-  const txHash = tx?.receipt.transactionHash;
+  const registerAfter = useMemo(() => Math.random() * 500, []);
+  const txHash = tx?.txHash;
   const requestInput = Boolean(txHash)
     ? { txHash: txHash! }
     : { id: backgroundTxId };
