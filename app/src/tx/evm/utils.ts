@@ -201,3 +201,29 @@ export const EVM_ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
   ],
 };
+
+export const errorContains = (error: any, message: string) =>
+  String(error?.data?.message ?? error?.message).includes(message);
+
+export enum TxError {
+  TxHashInvalid = 'invalid hash',
+  TxAlreadyProcessed = 'execution reverted: transfer info already processed',
+  TxInvalid = 'Transaction invalid. Action sequence missing.',
+}
+
+export const formatError = (error: any, txError: TxError) => {
+  if (errorContains(error, txError)) {
+    return formatTxError(txError);
+  }
+};
+
+const formatTxError = (txError: TxError) => {
+  switch (txError) {
+    case TxError.TxHashInvalid:
+      return 'Transaction hash is invalid. Please confirm inputs are correct.';
+    case TxError.TxAlreadyProcessed:
+      return 'Transaction already processed.';
+    case TxError.TxInvalid:
+      return 'Not a valid xAnchor transaction (action sequence missing).';
+  }
+};

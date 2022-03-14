@@ -8,7 +8,12 @@ import { Subject } from 'rxjs';
 import { Transaction, useTransactions } from './storage/useTransactions';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { TxEvent } from './useTx';
-import { EVM_ANCHOR_TX_REFETCH_MAP, refetchQueryByTxKind } from './utils';
+import {
+  errorContains,
+  EVM_ANCHOR_TX_REFETCH_MAP,
+  refetchQueryByTxKind,
+  TxError,
+} from './utils';
 
 export type ResumeTxResult = CrossChainTxResponse<ContractReceipt> | null;
 export type ResumeTxRender = TxResultRendering<ResumeTxResult>;
@@ -35,12 +40,7 @@ export const useResumeTx = (
         refetchQueries(refetchQueryByTxKind(tx.display.txKind));
         return result;
       } catch (error: any) {
-        // if already processed, return success
-        if (
-          String(error?.data?.message).includes(
-            'execution reverted: transfer info already processed',
-          )
-        ) {
+        if (errorContains(error, TxError.TxAlreadyProcessed)) {
           refetchQueries(refetchQueryByTxKind(tx.display.txKind));
           removeTransaction(tx.txHash);
           return null;
