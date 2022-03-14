@@ -1,6 +1,6 @@
 import React, { DOMAttributes } from 'react';
 import { UIElementProps } from '@libs/ui';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import { CircleSpinner } from 'react-spinners-kit';
 import { Transaction } from 'tx/evm';
 import { pluralize } from 'tx/evm/utils';
@@ -11,11 +11,12 @@ interface TransactionButtonProps
     Pick<DOMAttributes<HTMLButtonElement>, 'onClick'> {
   backgroundTransactions: Transaction[];
   closeWidget: () => void;
+  color: string;
 }
 
 const TransactionButtonBase = (props: TransactionButtonProps) => {
-  const { className, onClick, backgroundTransactions, closeWidget } = props;
-  const theme = useTheme();
+  const { className, onClick, backgroundTransactions, closeWidget, color } =
+    props;
 
   useEffectOnce(() => {
     closeWidget();
@@ -25,12 +26,16 @@ const TransactionButtonBase = (props: TransactionButtonProps) => {
   });
 
   return (
-    <button className={className} onClick={onClick}>
+    <button
+      className={className}
+      onClick={onClick}
+      style={{ color, borderColor: color }}
+    >
       <div className="note">
         {backgroundTransactions.length}{' '}
         {pluralize('transaction', backgroundTransactions)}
       </div>
-      <CircleSpinner size={15} color={theme.header.textColor} />
+      <CircleSpinner size={12} color={color} />
     </button>
   );
 };
@@ -51,7 +56,7 @@ export const TransactionButton = styled(TransactionButtonBase)`
   align-items: center;
 
   .note {
-    margin-right: 10px;
+    margin-right: 8px;
   }
 
   .gurPHt {

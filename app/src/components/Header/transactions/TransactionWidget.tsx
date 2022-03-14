@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { ClickAwayListener } from '@material-ui/core';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { TransactionButton } from './TransactionButton';
 import { DropdownBox, DropdownContainer } from '../desktop/DropdownContainer';
 import { TransactionList } from './TransactionList';
@@ -9,8 +9,9 @@ import { Link } from 'react-router-dom';
 import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { useBackgroundTransactions } from 'tx/evm/storage/useBackgroundTransactions';
 
-const TransactionWidgetBase = (props: UIElementProps) => {
-  const { className } = props;
+const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
+  const theme = useTheme();
+  const { className, color = theme.header.textColor } = props;
 
   const [open, setOpen] = useState(false);
   const { backgroundTransactions } = useBackgroundTransactions();
@@ -27,6 +28,7 @@ const TransactionWidgetBase = (props: UIElementProps) => {
     <ClickAwayListener onClickAway={() => setOpen(false)}>
       <div className={className}>
         <TransactionButton
+          color={color}
           backgroundTransactions={backgroundTransactions}
           onClick={() => setOpen((v) => !v)}
           closeWidget={() => setOpen(false)}

@@ -65,7 +65,6 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
   font-weight: 500;
   font-size: 10px;
   margin: 10px;
-  width: 300px;
 
   .tx-hash {
     cursor: pointer;
@@ -74,6 +73,10 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
 
     .copy {
       margin-right: 5px;
+
+      > .MuiSvgIcon-root {
+        font-size: 14px;
+      }
     }
 
     .hash {

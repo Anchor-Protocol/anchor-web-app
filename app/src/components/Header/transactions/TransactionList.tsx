@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { ButtonList } from '../shared';
+import { screen } from 'env';
 import styled from 'styled-components';
 import { TransactionDisplay } from './TransactionDisplay';
 import { Transaction, useTransactions } from 'tx/evm';
@@ -29,6 +30,11 @@ function TransactionListBase(props: TransactionListProps) {
 
 export const TransactionList = styled(TransactionListBase)`
   padding: 32px 28px 32px 28px;
+  width: 350px;
+
+  @media (max-width: ${screen.mobile.max}px) {
+    width: 300px;
+  }
 
   .clear-all {
     margin-left: auto;

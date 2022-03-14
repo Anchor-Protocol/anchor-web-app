@@ -9,6 +9,8 @@ import LogoAvax from '../assets/LogoAvax.svg';
 // import LogoEth from '../assets/LogoEth.svg';
 import LogoTerra from '../assets/LogoTerra.svg';
 import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
+import { TransactionWidget } from '../transactions/TransactionWidget';
+import { ChainSelector } from '../chain/ChainSelector';
 
 export interface MobileHeaderProps {
   open: boolean;
@@ -61,8 +63,10 @@ function MobileHeaderBase({
               ethereum={() => <img src={LogoAvax} alt="avaxLogo" />}
             />
           </a>
-
           <div />
+
+          <TransactionWidget className="transaction-widget" color="#555555" />
+          <ChainSelector className="chain-selector" />
 
           {/*<MobileNotification className="notification" />*/}
 
@@ -201,14 +205,30 @@ export const MobileHeader = styled(MobileHeaderBase)`
       }
     }
 
+    .chain-selector {
+      margin-right: 20px;
+
+      > button {
+        border-color: #555555;
+      }
+    }
+
+    .transaction-widget {
+      margin-right: 20px;
+
+      > button {
+        border-color: #555555;
+      }
+    }
+
     .notification {
       margin-right: 15px;
       transform: translateY(4px);
     }
 
-    button {
+    > button {
       &:last-child {
-        margin-left: 30px;
+        margin-left: 20px;
       }
     }
 
