@@ -1,15 +1,10 @@
 import { BACKGROUND_TRANSCATION_TAB_ID } from 'components/Header/transactions/BackgroundTransaction';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { Transaction } from '..';
 import { useTransactions } from './useTransactions';
 
 export const useBackgroundTransactions = () => {
   const { transactions, updateTransaction } = useTransactions();
-
-  const backgroundTransactions = useMemo(
-    () => transactions.filter((tx) => tx.minimized),
-    [transactions],
-  );
 
   const reserveBackgroundTx = useCallback(
     (tx: Transaction) => {
@@ -36,7 +31,7 @@ export const useBackgroundTransactions = () => {
   );
 
   return {
-    backgroundTransactions,
+    backgroundTransactions: transactions,
     reserveBackgroundTx,
     unReserveBackgroundTx,
   };

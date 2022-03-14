@@ -15,7 +15,6 @@ import { BACKGROUND_TRANSCATION_TAB_ID } from 'components/Header/transactions/Ba
 type TxRender<TxResult> = TxResultRendering<TxResult>;
 
 export type PersistedTxUtils = {
-  minimizeTx: () => void;
   isTxMinimizable: boolean;
   dismissTx: (txHash?: string) => void;
 };
@@ -52,12 +51,6 @@ export const usePersistedTx = <TxParams, TxResult>(
     [transactionExists, txHash],
   );
 
-  const minimizeTx = useCallback(() => {
-    if (isTxMinimizable) {
-      updateTransaction(txHash!, { minimized: true });
-    }
-  }, [updateTransaction, isTxMinimizable, txHash]);
-
   const onTxEvent = useCallback(
     (txEvent: TxEvent<TxParams>) => {
       const { event, txParams } = txEvent;
@@ -67,7 +60,6 @@ export const usePersistedTx = <TxParams, TxResult>(
         saveTransaction({
           txHash: payload.txHash,
           lastEventKind: event.kind,
-          minimized: true,
           display: displayTx(txParams),
           backgroundTransactionTabId: BACKGROUND_TRANSCATION_TAB_ID,
         });
@@ -143,6 +135,6 @@ export const usePersistedTx = <TxParams, TxResult>(
       parseTx,
       emptyTxResult,
     ),
-    utils: { minimizeTx, isTxMinimizable, dismissTx },
+    utils: { isTxMinimizable, dismissTx },
   };
 };

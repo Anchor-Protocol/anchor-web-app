@@ -71,7 +71,7 @@ export function TxResultRenderer({
             </h2>
 
             <Receipts resultRendering={resultRendering} />
-            {minimizable && onMinimize && (
+            {minimizable && (
               <Container direction="row" gap={10}>
                 <ActionButton
                   className="minimize-button"

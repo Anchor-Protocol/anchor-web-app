@@ -28,7 +28,7 @@ export const EvmRedeemCollateralDialog = (
 
   const redeemCollateralTx = useRedeemCollateralTx();
 
-  const { minimizeTx, isTxMinimizable } = redeemCollateralTx?.utils ?? {};
+  const { isTxMinimizable } = redeemCollateralTx?.utils ?? {};
   const [postTx, txResult] = redeemCollateralTx?.stream ?? [null, null];
 
   const proceed = useCallback(
@@ -57,7 +57,6 @@ export const EvmRedeemCollateralDialog = (
         <EvmTxResultRenderer
           onExit={props.closeDialog}
           txStreamResult={txResult}
-          onMinimize={minimizeTx}
           minimizable={isTxMinimizable}
         />
       }

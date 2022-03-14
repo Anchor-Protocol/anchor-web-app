@@ -48,7 +48,6 @@ export const useRestoreTx = () => {
           throw error;
         }
 
-        // if already processed, return success
         if (
           String(error?.data?.message).includes(
             'execution reverted: transfer info already processed',
