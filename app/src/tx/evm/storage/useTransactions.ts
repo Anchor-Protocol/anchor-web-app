@@ -1,5 +1,4 @@
 import { CrossChainEventKind } from '@anchor-protocol/crossanchor-sdk';
-import { ContractReceipt } from 'ethers';
 import { useCallback, useMemo } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 import { TxKind } from '../utils';
@@ -18,7 +17,7 @@ export type Transaction = {
   // TODO: think if this is needed
   // observedEventKinds: CrossChainEventKind[];
   display: TransactionDisplay;
-  receipt: ContractReceipt;
+  txHash: string;
   backgroundTransactionTabId: string | null;
 };
 
@@ -42,7 +41,7 @@ export const useTransactions = () => {
     (transaction: Transaction) => {
       setTransactionStore((transactionStore) => ({
         ...transactionStore,
-        [transaction.receipt.transactionHash]: transaction,
+        [transaction.txHash]: transaction,
       }));
     },
     [setTransactionStore],

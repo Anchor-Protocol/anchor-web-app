@@ -5,7 +5,7 @@ import { TxResultRendering } from '@libs/app-fns';
 import { TxEvent, useTx } from './useTx';
 import {
   CrossChainEventKind,
-  RemoteChainTxExecutedPayload,
+  RemoteChainTxSubmittedPayload,
 } from '@anchor-protocol/crossanchor-sdk';
 import { TransactionDisplay, useTransactions } from './storage/useTransactions';
 import { useCallback, useMemo, useState } from 'react';
@@ -30,14 +30,16 @@ export const usePersistedTx = <TxParams, TxResult>(
     txParams: TxParams,
     renderTxResults: Subject<TxRender<TxResult>>,
     txEvents: Subject<TxEvent<TxParams>>,
-  ) => Promise<NonNullable<TxResult>>,
+  ) => Promise<TxResult>,
   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
   emptyTxResult: TxResult,
   displayTx: (txParams: TxParams) => TransactionDisplay,
   onFinalize: (txHash: string) => void,
   onRegisterTxHash: (txHash: string) => void,
+  txHashInput?: string,
 ): PersistedTxResult<TxParams, TxResult> => {
-  const [txHash, setTxHash] = useState<string>();
+  const [txHash, setTxHash] = useState<string | undefined>(txHashInput);
+
   const {
     saveTransaction,
     removeTransaction,
@@ -59,22 +61,18 @@ export const usePersistedTx = <TxParams, TxResult>(
   const onTxEvent = useCallback(
     (txEvent: TxEvent<TxParams>) => {
       const { event, txParams } = txEvent;
-      if (Boolean(event.payload)) {
-        setTxHash(event.payload!.tx.transactionHash);
-        onRegisterTxHash(event.payload!.tx.transactionHash);
-      }
-
       // first event with tx in it
-      if (event.kind === CrossChainEventKind.RemoteChainTxExecuted) {
-        const payload =
-          event.payload as RemoteChainTxExecutedPayload<ContractReceipt>;
+      if (event.kind === CrossChainEventKind.RemoteChainTxSubmitted) {
+        const payload = event.payload as RemoteChainTxSubmittedPayload;
         saveTransaction({
-          receipt: payload.tx,
+          txHash: payload.txHash,
           lastEventKind: event.kind,
           minimized: true,
           display: displayTx(txParams),
           backgroundTransactionTabId: BACKGROUND_TRANSCATION_TAB_ID,
         });
+        setTxHash(payload.txHash);
+        onRegisterTxHash(payload.txHash);
         return;
       }
 
@@ -130,7 +128,11 @@ export const usePersistedTx = <TxParams, TxResult>(
         try {
           setTxEvents(txEvents);
           const resp = await sendTx(txParams, renderTxResults, txEvents);
-          const tx = parseTx(resp);
+          if (resp === null) {
+            return null;
+          }
+
+          const tx = parseTx(resp!);
           dismissTx(tx.transactionHash);
           return resp;
         } catch (err) {

@@ -15,7 +15,7 @@ export const useBackgroundTransactions = () => {
     (tx: Transaction) => {
       // can reserve only no-owner tab txes
       if (tx.backgroundTransactionTabId === null) {
-        updateTransaction(tx.receipt.transactionHash, {
+        updateTransaction(tx.txHash, {
           backgroundTransactionTabId: BACKGROUND_TRANSCATION_TAB_ID,
         });
       }
@@ -27,7 +27,7 @@ export const useBackgroundTransactions = () => {
     (tx: Transaction) => {
       // only owner tab can unreserve
       if (tx.backgroundTransactionTabId === BACKGROUND_TRANSCATION_TAB_ID) {
-        updateTransaction(tx.receipt.transactionHash, {
+        updateTransaction(tx.txHash, {
           backgroundTransactionTabId: null,
         });
       }

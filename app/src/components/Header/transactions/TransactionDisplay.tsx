@@ -19,7 +19,7 @@ interface TransactionDisplayProps extends UIElementProps {
 function TransactionDisplayBase(props: TransactionDisplayProps) {
   const { className, tx } = props;
 
-  const [isCopied, setCopied] = useClipboard(tx.receipt.transactionHash, {
+  const [isCopied, setCopied] = useClipboard(tx.txHash, {
     successDuration: 2000,
   });
 
@@ -28,14 +28,12 @@ function TransactionDisplayBase(props: TransactionDisplayProps) {
   const theme = useTheme();
 
   return (
-    <div className={className} key={tx.receipt.transactionHash}>
+    <div className={className} key={tx.txHash}>
       <div className="details">
         <span className="action">{formatTxKind(tx.display.txKind)}</span>
         <span className="tx-hash" onClick={setCopied}>
           <IconSpan className="copy">{isCopied && <Check />}</IconSpan>
-          <span className="hash">
-            {truncateEvm(tx.receipt.transactionHash)}
-          </span>
+          <span className="hash">{truncateEvm(tx.txHash)}</span>
           <CircleSpinner size={8} color={theme.colors.secondary} />
         </span>
       </div>

@@ -28,7 +28,7 @@ export const useResumeTx = (
       txEvents: Subject<TxEvent<ResumeTxParams>>,
     ) => {
       try {
-        const result = await xAnchor.restoreTx(tx.receipt, (event) => {
+        const result = await xAnchor.restoreTx(tx.txHash, (event) => {
           txEvents.next({ event, txParams });
         });
         refetchQueries(refetchQueryByTxKind(tx.display.txKind));
@@ -40,13 +40,13 @@ export const useResumeTx = (
             'execution reverted: transfer info already processed',
           )
         ) {
-          return { tx: tx.receipt };
+          return null;
         }
         console.log(error);
         throw error;
       }
     },
-    [xAnchor, tx.receipt, refetchQueries, tx.display.txKind],
+    [xAnchor, tx.txHash, refetchQueries, tx.display.txKind],
   );
 
   const displayTx = useCallback(() => tx.display, [tx.display]);

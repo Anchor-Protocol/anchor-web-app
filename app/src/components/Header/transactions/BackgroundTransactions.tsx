@@ -11,7 +11,7 @@ export const BackgroundTransactions = () => {
     <>
       {status === 'connected' &&
         backgroundTransactions.map((tx) => (
-          <BackgroundTransaction key={tx.receipt.transactionHash} tx={tx} />
+          <BackgroundTransaction key={tx.txHash} tx={tx} />
         ))}
     </>
   );
