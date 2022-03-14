@@ -29,6 +29,7 @@ const TransactionWidgetBase = (props: UIElementProps) => {
         <TransactionButton
           backgroundTransactions={backgroundTransactions}
           onClick={() => setOpen((v) => !v)}
+          closeWidget={() => setOpen(false)}
         />
         {open && (
           <DropdownContainer>

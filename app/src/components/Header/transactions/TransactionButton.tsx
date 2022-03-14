@@ -4,16 +4,25 @@ import styled, { useTheme } from 'styled-components';
 import { CircleSpinner } from 'react-spinners-kit';
 import { Transaction } from 'tx/evm';
 import { pluralize } from 'tx/evm/utils';
+import { useEffectOnce } from 'usehooks-ts';
 
 interface TransactionButtonProps
   extends UIElementProps,
     Pick<DOMAttributes<HTMLButtonElement>, 'onClick'> {
   backgroundTransactions: Transaction[];
+  closeWidget: () => void;
 }
 
 const TransactionButtonBase = (props: TransactionButtonProps) => {
-  const { className, onClick, backgroundTransactions } = props;
+  const { className, onClick, backgroundTransactions, closeWidget } = props;
   const theme = useTheme();
+
+  useEffectOnce(() => {
+    closeWidget();
+    return () => {
+      closeWidget();
+    };
+  });
 
   return (
     <button className={className} onClick={onClick}>
