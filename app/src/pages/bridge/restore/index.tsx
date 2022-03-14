@@ -2,7 +2,7 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { UIElementProps } from 'components/layouts/UIElementProps';
-import React, { ChangeEvent, KeyboardEvent, useCallback, useMemo } from 'react';
+import React, { ChangeEvent, KeyboardEvent, useCallback } from 'react';
 import styled from 'styled-components';
 import { TxRendering } from './components/TxRenderer';
 import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
@@ -16,16 +16,11 @@ function RestoreBase(props: UIElementProps) {
   const [input, state] = useRestoreTxForm();
   const [restoreTx, txResult] = useRestoreTx();
 
-  // TODO: add proper txHash validation
-  const invalidTxHash = useMemo(() => {
-    return !Boolean(state.txHash);
-  }, [state]);
-
   const submit = useCallback(() => {
-    if (!invalidTxHash && restoreTx) {
+    if (restoreTx) {
       restoreTx({ txHash: state.txHash });
     }
-  }, [state, invalidTxHash, restoreTx]);
+  }, [state, restoreTx]);
 
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
@@ -58,11 +53,7 @@ function RestoreBase(props: UIElementProps) {
           }}
         />
 
-        <ActionButton
-          className="submit"
-          disabled={invalidTxHash}
-          onClick={submit}
-        >
+        <ActionButton className="submit" onClick={submit}>
           Restore
         </ActionButton>
       </Section>

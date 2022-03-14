@@ -11,7 +11,7 @@ import { useCallback } from 'react';
 import { Subject } from 'rxjs';
 import { useTransactions } from './storage';
 import { TxEvent, useTx } from './useTx';
-import { capitalize, chain } from './utils';
+import { capitalize, chain, errorContains, TxError } from './utils';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -44,16 +44,7 @@ export const useRestoreTx = () => {
       } catch (error: any) {
         console.log(error);
 
-        if (String(error.message).includes('invalid hash')) {
-          throw error;
-        }
-
-        // if already processed, return success
-        if (
-          String(error?.data?.message).includes(
-            'execution reverted: transfer info already processed',
-          )
-        ) {
+        if (errorContains(error, TxError.TxAlreadyProcessed)) {
           removeTransaction(txParams.txHash);
           return null;
         }

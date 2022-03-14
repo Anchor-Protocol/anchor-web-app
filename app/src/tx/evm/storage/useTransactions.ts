@@ -12,7 +12,6 @@ export type TransactionDisplay = {
 };
 
 export type Transaction = {
-  minimized: boolean;
   lastEventKind: CrossChainEventKind;
   // TODO: think if this is needed
   // observedEventKinds: CrossChainEventKind[];

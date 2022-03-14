@@ -5,10 +5,15 @@ import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
-import { Transaction } from './storage/useTransactions';
+import { Transaction, useTransactions } from './storage/useTransactions';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { TxEvent } from './useTx';
-import { EVM_ANCHOR_TX_REFETCH_MAP, refetchQueryByTxKind } from './utils';
+import {
+  errorContains,
+  EVM_ANCHOR_TX_REFETCH_MAP,
+  refetchQueryByTxKind,
+  TxError,
+} from './utils';
 
 export type ResumeTxResult = CrossChainTxResponse<ContractReceipt> | null;
 export type ResumeTxRender = TxResultRendering<ResumeTxResult>;
@@ -19,6 +24,7 @@ export const useResumeTx = (
   tx: Transaction,
 ): BackgroundTxResult<ResumeTxParams, ResumeTxResult> | undefined => {
   const xAnchor = useEvmCrossAnchorSdk();
+  const { removeTransaction } = useTransactions();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const backgroundTx = useCallback(
@@ -34,19 +40,16 @@ export const useResumeTx = (
         refetchQueries(refetchQueryByTxKind(tx.display.txKind));
         return result;
       } catch (error: any) {
-        // if already processed, return success
-        if (
-          String(error?.data?.message).includes(
-            'execution reverted: transfer info already processed',
-          )
-        ) {
+        if (errorContains(error, TxError.TxAlreadyProcessed)) {
+          refetchQueries(refetchQueryByTxKind(tx.display.txKind));
+          removeTransaction(tx.txHash);
           return null;
         }
         console.log(error);
         throw error;
       }
     },
-    [xAnchor, tx.txHash, refetchQueries, tx.display.txKind],
+    [xAnchor, tx.txHash, refetchQueries, tx.display.txKind, removeTransaction],
   );
 
   const displayTx = useCallback(() => tx.display, [tx.display]);

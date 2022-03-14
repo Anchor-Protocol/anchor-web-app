@@ -27,7 +27,7 @@ export const EvmProvideCollateralDialog = (
     : ('0' as u<bAsset>);
 
   const provideCollateralTx = useProvideCollateralTx();
-  const { minimizeTx, isTxMinimizable } = provideCollateralTx?.utils ?? {};
+  const { isTxMinimizable } = provideCollateralTx?.utils ?? {};
   const [postTx, txResult] = provideCollateralTx?.stream ?? [null, null];
 
   const proceed = useCallback(
@@ -55,7 +55,6 @@ export const EvmProvideCollateralDialog = (
         <EvmTxResultRenderer
           onExit={props.closeDialog}
           txStreamResult={txResult}
-          onMinimize={minimizeTx}
           minimizable={isTxMinimizable}
         />
       }
