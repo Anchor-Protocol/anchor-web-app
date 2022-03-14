@@ -1,11 +1,10 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { useEvmWallet } from '@libs/evm-wallet';
+import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  txResult,
   TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
@@ -17,6 +16,7 @@ import { formatOutput, microfy } from '@anchor-protocol/formatter';
 import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
+import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
 type ProvideCollateralTxResult = OneWayTxResponse<ContractReceipt> | null;
 type ProvideCollateralTxRender = TxResultRendering<ProvideCollateralTxResult>;
@@ -31,7 +31,12 @@ export interface ProvideCollateralTxParams {
 export function useProvideCollateralTx():
   | BackgroundTxResult<ProvideCollateralTxParams, ProvideCollateralTxResult>
   | undefined {
-  const { address, connection, connectType, chainId } = useEvmWallet();
+  const {
+    address,
+    connection,
+    connectType,
+    chainId = EvmChainId.ETHEREUM_ROPSTEN,
+  } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
@@ -41,7 +46,18 @@ export function useProvideCollateralTx():
       renderTxResults: Subject<ProvideCollateralTxRender>,
       txEvents: Subject<TxEvent<ProvideCollateralTxParams>>,
     ) => {
-      const { collateralContract, amount, erc20Decimals } = txParams;
+      const { collateralContract, amount, tokenDisplay, erc20Decimals } =
+        txParams;
+
+      const symbol = tokenDisplay?.symbol ?? 'Collateral';
+
+      const writer = new EvmTxProgressWriter(
+        renderTxResults,
+        chainId,
+        connectType,
+      );
+      writer.approveCollateral(symbol);
+      writer.timer.start();
 
       try {
         await xAnchor.approveLimit(
@@ -50,12 +66,12 @@ export function useProvideCollateralTx():
           address!,
           TX_GAS_LIMIT,
           (event) => {
-            renderTxResults.next(
-              txResult(event, connectType, chainId!, TxKind.ProvideCollateral),
-            );
             txEvents.next({ event, txParams });
           },
         );
+
+        writer.provideCollateral(symbol);
+        writer.timer.reset();
 
         const response = await xAnchor.lockCollateral(
           { contract: collateralContract },
@@ -63,11 +79,7 @@ export function useProvideCollateralTx():
           address!,
           TX_GAS_LIMIT,
           (event) => {
-            console.log(event, 'eventEmitted');
-
-            renderTxResults.next(
-              txResult(event, connectType, chainId!, TxKind.ProvideCollateral),
-            );
+            writer.provideCollateral(symbol, event);
             txEvents.next({ event, txParams });
           },
         );
@@ -78,6 +90,8 @@ export function useProvideCollateralTx():
       } catch (err) {
         console.log(err);
         throw err;
+      } finally {
+        writer.timer.stop();
       }
     },
     [xAnchor, address, connectType, chainId, refetchQueries],
