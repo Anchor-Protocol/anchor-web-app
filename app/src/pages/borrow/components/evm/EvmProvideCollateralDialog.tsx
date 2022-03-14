@@ -16,10 +16,7 @@ export const EvmProvideCollateralDialog = (
 ) => {
   const { token, tokenDisplay } = props;
 
-  const { connected, terraWalletAddress, nativeWalletAddress } = useAccount();
-
-  console.log('terraWalletAddress', terraWalletAddress);
-  console.log('nativeWalletAddress', nativeWalletAddress);
+  const { connected } = useAccount();
 
   const erc20TokenBalance = useERC20Balance<bAsset>(token as ERC20Addr);
 
