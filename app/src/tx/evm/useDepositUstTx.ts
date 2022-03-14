@@ -58,41 +58,36 @@ export function useDepositUstTx():
       writer.approveUST();
       writer.timer.start();
 
-      await xAnchor.approveLimit(
-        { token: 'ust' },
-        depositAmount,
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          // renderTxResults.next(
-          //   txResult(event, connectType, chainId, TxKind.DepositUst),
-          // );
-          txEvents.next({ event, txParams });
-        },
-      );
+      try {
+        await xAnchor.approveLimit(
+          { token: 'ust' },
+          depositAmount,
+          address!,
+          TX_GAS_LIMIT,
+          (event) => {
+            txEvents.next({ event, txParams });
+          },
+        );
 
-      writer.depositUST();
-      writer.timer.reset();
+        writer.depositUST();
+        writer.timer.reset();
 
-      const response = await xAnchor.depositStable(
-        depositAmount,
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          console.log(event, 'eventEmitted');
-          txEvents.next({ event, txParams });
-          // renderTxResults.next(
-          //   txResult(event, connectType, chainId, TxKind.DepositUst),
-          // );
-          writer.depositUST(event);
-        },
-      );
+        const response = await xAnchor.depositStable(
+          depositAmount,
+          address!,
+          TX_GAS_LIMIT,
+          (event) => {
+            txEvents.next({ event, txParams });
+            writer.depositUST(event);
+          },
+        );
 
-      writer.timer.stop();
+        refetchQueries(refetchQueryByTxKind(TxKind.DepositUst));
 
-      refetchQueries(refetchQueryByTxKind(TxKind.DepositUst));
-
-      return response;
+        return response;
+      } finally {
+        writer.timer.stop();
+      }
     },
     [
       address,

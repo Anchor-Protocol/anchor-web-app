@@ -8,19 +8,19 @@ import { ContractReceipt } from 'ethers';
 import { Subject } from 'rxjs';
 import { TxProgressWriter } from './TxProgressWriter';
 
-// const EVENTKIND_STATUS = new Map<CrossChainEventKind, string>([
-//   [CrossChainEventKind.RemoteChainReturnTxRequested, 'Pending' ],
-//   // [CrossChainEventKind.RemoteChainTxSubmitted, 'Depositing' ],
-//   // [CrossChainEventKind.RemoteChainTxExecuted, 'Depositing' ],
-//   [CrossChainEventKind.RemoteChainWormholeEntered, 'Bridging' ],
-//   [CrossChainEventKind.RemoteChainApprovalRequested, 'Pending' ],
-//   [CrossChainEventKind.RemoteChainApprovalSubmitted, 'Pending' ],
-//   [CrossChainEventKind.TerraWormholeEntered, 'Bridging' ],
-//   [CrossChainEventKind.TerraWormholeExited, 'Bridging' ],
-//   [CrossChainEventKind.CrossChainTxCompleted, 'Complete' ],
-//   [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Completing' ],
-//   [CrossChainEventKind.RemoteChainReturnTxRequested, 'Completing' ],
-// ]);
+const DEFAULT_STATUS = new Map<CrossChainEventKind, string>([
+  [CrossChainEventKind.RemoteChainApprovalRequested, 'Approving'],
+  [CrossChainEventKind.RemoteChainApprovalSubmitted, 'Approving'],
+  [CrossChainEventKind.RemoteChainTxRequested, 'Pending'],
+  [CrossChainEventKind.RemoteChainTxSubmitted, 'Pending'],
+  [CrossChainEventKind.RemoteChainTxExecuted, 'Pending'],
+  [CrossChainEventKind.RemoteChainWormholeEntered, 'Bridging'],
+  [CrossChainEventKind.TerraWormholeEntered, 'Bridging'],
+  [CrossChainEventKind.TerraWormholeExited, 'Bridging'],
+  [CrossChainEventKind.RemoteChainReturnTxRequested, 'Completing'],
+  [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Completing'],
+  [CrossChainEventKind.CrossChainTxCompleted, 'Complete'],
+]);
 
 export class EvmTxProgressWriter<
   T extends TxResultRendering,
@@ -65,17 +65,9 @@ export class EvmTxProgressWriter<
 
   public depositUST(event?: CrossChainEvent<ContractReceipt>) {
     const map = new Map<CrossChainEventKind, string>([
-      [CrossChainEventKind.RemoteChainReturnTxRequested, 'Pending'],
+      ...DEFAULT_STATUS,
       [CrossChainEventKind.RemoteChainTxSubmitted, 'Depositing'],
       [CrossChainEventKind.RemoteChainTxExecuted, 'Depositing'],
-      [CrossChainEventKind.RemoteChainWormholeEntered, 'Bridging'],
-      [CrossChainEventKind.RemoteChainApprovalRequested, 'Pending'],
-      [CrossChainEventKind.RemoteChainApprovalSubmitted, 'Pending'],
-      [CrossChainEventKind.TerraWormholeEntered, 'Bridging'],
-      [CrossChainEventKind.TerraWormholeExited, 'Bridging'],
-      [CrossChainEventKind.CrossChainTxCompleted, 'Complete'],
-      [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Completing'],
-      [CrossChainEventKind.RemoteChainReturnTxRequested, 'Completing'],
     ]);
     this.write((current) => {
       return {
@@ -88,15 +80,7 @@ export class EvmTxProgressWriter<
 
   public withdrawUST(event?: CrossChainEvent<ContractReceipt>) {
     const map = new Map<CrossChainEventKind, string>([
-      [CrossChainEventKind.RemoteChainReturnTxRequested, 'Pending'],
-      [CrossChainEventKind.RemoteChainTxSubmitted, 'Confirming'],
-      [CrossChainEventKind.RemoteChainTxExecuted, 'Confirming'],
-      [CrossChainEventKind.RemoteChainWormholeEntered, 'Bridging'],
-      [CrossChainEventKind.RemoteChainApprovalRequested, 'Pending'],
-      [CrossChainEventKind.RemoteChainApprovalSubmitted, 'Pending'],
-      [CrossChainEventKind.TerraWormholeEntered, 'Bridging'],
-      [CrossChainEventKind.TerraWormholeExited, 'Bridging'],
-      [CrossChainEventKind.CrossChainTxCompleted, 'Complete'],
+      ...DEFAULT_STATUS,
       [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Withdrawing'],
       [CrossChainEventKind.RemoteChainReturnTxRequested, 'Withdrawing'],
     ]);
@@ -104,6 +88,36 @@ export class EvmTxProgressWriter<
       return {
         ...current,
         message: 'Withdrawing your UST',
+        receipts: this.mergeEventKind(current.receipts, map, event),
+      };
+    });
+  }
+
+  public borrowUST(event?: CrossChainEvent<ContractReceipt>) {
+    const map = new Map<CrossChainEventKind, string>([
+      ...DEFAULT_STATUS,
+      [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Borrowing'],
+      [CrossChainEventKind.RemoteChainReturnTxRequested, 'Borrowing'],
+    ]);
+    this.write((current) => {
+      return {
+        ...current,
+        message: 'Borrowing UST',
+        receipts: this.mergeEventKind(current.receipts, map, event),
+      };
+    });
+  }
+
+  public repayUST(event?: CrossChainEvent<ContractReceipt>) {
+    const map = new Map<CrossChainEventKind, string>([
+      ...DEFAULT_STATUS,
+      [CrossChainEventKind.RemoteChainTxSubmitted, 'Repaying'],
+      [CrossChainEventKind.RemoteChainTxExecuted, 'Repaying'],
+    ]);
+    this.write((current) => {
+      return {
+        ...current,
+        message: 'Repaying your loan',
         receipts: this.mergeEventKind(current.receipts, map, event),
       };
     });

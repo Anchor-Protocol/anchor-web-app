@@ -60,40 +60,36 @@ export function useWithdrawUstTx():
       writer.approveUST();
       writer.timer.start();
 
-      await xAnchor.approveLimit(
-        { token: 'aust' },
-        withdrawAmount,
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          // renderTxResults.next(
-          //   txResult(event, connectType, chainId, TxKind.WithdrawUst),
-          // );
-          txEvents.next({ event, txParams });
-        },
-      );
+      try {
+        await xAnchor.approveLimit(
+          { token: 'aust' },
+          withdrawAmount,
+          address!,
+          TX_GAS_LIMIT,
+          (event) => {
+            txEvents.next({ event, txParams });
+          },
+        );
 
-      writer.withdrawUST();
-      writer.timer.reset();
+        writer.withdrawUST();
+        writer.timer.reset();
 
-      const result = await xAnchor.redeemStable(
-        withdrawAmount,
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          // renderTxResults.next(
-          //   txResult(event, connectType, chainId, TxKind.WithdrawUst),
-          // );
-          writer.withdrawUST(event);
-          txEvents.next({ event, txParams });
-        },
-      );
+        const result = await xAnchor.redeemStable(
+          withdrawAmount,
+          address!,
+          TX_GAS_LIMIT,
+          (event) => {
+            writer.withdrawUST(event);
+            txEvents.next({ event, txParams });
+          },
+        );
 
-      writer.timer.stop();
+        refetchQueries(refetchQueryByTxKind(TxKind.WithdrawUst));
 
-      refetchQueries(refetchQueryByTxKind(TxKind.WithdrawUst));
-
-      return result;
+        return result;
+      } finally {
+        writer.timer.stop();
+      }
     },
     [
       xAnchor,

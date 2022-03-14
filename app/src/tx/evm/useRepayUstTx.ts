@@ -1,11 +1,10 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { useEvmWallet } from '@libs/evm-wallet';
+import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  txResult,
   TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
@@ -17,6 +16,7 @@ import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
 import { TxEvent } from './useTx';
 import { useRefetchQueries } from '@libs/app-provider';
+import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
 type RepayUstTxResult = OneWayTxResponse<ContractReceipt> | null;
 type RepayUstTxRender = TxResultRendering<RepayUstTxResult>;
@@ -28,7 +28,12 @@ export interface RepayUstTxParams {
 export function useRepayUstTx():
   | BackgroundTxResult<RepayUstTxParams, RepayUstTxResult>
   | undefined {
-  const { address, connection, connectType, chainId } = useEvmWallet();
+  const {
+    address,
+    connection,
+    connectType,
+    chainId = EvmChainId.ETHEREUM_ROPSTEN,
+  } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
@@ -43,36 +48,44 @@ export function useRepayUstTx():
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
-      await xAnchor.approveLimit(
-        { token: 'ust' },
-        amount,
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          renderTxResults.next(
-            txResult(event, connectType, chainId!, TxKind.RepayUst),
-          );
-          txEvents.next({ event, txParams });
-        },
+      const writer = new EvmTxProgressWriter(
+        renderTxResults,
+        chainId,
+        connectType,
       );
+      writer.approveUST();
+      writer.timer.start();
 
-      const result = await xAnchor.repayStable(
-        amount,
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          console.log(event, 'eventEmitted ');
+      try {
+        await xAnchor.approveLimit(
+          { token: 'ust' },
+          amount,
+          address!,
+          TX_GAS_LIMIT,
+          (event) => {
+            txEvents.next({ event, txParams });
+          },
+        );
 
-          renderTxResults.next(
-            txResult(event, connectType, chainId!, TxKind.RepayUst),
-          );
-          txEvents.next({ event, txParams });
-        },
-      );
+        writer.repayUST();
+        writer.timer.reset();
 
-      refetchQueries(refetchQueryByTxKind(TxKind.RepayUst));
+        const result = await xAnchor.repayStable(
+          amount,
+          address!,
+          TX_GAS_LIMIT,
+          (event) => {
+            writer.repayUST(event);
+            txEvents.next({ event, txParams });
+          },
+        );
 
-      return result;
+        refetchQueries(refetchQueryByTxKind(TxKind.RepayUst));
+
+        return result;
+      } finally {
+        writer.timer.stop();
+      }
     },
     [
       xAnchor,
