@@ -110,26 +110,20 @@ export const borrowRedeemCollateralForm = ({
     BorrowRedeemCollateralFormStates,
     BorrowRedeemCollateralFormAsyncStates
   > => {
-    //console.log("redeemAmount", redeemAmount.toString())
-
     const nextLtv = computeRedeemCollateralNextLtv(
       redeemAmount,
+      collateralTokenDecimals,
       currentLtv,
       amountToLtv,
     );
 
-    //console.log("nextLtv", nextLtv?.toString())
-
     const withdrawableAmount = ltvToAmount(0.75 as Rate<BigSource>);
-
-    //console.log("withdrawableAmount", withdrawableAmount?.toString())
 
     const withdrawableMaxAmount = ltvToAmount(1 as Rate<BigSource>);
 
-    //console.log("withdrawableMaxAmount", withdrawableMaxAmount?.toString())
-
     const borrowLimit = computeRedeemCollateralBorrowLimit(
       collateralToken,
+      collateralTokenDecimals,
       redeemAmount,
       overseerCollaterals,
       oraclePrices,
@@ -143,6 +137,7 @@ export const borrowRedeemCollateralForm = ({
     const invalidRedeemAmount = validateRedeemAmount(
       redeemAmount,
       withdrawableMaxAmount,
+      collateralTokenDecimals,
     );
 
     const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {

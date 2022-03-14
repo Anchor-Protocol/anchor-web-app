@@ -7,6 +7,7 @@ import { BAssetLtvs } from '../../queries/borrow/market';
 
 export function computeRedeemCollateralBorrowLimit(
   collateralToken: CW20Addr,
+  collateralTokenDecimals: number,
   redeemAmount: bAsset,
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
@@ -17,6 +18,8 @@ export function computeRedeemCollateralBorrowLimit(
   }
   return computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs, [
     collateralToken,
-    big(microfy(redeemAmount)).mul(-1) as u<bAsset<BigSource>>,
+    big(microfy(redeemAmount, collateralTokenDecimals)).mul(-1) as u<
+      bAsset<BigSource>
+    >,
   ]);
 }

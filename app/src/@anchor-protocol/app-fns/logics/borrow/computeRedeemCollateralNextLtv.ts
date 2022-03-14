@@ -6,6 +6,7 @@ import big, { Big, BigSource } from 'big.js';
 
 export function computeRedeemCollateralNextLtv(
   redeemAmount: bAsset,
+  decimals: number,
   currentLtv: Rate<Big> | undefined,
   redeemAmountToLtv: (redeemAmount: u<bAsset<BigSource>>) => Rate<Big>,
 ): Rate<Big> | undefined {
@@ -13,7 +14,7 @@ export function computeRedeemCollateralNextLtv(
     return currentLtv;
   }
 
-  const amount = microfy(redeemAmount);
+  const amount = microfy(redeemAmount, decimals);
 
   try {
     const ltv = redeemAmountToLtv(amount);
