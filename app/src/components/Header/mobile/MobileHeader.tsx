@@ -6,7 +6,7 @@ import React, { ReactNode } from 'react';
 import { NavLink, useMatch } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import LogoAvax from '../assets/LogoAvax.svg';
-import LogoEth from '../assets/LogoEth.svg';
+// import LogoEth from '../assets/LogoEth.svg';
 import LogoTerra from '../assets/LogoTerra.svg';
 import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
 
@@ -58,8 +58,7 @@ function MobileHeaderBase({
           >
             <DeploymentSwitch
               terra={() => <img src={LogoTerra} alt="terraLogo" />}
-              ethereum={() => <img src={LogoEth} alt="ethLogo" />}
-              avalanche={() => <img src={LogoAvax} alt="avaxLogo" />}
+              ethereum={() => <img src={LogoAvax} alt="avaxLogo" />}
             />
           </a>
 

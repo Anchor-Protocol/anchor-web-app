@@ -75,7 +75,7 @@ export const DesktopNotification = styled(DesktopNotificationBase)`
   &[data-enabled='true'] {
     .notification-icon {
       svg {
-        color: ${({ theme }) => theme.colors.positive};
+        color: ${({ theme }) => theme.header.textColor};
       }
     }
   }

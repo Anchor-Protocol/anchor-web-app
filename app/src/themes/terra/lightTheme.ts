@@ -4,6 +4,17 @@ import type { DefaultTheme } from 'styled-components';
 import { themeBuilder, Mode } from '../themeHelper';
 import { Chain } from '@anchor-protocol/app-provider';
 
+const SECONDARY_200 = '#285e28';
+const SECONDARY_300 = 'rgba(75, 219, 75, 0.1)';
+const SECONDARY_400 = '#4BDB4B';
+const SECONDARY_500 = '#36a337';
+const SECONDARY_600 = '#2d832d';
+const SECONDARY_700 = '#246d25';
+const SECONDARY_800 = '#174f1a';
+const SECONDARY_900 = '#0e3311';
+
+const GRAY_100 = '#101010';
+
 const BASE_GRAY_100 = '#EFEFEF';
 const BASE_GRAY_200 = '#F4F4F5';
 const BASE_GRAY_300 = '#1F1F1F';
@@ -14,12 +25,13 @@ const BASE_GRAY_700 = '#2c2c2c';
 const BASE_GRAY_800 = 'rgba(0, 0, 0, 0.1)';
 const BASE_GRAY_900 = 'rgba(0, 0, 0, 0.15)';
 const BASE_GRAY_1000 = 'rgba(255, 255, 255, 0.8)';
+const BASE_GRAY_1100 = '#1c1c1c';
 
 const BASE_BLUE_100 = 'rgba(37, 117, 164, 0.05)';
-// const BASE_BLUE_200 = '#5B5E80';
 const BASE_BLUE_300 = '#3867c4';
 const BASE_BLUE_400 = '#3e9bba';
 const BASE_RED_100 = '#ef3158';
+const BASE_RED_200 = '#e95979';
 const BASE_GREEN_100 = '#94f3b8';
 const BASE_ORANGE_100 = '#dd8f5c';
 const BASE_YELLOW_100 = '#FF9A63';
@@ -49,40 +61,39 @@ export const lightTheme: DefaultTheme = {
   dimTextColor: BASE_GRAY_600,
 
   colors: {
-    positive: '#4BDB4B',
-    negative: '#e95979',
+    positive: SECONDARY_400,
+    negative: BASE_RED_200,
     warning: BASE_YELLOW_100,
-    primary: '#4BDB4B',
-    primaryDark: '#4BDB4B',
-    secondary: '#4BDB4B',
-    secondaryDark: '#4BDB4B',
+    primary: SECONDARY_400,
+    primaryDark: SECONDARY_400,
+    secondary: SECONDARY_400,
+    secondaryDark: SECONDARY_400,
   },
 
-  //errorTextColor: '#e95979',
-  //positiveTextColor: '#4BDB4B',
-  //
-  //pointColor: '#4BDB4B',
+  //errorTextColor: BASE_RED_200,
+  //positiveTextColor: SECONDARY_400,
+  //pointColor: SECONDARY_400,
 
   chart: [
-    '#4bdb4b',
-    '#36a337',
-    '#2d832d',
-    '#246d25',
-    '#174f1a',
-    '#0e3311',
-    '#101010',
+    SECONDARY_400,
+    SECONDARY_500,
+    SECONDARY_600,
+    SECONDARY_700,
+    SECONDARY_800,
+    SECONDARY_900,
+    GRAY_100,
   ],
 
   header: {
     backgroundColor: BLACK,
-    textColor: '#4BDB4B',
+    textColor: SECONDARY_400,
   },
 
   messageBox: {
-    borderColor: '#4BDB4B',
-    backgroundColor: 'rgba(75, 219, 75, 0.1)',
-    textColor: '#285e28',
-    linkColor: '#4BDB4B',
+    borderColor: SECONDARY_400,
+    backgroundColor: SECONDARY_300,
+    textColor: SECONDARY_200,
+    linkColor: SECONDARY_400,
   },
 
   label: {
@@ -92,10 +103,10 @@ export const lightTheme: DefaultTheme = {
   },
 
   actionButton: {
-    backgroundColor: '#2c2c2c',
-    backgroundHoverColor: '#1c1c1c',
-    textColor: '#ffffff',
-    hoverTextColor: '#ffffff',
+    backgroundColor: BASE_GRAY_700,
+    backgroundHoverColor: BASE_GRAY_1100,
+    textColor: WHITE,
+    hoverTextColor: WHITE,
   },
 
   textButton: {
@@ -103,10 +114,10 @@ export const lightTheme: DefaultTheme = {
   },
 
   borderButton: {
-    borderColor: '#2c2c2c',
-    borderHoverColor: '#1c1c1c',
-    textColor: '#1f1f1f',
-    hoverTextColor: '#2c2c2c',
+    borderColor: BASE_GRAY_700,
+    borderHoverColor: BASE_GRAY_1100,
+    textColor: BASE_GRAY_300,
+    hoverTextColor: BASE_GRAY_700,
   },
 
   selector: {

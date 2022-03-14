@@ -47,12 +47,13 @@ const BASE_GRAY_700 = '#2c2c2c';
 const BASE_GRAY_800 = 'rgba(0, 0, 0, 0.1)';
 const BASE_GRAY_900 = 'rgba(0, 0, 0, 0.15)';
 const BASE_GRAY_1000 = 'rgba(255, 255, 255, 0.8)';
+const BASE_GRAY_1100 = '#1c1c1c';
 
 const BASE_BLUE_100 = 'rgba(37, 117, 164, 0.05)';
-const BASE_BLUE_200 = '#5B5E80';
 const BASE_BLUE_300 = '#3867c4';
 const BASE_BLUE_400 = '#3e9bba';
 const BASE_RED_100 = '#ef3158';
+const BASE_RED_200 = '#e95979';
 const BASE_GREEN_100 = '#94f3b8';
 const BASE_ORANGE_100 = '#dd8f5c';
 const BASE_YELLOW_100 = '#FF9A63';
@@ -82,7 +83,7 @@ export const lightTheme: DefaultTheme = {
 
   colors: {
     positive: SECONDARY_500,
-    negative: PRIMARY_500,
+    negative: BASE_RED_200,
     warning: BASE_YELLOW_100,
     primary: PRIMARY_400,
     primaryDark: PRIMARY_500,
@@ -120,10 +121,10 @@ export const lightTheme: DefaultTheme = {
   },
 
   actionButton: {
-    backgroundColor: '#2c2c2c',
-    backgroundHoverColor: '#1c1c1c',
-    textColor: '#ffffff',
-    hoverTextColor: '#ffffff',
+    backgroundColor: BASE_GRAY_700,
+    backgroundHoverColor: BASE_GRAY_1100,
+    textColor: WHITE,
+    hoverTextColor: WHITE,
   },
 
   textButton: {
@@ -131,10 +132,10 @@ export const lightTheme: DefaultTheme = {
   },
 
   borderButton: {
-    borderColor: '#2c2c2c',
-    borderHoverColor: '#1c1c1c',
-    textColor: '#1f1f1f',
-    hoverTextColor: '#2c2c2c',
+    borderColor: BASE_GRAY_700,
+    borderHoverColor: BASE_GRAY_1100,
+    textColor: BASE_GRAY_300,
+    hoverTextColor: BASE_GRAY_700,
   },
 
   selector: {
