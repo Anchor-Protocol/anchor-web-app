@@ -33,17 +33,16 @@ export const EvmRedeemCollateralDialog = (
 
   const proceed = useCallback(
     (amount: bAsset) => {
-      if (connected && postTx && erc20Decimals) {
+      if (connected && postTx) {
         postTx({
           collateralContractEvm: token,
           collateralContractTerra: collateralToken,
           amount,
-          erc20Decimals,
           tokenDisplay,
         });
       }
     },
-    [connected, postTx, token, collateralToken, tokenDisplay, erc20Decimals],
+    [connected, postTx, token, collateralToken, tokenDisplay],
   );
 
   return (

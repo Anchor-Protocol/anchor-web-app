@@ -25,7 +25,6 @@ export interface RedeemCollateralTxParams {
   collateralContractEvm: string;
   collateralContractTerra: string;
   amount: bAsset & NoMicro;
-  erc20Decimals: number;
   tokenDisplay?: CW20TokenDisplayInfo;
 }
 
@@ -42,11 +41,12 @@ export function useRedeemCollateralTx():
       renderTxResults: Subject<RedeemCollateralTxRender>,
       txEvents: Subject<TxEvent<RedeemCollateralTxParams>>,
     ) => {
-      const { collateralContractTerra, amount, erc20Decimals } = txParams;
+      const { collateralContractTerra, amount, tokenDisplay } = txParams;
+      const decimals = tokenDisplay?.decimals ?? 6;
 
       const result = await xAnchor.unlockCollateral(
         { contract: collateralContractTerra },
-        microfy(amount, erc20Decimals),
+        microfy(amount, decimals),
         address!,
         TX_GAS_LIMIT,
         (event) => {

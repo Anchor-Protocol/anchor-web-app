@@ -96,7 +96,14 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
     (nextLtv: Rate<Big>) => {
       const ltvToAmount = states.ltvToAmount;
       try {
+        //console.log("onLtvChange:nextLtv", nextLtv.toString())
         const nextAmount = ltvToAmount(nextLtv);
+        //console.log("onLtvChange:nextAmount", nextAmount.toString())
+        //console.log("onLtvChange:demicrofy", demicrofy(nextAmount, collateralTokenDecimals).toString())
+        //console.log("onLtvChange:formatInput", formatInput<bAsset>(
+        //  demicrofy(nextAmount, collateralTokenDecimals),
+        //  collateralTokenDecimals,
+        //).toString())
         input({
           redeemAmount: formatInput<bAsset>(
             demicrofy(nextAmount, collateralTokenDecimals),
@@ -195,7 +202,7 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
                       collateralTokenDecimals,
                     ),
                     {
-                      decimals: collateralTokenDecimals,
+                      decimals: 3,
                     },
                   )
                 : 0}{' '}

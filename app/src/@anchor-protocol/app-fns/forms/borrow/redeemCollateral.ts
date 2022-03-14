@@ -110,15 +110,23 @@ export const borrowRedeemCollateralForm = ({
     BorrowRedeemCollateralFormStates,
     BorrowRedeemCollateralFormAsyncStates
   > => {
+    //console.log("redeemAmount", redeemAmount.toString())
+
     const nextLtv = computeRedeemCollateralNextLtv(
       redeemAmount,
       currentLtv,
       amountToLtv,
     );
 
+    //console.log("nextLtv", nextLtv?.toString())
+
     const withdrawableAmount = ltvToAmount(0.75 as Rate<BigSource>);
 
+    //console.log("withdrawableAmount", withdrawableAmount?.toString())
+
     const withdrawableMaxAmount = ltvToAmount(1 as Rate<BigSource>);
+
+    //console.log("withdrawableMaxAmount", withdrawableMaxAmount?.toString())
 
     const borrowLimit = computeRedeemCollateralBorrowLimit(
       collateralToken,
@@ -139,21 +147,8 @@ export const borrowRedeemCollateralForm = ({
 
     const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
       try {
-        console.log('ltvStepFunction:draftLtv', draftLtv.toString());
-
         const draftAmount = ltvToAmount(draftLtv);
-
-        console.log('ltvStepFunction:draftAmount', draftAmount.toString());
-
-        // // UST is 6 decimals and TVL and limits are in UST so
-        // // we need to normalize back to the tokens decimals
-        //return amountToLtv(normalize(draftAmount, collateralTokenDecimals, 6));
-
-        const a = amountToLtv(draftAmount);
-
-        console.log('ltvStepFunction:a', a.toString());
-
-        return a;
+        return amountToLtv(draftAmount);
       } catch {
         return draftLtv;
       }
