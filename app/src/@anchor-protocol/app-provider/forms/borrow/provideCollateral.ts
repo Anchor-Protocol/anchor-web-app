@@ -14,6 +14,7 @@ import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export function useBorrowProvideCollateralForm(
   collateralToken: CW20Addr,
+  collateralTokenDecimals: number,
   balance: u<bAsset>,
   fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
@@ -42,6 +43,7 @@ export function useBorrowProvideCollateralForm(
       collateralToken,
       userBAssetBalance: balance,
       userUSTBalance: uUST,
+      collateralTokenDecimals,
       connected,
       oraclePrices,
       overseerCollaterals,

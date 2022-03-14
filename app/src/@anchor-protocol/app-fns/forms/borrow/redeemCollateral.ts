@@ -33,6 +33,7 @@ export interface BorrowRedeemCollateralFormDependency {
   fixedFee: u<UST>;
   userUSTBalance: u<UST>;
   userBAssetBalance: u<bAsset>;
+  collateralTokenDecimals: number;
   oraclePrices: moneyMarket.oracle.PricesResponse;
   overseerWhitelist: OverseerWhitelistWithDisplay;
   bAssetLtvs: BAssetLtvs;
@@ -64,6 +65,7 @@ export interface BorrowRedeemCollateralFormAsyncStates {}
 
 export const borrowRedeemCollateralForm = ({
   collateralToken,
+  collateralTokenDecimals,
   fixedFee,
   userUSTBalance,
   userBAssetBalance,
@@ -86,6 +88,7 @@ export const borrowRedeemCollateralForm = ({
 
   const ltvToAmount = computeLtvToRedeemAmount(
     collateralToken,
+    collateralTokenDecimals,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -136,8 +139,21 @@ export const borrowRedeemCollateralForm = ({
 
     const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
       try {
+        console.log('ltvStepFunction:draftLtv', draftLtv.toString());
+
         const draftAmount = ltvToAmount(draftLtv);
-        return amountToLtv(draftAmount);
+
+        console.log('ltvStepFunction:draftAmount', draftAmount.toString());
+
+        // // UST is 6 decimals and TVL and limits are in UST so
+        // // we need to normalize back to the tokens decimals
+        //return amountToLtv(normalize(draftAmount, collateralTokenDecimals, 6));
+
+        const a = amountToLtv(draftAmount);
+
+        console.log('ltvStepFunction:a', a.toString());
+
+        return a;
       } catch {
         return draftLtv;
       }

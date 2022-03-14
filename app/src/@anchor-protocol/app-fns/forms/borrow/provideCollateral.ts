@@ -24,6 +24,7 @@ import { validateDepositAmount } from '../../logics/borrow/validateDepositAmount
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
+import { normalize } from '@anchor-protocol/formatter';
 
 export interface BorrowProvideCollateralFormInput {
   depositAmount: bAsset;
@@ -31,6 +32,7 @@ export interface BorrowProvideCollateralFormInput {
 
 export interface BorrowProvideCollateralFormDependency {
   collateralToken: CW20Addr;
+  collateralTokenDecimals: number;
   fixedFee: u<UST>;
   userUSTBalance: u<UST>;
   userBAssetBalance: u<bAsset>;
@@ -63,6 +65,7 @@ export interface BorrowProvideCollateralFormAsyncStates {}
 
 export const borrowProvideCollateralForm = ({
   collateralToken,
+  collateralTokenDecimals,
   fixedFee,
   userUSTBalance,
   userBAssetBalance,
@@ -83,6 +86,7 @@ export const borrowProvideCollateralForm = ({
 
   const ltvToAmount = computeLtvToDepositAmount(
     collateralToken,
+    collateralTokenDecimals,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -119,7 +123,10 @@ export const borrowProvideCollateralForm = ({
   const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
     try {
       const draftAmount = ltvToAmount(draftLtv);
-      return amountToLtv(draftAmount);
+
+      // UST is 6 decimals and TVL and limits are in UST so
+      // we need to normalize back to the tokens decimals
+      return amountToLtv(normalize(draftAmount, collateralTokenDecimals, 6));
     } catch {
       return draftLtv;
     }
@@ -145,6 +152,7 @@ export const borrowProvideCollateralForm = ({
     const invalidDepositAmount = validateDepositAmount(
       depositAmount,
       userBAssetBalance,
+      collateralTokenDecimals,
     );
 
     const availablePost =

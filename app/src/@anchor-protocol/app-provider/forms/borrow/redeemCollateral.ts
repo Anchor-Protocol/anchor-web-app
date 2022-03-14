@@ -14,6 +14,7 @@ import { useBalances } from 'contexts/balances';
 
 export function useBorrowRedeemCollateralForm(
   collateralToken: CW20Addr,
+  collateralTokenDecimals: number,
   balance: u<bAsset>,
   fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
@@ -40,6 +41,7 @@ export function useBorrowRedeemCollateralForm(
     borrowRedeemCollateralForm,
     {
       collateralToken,
+      collateralTokenDecimals,
       userBAssetBalance: balance,
       userUSTBalance: uUST,
       connected,

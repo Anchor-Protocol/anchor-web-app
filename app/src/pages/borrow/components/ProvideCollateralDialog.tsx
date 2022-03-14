@@ -66,14 +66,15 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
 
   const { connected, availablePost } = useAccount();
 
+  const collateralTokenDecimals = tokenDisplay?.decimals ?? 6;
+
   const [input, states] = useBorrowProvideCollateralForm(
     collateralToken,
+    collateralTokenDecimals,
     uTokenBalance,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
   );
-
-  const decimals = tokenDisplay?.decimals ?? 6;
 
   const {
     ust: {
@@ -99,11 +100,14 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
       try {
         const nextAmount = ltvToAmount(nextLtv);
         updateDepositAmount(
-          formatInput<bAsset>(demicrofy(nextAmount, decimals), decimals),
+          formatInput<bAsset>(
+            demicrofy(nextAmount, collateralTokenDecimals),
+            collateralTokenDecimals,
+          ),
         );
       } catch {}
     },
-    [updateDepositAmount, ltvToAmount, decimals],
+    [updateDepositAmount, ltvToAmount, collateralTokenDecimals],
   );
 
   const renderBroadcastTx = useMemo(() => {
@@ -178,15 +182,21 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
               onClick={() =>
                 updateDepositAmount(
                   formatInput<bAsset>(
-                    demicrofy(states.userBAssetBalance, decimals),
-                    decimals,
+                    demicrofy(
+                      states.userBAssetBalance,
+                      collateralTokenDecimals,
+                    ),
+                    collateralTokenDecimals,
                   ),
                 )
               }
             >
-              {formatOutput(demicrofy(states.userBAssetBalance, decimals), {
-                decimals,
-              })}{' '}
+              {formatOutput(
+                demicrofy(states.userBAssetBalance, collateralTokenDecimals),
+                {
+                  decimals: collateralTokenDecimals,
+                },
+              )}{' '}
               {states.collateral.tokenDisplay?.symbol ??
                 states.collateral.symbol}
             </span>

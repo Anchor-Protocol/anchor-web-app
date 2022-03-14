@@ -75,8 +75,11 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
     },
   } = useFormatters();
 
+  const collateralTokenDecimals = tokenDisplay?.decimals ?? 6;
+
   const [input, states] = useBorrowRedeemCollateralForm(
     collateralToken,
+    collateralTokenDecimals,
     uTokenBalance,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
@@ -89,8 +92,6 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
     [input],
   );
 
-  const decimals = tokenDisplay?.decimals ?? 6;
-
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
       const ltvToAmount = states.ltvToAmount;
@@ -98,13 +99,13 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
         const nextAmount = ltvToAmount(nextLtv);
         input({
           redeemAmount: formatInput<bAsset>(
-            demicrofy(nextAmount, decimals),
-            decimals,
+            demicrofy(nextAmount, collateralTokenDecimals),
+            collateralTokenDecimals,
           ),
         });
       } catch {}
     },
-    [input, states.ltvToAmount, decimals],
+    [input, states.ltvToAmount, collateralTokenDecimals],
   );
 
   const renderBroadcastTx = useMemo(() => {
@@ -178,16 +179,25 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
                 states.withdrawableAmount &&
                 updateRedeemAmount(
                   formatInput(
-                    demicrofy(states.withdrawableAmount, decimals),
-                    decimals,
+                    demicrofy(
+                      states.withdrawableAmount,
+                      collateralTokenDecimals,
+                    ),
+                    collateralTokenDecimals,
                   ),
                 )
               }
             >
               {states.withdrawableAmount
-                ? formatOutput(demicrofy(states.withdrawableAmount, decimals), {
-                    decimals,
-                  })
+                ? formatOutput(
+                    demicrofy(
+                      states.withdrawableAmount,
+                      collateralTokenDecimals,
+                    ),
+                    {
+                      decimals: collateralTokenDecimals,
+                    },
+                  )
                 : 0}{' '}
               {states.collateral.tokenDisplay?.symbol ??
                 states.collateral.symbol}
