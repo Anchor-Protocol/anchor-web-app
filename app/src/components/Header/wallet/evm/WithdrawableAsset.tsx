@@ -27,6 +27,10 @@ const WithdrawableAssetBase = (props: WithdrawableAssetProps) => {
     withdrawAsset!({ tokenContract, amount: balance, symbol });
   }, [tokenContract, withdrawAsset, balance, symbol]);
 
+  if (txResult?.status === StreamStatus.DONE) {
+    return null;
+  }
+
   return (
     <div className={props.className}>
       <div className="symbol">{symbol}</div>
