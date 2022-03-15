@@ -8,6 +8,7 @@ import { TransactionList } from './TransactionList';
 import { Link } from 'react-router-dom';
 import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { useBackgroundTransactions } from 'tx/evm/storage/useBackgroundTransactions';
+import { useTransactions } from 'tx/evm';
 
 const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
   const theme = useTheme();
@@ -19,6 +20,8 @@ const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
   const {
     target: { chain },
   } = useDeploymentTarget();
+
+  const { removeAll } = useTransactions();
 
   if (backgroundTransactions.length === 0 || chain === Chain.Terra) {
     return null;
@@ -50,6 +53,9 @@ const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
                       >
                         Restore transaction
                       </Link>
+                      <div className="clear-all" onClick={removeAll}>
+                        Clear all
+                      </div>
                     </div>
                   </div>
                 }
@@ -87,6 +93,19 @@ export const TransactionWidget = styled(TransactionWidgetBase)`
     .link {
       margin-top: 5px;
       cursor: pointer;
+      color: ${({ theme }) => theme.colors.secondaryDark};
+    }
+
+    .clear-all {
+      margin-left: auto;
+      margin-right: auto;
+      width: 60px;
+      display: flex;
+      font-size: 12px;
+      font-weight: 500;
+      justify-content: center;
+      cursor: pointer;
+      margin-top: 5px;
       color: ${({ theme }) => theme.colors.secondaryDark};
     }
   }

@@ -6,7 +6,8 @@ import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
-import { TxEvent, useTx } from './useTx';
+import { useBackgroundTx } from './useBackgroundTx';
+import { TxEvent } from './useTx';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
@@ -15,11 +16,13 @@ import {
   TX_GAS_LIMIT,
 } from './utils';
 
-type TxResult = TwoWayTxResponse<ContractReceipt> | null;
-type TxRender = TxResultRendering<TxResult>;
+type WithdrawAssetsTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type WithdrawAssetsTxRender = TxResultRendering<WithdrawAssetsTxResult>;
 
 export interface WithdrawAssetsTxParams {
   tokenContract: string;
+  amount: string;
+  symbol: string;
 }
 
 export const useWithdrawAssetsTx = () => {
@@ -32,7 +35,7 @@ export const useWithdrawAssetsTx = () => {
   const withdrawTx = useCallback(
     async (
       txParams: WithdrawAssetsTxParams,
-      renderTxResults: Subject<TxRender>,
+      renderTxResults: Subject<WithdrawAssetsTxRender>,
       txEvents: Subject<TxEvent<WithdrawAssetsTxParams>>,
     ) => {
       try {
@@ -59,9 +62,21 @@ export const useWithdrawAssetsTx = () => {
     [xAnchor, chainId, connectType, address, refetchQueries],
   );
 
-  const withdrawAssetsTx = useTx(withdrawTx, (resp) => resp.tx, null);
+  const withdrawAssetsTx = useBackgroundTx<
+    WithdrawAssetsTxParams,
+    WithdrawAssetsTxResult
+  >(
+    withdrawTx,
+    (resp) => resp.tx,
+    null,
+    (txParams) => ({
+      txKind: TxKind.WithdrawAssets,
+      amount: `${txParams.amount} ${txParams.symbol}`,
+      timestamp: Date.now(),
+    }),
+  );
 
   return connection && provider && connectType && chainId && address
     ? withdrawAssetsTx
-    : [null, null];
+    : undefined;
 };

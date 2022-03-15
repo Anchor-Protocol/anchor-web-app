@@ -6,6 +6,7 @@ import { HumanAddr } from '@libs/types';
 import styled from 'styled-components';
 import { TokenList } from '../TokenList';
 import { Link } from 'react-router-dom';
+import { WithdrawableAssets } from './WithdrawableAssets';
 
 type Action = () => void;
 
@@ -30,6 +31,7 @@ const ContentBase = (props: ContentProps) => {
       onDisconnectWallet={onDisconnectWallet}
     >
       <TokenList onClose={onClose} />
+      <WithdrawableAssets />
       <div className="restore-tx">
         <div className="restore-tx-inner">
           <p>Having transaction issues?</p>
