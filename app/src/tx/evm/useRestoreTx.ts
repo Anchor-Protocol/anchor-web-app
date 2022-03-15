@@ -1,17 +1,14 @@
-import {
-  CrossChainEvent,
-  CrossChainEventKind,
-  CrossChainTxResponse,
-} from '@anchor-protocol/crossanchor-sdk';
-import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
-import { ConnectType, EvmChainId, useEvmWallet } from '@libs/evm-wallet';
+import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { TxResultRendering } from '@libs/app-fns';
+import { useEvmWallet } from '@libs/evm-wallet';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
+import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 import { useTransactions } from './storage';
 import { TxEvent, useTx } from './useTx';
-import { capitalize, chain, errorContains, TxError } from './utils';
+import { errorContains, TxError } from './utils';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -31,11 +28,17 @@ export const useRestoreTx = () => {
       renderTxResults: Subject<TxRender>,
       txEvents: Subject<TxEvent<RestoreTxParams>>,
     ) => {
+      const writer = new EvmTxProgressWriter(
+        renderTxResults,
+        chainId!,
+        connectType,
+      );
+      writer.restoreTx();
+      writer.timer.start();
+
       try {
         const result = await xAnchor.restoreTx(txParams.txHash, (event) => {
-          console.log(event, 'eventEmitted ');
-
-          renderTxResults.next(restoreTxResult(event, connectType, chainId!));
+          writer.restoreTx(event);
           txEvents.next({ event, txParams });
         });
 
@@ -50,6 +53,8 @@ export const useRestoreTx = () => {
         }
 
         throw error;
+      } finally {
+        writer.timer.stop();
       }
     },
     [xAnchor, chainId, connectType, removeTransaction],
@@ -60,36 +65,4 @@ export const useRestoreTx = () => {
   return connection && provider && connectType && chainId
     ? restoreTxStream
     : [null, null];
-};
-
-const restoreTxResult = (
-  event: CrossChainEvent<ContractReceipt>,
-  connnectType: ConnectType,
-  chainId: EvmChainId,
-) => {
-  return {
-    value: null,
-    message: restoreTxMessage(event, connnectType, chainId),
-    phase: TxStreamPhase.BROADCAST,
-    receipts: [
-      //{ name: "Status", value: txResultMessage(event, connnectType, chainId, action) }
-    ],
-  };
-};
-
-const restoreTxMessage = (
-  event: CrossChainEvent<ContractReceipt>,
-  connnectType: ConnectType,
-  chainId: EvmChainId,
-) => {
-  switch (event.kind) {
-    case CrossChainEventKind.RemoteChainReturnTxRequested:
-      return `Deposit requested. ${capitalize(
-        connnectType,
-      )} notification should appear soon...`;
-    case CrossChainEventKind.RemoteChainReturnTxSubmitted:
-      return `Waiting for deposit transaction on ${capitalize(
-        chain(chainId),
-      )}...`;
-  }
 };

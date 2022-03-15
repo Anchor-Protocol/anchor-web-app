@@ -156,6 +156,38 @@ export class EvmTxProgressWriter<
     });
   }
 
+  public claimRewards(event?: CrossChainEvent<ContractReceipt>) {
+    const map = new Map<CrossChainEventKind, string>([
+      ...DEFAULT_STATUS,
+      [CrossChainEventKind.RemoteChainTxSubmitted, `Claiming`],
+      [CrossChainEventKind.RemoteChainTxExecuted, `Claiming`],
+    ]);
+    this.write((current) => {
+      return {
+        ...current,
+        message: `Claiming rewards`,
+        description: this._description,
+        receipts: this.mergeEventKind(current.receipts, map, event),
+      };
+    });
+  }
+
+  public restoreTx(event?: CrossChainEvent<ContractReceipt>) {
+    const map = new Map<CrossChainEventKind, string>([
+      ...DEFAULT_STATUS,
+      [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Restoring'],
+      [CrossChainEventKind.RemoteChainReturnTxRequested, 'Restoring'],
+    ]);
+    this.write((current) => {
+      return {
+        ...current,
+        message: 'Restoring transaction',
+        description: this._description,
+        receipts: this.mergeEventKind(current.receipts, map, event),
+      };
+    });
+  }
+
   public withdrawCollateral(
     symbol: string,
     event?: CrossChainEvent<ContractReceipt>,

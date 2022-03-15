@@ -5,7 +5,6 @@ import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  txResult,
   TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
@@ -15,6 +14,7 @@ import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { TxEvent } from './useTx';
 import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { useRefetchQueries } from '@libs/app-provider';
+import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
 type ClaimRewardsTxResult = OneWayTxResponse<ContractReceipt> | null;
 type ClaimRewardsTxRender = TxResultRendering<ClaimRewardsTxResult>;
@@ -34,21 +34,29 @@ export function useClaimRewardsTx():
       renderTxResults: Subject<ClaimRewardsTxRender>,
       txEvents: Subject<TxEvent<ClaimRewardsTxParams>>,
     ) => {
-      const result = await xAnchor.claimRewards(
-        address!,
-        TX_GAS_LIMIT,
-        (event) => {
-          console.log(event, 'eventEmitted');
-
-          renderTxResults.next(
-            txResult(event, connectType, chainId!, TxKind.ClaimRewards),
-          );
-          txEvents.next({ event, txParams });
-        },
+      const writer = new EvmTxProgressWriter(
+        renderTxResults,
+        chainId!,
+        connectType,
       );
+      writer.claimRewards();
+      writer.timer.start();
 
-      refetchQueries(refetchQueryByTxKind(TxKind.ClaimRewards));
-      return result;
+      try {
+        const result = await xAnchor.claimRewards(
+          address!,
+          TX_GAS_LIMIT,
+          (event) => {
+            writer.claimRewards(event);
+            txEvents.next({ event, txParams });
+          },
+        );
+
+        refetchQueries(refetchQueryByTxKind(TxKind.ClaimRewards));
+        return result;
+      } finally {
+        writer.timer.stop();
+      }
     },
     [address, connectType, xAnchor, chainId, refetchQueries],
   );
