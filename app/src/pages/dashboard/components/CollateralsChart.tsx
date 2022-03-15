@@ -64,7 +64,7 @@ export class CollateralsChart extends Component<CollateralsChartProps> {
         this.chart.options.scales.x.ticks.color = this.props.theme.dimTextColor;
       }
       this.chart.data.datasets[0].borderColor =
-        this.props.theme.colors.positive;
+        this.props.theme.colors.secondary;
     }
 
     if (prevProps.isMobile !== this.props.isMobile) {
@@ -167,7 +167,7 @@ export class CollateralsChart extends Component<CollateralsChartProps> {
             data: this.props.data?.map(({ total_value }) =>
               big(total_value).toNumber(),
             ),
-            borderColor: this.props.theme.colors.positive,
+            borderColor: this.props.theme.colors.secondary,
             borderWidth: 2,
           },
         ],

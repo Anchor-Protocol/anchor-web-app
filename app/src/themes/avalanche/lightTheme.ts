@@ -31,6 +31,8 @@ const GRAY_300 = '#DFDFDF';
 const GRAY_200 = '#F0F0F0';
 const GRAY_100 = '#F7F7F7';
 
+const BLUE_100 = '#561DF4';
+
 /* eslint-enable */
 
 export const lightTheme: DefaultTheme = {
@@ -40,7 +42,8 @@ export const lightTheme: DefaultTheme = {
   dimTextColor: GRAY_500,
   colors: {
     ...defaultLightTheme.colors,
-    positive: SECONDARY_500,
+    positive: BLUE_100,
+    negative: PRIMARY_500,
     primary: PRIMARY_400,
     primaryDark: PRIMARY_500,
     secondary: SECONDARY_500,
@@ -65,6 +68,18 @@ export const lightTheme: DefaultTheme = {
     backgroundColor: SECONDARY_100,
     textColor: SECONDARY_900,
     linkColor: SECONDARY_500,
+  },
+  actionButton: {
+    backgroundColor: GRAY_700,
+    backgroundHoverColor: GRAY_600,
+    textColor: GRAY_100,
+    hoverTextColor: GRAY_100,
+  },
+  borderButton: {
+    borderColor: GRAY_700,
+    borderHoverColor: GRAY_600,
+    textColor: GRAY_700,
+    hoverTextColor: GRAY_600,
   },
   tooltip: {
     ...defaultLightTheme.tooltip,

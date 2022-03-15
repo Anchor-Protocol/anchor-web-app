@@ -53,7 +53,7 @@ function useColorPalette(): ColorPalette {
   return useMemo<ColorPalette>(() => {
     return {
       line: {
-        stroke: theme.colors.secondary,
+        stroke: theme.colors.primary,
         strokeWidth: 4,
       },
       pointing: {
@@ -71,7 +71,7 @@ function useColorPalette(): ColorPalette {
         strokeColor: theme.textColor,
       },
     };
-  }, [theme.colors.secondary, theme.label.backgroundColor, theme.textColor]);
+  }, [theme.colors.primary, theme.label.backgroundColor, theme.textColor]);
 }
 
 export function APYChartBase({

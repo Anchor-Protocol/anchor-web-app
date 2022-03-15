@@ -33,8 +33,10 @@ export const BASE_GRAY_1100 = '#1c1c1c';
 export const BASE_BLUE_100 = 'rgba(37, 117, 164, 0.05)';
 export const BASE_BLUE_300 = '#3867c4';
 export const BASE_BLUE_400 = '#3e9bba';
+
 export const BASE_RED_100 = '#ef3158';
 export const BASE_RED_200 = '#e95979';
+
 export const BASE_GREEN_100 = '#94f3b8';
 export const BASE_ORANGE_100 = '#dd8f5c';
 export const BASE_YELLOW_100 = '#FF9A63';

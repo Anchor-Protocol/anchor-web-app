@@ -318,7 +318,7 @@ const StyledComponent = styled(Component)`
     }
 
     &.apy {
-      color: ${({ theme }) => theme.colors.positive};
+      color: ${({ theme }) => theme.colors.primary};
 
       .value {
         font-weight: 500;

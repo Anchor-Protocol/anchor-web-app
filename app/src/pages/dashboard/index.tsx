@@ -199,13 +199,13 @@ function DashboardBase({ className }: DashboardProps) {
                       totalCollaterals={
                         totalValueLocked?.totalCollaterals ?? ('1' as u<UST>)
                       }
-                      totalDepositColor={theme.colors.positive}
+                      totalDepositColor={theme.colors.secondary}
                       totalCollateralsColor={theme.textColor}
                     />
                   </div>
                   <div>
                     <h3>
-                      <i style={{ backgroundColor: theme.colors.positive }} />{' '}
+                      <i style={{ backgroundColor: theme.colors.secondary }} />{' '}
                       Total Deposit
                     </h3>
                     <p>
@@ -355,8 +355,8 @@ function DashboardBase({ className }: DashboardProps) {
             <header>
               <div>
                 <h2>
-                  <i style={{ backgroundColor: theme.colors.positive }} /> TOTAL
-                  DEPOSIT
+                  <i style={{ backgroundColor: theme.colors.secondary }} />{' '}
+                  TOTAL DEPOSIT
                   {stableCoin && (
                     <span
                       data-negative={big(stableCoin.totalDepositDiff).lt(0)}
