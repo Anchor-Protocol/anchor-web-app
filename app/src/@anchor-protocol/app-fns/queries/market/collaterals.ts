@@ -38,7 +38,7 @@ export async function marketCollateralsQuery({
   )
     .then((res) => res.json())
     .then((data: MarketCollateralsHistory[]) => {
-      return [...data.reverse(), now];
+      return [...data.sort((a, b) => a.timestamp - b.timestamp), now];
     });
 
   return {
