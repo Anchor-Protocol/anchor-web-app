@@ -4,7 +4,7 @@ import { useMenus, RouteMenu } from 'configurations/menu';
 import { mobileHeaderHeight } from 'env';
 import React, { ReactNode } from 'react';
 import { NavLink, useMatch } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, useTheme } from 'styled-components';
 import LogoAvax from '../assets/LogoAvax.svg';
 // import LogoEth from '../assets/LogoEth.svg';
 import LogoTerra from '../assets/LogoTerra.svg';
@@ -34,6 +34,7 @@ function MobileHeaderBase({
   viewAddressButtonElement,
 }: MobileHeaderProps) {
   const menus = useMenus();
+  const theme = useTheme();
 
   return (
     <>
@@ -65,7 +66,10 @@ function MobileHeaderBase({
           </a>
           <div />
 
-          <TransactionWidget className="transaction-widget" color="#555555" />
+          <TransactionWidget
+            className="transaction-widget"
+            color={theme.header.textColor}
+          />
           <ChainSelector className="chain-selector" />
 
           {/*<MobileNotification className="notification" />*/}
@@ -141,11 +145,11 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
     a {
       text-decoration: none;
-      color: #555555;
+      color: ${({ theme }) => theme.header.textColor};
     }
 
-    button {
-      color: #555555;
+    > button {
+      color: ${({ theme }) => theme.header.textColor};
 
       &[data-on='true'] {
         color: #ffffff;
@@ -209,7 +213,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
       margin-right: 20px;
 
       > button {
-        border-color: #555555;
+        border-color: ${({ theme }) => theme.header.textColor};
       }
     }
 
@@ -217,7 +221,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
       margin-right: 20px;
 
       > button {
-        border-color: #555555;
+        border-color: ${({ theme }) => theme.header.textColor};
       }
     }
 
