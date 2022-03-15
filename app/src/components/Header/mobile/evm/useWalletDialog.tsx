@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { useAccount } from 'contexts/account';
 import { Content } from '../../wallet/evm/Content';
 import { useEvmWallet } from '@libs/evm-wallet';
+import { ConnectionList } from 'components/Header/wallet/evm/ConnectionList';
 
 // TODO: see if this can be merged with useWalletDialog on the Terra side
 
@@ -36,13 +37,15 @@ function ComponentBase(props: DialogProps<FormParams, FormReturn>) {
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
-        {connected && connection && (
+        {connected && connection ? (
           <Content
             walletAddress={terraWalletAddress!}
             connection={connection}
             onClose={closeDialog}
             onDisconnectWallet={disconnectWallet}
           />
+        ) : (
+          <ConnectionList onClose={closeDialog} />
         )}
       </Dialog>
     </Modal>
