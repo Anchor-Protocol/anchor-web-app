@@ -1,4 +1,4 @@
-import { useChainOptions } from '@terra-money/wallet-provider';
+import { WalletControllerChainOptions } from '@terra-money/wallet-provider';
 import { AstroportGuideBanner } from 'components/AstroportGuideBanner';
 import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
@@ -42,9 +42,11 @@ import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import '../configurations/chartjs';
 
-export function TerraApp() {
-  const chainOptions = useChainOptions();
+type TerraAppProps = {
+  chainOptions: WalletControllerChainOptions | null;
+};
 
+export function TerraApp({ chainOptions }: TerraAppProps) {
   return (
     chainOptions && (
       <TerraAppProviders {...chainOptions}>
