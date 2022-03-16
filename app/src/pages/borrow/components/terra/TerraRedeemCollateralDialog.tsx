@@ -7,28 +7,31 @@ import { useAccount } from 'contexts/account';
 import { useCallback } from 'react';
 import { RedeemCollateralDialog } from '../RedeemCollateralDialog';
 import { RedeemCollateralFormParams } from '../types';
+import { normalize } from '@anchor-protocol/formatter';
 
 export const TerraRedeemCollateralDialog = (
   props: DialogProps<RedeemCollateralFormParams>,
 ) => {
-  const { collateralToken } = props;
+  const { collateralToken, tokenDisplay } = props;
 
   const { connected, terraWalletAddress } = useAccount();
 
-  const uTokenBalance = useCW20Balance<bAsset>(
+  const cw20Balance = useCW20Balance<bAsset>(
     collateralToken,
     terraWalletAddress,
   );
+
+  const uTokenBalance = normalize(cw20Balance, 6, tokenDisplay?.decimals ?? 6);
 
   const [postTx, txResult] = useBorrowRedeemCollateralTx(collateralToken);
 
   const proceed = useCallback(
     (redeemAmount: bAsset) => {
       if (connected && postTx) {
-        postTx({ redeemAmount });
+        postTx({ redeemAmount, tokenDisplay });
       }
     },
-    [connected, postTx],
+    [connected, postTx, tokenDisplay],
   );
 
   return (

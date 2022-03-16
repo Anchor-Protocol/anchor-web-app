@@ -7,18 +7,21 @@ import { useAccount } from 'contexts/account';
 import { useCallback } from 'react';
 import { ProvideCollateralDialog } from '../ProvideCollateralDialog';
 import { ProvideCollateralFormParams } from '../types';
+import { normalize } from '@anchor-protocol/formatter';
 
 export const TerraProvideCollateralDialog = (
   props: DialogProps<ProvideCollateralFormParams>,
 ) => {
-  const { collateralToken } = props;
+  const { collateralToken, tokenDisplay } = props;
 
   const { connected, terraWalletAddress } = useAccount();
 
-  const uTokenBalance = useCW20Balance<bAsset>(
+  const cw20Balance = useCW20Balance<bAsset>(
     collateralToken,
     terraWalletAddress,
   );
+
+  const uTokenBalance = normalize(cw20Balance, 6, tokenDisplay?.decimals ?? 6);
 
   const [postTx, txResult] = useBorrowProvideCollateralTx(collateralToken);
 
@@ -27,10 +30,11 @@ export const TerraProvideCollateralDialog = (
       if (connected && postTx) {
         postTx({
           depositAmount,
+          tokenDisplay,
         });
       }
     },
-    [connected, postTx],
+    [connected, postTx, tokenDisplay],
   );
 
   return (

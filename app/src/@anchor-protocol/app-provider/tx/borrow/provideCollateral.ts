@@ -10,9 +10,11 @@ import { ANCHOR_TX_KEY } from '../../env';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 import { useWhitelistCollateralByTokenAddrQuery } from '@anchor-protocol/app-provider';
+import { CW20TokenDisplayInfo } from '@libs/app-fns';
 
 export interface BorrowProvideCollateralTxParams {
   depositAmount: bAsset;
+  tokenDisplay?: CW20TokenDisplayInfo;
   onTxSucceed?: () => void;
 }
 
@@ -35,7 +37,11 @@ export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
-    ({ depositAmount, onTxSucceed }: BorrowProvideCollateralTxParams) => {
+    ({
+      depositAmount,
+      onTxSucceed,
+      tokenDisplay,
+    }: BorrowProvideCollateralTxParams) => {
       if (
         !connectedWallet ||
         !connected ||
@@ -47,6 +53,7 @@ export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
       }
 
       return borrowProvideCollateralTx({
+        tokenDisplay,
         walletAddr: terraWalletAddress,
         depositAmount,
         bAssetTokenAddr,
