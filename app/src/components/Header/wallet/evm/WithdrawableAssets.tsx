@@ -56,7 +56,7 @@ const WithdrawableAssetsBase = (props: WithdrawableAssetsProps) => {
 
   return (
     <div className={props.className}>
-      <div className="withdrawable-header">Stuck assets</div>
+      <div className="withdrawable-header">Unclaimed balances</div>
       <div className="withdrawable-assets">
         {withdrawableAssets.map((asset) => (
           <WithdrawableAsset
