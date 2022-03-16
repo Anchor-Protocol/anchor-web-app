@@ -17,7 +17,7 @@ import { useAncVestingClaimTx } from '@anchor-protocol/app-provider/tx/anc/ancVe
 import { StreamStatus } from '@rx-stream/react';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MessageBox } from 'components/MessageBox';
 import { useAncVestingAccountQuery } from '@anchor-protocol/app-provider/queries/anc/vestingClaim';
 import { ANC, u } from '@anchor-protocol/types';
@@ -51,7 +51,7 @@ const ClaimableList = (props: ClaimableListProps) => {
 function ClaimBase(props: UIElementProps) {
   const { className } = props;
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const connectedWallet = useConnectedWallet();
 
@@ -76,7 +76,7 @@ function ClaimBase(props: UIElementProps) {
   ) {
     const onExit =
       vestingClaimResult.status === StreamStatus.DONE
-        ? () => history.push('/mypage')
+        ? () => navigate('/mypage')
         : () => {};
 
     return (

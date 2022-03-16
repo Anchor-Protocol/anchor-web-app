@@ -4,26 +4,28 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
-import { useBAssetInfoByTokenAddrQuery } from '../../queries/basset/bAssetInfoByTokenAddr';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
+import { useWhitelistCollateralByTokenAddrQuery } from '@anchor-protocol/app-provider';
 
 export interface BorrowProvideCollateralTxParams {
   depositAmount: bAsset;
-  //collateralDenom: COLLATERAL_DENOMS;
   onTxSucceed?: () => void;
 }
 
 export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
-  const { data: { bAsset } = {} } =
-    useBAssetInfoByTokenAddrQuery(bAssetTokenAddr);
+  const { data: collateral } =
+    useWhitelistCollateralByTokenAddrQuery(bAssetTokenAddr);
 
   const { refetch: borrowMarketQuery } = useBorrowMarketQuery();
   const { refetch: borrowBorrowerQuery } = useBorrowBorrowerQuery();
@@ -34,17 +36,23 @@ export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
 
   const stream = useCallback(
     ({ depositAmount, onTxSucceed }: BorrowProvideCollateralTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost || !bAsset) {
+      if (
+        !connectedWallet ||
+        !connected ||
+        !availablePost ||
+        !collateral ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return borrowProvideCollateralTx({
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         depositAmount,
         bAssetTokenAddr,
         overseerAddr: contractAddress.moneyMarket.overseer,
-        bAssetCustodyAddr: bAsset.custody_contract,
-        bAssetSymbol: bAsset.symbol,
+        bAssetCustodyAddr: collateral.custody_contract,
+        bAssetSymbol: collateral.symbol,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
@@ -65,10 +73,12 @@ export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
       });
     },
     [
-      bAsset,
+      collateral,
       bAssetTokenAddr,
+      availablePost,
       borrowBorrowerQuery,
       borrowMarketQuery,
+      connected,
       connectedWallet,
       constants.gasAdjustment,
       constants.gasWanted,
@@ -76,6 +86,7 @@ export function useBorrowProvideCollateralTx(bAssetTokenAddr: CW20Addr) {
       fixedFee,
       queryClient,
       refetchQueries,
+      terraWalletAddress,
       txErrorReporter,
     ],
   );

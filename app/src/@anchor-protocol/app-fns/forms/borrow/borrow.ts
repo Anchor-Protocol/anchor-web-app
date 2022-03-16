@@ -9,7 +9,10 @@ import {
   computeLtv,
   computeLtvToBorrowAmount,
 } from '@anchor-protocol/app-fns';
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
+import {
+  DeploymentTarget,
+  OverseerWhitelistWithDisplay,
+} from '@anchor-protocol/app-provider';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { u, UST } from '@libs/types';
@@ -22,13 +25,14 @@ import { computeBorrowTxFee } from '../../logics/borrow/computeBorrowTxFee';
 import { computeEstimateLiquidationPrice } from '../../logics/borrow/computeEstimateLiquidationPrice';
 import { validateBorrowAmount } from '../../logics/borrow/validateBorrowAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
-import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
+import { BAssetLtvs } from '../../queries/borrow/market';
 
 export interface BorrowBorrowFormInput {
   borrowAmount: UST;
 }
 
 export interface BorrowBorrowFormDependency {
+  target: DeploymentTarget;
   fixedFee: u<UST>;
   userUSTBalance: u<UST>;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
@@ -36,7 +40,6 @@ export interface BorrowBorrowFormDependency {
   oraclePrices: moneyMarket.oracle.PricesResponse;
   borrowRate: moneyMarket.interestModel.BorrowRateResponse;
   overseerWhitelist: OverseerWhitelistWithDisplay;
-  bAssetLtvsAvg: BAssetLtv;
   bAssetLtvs: BAssetLtvs;
   blocksPerYear: number;
   taxRate: Rate;
@@ -48,7 +51,6 @@ export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
   amountToLtv: (borrowAmount: u<UST>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<UST<Big>>;
   ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
-
   borrowLimit: u<UST<Big>>;
   currentLtv: Rate<Big> | undefined;
   userMaxLtv: Rate<BigSource>;
@@ -56,24 +58,20 @@ export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
   safeMax: u<UST<Big>>;
   max: u<UST<Big>>;
   invalidTxFee: string | undefined;
-
   nextLtv: Rate<Big> | undefined;
   txFee: u<UST<Big>> | undefined;
   estimatedLiquidationPrice: string | null;
-
   receiveAmount: u<UST<Big>> | undefined;
   invalidBorrowAmount: string | undefined;
   invalidOverMaxLtv: string | undefined;
   warningOverSafeLtv: string | undefined;
-
-  bAssetLtvsAvg: BAssetLtv;
-
   availablePost: boolean;
 }
 
 export interface BorrowBorrowFormAsyncStates {}
 
 export const borrowBorrowForm = ({
+  target,
   fixedFee,
   userUSTBalance,
   marketBorrowerInfo,
@@ -81,7 +79,6 @@ export const borrowBorrowForm = ({
   oraclePrices,
   borrowRate,
   overseerWhitelist,
-  bAssetLtvsAvg,
   bAssetLtvs,
   blocksPerYear,
   taxRate,
@@ -108,9 +105,10 @@ export const borrowBorrowForm = ({
 
   const max = computeBorrowMax(borrowLimit, borrowedAmount);
 
-  const invalidTxFee = connected
-    ? validateTxFee(userUSTBalance, fixedFee)
-    : undefined;
+  const invalidTxFee =
+    connected && target.isNative
+      ? validateTxFee(userUSTBalance, fixedFee)
+      : undefined;
 
   const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
     try {
@@ -129,11 +127,9 @@ export const borrowBorrowForm = ({
   > => {
     const nextLtv = computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
 
-    const txFee = computeBorrowTxFee(
-      borrowAmount,
-      { taxRate, maxTaxUUSD },
-      fixedFee,
-    );
+    const txFee = target.isNative
+      ? computeBorrowTxFee(borrowAmount, { taxRate, maxTaxUUSD }, fixedFee)
+      : (Big(0) as u<UST<Big>>);
 
     const estimatedLiquidationPrice = nextLtv
       ? computeEstimateLiquidationPrice(
@@ -185,7 +181,6 @@ export const borrowBorrowForm = ({
         invalidOverMaxLtv,
         warningOverSafeLtv,
         borrowAmount,
-        bAssetLtvsAvg,
         availablePost,
       },
       undefined,

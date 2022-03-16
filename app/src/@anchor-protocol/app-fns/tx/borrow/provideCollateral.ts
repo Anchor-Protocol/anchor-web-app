@@ -52,7 +52,6 @@ export function borrowProvideCollateralTx($: {
   bAssetTokenAddr: CW20Addr;
   bAssetCustodyAddr: HumanAddr;
   bAssetSymbol: string;
-
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;

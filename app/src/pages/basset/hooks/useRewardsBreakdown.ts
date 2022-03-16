@@ -12,10 +12,7 @@ import {
   useBorrowMarketQuery,
 } from '@anchor-protocol/app-provider';
 import { bAsset, moneyMarket } from '@anchor-protocol/types';
-import { CW20TokenDisplayInfo, CW20TokenDisplayInfos } from '@libs/app-fns';
-import { useCW20TokenDisplayInfosQuery } from '@libs/app-provider';
 import { HumanAddr, u, UST } from '@libs/types';
-import { useWallet } from '@terra-money/use-wallet';
 import big from 'big.js';
 import { useMemo } from 'react';
 import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
@@ -26,7 +23,7 @@ type BAssetClaimableRewardsPayload = [
 ];
 
 export type RewardBreakdown = {
-  tokenDisplay: CW20TokenDisplayInfo;
+  symbol: string;
   tokenRewardUST: u<UST<big>>;
   tokenReward: u<bAsset<big>>;
   tokenPriceUST: u<UST<big>>;
@@ -41,7 +38,6 @@ export type RewardsBreakdown = {
 const bLunaRewardBreakdown = (
   oraclePrices: moneyMarket.oracle.PricesResponse['prices'],
   contractAddress: AnchorContractAddress,
-  tokenDisplayInfos: { [addr: string]: CW20TokenDisplayInfo },
   claimableRewards?: BLunaClaimableRewards,
 ): RewardBreakdown => {
   const tokenPriceUST = big(
@@ -55,7 +51,7 @@ const bLunaRewardBreakdown = (
   );
 
   return {
-    tokenDisplay: tokenDisplayInfos[contractAddress.cw20.bLuna],
+    symbol: 'bLuna',
     tokenRewardUST,
     tokenPriceUST,
     tokenReward: (tokenPriceUST.gt(big(0))
@@ -85,7 +81,7 @@ const bAssetRewardsBreakdown = (
     ) as u<UST<big>>;
 
     return {
-      tokenDisplay: b.tokenDisplay.anchor,
+      symbol: b.tokenDisplay?.anchor?.symbol ?? b.bAsset.symbol,
       tokenRewardUST,
       tokenPriceUST,
       tokenReward: (tokenPriceUST.gt(big(0))
@@ -98,13 +94,11 @@ const bAssetRewardsBreakdown = (
 
 const useRewardsBreakdown = (
   oraclePrices: moneyMarket.oracle.PricesResponse['prices'],
-  tokenDisplayInfos: CW20TokenDisplayInfos,
 ): RewardsBreakdown => {
   const { data: bAssetInfoList = [] } = useBAssetInfoListQuery();
   const { data: { rewards: bAssetRewards = [] } = {} } =
     useBAssetClaimableRewardsTotalQuery();
 
-  const { network } = useWallet();
   const { contractAddress } = useAnchorWebapp();
   const { data: bLunaClaimableRewards } = useBLunaClaimableRewards();
 
@@ -113,16 +107,9 @@ const useRewardsBreakdown = (
       bLunaRewardBreakdown(
         oraclePrices,
         contractAddress,
-        tokenDisplayInfos[network.name] ?? {},
         bLunaClaimableRewards,
       ),
-    [
-      oraclePrices,
-      contractAddress,
-      tokenDisplayInfos,
-      network,
-      bLunaClaimableRewards,
-    ],
+    [oraclePrices, contractAddress, bLunaClaimableRewards],
   );
 
   const bAssetBreakdown = useMemo(
@@ -146,7 +133,6 @@ const useRewardsBreakdown = (
 
 export const useClaimableRewardsBreakdown = () => {
   const { data: { oraclePrices } = {} } = useBorrowMarketQuery();
-  const { data: tokenDisplayInfos = {} } = useCW20TokenDisplayInfosQuery();
 
-  return useRewardsBreakdown(oraclePrices?.prices ?? [], tokenDisplayInfos);
+  return useRewardsBreakdown(oraclePrices?.prices ?? []);
 };

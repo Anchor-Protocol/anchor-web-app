@@ -52,14 +52,14 @@ export function BorrowUsageGraph(props: BorrowUsageGraphProps) {
             ? theme.colors.negative
             : currentLtv.gte(ANCHOR_SAFE_RATIO)
             ? theme.colors.warning
-            : theme.colors.positive,
+            : theme.colors.primary,
           value: currentLtv.toNumber(),
           tooltip: undefined,
         }
       : {
           variant: 'label',
           label: '',
-          color: theme.colors.positive,
+          color: theme.colors.primary,
           value: 0,
           tooltip: undefined,
         },

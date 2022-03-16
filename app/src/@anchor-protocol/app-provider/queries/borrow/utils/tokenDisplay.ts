@@ -4,6 +4,7 @@ import { CW20TokenDisplayInfo } from '@libs/app-fns';
 import { TokenDisplayInfoByAddr } from '../../utils/tokenDisplay';
 
 type OverseerWhilelistElem = moneyMarket.overseer.WhitelistResponse['elems'][0];
+
 export type OverseerWhitelistWithDisplay = {
   elems: Array<OverseerWhilelistElem & { tokenDisplay: CW20TokenDisplayInfo }>;
 };

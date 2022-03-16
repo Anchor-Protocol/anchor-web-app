@@ -25,7 +25,6 @@ import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/Sel
 import { useResolveLast } from '@libs/use-resolve-last';
 import { NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { DiscloseSlippageSelector } from 'components/DiscloseSlippageSelector';
 import { MessageBox } from 'components/MessageBox';
@@ -34,6 +33,7 @@ import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { sellFromSimulation } from 'pages/trade/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/trade/logics/sellToSimulation';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
@@ -61,7 +61,7 @@ export function TradeSell() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -97,17 +97,17 @@ export function TradeSell() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidFromAmount = useMemo(() => {
-    if (fromAmount.length === 0 || !connectedWallet) return undefined;
+    if (fromAmount.length === 0 || !connected) return undefined;
 
     return microfy(fromAmount).gt(bank.tokenBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.tokenBalances.uANC, fromAmount, connectedWallet]);
+  }, [bank.tokenBalances.uANC, fromAmount, connected]);
 
   // ---------------------------------------------
   // effects
@@ -261,7 +261,7 @@ export function TradeSell() {
 
   const proceed = useCallback(
     (burnAmount: ANC, maxSpread: number) => {
-      if (!connectedWallet || !sell) {
+      if (!connected || !sell) {
         return;
       }
 
@@ -273,7 +273,7 @@ export function TradeSell() {
         },
       });
     },
-    [connectedWallet, sell, init],
+    [connected, sell, init],
   );
 
   // ---------------------------------------------
@@ -318,7 +318,7 @@ export function TradeSell() {
         error={!!invalidFromAmount}
         leftHelperText={invalidFromAmount}
         rightHelperText={
-          !!connectedWallet && (
+          connected && (
             <span>
               Balance:{' '}
               <span
@@ -453,8 +453,8 @@ export function TradeSell() {
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !sell ||
             !ancPrice ||
             fromAmount.length === 0 ||

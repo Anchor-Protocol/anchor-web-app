@@ -1,7 +1,7 @@
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { lastSyncedHeightQuery } from '@libs/app-fns';
 import { QueryClient } from '@libs/query-client';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
@@ -17,7 +17,7 @@ const queryFn = createQueryFn((queryClient: QueryClient, chainID: string) => {
 });
 
 export function useLastSyncedHeightQuery(): UseQueryResult<number> {
-  const { network } = useWallet();
+  const { network } = useNetwork();
   const { queryClient, queryErrorReporter } = useAnchorWebapp();
 
   const result = useQuery(

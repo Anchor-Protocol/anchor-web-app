@@ -1,5 +1,5 @@
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { truncate } from '@libs/formatter';
-import { useWallet } from '@terra-money/wallet-provider';
 import React from 'react';
 
 export interface TxHashProps {
@@ -7,7 +7,7 @@ export interface TxHashProps {
 }
 
 export function TxHashLink({ txHash }: TxHashProps) {
-  const { network } = useWallet();
+  const { network } = useNetwork();
 
   return (
     <a

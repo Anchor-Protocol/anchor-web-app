@@ -137,9 +137,17 @@ function Component({ className, bAssetInfo }: WhExportProps) {
           className="symbols"
           view="export"
           fromIcon={
-            <TokenIcon tokenDisplay={bAssetInfo.tokenDisplay.wormhole} />
+            <TokenIcon
+              symbol={bAssetInfo.tokenDisplay.wormhole?.symbol}
+              path={bAssetInfo.tokenDisplay.wormhole?.icon}
+            />
           }
-          toIcon={<TokenIcon tokenDisplay={bAssetInfo.tokenDisplay.anchor} />}
+          toIcon={
+            <TokenIcon
+              symbol={bAssetInfo.tokenDisplay.anchor?.symbol}
+              path={bAssetInfo.tokenDisplay.anchor?.symbol}
+            />
+          }
         />
       </ConvertSymbolsContainer>
 
@@ -171,7 +179,10 @@ function Component({ className, bAssetInfo }: WhExportProps) {
         }
       >
         <SelectAndTextInputContainerLabel>
-          <TokenIcon tokenDisplay={bAssetInfo.tokenDisplay.anchor} />{' '}
+          <TokenIcon
+            symbol={bAssetInfo.tokenDisplay.anchor?.symbol}
+            path={bAssetInfo.tokenDisplay.anchor?.icon}
+          />{' '}
           {bAssetInfo.tokenDisplay.anchor.symbol}
         </SelectAndTextInputContainerLabel>
         <NumberMuiInput
@@ -194,7 +205,10 @@ function Component({ className, bAssetInfo }: WhExportProps) {
 
       <SelectAndTextInputContainer className="to" gridColumns={[140, '1fr']}>
         <SelectAndTextInputContainerLabel>
-          <TokenIcon tokenDisplay={bAssetInfo.tokenDisplay.wormhole} />{' '}
+          <TokenIcon
+            symbol={bAssetInfo.tokenDisplay.wormhole?.symbol}
+            path={bAssetInfo.tokenDisplay.wormhole?.icon}
+          />{' '}
           {bAssetInfo.tokenDisplay.wormhole.symbol}
         </SelectAndTextInputContainerLabel>
         <NumberMuiInput

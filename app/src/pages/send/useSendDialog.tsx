@@ -39,12 +39,12 @@ import { Modal, NativeSelect as MuiNativeSelect } from '@material-ui/core';
 import { Warning } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
 import { AccAddress } from '@terra-money/terra.js';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import React, {
   ChangeEvent,
@@ -75,7 +75,7 @@ function ComponentBase({
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -154,7 +154,7 @@ function ComponentBase({
         cw20Address: cw20.bLuna,
       },
       ...infoAndBalances.map(({ bAsset, balance, tokenDisplay }) => ({
-        label: tokenDisplay.symbol,
+        label: tokenDisplay?.symbol ?? bAsset.symbol,
         value: bAsset.symbol,
         integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
         decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -163,16 +163,6 @@ function ComponentBase({
           formatBAssetInput(demicrofy(balance.balance)),
         cw20Address: bAsset.collateral_token,
       })),
-      //{
-      //  label: 'bETH',
-      //  value: 'beth',
-      //  integerPoints: LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-      //  decimalPoints: LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-      //  getWithdrawable: (bank: AnchorBank) => bank.tokenBalances.ubEth,
-      //  getFormatWithdrawable: (bank: AnchorBank) =>
-      //    formatBAssetInput(demicrofy(bank.tokenBalances.ubEth)),
-      //  cw20Address: cw20.bEth,
-      //},
       {
         label: 'ANC',
         value: 'anc',
@@ -247,8 +237,8 @@ function ComponentBase({
   }, [amount, bank.tax.maxTaxUUSD, bank.tax.taxRate, currency.value, fixedFee]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, txFee),
-    [bank, connectedWallet, txFee],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, txFee),
+    [bank, connected, txFee],
   );
 
   const invalidAddress = useMemo(() => {
@@ -279,7 +269,7 @@ function ComponentBase({
       txFee: u<UST>,
       memo: string,
     ) => {
-      if (!connectedWallet || !send) {
+      if (!connected || !send) {
         return;
       }
 
@@ -291,7 +281,7 @@ function ComponentBase({
         memo,
       });
     },
-    [connectedWallet, send],
+    [connected, send],
   );
 
   if (
@@ -423,7 +413,7 @@ function ComponentBase({
           <ActionButton
             className="send"
             disabled={
-              !connectedWallet ||
+              !connected ||
               !send ||
               address.length === 0 ||
               amount.length === 0 ||

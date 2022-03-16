@@ -1,4 +1,4 @@
-import { CW20Addr, HumanAddr, u, UST } from '@libs/types';
+import { HumanAddr, u, UST } from '@libs/types';
 import big, { Big } from 'big.js';
 import { bAsset } from '@anchor-protocol/types';
 import React, { useMemo } from 'react';
@@ -25,12 +25,7 @@ const tokenMetadataBySymbol: TokenMetadata = {
 };
 
 const defaultRewardBreakdown = (symbol: string): RewardBreakdown => ({
-  tokenDisplay: {
-    symbol,
-    protocol: '',
-    token: '' as CW20Addr,
-    icon: '',
-  },
+  symbol: '???',
   tokenPriceUST: big(0) as u<UST<Big>>,
   tokenReward: big(0) as u<bAsset<Big>>,
   tokenRewardUST: big(0) as u<UST<Big>>,
@@ -43,7 +38,7 @@ const Component = ({
 }: ClaimableRewardsBreakdownProps) => {
   const rewardChartDescriptors = useMemo(() => {
     const rewardsBySymbol = rewardsBreakdown.rewardBreakdowns.reduce(
-      (acc, curr) => ({ ...acc, [curr.tokenDisplay.symbol]: curr }),
+      (acc, curr) => ({ ...acc, [curr.symbol]: curr }),
       {} as { [k: string]: RewardBreakdown },
     );
 
@@ -56,7 +51,7 @@ const Component = ({
 
         return {
           value: Number(formatUTokenDecimal2(rewardBreakdown.tokenRewardUST)),
-          label: rewardBreakdown.tokenDisplay.symbol,
+          label: rewardBreakdown.symbol,
           color: tokenMetadata.color,
         };
       },

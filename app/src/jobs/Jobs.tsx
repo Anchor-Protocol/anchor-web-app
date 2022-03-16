@@ -1,4 +1,3 @@
-import { useLocalStorageJson } from '@libs/use-local-storage';
 import React, {
   Consumer,
   Context,
@@ -7,6 +6,7 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 import { LiquidationAlert, useLiquidationAlert } from './liquidationAlert';
 
 export interface JobsProviderProps {
@@ -22,13 +22,13 @@ export interface Jobs {
 const JobsContext: Context<Jobs> = createContext<Jobs>();
 
 export function JobsProvider({ children }: JobsProviderProps) {
-  const [liquidationAlert, updateLiquidationAlert] = useLocalStorageJson<{
+  const [liquidationAlert, updateLiquidationAlert] = useLocalStorage<{
     enabled: boolean;
     ratio: number;
-  }>('__anchor_jobs_liquidation_alert__', () => ({
+  }>('__anchor_jobs_liquidation_alert__', {
     enabled: false,
     ratio: 0.5,
-  }));
+  });
 
   useLiquidationAlert(liquidationAlert);
 

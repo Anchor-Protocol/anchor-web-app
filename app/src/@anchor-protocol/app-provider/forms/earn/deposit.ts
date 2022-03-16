@@ -3,33 +3,33 @@ import {
   EarnDepositFormStates,
 } from '@anchor-protocol/app-fns';
 import { UST } from '@anchor-protocol/types';
-import { useFixedFee } from '@libs/app-provider';
+import { useFixedFee, useUstTax } from '@libs/app-provider';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
+import { useBalances } from 'contexts/balances';
 import { useCallback } from 'react';
-import { useAnchorBank } from '../../hooks/useAnchorBank';
 
 export interface EarnDepositFormReturn extends EarnDepositFormStates {
   updateDepositAmount: (depositAmount: UST) => void;
 }
 
 export function useEarnDepositForm(): EarnDepositFormReturn {
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
-  const { tokenBalances, tax } = useAnchorBank();
+  const { uUST } = useBalances();
+
+  const { taxRate, maxTax } = useUstTax();
 
   const [input, states] = useForm(
     earnDepositForm,
     {
-      isConnected: !!connectedWallet,
+      isConnected: connected,
       fixedGas: fixedFee,
-      taxRate: tax.taxRate,
-      maxTaxUUSD: tax.maxTaxUUSD,
-      //taxRate: tax.taxRate,
-      //maxTaxUUSD: tax.maxTaxUUSD,
-      userUUSTBalance: tokenBalances.uUST,
+      taxRate: taxRate,
+      maxTaxUUSD: maxTax,
+      userUUSTBalance: uUST,
     },
     () => ({ depositAmount: '0' as UST }),
   );

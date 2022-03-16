@@ -13,6 +13,8 @@ export interface BAssetClaimTxParams {
 }
 
 export function useBAssetClaimTx() {
+  //const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, constants } = useAnchorWebapp();

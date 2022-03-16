@@ -27,7 +27,7 @@ export class StablecoinChart extends Component<StablecoinChartProps> {
           <hr />
           <section>
             <div
-              style={{ backgroundColor: this.props.theme.colors.positive }}
+              style={{ backgroundColor: this.props.theme.colors.secondary }}
             />
             <div />
           </section>
@@ -70,7 +70,7 @@ export class StablecoinChart extends Component<StablecoinChartProps> {
         this.chart.options.scales.x.ticks.color = this.props.theme.dimTextColor;
       }
       this.chart.data.datasets[0].borderColor =
-        this.props.theme.colors.positive;
+        this.props.theme.colors.secondary;
       this.chart.data.datasets[1].borderColor = this.props.theme.textColor;
     }
 
@@ -178,7 +178,7 @@ export class StablecoinChart extends Component<StablecoinChartProps> {
             data: this.props.data.map(({ total_ust_deposits }) =>
               big(total_ust_deposits).toNumber(),
             ),
-            borderColor: this.props.theme.colors.positive,
+            borderColor: this.props.theme.colors.secondary,
             borderWidth: 2,
           },
           {

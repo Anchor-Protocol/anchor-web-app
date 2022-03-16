@@ -1,0 +1,158 @@
+name: CI/CD
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - "release/*"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
+      - "v[0-9]+.[0-9]+.[0-9]+-rc*" # Push events to matching v*, i.e. v1.0-rc1, v20.15.10-rc5
+
+env:
+  NODE_VERSION: 14
+  NODE_OPTIONS: '--max_old_space_size=4096'
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  REGISTRY: ghcr.io
+  IMAGE_NAME: web-app
+  PLATFORMS: linux/amd64,linux/arm64
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set Node.js version
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - name: Cache yarn
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Version
+        run: |
+          node --version
+          yarn --version
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Lint
+        run: yarn run lint
+#
+      #- name: Test
+      #  run: |
+      #    yarn run app:coverage
+      #    yarn run landing:coverage
+#
+      #- name: Upload coverage to Codecov
+      #  uses: codecov/codecov-action@v1
+      #  with:
+      #    files: ./app/coverage/coverage-final.json,./landing/coverage/coverage-final.json
+
+      - name: Build
+        id: build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          yarn run app:build
+          echo "::set-output name=hash::${{ runner.os }}-app-$(git rev-parse --short HEAD)"
+          sed -i '/build/d' ./app/.gitignore
+
+      - name: Store build artifacts
+        uses: actions/upload-artifact@v3
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          name: ${{ steps.build.outputs.hash }}
+          path: app/build
+
+    outputs:
+      artifactName: ${{ steps.build.outputs.hash }}
+      artifactPath: app/build
+
+  release:
+    name: Release
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    permissions:
+      packages: write
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Restore build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.test.outputs.artifactName }}
+          path: ${{ needs.test.outputs.artifactPath }}
+
+      - name: Prepare
+        id: prep
+        run: |
+          VERSION=noop
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          elif [[ $GITHUB_REF == refs/heads/* ]]; then
+            VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+            if [ "${{ github.event.repository.default_branch }}" = "$VERSION" ]; then
+              VERSION=latest
+            fi
+          fi
+          IMAGE=$(echo ${REGISTRY}/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME} | tr '[:upper:]' '[:lower:]')
+          TAGS="${IMAGE}:${VERSION}"
+          TAGS="$TAGS,${IMAGE}:$(git rev-parse --short HEAD)"
+          if [[ $VERSION =~ ^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            TAGS="$TAGS,${IMAGE}:${VERSION}"
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=tags::${TAGS}
+          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          sed -i '/build/d' ./app/.gitignore
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: ${{ env.PLATFORMS }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: app/build
+          file: Dockerfile
+          push: ${{ github.event_name != 'pull_request' && !contains(github.ref, 'release') }}
+          tags: ${{ steps.prep.outputs.tags }}
+          platforms: ${{ env.PLATFORMS }}
+          build-args: |
+            BUILD_ENV=ci
