@@ -45,13 +45,12 @@ export const useRestoreTx = () => {
         removeTransaction(txParams.txHash);
         return result;
       } catch (error: any) {
-        console.log(error);
-
         if (errorContains(error, TxError.TxAlreadyProcessed)) {
           removeTransaction(txParams.txHash);
           return null;
         }
 
+        console.log(error);
         throw error;
       } finally {
         writer.timer.stop();

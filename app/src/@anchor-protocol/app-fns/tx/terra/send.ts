@@ -39,8 +39,6 @@ export function terraSendTx($: {
 }): Observable<TxResultRendering> {
   const helper = new TxHelper($);
 
-  console.log($);
-
   return pipe(
     _createTxOptions({
       msgs: $.currency.cw20Address

@@ -44,8 +44,6 @@ export const useWithdrawAssetsTx = () => {
           address!,
           TX_GAS_LIMIT,
           (event) => {
-            console.log(event, 'eventEmitted ');
-
             renderTxResults.next(
               txResult(event, connectType, chainId!, TxKind.WithdrawAssets),
             );

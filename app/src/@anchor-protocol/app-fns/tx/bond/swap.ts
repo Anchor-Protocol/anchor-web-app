@@ -95,8 +95,6 @@ export function bondSwapTx($: {
       }
 
       try {
-        console.log(fromContract);
-
         const boughtAmount = pickAttributeValueByKey<u<Luna>>(
           fromContract,
           'return_amount',
