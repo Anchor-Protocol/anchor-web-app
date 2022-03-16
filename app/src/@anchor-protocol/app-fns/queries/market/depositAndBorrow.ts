@@ -1,5 +1,6 @@
 import { JSDateTime, u, UST } from '@anchor-protocol/types';
-import { dedupeTimestamp } from './utils/dedupeTimestamp';
+import { group } from 'd3-array';
+import { gmt9am } from 'utils/gmt9am';
 
 interface MarketDepositRaw {
   total_ust_deposits: u<UST>;
@@ -51,17 +52,6 @@ export interface MarketDepositAndBorrowQueryParams {
   endpoint: string;
 }
 
-// const unique = [];
-//   const entities = response
-//     .sort((a, b) => b.timestamp - a.timestamp)
-//     .filter((entity) => {
-//       if (unique.indexOf(gmt9am(entity.timestamp)) > -1) {
-//         return false;
-//       }
-//       unique.push(gmt9am(entity.timestamp));
-//       return true;
-//     });
-
 export async function marketDepositAndBorrowQuery({
   endpoint,
 }: MarketDepositAndBorrowQueryParams): Promise<MarketDepositAndBorrowData> {
@@ -87,21 +77,23 @@ export async function marketDepositAndBorrowQuery({
     timestamp: Date.now() as JSDateTime,
   };
 
-  const combined = [
-    ...depositHistory.total_ust_deposits
-      .map(({ deposit, timestamp }, i) => {
-        return {
-          total_ust_deposits: deposit,
-          total_borrowed: borrowHistory[i].total_borrowed,
-          timestamp,
-        };
-      })
-      .reverse(),
-    now,
-  ];
+  const deposits = group(depositHistory.total_ust_deposits, (k) =>
+    gmt9am(k.timestamp),
+  );
+
+  const borrowings = group(borrowHistory, (k) => gmt9am(k.timestamp));
+
+  const combined = Array.from(deposits).map(([timestamp, deposit]) => {
+    const borrowing = borrowings.get(timestamp);
+    return {
+      timestamp: timestamp as JSDateTime,
+      total_ust_deposits: deposit[0].deposit,
+      total_borrowed: borrowing ? borrowing[0].total_borrowed : ('0' as u<UST>),
+    };
+  });
 
   return {
     now,
-    history: dedupeTimestamp(combined, 'timestamp'),
+    history: combined.sort((a, b) => a.timestamp - b.timestamp),
   };
 }
