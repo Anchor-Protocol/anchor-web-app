@@ -172,7 +172,7 @@ function TotalValueBase({ className }: TotalValueProps) {
         },
         {
           label: 'Govern',
-          tooltip: 'Total value of staked ANC and unclaimed voting rewards',
+          tooltip: 'Total value of staked ANC',
           amount: govern,
         },
       ],
