@@ -15,11 +15,18 @@ interface ContentProps extends UIElementProps {
   connection: Connection;
   onClose: Action;
   onDisconnectWallet: Action;
+  onAddUST?: Action;
 }
 
 const ContentBase = (props: ContentProps) => {
-  const { className, walletAddress, connection, onClose, onDisconnectWallet } =
-    props;
+  const {
+    className,
+    walletAddress,
+    connection,
+    onClose,
+    onDisconnectWallet,
+    onAddUST,
+  } = props;
 
   return (
     <WalletContent
@@ -30,7 +37,7 @@ const ContentBase = (props: ContentProps) => {
       readonly={false}
       onDisconnectWallet={onDisconnectWallet}
     >
-      <TokenList onClose={onClose} />
+      <TokenList onClose={onClose} onAddUST={onAddUST} />
       <WithdrawableAssets />
       <div className="restore-tx">
         <div className="restore-tx-inner">
