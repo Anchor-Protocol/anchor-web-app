@@ -81,7 +81,9 @@ export async function marketDepositAndBorrowQuery({
       .map(({ deposit, timestamp }, i) => {
         return {
           total_ust_deposits: deposit,
-          total_borrowed: borrowHistory[i].total_borrowed,
+          total_borrowed: borrowHistory[i]
+            ? borrowHistory[i].total_borrowed
+            : ('1' as u<UST>),
           timestamp,
         };
       })
