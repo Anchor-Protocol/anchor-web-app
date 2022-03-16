@@ -23,14 +23,19 @@ export const useReserveBackgroundTx = (tx: Transaction) => {
 
   useEffect(() => {
     // reattempt reservation on empty slot
-    if (tx.backgroundTransactionTabId === null) {
+    if (tx.backgroundTransactionTabId === null && !reservationTimeoutId) {
       const timeoutId = setTimeout(() => {
         reserveBackgroundTx(tx);
       }, reserveAfter);
       setReservationTimeoutId(timeoutId);
     }
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tx.backgroundTransactionTabId]);
+  }, [
+    tx,
+    reserveBackgroundTx,
+    reservationTimeoutId,
+    setReservationTimeoutId,
+    reserveAfter,
+  ]);
 
   useExecuteOnceWhen(
     () => {

@@ -140,19 +140,17 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
           </span>
         </div>
 
-        {txFee && (
-          <figure className="graph">
-            <AmountSlider
-              disabled={!connected}
-              max={Number(demicrofy(totalDeposit))}
-              txFee={Number(demicrofy(txFee))}
-              value={Number(withdrawAmount)}
-              onChange={(value) => {
-                updateWithdrawAmount(formatInput(value.toString() as UST));
-              }}
-            />
-          </figure>
-        )}
+        <figure className="graph">
+          <AmountSlider
+            disabled={!connected}
+            max={Number(demicrofy(totalDeposit))}
+            txFee={Number(demicrofy(txFee ?? ('0' as UST)))}
+            value={Number(withdrawAmount)}
+            onChange={(value) => {
+              updateWithdrawAmount(formatInput(value.toString() as UST));
+            }}
+          />
+        </figure>
 
         {txFee && receiveAmount && (
           <TxFeeList className="receipt">

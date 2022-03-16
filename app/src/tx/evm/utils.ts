@@ -72,7 +72,7 @@ export const txResultMessage = (
         connnectType,
       )} notification should appear soon...`;
     case CrossChainEventKind.RemoteChainReturnTxSubmitted:
-      return `Waiting for deposit transaction on ${capitalize(
+      return `Waiting for finalize transaction on ${capitalize(
         chain(chainId),
       )}...`;
   }

@@ -126,19 +126,18 @@ function DepositDialogBase(props: DepositDialogProps) {
             </span>
           </span>
         </div>
-        {txFee && (
-          <figure className="graph">
-            <AmountSlider
-              disabled={!account.connected}
-              max={Number(demicrofy(maxAmount))}
-              txFee={Number(demicrofy(txFee))}
-              value={Number(depositAmount)}
-              onChange={(value) => {
-                updateDepositAmount(formatInput(value.toString() as UST));
-              }}
-            />
-          </figure>
-        )}
+
+        <figure className="graph">
+          <AmountSlider
+            disabled={!account.connected}
+            max={Number(demicrofy(maxAmount))}
+            txFee={Number(demicrofy(txFee ?? ('0' as UST)))}
+            value={Number(depositAmount)}
+            onChange={(value) => {
+              updateDepositAmount(formatInput(value.toString() as UST));
+            }}
+          />
+        </figure>
 
         {txFee && sendAmount && (
           <TxFeeList className="receipt">

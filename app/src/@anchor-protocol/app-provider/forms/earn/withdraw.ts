@@ -38,7 +38,7 @@ export function useEarnWithdrawForm(): EarnWithdrawFormReturn {
       userUUSTBalance: uUST,
       totalDeposit: totalDeposit,
     },
-    () => ({ withdrawAmount: '0' as UST }),
+    () => ({ withdrawAmount: '' as UST }),
   );
 
   const updateWithdrawAmount = useCallback(

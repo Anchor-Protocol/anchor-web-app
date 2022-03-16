@@ -31,7 +31,7 @@ export function useEarnDepositForm(): EarnDepositFormReturn {
       maxTaxUUSD: maxTax,
       userUUSTBalance: uUST,
     },
-    () => ({ depositAmount: '0' as UST }),
+    () => ({ depositAmount: '' as UST }),
   );
 
   const updateDepositAmount = useCallback(
