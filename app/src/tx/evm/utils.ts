@@ -10,7 +10,7 @@ import { StreamReturn } from '@rx-stream/react';
 import { ANCHOR_TX_REFETCH_MAP } from 'env';
 import { ContractReceipt } from 'ethers';
 
-export const TX_GAS_LIMIT = 250000;
+export const TX_GAS_LIMIT = 255000;
 
 export type UseTxReturn<T, V> =
   | StreamReturn<T, TxResultRendering<V>>

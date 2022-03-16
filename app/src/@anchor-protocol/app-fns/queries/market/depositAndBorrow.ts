@@ -51,6 +51,17 @@ export interface MarketDepositAndBorrowQueryParams {
   endpoint: string;
 }
 
+// const unique = [];
+//   const entities = response
+//     .sort((a, b) => b.timestamp - a.timestamp)
+//     .filter((entity) => {
+//       if (unique.indexOf(gmt9am(entity.timestamp)) > -1) {
+//         return false;
+//       }
+//       unique.push(gmt9am(entity.timestamp));
+//       return true;
+//     });
+
 export async function marketDepositAndBorrowQuery({
   endpoint,
 }: MarketDepositAndBorrowQueryParams): Promise<MarketDepositAndBorrowData> {
