@@ -106,6 +106,7 @@ function TotalValueBase({ className }: TotalValueProps) {
       oraclePrices,
       bAssetBalanceTotal,
     );
+
     const pool =
       ancUstLp && ancPrice
         ? (big(big(ancUstLp.poolAssets.anc).mul(ancPrice.ANCPrice)).plus(
