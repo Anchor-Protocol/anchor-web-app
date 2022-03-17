@@ -73,7 +73,7 @@ export async function bAssetInfoAndBalanceTotalQuery(
 
   const infoAndBalances = await Promise.all(
     whitelist.elems
-      .filter(({ symbol }) => symbol.toLowerCase() !== 'bluna')
+      //.filter(({ symbol }) => symbol.toLowerCase() !== 'bluna')
       .map((el) => bAssetInfoAndBalanceQuery(walletAddr, el, queryClient)),
   ).then((list) => {
     return list
