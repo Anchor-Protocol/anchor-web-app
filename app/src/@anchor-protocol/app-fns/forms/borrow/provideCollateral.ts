@@ -24,7 +24,7 @@ import { validateDepositAmount } from '../../logics/borrow/validateDepositAmount
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
-import { normalize } from '@anchor-protocol/formatter';
+import { microfy } from '@anchor-protocol/formatter';
 
 export interface BorrowProvideCollateralFormInput {
   depositAmount: bAsset;
@@ -78,7 +78,6 @@ export const borrowProvideCollateralForm = ({
 }: BorrowProvideCollateralFormDependency) => {
   const amountToLtv = computeDepositAmountToLtv(
     collateralToken,
-    collateralTokenDecimals,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -87,7 +86,6 @@ export const borrowProvideCollateralForm = ({
 
   const ltvToAmount = computeLtvToDepositAmount(
     collateralToken,
-    collateralTokenDecimals,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -123,11 +121,7 @@ export const borrowProvideCollateralForm = ({
 
   const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
     try {
-      const draftAmount = ltvToAmount(draftLtv);
-
-      // UST is 6 decimals and TVL and limits are in UST so
-      // we need to normalize back to the tokens decimals
-      return amountToLtv(normalize(draftAmount, collateralTokenDecimals, 6));
+      return amountToLtv(ltvToAmount(draftLtv));
     } catch {
       return draftLtv;
     }
@@ -139,28 +133,31 @@ export const borrowProvideCollateralForm = ({
     BorrowProvideCollateralFormStates,
     BorrowProvideCollateralFormAsyncStates
   > => {
+    const amount =
+      depositAmount.length > 0
+        ? microfy(depositAmount, collateralTokenDecimals)
+        : ('0' as u<bAsset>);
+
     const nextLtv = computeProvideCollateralNextLtv(
-      depositAmount,
+      amount,
       currentLtv,
       amountToLtv,
     );
 
     const borrowLimit = computeProvideCollateralBorrowLimit(
-      depositAmount,
-      collateralTokenDecimals,
+      amount,
       amountToBorrowLimit,
     );
 
     const invalidDepositAmount = validateDepositAmount(
-      depositAmount,
+      amount,
       userBAssetBalance,
-      collateralTokenDecimals,
     );
 
     const availablePost =
       connected &&
       depositAmount.length > 0 &&
-      big(depositAmount).gt(0) &&
+      big(amount).gt(0) &&
       !invalidTxFee &&
       !invalidDepositAmount;
 

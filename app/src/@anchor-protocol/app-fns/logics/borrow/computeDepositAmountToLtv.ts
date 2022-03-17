@@ -1,13 +1,11 @@
 import { BAssetLtvs, computeBorrowLimit } from '@anchor-protocol/app-fns';
 import type { bAsset, CW20Addr, Rate, u } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
 
 export const computeDepositAmountToLtv =
   (
     collateralToken: CW20Addr,
-    collateralTokenDecimals: number,
     marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
     overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
     oraclePrices: moneyMarket.oracle.PricesResponse,
@@ -19,7 +17,7 @@ export const computeDepositAmountToLtv =
       overseerCollaterals,
       oraclePrices,
       bAssetLtvs,
-      [collateralToken, microfy(depositAmount, collateralTokenDecimals)],
+      [collateralToken, depositAmount],
     );
 
     return (
