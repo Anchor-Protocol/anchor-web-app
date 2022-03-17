@@ -13,7 +13,7 @@ export const useReserveBackgroundTx = (tx: Transaction) => {
   //   and background tx isn't invoked
   const [reservationTimeoutId, setReservationTimeoutId] =
     useState<NodeJS.Timer>();
-  const reserveAfter = useMemo(() => Math.random() * 5000, []);
+  const reserveAfter = useMemo(() => Math.random() * 10000, []);
   const { reserveBackgroundTx, unReserveBackgroundTx } =
     useBackgroundTransactions();
 
