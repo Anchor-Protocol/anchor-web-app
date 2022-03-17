@@ -35,7 +35,7 @@ function Component({ className }: UIElementProps) {
 
   const tabChange = useCallback(
     (nextTab: Item) => {
-      navigate(`/bluna/convert/${nextTab.value}`);
+      navigate(`/basset/bluna/${nextTab.value}`);
     },
     [navigate],
   );
