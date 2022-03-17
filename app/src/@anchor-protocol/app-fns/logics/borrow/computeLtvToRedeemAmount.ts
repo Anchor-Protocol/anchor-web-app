@@ -7,7 +7,6 @@ import { Big, BigSource } from 'big.js';
 export const computeLtvToRedeemAmount =
   (
     collateralToken: CW20Addr,
-    collateralTokenDecimals: number,
     marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse,
     overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
     oraclePrices: moneyMarket.oracle.PricesResponse,

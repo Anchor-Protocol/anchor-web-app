@@ -23,6 +23,7 @@ import { validateRedeemAmount } from '../../logics/borrow/validateRedeemAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
+import { microfy } from '@anchor-protocol/formatter';
 
 export interface BorrowRedeemCollateralFormInput {
   redeemAmount: bAsset;
@@ -88,7 +89,6 @@ export const borrowRedeemCollateralForm = ({
 
   const ltvToAmount = computeLtvToRedeemAmount(
     collateralToken,
-    collateralTokenDecimals,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -104,15 +104,27 @@ export const borrowRedeemCollateralForm = ({
     computeBorrowedAmount(marketBorrowerInfo),
   );
 
+  const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
+    try {
+      return amountToLtv(ltvToAmount(draftLtv));
+    } catch {
+      return draftLtv;
+    }
+  };
+
   return ({
     redeemAmount,
   }: BorrowRedeemCollateralFormInput): FormReturn<
     BorrowRedeemCollateralFormStates,
     BorrowRedeemCollateralFormAsyncStates
   > => {
+    const amount =
+      redeemAmount.length > 0
+        ? microfy(redeemAmount, collateralTokenDecimals)
+        : ('0' as u<bAsset>);
+
     const nextLtv = computeRedeemCollateralNextLtv(
-      redeemAmount,
-      collateralTokenDecimals,
+      amount,
       currentLtv,
       amountToLtv,
     );
@@ -123,8 +135,7 @@ export const borrowRedeemCollateralForm = ({
 
     const borrowLimit = computeRedeemCollateralBorrowLimit(
       collateralToken,
-      collateralTokenDecimals,
-      redeemAmount,
+      amount,
       overseerCollaterals,
       oraclePrices,
       bAssetLtvs,
@@ -135,19 +146,9 @@ export const borrowRedeemCollateralForm = ({
       : undefined;
 
     const invalidRedeemAmount = validateRedeemAmount(
-      redeemAmount,
+      amount,
       withdrawableMaxAmount,
-      collateralTokenDecimals,
     );
-
-    const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
-      try {
-        const draftAmount = ltvToAmount(draftLtv);
-        return amountToLtv(draftAmount);
-      } catch {
-        return draftLtv;
-      }
-    };
 
     const availablePost =
       connected &&

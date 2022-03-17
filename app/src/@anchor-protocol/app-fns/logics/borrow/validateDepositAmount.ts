@@ -1,14 +1,13 @@
 import type { bAsset, u } from '@anchor-protocol/types';
-import { microfy } from '@libs/formatter';
+import big from 'big.js';
 
 export function validateDepositAmount(
-  depositAmount: bAsset,
+  depositAmount: u<bAsset>,
   balance: u<bAsset>,
-  decimals: number,
 ): string | undefined {
   if (depositAmount.length === 0) {
     return undefined;
-  } else if (microfy(depositAmount, decimals).gt(balance ?? 0)) {
+  } else if (big(depositAmount).gt(balance ?? 0)) {
     return `Not enough assets`;
   }
   return undefined;
