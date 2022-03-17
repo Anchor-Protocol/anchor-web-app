@@ -210,17 +210,19 @@ export const MobileHeader = styled(MobileHeaderBase)`
     }
 
     .chain-selector {
-      margin-right: 20px;
+      margin-right: 10px;
 
       > button {
+        padding: 0 10px;
         border-color: ${({ theme }) => theme.header.textColor};
       }
     }
 
     .transaction-widget {
-      margin-right: 20px;
+      margin-right: 10px;
 
       > button {
+        padding: 0 10px;
         border-color: ${({ theme }) => theme.header.textColor};
       }
     }
@@ -232,7 +234,7 @@ export const MobileHeader = styled(MobileHeaderBase)`
 
     > button {
       &:last-child {
-        margin-left: 20px;
+        margin-left: 10px;
       }
     }
 
