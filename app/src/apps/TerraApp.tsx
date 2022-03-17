@@ -55,7 +55,7 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
           <Header />
           <AstroportGuideBanner />
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route index={true} element={<Dashboard />} />
 
             <Route path="/earn" element={<Earn />} />
 
@@ -141,7 +141,7 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/terms" element={<TermsOfService />} />
 
-            <Route element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </TerraAppProviders>

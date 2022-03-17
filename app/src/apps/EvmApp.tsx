@@ -22,7 +22,7 @@ export function EvmApp() {
         <GlobalStyle />
         <Header />
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route index={true} element={<Dashboard />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/earn" element={<Earn />} />
           <Route path="/borrow" element={<Borrow />} />
@@ -31,7 +31,7 @@ export function EvmApp() {
           <Route path="/poll/:id" element={<PollDetail />} />
           <Route path="/bridge/restore" element={<Restore />} />
           <Route path="/claim/all" element={<ClaimAll />} />
-          <Route element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <BackgroundTransactions />
       </div>
