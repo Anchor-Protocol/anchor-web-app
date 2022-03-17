@@ -49,6 +49,7 @@ export function useBAssetImportTx(tokenAddr: CW20Addr | undefined) {
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
+        bAssetInfo,
         // query
         queryClient,
         // error

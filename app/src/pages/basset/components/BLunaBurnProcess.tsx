@@ -1,7 +1,7 @@
-import { useLocalStorage } from '@libs/use-local-storage';
 import { Info, KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
 import { fixHMR } from 'fix-hmr';
 import React, { CSSProperties } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 import styled from 'styled-components';
 
 export interface BLunaBurnProcessProps {
@@ -12,7 +12,7 @@ export interface BLunaBurnProcessProps {
 function Component({ className, style }: BLunaBurnProcessProps) {
   const [show, setShow] = useLocalStorage<'on' | 'off'>(
     '__anchor_show_burn_process__',
-    () => 'off',
+    'off',
   );
 
   return (

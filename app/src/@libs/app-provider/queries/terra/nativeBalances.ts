@@ -6,8 +6,8 @@ import {
 } from '@libs/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { HumanAddr, NativeDenom, Token, u, UST } from '@libs/types';
-import { useConnectedWallet } from '@terra-money/use-wallet';
 import { useMemo } from 'react';
+import { useAccount } from 'contexts/account';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useApp } from '../../contexts/app';
 import { TERRA_QUERY_KEY } from '../../env';
@@ -19,17 +19,17 @@ export function useTerraNativeBalancesQuery(
 ): UseQueryResult<NativeBalances | undefined> {
   const { queryClient, queryErrorReporter } = useApp();
 
-  const connectedWallet = useConnectedWallet();
+  const { connected, terraWalletAddress } = useAccount();
 
   const result = useQuery(
     [
       TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
-      walletAddr ?? connectedWallet?.walletAddress,
+      walletAddr ?? terraWalletAddress,
       queryClient,
     ],
     queryFn,
     {
-      refetchInterval: !!connectedWallet && 1000 * 60 * 5,
+      refetchInterval: connected && 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,
       placeholderData: () => EMPTY_NATIVE_BALANCES,

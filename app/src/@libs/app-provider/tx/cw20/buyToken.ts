@@ -5,6 +5,7 @@ import { HumanAddr, Rate, Token, u, UST } from '@libs/types';
 import { useConnectedWallet } from '@terra-money/use-wallet';
 import big from 'big.js';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useApp } from '../../contexts/app';
 import { TERRA_TX_KEYS } from '../../env';
 import { useRefetchQueries } from '../../hooks/useRefetchQueries';
@@ -23,6 +24,8 @@ export function useCW20BuyTokenTx(
   tokenUstPairAddr: HumanAddr,
   tokenSymbol: string,
 ) {
+  const { availablePost, connected } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, constants } = useApp();
@@ -38,11 +41,7 @@ export function useCW20BuyTokenTx(
 
   const stream = useCallback(
     ({ buyAmount, txFee, maxSpread, onTxSucceed }: CW20BuyTokenTxParams) => {
-      if (
-        !connectedWallet ||
-        !connectedWallet.availablePost ||
-        !terraswapPool
-      ) {
+      if (!availablePost || !connected || !connectedWallet || !terraswapPool) {
         throw new Error(`Can't post!`);
       }
 
@@ -75,18 +74,20 @@ export function useCW20BuyTokenTx(
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
-      constants.gasAdjustment,
-      constants.gasWanted,
-      fixedFee,
-      maxTax,
-      refetchQueries,
-      taxRate,
       terraswapPool,
-      tokenSymbol,
       tokenUstPairAddr,
-      txErrorReporter,
+      tokenSymbol,
+      taxRate,
+      maxTax,
+      fixedFee,
+      constants.gasWanted,
+      constants.gasAdjustment,
       queryClient,
+      txErrorReporter,
+      refetchQueries,
     ],
   );
 

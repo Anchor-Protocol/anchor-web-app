@@ -67,7 +67,7 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
         this.chart.options.scales.y.ticks.color = this.props.theme.dimTextColor;
       }
       this.chart.data.datasets[0].borderColor =
-        this.props.theme.colors.positive;
+        this.props.theme.colors.secondary;
     }
 
     if (prevProps.isMobile !== this.props.isMobile) {
@@ -213,7 +213,7 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
             data: this.props.data.map(({ anc_price }) =>
               big(anc_price).toNumber(),
             ),
-            borderColor: this.props.theme.colors.positive,
+            borderColor: this.props.theme.colors.secondary,
             borderWidth: 2,
           },
         ],

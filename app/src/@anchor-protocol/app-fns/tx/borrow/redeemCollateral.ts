@@ -3,7 +3,12 @@ import {
   computeBorrowLimit,
   computeLtv,
 } from '@anchor-protocol/app-fns';
-import { formatLuna } from '@anchor-protocol/notation';
+import {
+  formatInput,
+  formatOutput,
+  microfy,
+  demicrofy,
+} from '@anchor-protocol/formatter';
 import {
   bAsset,
   bLuna,
@@ -15,6 +20,7 @@ import {
   UST,
 } from '@anchor-protocol/types';
 import {
+  CW20TokenDisplayInfo,
   pickAttributeValue,
   pickEvent,
   pickRawLog,
@@ -29,7 +35,7 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, formatRate, formatTokenInput } from '@libs/formatter';
+import { formatRate } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import {
@@ -45,6 +51,7 @@ import { BorrowMarket } from '../../queries/borrow/market';
 import { _fetchBorrowData } from './_fetchBorrowData';
 
 export function borrowRedeemCollateralTx($: {
+  tokenDisplay?: CW20TokenDisplayInfo;
   walletAddr: HumanAddr;
   redeemAmount: bAsset;
   overseerAddr: HumanAddr;
@@ -68,6 +75,7 @@ export function borrowRedeemCollateralTx($: {
   onTxSucceed?: () => void;
 }): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
+  const collateralDecimals = $.tokenDisplay?.decimals ?? 6;
 
   return pipe(
     _createTxOptions({
@@ -77,7 +85,13 @@ export function borrowRedeemCollateralTx($: {
           // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/overseer/src/msg.rs#L78
           unlock_collateral: {
             collaterals: [
-              [$.bAssetTokenAddr, formatTokenInput($.redeemAmount)],
+              [
+                $.bAssetTokenAddr,
+                formatInput(
+                  microfy($.redeemAmount, collateralDecimals),
+                  collateralDecimals,
+                ),
+              ],
             ],
           },
         }),
@@ -86,7 +100,10 @@ export function borrowRedeemCollateralTx($: {
         new MsgExecuteContract($.walletAddr, $.bAssetCustodyAddr, {
           // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/custody/src/msg.rs#L69
           withdraw_collateral: {
-            amount: formatTokenInput($.redeemAmount),
+            amount: formatInput(
+              microfy($.redeemAmount, collateralDecimals),
+              collateralDecimals,
+            ),
           },
         }),
       ],
@@ -134,9 +151,10 @@ export function borrowRedeemCollateralTx($: {
           receipts: [
             redeemedAmount && {
               name: 'Redeemed Amount',
-              value: `${formatLuna(demicrofy(redeemedAmount))} ${
-                $.bAssetSymbol
-              }`,
+              value: `${formatOutput(
+                demicrofy(redeemedAmount, collateralDecimals),
+                { decimals: collateralDecimals },
+              )} ${$.bAssetSymbol}`,
             },
             ltv && {
               name: 'New Borrow Usage',

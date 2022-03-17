@@ -21,13 +21,13 @@ import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { SelectAndTextInputContainer } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { Input, InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpLpSimulation } from 'pages/trade/logics/ancUstLpLpSimulation';
@@ -38,7 +38,7 @@ export function AncUstLpWithdraw() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -66,17 +66,17 @@ export function AncUstLpWithdraw() {
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [connectedWallet, bank, fixedFee],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [connected, bank, fixedFee],
   );
 
   const invalidLpAmount = useMemo(() => {
-    if (lpAmount.length === 0 || !connectedWallet) return undefined;
+    if (lpAmount.length === 0 || !connected) return undefined;
 
     return big(microfy(lpAmount)).gt(bank.tokenBalances.uAncUstLP)
       ? 'Not enough assets'
       : undefined;
-  }, [bank.tokenBalances.uAncUstLP, lpAmount, connectedWallet]);
+  }, [bank.tokenBalances.uAncUstLP, lpAmount, connected]);
 
   const updateLpAmount = useCallback(
     (nextLpAmount: string) => {
@@ -111,7 +111,7 @@ export function AncUstLpWithdraw() {
 
   const proceed = useCallback(
     (lpAmount: AncUstLP) => {
-      if (!connectedWallet || !withdraw) {
+      if (!connected || !withdraw) {
         return;
       }
 
@@ -122,7 +122,7 @@ export function AncUstLpWithdraw() {
         },
       });
     },
-    [connectedWallet, init, withdraw],
+    [connected, init, withdraw],
   );
 
   // ---------------------------------------------
@@ -253,8 +253,8 @@ export function AncUstLpWithdraw() {
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !withdraw ||
             lpAmount.length === 0 ||
             big(lpAmount).lte(0) ||

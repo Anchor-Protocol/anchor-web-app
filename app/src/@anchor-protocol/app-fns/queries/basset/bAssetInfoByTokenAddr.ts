@@ -55,6 +55,10 @@ export async function bAssetInfoByTokenSymbolQuery(
   tokenSymbol: string | undefined,
   queryClient: QueryClient,
 ): Promise<BAssetInfo | undefined> {
+  if (tokenSymbol === undefined) {
+    return undefined;
+  }
+
   const bAsset = await bAssetInfoByTokenQuery(
     overseerContract,
     queryClient,

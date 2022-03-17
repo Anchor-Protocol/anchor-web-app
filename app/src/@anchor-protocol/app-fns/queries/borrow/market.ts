@@ -55,10 +55,7 @@ export type BorrowMarket = WasmQueryData<BorrowMarketWasmQuery> & {
   marketBalances: {
     uUST: u<UST>;
   };
-
   bAssetLtvs: BAssetLtvs;
-  bAssetLtvsSum: BAssetLtv;
-  bAssetLtvsAvg: BAssetLtv;
 };
 
 // language=graphql
@@ -173,35 +170,12 @@ export async function borrowMarketQuery(
     }
   }
 
-  const bAssetLtvsSum = Array.from(bAssetLtvs).reduce(
-    (total, [, { max, safe }]) => {
-      return {
-        max: big(total.max).plus(max).toFixed() as Rate,
-        safe: big(total.safe).plus(safe).toFixed() as Rate,
-      };
-    },
-    { max: '0' as Rate, safe: '0' as Rate },
-  );
-
-  const bAssetLtvsAvg = {
-    max: big(bAssetLtvsSum.max).div(bAssetLtvs.size).toFixed() as Rate,
-    safe: big(bAssetLtvsSum.safe).div(bAssetLtvs.size).toFixed() as Rate,
-  };
-
   return {
     marketBalances,
     marketState,
     overseerWhitelist,
     oraclePrices,
-    //bLunaOraclePrice,
-    //bEthOraclePrice,
     borrowRate,
     bAssetLtvs,
-    bAssetLtvsSum,
-    bAssetLtvsAvg,
-    //bLunaMaxLtv,
-    //bLunaSafeLtv,
-    //bEthMaxLtv,
-    //bEthSafeLtv,
   };
 }

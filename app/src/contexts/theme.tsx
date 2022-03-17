@@ -1,5 +1,3 @@
-import { darkTheme } from '@libs/neumorphism-ui/themes/darkTheme';
-import { lightTheme } from '@libs/neumorphism-ui/themes/lightTheme';
 import { ThemeProvider as NeumorphismThemeProvider } from '@libs/neumorphism-ui/themes/ThemeProvider';
 import type { ReactNode } from 'react';
 import React, {
@@ -18,11 +16,14 @@ type ThemeColor = 'light' | 'dark';
 export interface ThemeProviderProps {
   children: ReactNode;
   initialTheme: ThemeColor;
+  lightTheme: DefaultTheme;
+  darkTheme?: DefaultTheme;
 }
 
 export interface ThemeState {
   themeColor: ThemeColor;
   theme: DefaultTheme;
+  switchable: boolean;
   updateTheme: (themeColor: ThemeColor) => void;
 }
 
@@ -31,32 +32,31 @@ const ThemeContext: Context<ThemeState> = createContext<ThemeState>();
 
 const storageKey = '__anchor_theme__';
 
-export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
+export function ThemeProvider(props: ThemeProviderProps) {
+  const { children, initialTheme, lightTheme, darkTheme } = props;
+
   const [themeColor, setThemeColor] = useState<ThemeColor>(
     () => (localStorage.getItem(storageKey) ?? initialTheme) as ThemeColor,
   );
 
-  const theme = useMemo(() => {
-    return themeColor === 'dark' ? darkTheme : lightTheme;
-  }, [themeColor]);
-
-  const updateTheme = useCallback((theme: ThemeColor) => {
-    setThemeColor(theme);
-    localStorage.setItem(storageKey, theme);
+  const updateTheme = useCallback((color: ThemeColor) => {
+    setThemeColor(color);
+    localStorage.setItem(storageKey, color);
   }, []);
 
   const state = useMemo<ThemeState>(
     () => ({
       themeColor,
-      theme,
+      theme: themeColor === 'dark' && darkTheme ? darkTheme : lightTheme,
+      switchable: darkTheme !== undefined,
       updateTheme,
     }),
-    [theme, themeColor, updateTheme],
+    [themeColor, updateTheme, lightTheme, darkTheme],
   );
 
   return (
     <ThemeContext.Provider value={state}>
-      <NeumorphismThemeProvider theme={theme}>
+      <NeumorphismThemeProvider theme={state.theme}>
         {children}
       </NeumorphismThemeProvider>
     </ThemeContext.Provider>

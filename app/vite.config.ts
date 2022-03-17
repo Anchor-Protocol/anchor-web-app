@@ -1,4 +1,5 @@
 import reactRefresh from '@vitejs/plugin-react-refresh';
+import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
 import * as path from 'path';
 import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
@@ -28,7 +29,7 @@ export default defineConfig({
       peerMaxConcurrentStreams: 300,
     },
   },
-  plugins: [reactRefresh(), tsconfigPaths(), svgr()],
+  plugins: [viteCommonjs(), reactRefresh(), tsconfigPaths(), svgr()],
   build: {
     sourcemap: true,
     outDir: 'build',

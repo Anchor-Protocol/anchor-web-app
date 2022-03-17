@@ -1,18 +1,23 @@
-import { BorrowMarket, borrowMarketQuery } from '@anchor-protocol/app-fns';
+import { borrowMarketQuery } from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
+import {
+  BorrowMarketWithDisplay,
+  withBorrowMarketTokenDisplay,
+} from './utils/tokenDisplay';
+import { useQueryWithTokenDisplay } from '../utils/tokenDisplay';
 
 const queryFn = createQueryFn(borrowMarketQuery);
 
 export function useBorrowMarketQuery(): UseQueryResult<
-  BorrowMarket | undefined
+  BorrowMarketWithDisplay | undefined
 > {
   const { contractAddress, hiveQueryClient, queryErrorReporter } =
     useAnchorWebapp();
 
-  return useQuery(
+  const borrowMarket = useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_MARKET,
       contractAddress.moneyMarket.market,
@@ -24,8 +29,10 @@ export function useBorrowMarketQuery(): UseQueryResult<
     queryFn,
     {
       refetchInterval: 1000 * 60 * 5,
-      keepPreviousData: true,
+      keepPreviousData: false,
       onError: queryErrorReporter,
     },
   );
+
+  return useQueryWithTokenDisplay(borrowMarket, withBorrowMarketTokenDisplay);
 }

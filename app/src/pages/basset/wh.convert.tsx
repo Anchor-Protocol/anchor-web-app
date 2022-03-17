@@ -1,25 +1,12 @@
-import { prettifySymbol } from '@anchor-protocol/app-fns';
 import { useBAssetInfoByTokenSymbolQuery } from '@anchor-protocol/app-provider';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
+import { UIElementProps } from '@libs/ui';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { fixHMR } from 'fix-hmr';
 import React, { useCallback, useMemo } from 'react';
-import {
-  Redirect,
-  Route,
-  RouteComponentProps,
-  Switch,
-  useRouteMatch,
-} from 'react-router-dom';
+import { useMatch, useNavigate, Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import { WhExport } from './components/WhExport';
-import { WhImport } from './components/WhImport';
-
-export interface WormholeConvertProps
-  extends RouteComponentProps<{ tokenSymbol: string | undefined }> {
-  className?: string;
-}
 
 interface Item {
   label: string;
@@ -27,20 +14,21 @@ interface Item {
   tooltip: string;
 }
 
-function Component({ className, match, history }: WormholeConvertProps) {
+function Component({ className }: UIElementProps) {
+  const navigate = useNavigate();
+
+  const match = useMatch({ path: '/basset/wh/:tokenSymbol/:page', end: true });
+
   const { data: bAssetInfo } = useBAssetInfoByTokenSymbolQuery(
-    match.params.tokenSymbol,
+    match?.params.tokenSymbol,
   );
 
   const tabItems = useMemo<Item[]>(() => {
     const bAssetSymbol = bAssetInfo
-      ? prettifySymbol(bAssetInfo.bAsset.symbol)
+      ? bAssetInfo.tokenDisplay.anchor.symbol
       : 'ASSET';
     const whAssetSymbol = bAssetInfo
-      ? prettifySymbol(
-          bAssetInfo.wormholeTokenInfo!.symbol,
-          bAssetInfo.wormholeTokenInfo,
-        )
+      ? bAssetInfo.tokenDisplay.wormhole.symbol
       : 'whASSET';
 
     return [
@@ -58,19 +46,15 @@ function Component({ className, match, history }: WormholeConvertProps) {
     ];
   }, [bAssetInfo]);
 
-  const pageMatch = useRouteMatch<{ page: string }>(`${match.url}/:page`);
-
   const tab = useMemo<Item | undefined>(() => {
-    return tabItems.find(({ value }) => value === pageMatch?.params.page);
-  }, [pageMatch?.params.page, tabItems]);
+    return tabItems.find(({ value }) => value === match?.params.page);
+  }, [match?.params.page, tabItems]);
 
   const tabChange = useCallback(
     (nextTab: Item) => {
-      history.push({
-        pathname: `${match.url}/${nextTab.value}`,
-      });
+      navigate(`/basset/wh/${match?.params.tokenSymbol}/${nextTab.value}`);
     },
-    [history, match.url],
+    [navigate, match?.params.tokenSymbol],
   );
 
   return (
@@ -90,17 +74,7 @@ function Component({ className, match, history }: WormholeConvertProps) {
         keyFunction={({ value }) => value}
         tooltipFunction={({ tooltip }) => tooltip}
       />
-
-      <Switch>
-        <Redirect exact path={`${match.url}/`} to={`${match.url}/to-basset`} />
-        <Route path={`${match.url}/to-basset`}>
-          {bAssetInfo && <WhImport bAssetInfo={bAssetInfo} />}
-        </Route>
-        <Route path={`${match.url}/to-wbasset`}>
-          {bAssetInfo && <WhExport bAssetInfo={bAssetInfo} />}
-        </Route>
-        <Redirect path={`${match.url}/*`} to={`${match.url}/to-basset`} />
-      </Switch>
+      <Outlet />
     </CenteredLayout>
   );
 }

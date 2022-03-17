@@ -1,22 +1,24 @@
+import { BorrowBorrower, borrowBorrowForm } from '@anchor-protocol/app-fns';
 import {
-  BorrowBorrower,
-  borrowBorrowForm,
-  BorrowMarket,
-} from '@anchor-protocol/app-fns';
-import { useFixedFee } from '@libs/app-provider';
+  BorrowMarketWithDisplay,
+  useDeploymentTarget,
+} from '@anchor-protocol/app-provider';
+import { useFixedFee, useUstTax } from '@libs/app-provider';
 import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
+import { useBalances } from 'contexts/balances';
 import { useAnchorWebapp } from '../../contexts/context';
-import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export function useBorrowBorrowForm(
-  fallbackBorrowMarket: BorrowMarket,
+  fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
 ) {
-  const connectedWallet = useConnectedWallet();
+  const { target } = useDeploymentTarget();
+
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -24,13 +26,14 @@ export function useBorrowBorrowForm(
     constants: { blocksPerYear },
   } = useAnchorWebapp();
 
-  const { tokenBalances, tax } = useAnchorBank();
+  const { uUST } = useBalances();
+
+  const { taxRate, maxTax } = useUstTax();
 
   const {
     data: {
       borrowRate,
       oraclePrices,
-      bAssetLtvsAvg,
       bAssetLtvs,
       overseerWhitelist,
     } = fallbackBorrowMarket,
@@ -43,13 +46,13 @@ export function useBorrowBorrowForm(
   return useForm(
     borrowBorrowForm,
     {
-      maxTaxUUSD: tax.maxTaxUUSD,
-      taxRate: tax.taxRate,
-      userUSTBalance: tokenBalances.uUST,
-      connected: !!connectedWallet,
+      target,
+      maxTaxUUSD: maxTax,
+      taxRate: taxRate,
+      userUSTBalance: uUST,
+      connected,
       oraclePrices,
       borrowRate,
-      bAssetLtvsAvg,
       bAssetLtvs,
       overseerCollaterals,
       blocksPerYear,

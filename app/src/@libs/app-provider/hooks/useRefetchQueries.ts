@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useQueryClient } from 'react-query';
+import { TxRefetchMap } from '..';
 import { useApp } from '../contexts/app';
 import { QueryRefetch } from '../types';
 
@@ -23,14 +24,14 @@ function runRefetch(queryRefetch: string | QueryRefetch): Promise<string> {
   });
 }
 
-export function useRefetchQueries() {
+export function useRefetchQueries(refetchMap?: TxRefetchMap) {
   const queryClient = useQueryClient();
 
-  const { refetchMap } = useApp();
+  const { refetchMap: terraRefetchMap } = useApp();
 
   return useCallback(
     (txKey: string) => {
-      const queryRefetches = refetchMap[txKey];
+      const queryRefetches = (refetchMap ?? terraRefetchMap)[txKey];
 
       if (queryRefetches) {
         for (const queryRefetch of queryRefetches) {
@@ -43,6 +44,6 @@ export function useRefetchQueries() {
         }
       }
     },
-    [queryClient, refetchMap],
+    [queryClient, refetchMap, terraRefetchMap],
   );
 }

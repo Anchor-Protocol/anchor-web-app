@@ -17,14 +17,14 @@ import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import React, { useCallback, useMemo } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { SwishSpinner } from 'react-spinners-kit';
 import styled from 'styled-components';
 
@@ -39,9 +39,9 @@ function AirdropBase({ className }: AirdropProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { data: airdrop, isLoading } = useAirdropCheckQuery();
 
@@ -57,23 +57,23 @@ function AirdropBase({ className }: AirdropProps) {
   const bank = useAnchorBank();
 
   const invalidTxFee = useMemo(
-    () => connectedWallet && validateTxFee(bank.tokenBalances.uUST, airdropFee),
-    [airdropFee, bank, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, airdropFee),
+    [airdropFee, bank, connected],
   );
 
   const exit = useCallback(() => {
-    history.push('/earn');
-  }, [history]);
+    navigate('/earn');
+  }, [navigate]);
 
   const proceed = useCallback(
     (airdrop: AirdropData) => {
-      if (!connectedWallet || !claim) {
+      if (!connected || !claim) {
         return;
       }
 
       claim({ airdrop });
     },
-    [claim, connectedWallet],
+    [claim, connected],
   );
 
   // ---------------------------------------------
@@ -145,8 +145,8 @@ function AirdropBase({ className }: AirdropProps) {
           <ActionButton
             className="proceed"
             disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
+              !connected ||
+              !availablePost ||
               !claim ||
               !airdrop ||
               !!invalidTxFee

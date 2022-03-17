@@ -32,15 +32,20 @@ export interface NeumorphismTheme extends Theme {
   textColor: string;
   dimTextColor: string;
 
-  //errorTextColor: string;
-  //positiveTextColor: string;
-  //pointColor: string;
+  header: {
+    backgroundColor: string;
+    textColor: string;
+  };
 
   // level
   colors: {
     positive: string;
     negative: string;
     warning: string;
+    primary: string;
+    primaryDark: string;
+    secondary: string;
+    secondaryDark: string;
   };
 
   // label
@@ -50,11 +55,15 @@ export interface NeumorphismTheme extends Theme {
     borderColor: string;
   };
 
+  // the colors to display on the charts
+  chart: string[];
+
   // action buttons
   actionButton: {
     backgroundColor: string;
     backgroundHoverColor: string;
     textColor: string;
+    hoverTextColor: string;
   };
 
   // text buttons
@@ -67,6 +76,7 @@ export interface NeumorphismTheme extends Theme {
     borderColor: string;
     borderHoverColor: string;
     textColor: string;
+    hoverTextColor: string;
   };
 
   // selector
@@ -111,6 +121,14 @@ export interface NeumorphismTheme extends Theme {
   skeleton: {
     backgroundColor: string;
     lightColor: string;
+  };
+
+  // message-box
+  messageBox: {
+    borderColor: string;
+    backgroundColor: string;
+    textColor: string;
+    linkColor: string;
   };
 
   // dialog

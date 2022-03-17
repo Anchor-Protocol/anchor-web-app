@@ -1,3 +1,4 @@
+import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
 import {
   computeBorrowedAmount,
   computeBorrowLimit,
@@ -21,7 +22,9 @@ import { computeProvideCollateralNextLtv } from '../../logics/borrow/computeProv
 import { pickCollateral } from '../../logics/borrow/pickCollateral';
 import { validateDepositAmount } from '../../logics/borrow/validateDepositAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
-import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
+import { BAssetLtvs } from '../../queries/borrow/market';
+import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
+import { normalize } from '@anchor-protocol/formatter';
 
 export interface BorrowProvideCollateralFormInput {
   depositAmount: bAsset;
@@ -29,13 +32,13 @@ export interface BorrowProvideCollateralFormInput {
 
 export interface BorrowProvideCollateralFormDependency {
   collateralToken: CW20Addr;
+  collateralTokenDecimals: number;
   fixedFee: u<UST>;
   userUSTBalance: u<UST>;
   userBAssetBalance: u<bAsset>;
   oraclePrices: moneyMarket.oracle.PricesResponse;
-  overseerWhitelist: moneyMarket.overseer.WhitelistResponse;
+  overseerWhitelist: OverseerWhitelistWithDisplay;
   bAssetLtvs: BAssetLtvs;
-  bAssetLtvsAvg: BAssetLtv;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse;
   connected: boolean;
@@ -46,19 +49,14 @@ export interface BorrowProvideCollateralFormStates
   amountToLtv: (depositAmount: u<bAsset>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<bAsset<Big>>;
   ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
-
-  bAssetLtvsAvg: BAssetLtv;
-
   dangerLtv: Rate<Big>;
-  collateral: moneyMarket.overseer.WhitelistResponse['elems'][number];
-
+  collateral: OverseerWhitelistWithDisplay['elems'][0];
   txFee: u<UST>;
   currentLtv: Rate<Big> | undefined;
   nextLtv: Rate<Big> | undefined;
   borrowLimit: u<UST<Big>>;
   invalidTxFee: string | undefined;
   invalidDepositAmount: string | undefined;
-
   userBAssetBalance: u<bAsset>;
   availablePost: boolean;
 }
@@ -67,11 +65,11 @@ export interface BorrowProvideCollateralFormAsyncStates {}
 
 export const borrowProvideCollateralForm = ({
   collateralToken,
+  collateralTokenDecimals,
   fixedFee,
   userUSTBalance,
   userBAssetBalance,
   bAssetLtvs,
-  bAssetLtvsAvg,
   overseerWhitelist,
   overseerCollaterals,
   oraclePrices,
@@ -80,6 +78,7 @@ export const borrowProvideCollateralForm = ({
 }: BorrowProvideCollateralFormDependency) => {
   const amountToLtv = computeDepositAmountToLtv(
     collateralToken,
+    collateralTokenDecimals,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -88,6 +87,7 @@ export const borrowProvideCollateralForm = ({
 
   const ltvToAmount = computeLtvToDepositAmount(
     collateralToken,
+    collateralTokenDecimals,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -111,6 +111,8 @@ export const borrowProvideCollateralForm = ({
 
   const currentLtv = computeLtv(borrowLimit, borrowedAmount);
 
+  const bAssetLtvsAvg = computebAssetLtvsAvg(bAssetLtvs);
+
   const dangerLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
 
   const collateral = pickCollateral(collateralToken, overseerWhitelist);
@@ -122,7 +124,10 @@ export const borrowProvideCollateralForm = ({
   const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
     try {
       const draftAmount = ltvToAmount(draftLtv);
-      return amountToLtv(draftAmount);
+
+      // UST is 6 decimals and TVL and limits are in UST so
+      // we need to normalize back to the tokens decimals
+      return amountToLtv(normalize(draftAmount, collateralTokenDecimals, 6));
     } catch {
       return draftLtv;
     }
@@ -142,12 +147,14 @@ export const borrowProvideCollateralForm = ({
 
     const borrowLimit = computeProvideCollateralBorrowLimit(
       depositAmount,
+      collateralTokenDecimals,
       amountToBorrowLimit,
     );
 
     const invalidDepositAmount = validateDepositAmount(
       depositAmount,
       userBAssetBalance,
+      collateralTokenDecimals,
     );
 
     const availablePost =
@@ -172,7 +179,6 @@ export const borrowProvideCollateralForm = ({
         ltvToAmount,
         userBAssetBalance,
         availablePost,
-        bAssetLtvsAvg,
         txFee: fixedFee,
       },
       undefined,

@@ -5,11 +5,12 @@ import { TradeBuy } from 'pages/trade/components/TradeBuy';
 import { TradeSell } from 'pages/trade/components/TradeSell';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
-  Redirect,
+  Navigate,
   Route,
-  Switch,
-  useHistory,
-  useRouteMatch,
+  Routes,
+  useNavigate,
+  useMatch,
+  Outlet,
 } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -39,9 +40,9 @@ const tabItems: Item[] = [
 ];
 
 function TradeBase({ className }: RewardsPoolProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
-  const pageMatch = useRouteMatch<{ view: string }>(`/trade/:view`);
+  const pageMatch = useMatch(`/trade/:view`);
 
   const tab = useMemo<Item | undefined>(() => {
     switch (pageMatch?.params.view) {
@@ -54,11 +55,11 @@ function TradeBase({ className }: RewardsPoolProps) {
 
   const tabChange = useCallback(
     (nextTab: Item) => {
-      history.push({
+      navigate({
         pathname: nextTab.value === 'sell' ? `/trade/sell` : `/trade/buy`,
       });
     },
-    [history],
+    [navigate],
   );
 
   return (
@@ -74,12 +75,13 @@ function TradeBase({ className }: RewardsPoolProps) {
       />
 
       <Section>
-        <Switch>
-          <Route path={`/trade/buy`} component={TradeBuy} />
-          <Route path={`/trade/sell`} component={TradeSell} />
-          <Redirect exact path={`/trade`} to={`/trade/buy`} />
-          <Redirect path={`/trade/*`} to={`/trade/buy`} />
-        </Switch>
+        <Routes>
+          <Route path="" element={<Navigate to="/trade/buy" />} />
+          <Route path="/buy" element={<TradeBuy />} />
+          <Route path="/sell" element={<TradeSell />} />
+          <Route path="*" element={<Navigate to="/trade/buy" />} />
+        </Routes>
+        <Outlet />
       </Section>
     </CenteredLayout>
   );

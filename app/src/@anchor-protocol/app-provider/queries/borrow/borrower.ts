@@ -1,8 +1,8 @@
 import { BorrowBorrower, borrowBorrowerQuery } from '@anchor-protocol/app-fns';
 import { EMPTY_QUERY_RESULT } from '@libs/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useQuery, UseQueryResult } from 'react-query';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_QUERY_KEY } from '../../env';
 
@@ -11,7 +11,7 @@ const queryFn = createQueryFn(borrowBorrowerQuery);
 export function useBorrowBorrowerQuery(): UseQueryResult<
   BorrowBorrower | undefined
 > {
-  const connectedWallet = useConnectedWallet();
+  const { connected, terraWalletAddress } = useAccount();
 
   const { queryClient, lastSyncedHeight, queryErrorReporter } =
     useAnchorWebapp();
@@ -23,7 +23,7 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_BORROWER,
-      connectedWallet?.walletAddress,
+      terraWalletAddress,
       lastSyncedHeight,
       moneyMarket.market,
       moneyMarket.overseer,
@@ -31,12 +31,12 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
     ],
     queryFn,
     {
-      refetchInterval: !!connectedWallet && 1000 * 60 * 5,
-      enabled: !!connectedWallet,
+      refetchInterval: connected && 1000 * 60 * 5,
+      enabled: connected,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },
   );
 
-  return connectedWallet ? result : EMPTY_QUERY_RESULT;
+  return connected ? result : EMPTY_QUERY_RESULT;
 }

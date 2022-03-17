@@ -6,7 +6,7 @@ import {
 } from '@libs/app-fns';
 import { Token } from '@libs/types';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-money/use-wallet';
+import { useAccount } from 'contexts/account';
 import { useApp } from '../../contexts/app';
 import { useFixedFee } from '../../hooks/useFixedFee';
 import { useSendBalanceQuery } from '../../queries/send/balance';
@@ -18,7 +18,7 @@ export interface SendFormParams {
 }
 
 export function useSendForm<T extends Token>({ tokenInfo }: SendFormParams) {
-  const connectedWallet = useConnectedWallet();
+  const { connected, terraWalletAddress } = useAccount();
 
   const { queryClient } = useApp();
 
@@ -26,7 +26,7 @@ export function useSendForm<T extends Token>({ tokenInfo }: SendFormParams) {
 
   const { taxRate, maxTax } = useUstTax();
 
-  const uUST = useUstBalance(connectedWallet?.walletAddress);
+  const uUST = useUstBalance(terraWalletAddress);
 
   const balance = useSendBalanceQuery<T>(
     'native_token' in tokenInfo.assetInfo
@@ -41,14 +41,14 @@ export function useSendForm<T extends Token>({ tokenInfo }: SendFormParams) {
     {
       tokenInfo,
       balance,
-      walletAddr: connectedWallet?.walletAddress,
+      walletAddr: terraWalletAddress,
       queryClient,
       ustBalance: uUST,
       taxRate,
       maxTaxUUSD: maxTax,
       fixedFee,
       maxSpread: 0.1,
-      connected: !!connectedWallet,
+      connected,
     },
     () => ({ amount: '', toAddr: '', memo: '' } as SendFormInput<T>),
   );

@@ -1,6 +1,6 @@
+import React, { useCallback, useMemo } from 'react';
 import { computeTotalDeposit } from '@anchor-protocol/app-fns';
 import { useEarnEpochStatesQuery } from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   formatUST,
   formatUSTWithPostfixUnits,
@@ -13,11 +13,12 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { AnimateNumber } from '@libs/ui';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { SubAmount } from 'components/primitives/SubAmount';
-import React, { useCallback, useMemo } from 'react';
+import { useAccount } from 'contexts/account';
+import { useBalances } from 'contexts/balances';
 import { useDepositDialog } from './useDepositDialog';
 import { useWithdrawDialog } from './useWithdrawDialog';
+import Big from 'big.js';
 
 export interface TotalDepositSectionProps {
   className?: string;
@@ -27,14 +28,12 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const {
-    tokenBalances: { uaUST },
-  } = useAnchorBank();
+  const { uUST, uaUST } = useBalances();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 
@@ -55,11 +54,11 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   const [openWithdrawDialog, withdrawDialogElement] = useWithdrawDialog();
 
   const openDeposit = useCallback(async () => {
-    await openDepositDialog({});
+    await openDepositDialog();
   }, [openDepositDialog]);
 
   const openWithdraw = useCallback(async () => {
-    await openWithdrawDialog({});
+    await openWithdrawDialog();
   }, [openWithdrawDialog]);
 
   // ---------------------------------------------
@@ -93,13 +92,13 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
 
       <aside className="total-deposit-buttons">
         <ActionButton
-          disabled={!connectedWallet || !moneyMarketEpochState}
+          disabled={!connected || !moneyMarketEpochState || Big(uUST).lte(0)}
           onClick={openDeposit}
         >
           Deposit
         </ActionButton>
         <BorderButton
-          disabled={!connectedWallet || !moneyMarketEpochState}
+          disabled={!connected || !moneyMarketEpochState || Big(uaUST).lte(0)}
           onClick={openWithdraw}
         >
           Withdraw

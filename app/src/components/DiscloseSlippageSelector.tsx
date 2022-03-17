@@ -1,6 +1,5 @@
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
-import { useLocalStorageJson } from '@libs/use-local-storage';
 import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import big from 'big.js';
 import {
@@ -9,6 +8,7 @@ import {
 } from 'components/SlippageSelector';
 import { fixHMR } from 'fix-hmr';
 import React from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 import styled from 'styled-components';
 
 export interface DiscloseSlippageSelectorProps extends SlippageSelectorProps {}
@@ -18,9 +18,9 @@ function Component({
   value,
   ...selectorProps
 }: DiscloseSlippageSelectorProps) {
-  const [{ open }, setOpen] = useLocalStorageJson<{ open: boolean }>(
+  const [{ open }, setOpen] = useLocalStorage<{ open: boolean }>(
     '__anchor_slippage__',
-    () => ({ open: false }),
+    { open: false },
   );
 
   return (

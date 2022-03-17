@@ -1,31 +1,34 @@
 import { Wallet } from '@anchor-protocol/icons';
-import { Connection, ConnectType } from '@terra-money/wallet-provider';
+import { UIElementProps } from '@libs/ui';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
-export interface ConnectionIconsProps {
-  className?: string;
-  connection: Connection;
+export interface ConnectionIconsProps extends UIElementProps {
+  name: string;
+  readonly: boolean;
+  icon: string;
 }
 
-function ConnectionIconsBase({ className, connection }: ConnectionIconsProps) {
+function ConnectionIconsBase(props: ConnectionIconsProps) {
+  const { className, name, readonly, icon } = props;
   return (
     <div className={className}>
-      {connection.type !== ConnectType.READONLY ? (
-        <Description>{connection.name}</Description>
-      ) : null}
-
-      <Icon>
-        <Wallet />
-      </Icon>
-
-      {connection.type !== ConnectType.READONLY && <Line />}
-
-      {connection.type !== ConnectType.READONLY ? (
+      {readonly ? (
         <Icon>
-          <img src={connection.icon} alt={connection.name} />
+          <Wallet />
         </Icon>
-      ) : null}
+      ) : (
+        <>
+          <Description>{name}</Description>
+          <Icon>
+            <Wallet />
+          </Icon>
+          <Line />
+          <Icon>
+            <img src={icon} alt={name} />
+          </Icon>
+        </>
+      )}
     </div>
   );
 }

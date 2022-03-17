@@ -1,6 +1,5 @@
 import { App, useApp } from '@libs/app-provider';
 import { NetworkInfo } from '@terra-money/use-wallet';
-import { useWallet } from '@terra-money/wallet-provider';
 import React, {
   Context,
   createContext,
@@ -8,6 +7,7 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
+import { useNetwork } from '..';
 import { AnchorConstants, AnchorContractAddress } from '../types';
 
 export interface AnchorWebappProviderProps {
@@ -28,7 +28,7 @@ export function AnchorWebappProvider({
   children,
   indexerApiEndpoints,
 }: AnchorWebappProviderProps) {
-  const { network } = useWallet();
+  const { network } = useNetwork();
 
   //const { contractAddress } = useApp<AnchorContractAddress>();
 

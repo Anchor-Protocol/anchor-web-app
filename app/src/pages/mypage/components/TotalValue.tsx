@@ -3,28 +3,28 @@ import {
   computeTotalDeposit,
 } from '@anchor-protocol/app-fns';
 import {
-  useAnchorWebapp,
   useAncPriceQuery,
   useBAssetInfoAndBalanceTotalQuery,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
+  useDeploymentTarget,
   useEarnEpochStatesQuery,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
-import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { u, UST } from '@anchor-protocol/types';
 import { sum } from '@libs/big-math';
-import { demicrofy } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { AnimateNumber } from '@libs/ui';
 import { Send } from '@material-ui/icons';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
+import { useAccount } from 'contexts/account';
+import { useBalances } from 'contexts/balances';
+import { useTheme } from 'contexts/theme';
 import { fixHMR } from 'fix-hmr';
 import { computeHoldings } from 'pages/mypage/logics/computeHoldings';
 import { useRewards } from 'pages/mypage/logics/useRewards';
@@ -38,16 +38,6 @@ export interface TotalValueProps {
   className?: string;
 }
 
-const colors = [
-  '#4bdb4b',
-  '#36a337',
-  '#2d832d',
-  '#246d25',
-  '#174f1a',
-  '#0e3311',
-  '#101010',
-];
-
 interface Item {
   label: string;
   tooltip: string;
@@ -55,9 +45,19 @@ interface Item {
 }
 
 function TotalValueBase({ className }: TotalValueProps) {
-  const connectedWallet = useConnectedWallet();
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
 
-  const { tokenBalances } = useAnchorBank();
+  const { theme } = useTheme();
+
+  const { connected } = useAccount();
+
+  const tokenBalances = useBalances();
+
+  const {
+    ust: { formatOutput, demicrofy, symbol },
+  } = useFormatters();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 
@@ -66,8 +66,6 @@ function TotalValueBase({ className }: TotalValueProps) {
   const { ancUstLp, ustBorrow } = useRewards();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-
-  const { contractAddress } = useAnchorWebapp();
 
   const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
@@ -87,7 +85,7 @@ function TotalValueBase({ className }: TotalValueProps) {
     totalValue: u<UST<BigSource>>;
     data: Item[];
   }>(() => {
-    if (!connectedWallet) {
+    if (!connected) {
       return { totalValue: '0' as u<UST>, data: [] };
     }
 
@@ -105,7 +103,6 @@ function TotalValueBase({ className }: TotalValueProps) {
     const holdings = computeHoldings(
       tokenBalances,
       ancPrice,
-      contractAddress,
       oraclePrices,
       bAssetBalanceTotal,
     );
@@ -172,7 +169,7 @@ function TotalValueBase({ className }: TotalValueProps) {
         },
         {
           label: 'Govern',
-          tooltip: 'Total value of staked ANC and unclaimed voting rewards',
+          tooltip: 'Total value of staked ANC',
           amount: govern,
         },
       ],
@@ -181,8 +178,7 @@ function TotalValueBase({ className }: TotalValueProps) {
     ancPrice,
     ancUstLp,
     bAssetBalanceTotal,
-    connectedWallet,
-    contractAddress,
+    connected,
     marketBorrowerInfo,
     moneyMarketEpochState,
     oraclePrices,
@@ -200,9 +196,9 @@ function TotalValueBase({ className }: TotalValueProps) {
     return data.map(({ label, amount }, i) => ({
       label,
       value: +amount,
-      color: colors[i % colors.length],
+      color: theme.chart[i % theme.chart.length],
     }));
-  }, [data]);
+  }, [data, theme.chart]);
 
   return (
     <Section className={className} data-small-layout={isSmallLayout}>
@@ -218,21 +214,20 @@ function TotalValueBase({ className }: TotalValueProps) {
             </IconSpan>
           </h4>
           <p>
-            <AnimateNumber format={formatUSTWithPostfixUnits}>
+            <AnimateNumber format={formatOutput}>
               {demicrofy(totalValue)}
             </AnimateNumber>
             <Sub> UST</Sub>
           </p>
         </div>
-        <div>
-          <BorderButton
-            onClick={() => openSend({})}
-            disabled={!connectedWallet}
-          >
-            <Send />
-            Send
-          </BorderButton>
-        </div>
+        {isNative && (
+          <div>
+            <BorderButton onClick={() => openSend({})} disabled={!connected}>
+              <Send />
+              Send
+            </BorderButton>
+          </div>
+        )}
       </header>
 
       <div className="values">
@@ -240,7 +235,7 @@ function TotalValueBase({ className }: TotalValueProps) {
           {data.map(({ label, tooltip, amount }, i) => (
             <li
               key={label}
-              style={{ color: colors[i] }}
+              style={{ color: theme.chart[i] }}
               data-focus={i === focusedIndex}
             >
               <i />
@@ -249,7 +244,10 @@ function TotalValueBase({ className }: TotalValueProps) {
                   {label} <InfoTooltip>{tooltip}</InfoTooltip>
                 </IconSpan>
               </p>
-              <p>{formatUSTWithPostfixUnits(demicrofy(amount))} UST</p>
+              <p>
+                {formatOutput(demicrofy(amount))}
+                {` ${symbol}`}
+              </p>
             </li>
           ))}
         </ul>
