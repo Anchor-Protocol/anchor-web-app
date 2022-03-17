@@ -26,7 +26,6 @@ export function computeEstimateLiquidationPrice(
   const whitelist = overseerWhitelist.elems.find(
     ({ collateral_token }) => collateral_token === collateral[0],
   );
-
   const oracle = oraclePrices.prices.find(
     ({ asset }) => asset === collateral[0],
   );
