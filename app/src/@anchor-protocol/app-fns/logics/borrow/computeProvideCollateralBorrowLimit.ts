@@ -6,9 +6,10 @@ import { Big, BigSource } from 'big.js';
 
 export function computeProvideCollateralBorrowLimit(
   depositAmount: bAsset,
+  decimals: number,
   amountToBorrowLimit: (depositAmount: u<bAsset<BigSource>>) => u<UST<Big>>,
 ): u<UST<Big>> {
   return depositAmount.length > 0
-    ? amountToBorrowLimit(microfy(depositAmount))
+    ? amountToBorrowLimit(microfy(depositAmount, decimals))
     : (Big(0) as u<UST<Big>>);
 }

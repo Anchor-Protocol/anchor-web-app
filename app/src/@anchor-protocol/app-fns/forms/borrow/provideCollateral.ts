@@ -78,6 +78,7 @@ export const borrowProvideCollateralForm = ({
 }: BorrowProvideCollateralFormDependency) => {
   const amountToLtv = computeDepositAmountToLtv(
     collateralToken,
+    collateralTokenDecimals,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -146,6 +147,7 @@ export const borrowProvideCollateralForm = ({
 
     const borrowLimit = computeProvideCollateralBorrowLimit(
       depositAmount,
+      collateralTokenDecimals,
       amountToBorrowLimit,
     );
 
