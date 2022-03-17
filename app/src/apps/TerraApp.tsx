@@ -66,7 +66,7 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
             <Route path="/basset/bluna" element={<BlunaConvert />}>
               <Route path="" element={<Navigate to="mint" />} />
               <Route path="mint" element={<BLunaMint />} />
-              <Route path="burnt" element={<BLunaBurn />} />
+              <Route path="burn" element={<BLunaBurn />} />
               <Route path="*" element={<Navigate to="mint" />} />
             </Route>
 
