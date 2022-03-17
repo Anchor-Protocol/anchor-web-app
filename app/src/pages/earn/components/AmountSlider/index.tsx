@@ -92,7 +92,7 @@ export const AmountSlider = ({
   const quarterValueUST = useMemo(() => (0.25 * max).toFixed(2), [max]);
   const halfValueUST = useMemo(() => (0.5 * max).toFixed(2), [max]);
   const threeFourthsValueUST = useMemo(() => (0.75 * max).toFixed(2), [max]);
-  const maxValueUST = useMemo(() => allowed.toFixed(2), [allowed]);
+  const maxValueUST = useMemo(() => max.toFixed(2), [max]);
 
   return (
     <HorizontalGraphBar<Data>
@@ -124,7 +124,7 @@ export const AmountSlider = ({
           variant: 'label',
           label: `Max`,
           color: 'rgba(0, 0, 0, 0)',
-          value: allowed / max,
+          value: 1,
           tooltip: `${maxValueUST} UST`,
         },
         {
@@ -132,7 +132,7 @@ export const AmountSlider = ({
           label: `${formatRate(valueRatio.toFixed(2) as Rate)}%`,
           color:
             value > allowed ? theme.colors.negative : theme.colors.positive,
-          value: Math.min(value, allowed) / max,
+          value: Math.min(value, max) / max,
         },
       ]}
       colorFunction={colorFunction}
@@ -147,7 +147,7 @@ export const AmountSlider = ({
               min={0}
               max={max}
               start={0}
-              end={allowed}
+              end={max}
               value={value}
               onChange={onChange}
             />
