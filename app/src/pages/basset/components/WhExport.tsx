@@ -145,7 +145,7 @@ function Component({ className, bAssetInfo }: WhExportProps) {
           toIcon={
             <TokenIcon
               symbol={bAssetInfo.tokenDisplay.anchor?.symbol}
-              path={bAssetInfo.tokenDisplay.anchor?.symbol}
+              path={bAssetInfo.tokenDisplay.anchor?.icon}
             />
           }
         />
