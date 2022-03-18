@@ -245,7 +245,7 @@ function OverviewBase({ className }: OverviewProps) {
             <p>
               <AnimateNumber format={formatRate}>
                 {lpRewards && lpRewards.length > 0
-                  ? lpRewards[0].APY
+                  ? lpRewards[0].apr
                   : (0 as Rate<number>)}
               </AnimateNumber>{' '}
               %

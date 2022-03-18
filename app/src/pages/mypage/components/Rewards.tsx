@@ -185,7 +185,7 @@ export function RewardsBase({ className }: RewardsProps) {
               </td>
               <td>
                 {lpRewards && lpRewards.length > 0
-                  ? formatRate(lpRewards[0].APY)
+                  ? formatRate(lpRewards[0].apr)
                   : 0}{' '}
                 %
               </td>
