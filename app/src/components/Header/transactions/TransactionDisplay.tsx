@@ -1,20 +1,38 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { UIElementProps } from '@libs/ui';
-import styled, { useTheme } from 'styled-components';
-import { formatDistance } from 'date-fns';
-import { truncateEvm } from '@libs/formatter';
+import styled from 'styled-components';
+import { differenceInSeconds } from 'date-fns';
+import { formatEllapsedSimple, truncateEvm } from '@libs/formatter';
 import { Transaction } from 'tx/evm/storage/useTransactions';
-import { formatTxKind, txResultMessage } from 'tx/evm/utils';
+import { formatTxKind, TxKind } from 'tx/evm/utils';
 import useClipboard from 'react-use-clipboard';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Check } from '@material-ui/icons';
 import { useResumeBackgroundTx } from './background/useResumeBackgroundTx';
-import { useEvmWallet } from '@libs/evm-wallet';
-import { CircleSpinner } from 'react-spinners-kit';
+import { CrossChainEventKind } from '@anchor-protocol/crossanchor-sdk';
+import { useCountdown } from 'usehooks-ts';
+import { TransactionProgress } from './TransactionProgress';
 
 interface TransactionDisplayProps extends UIElementProps {
   tx: Transaction;
 }
+
+const ONE_WAY_TX_STEPS =
+  CrossChainEventKind.OutgoingSequenceRetrieved.valueOf();
+const TWO_WAY_TX_STEPS = CrossChainEventKind.CrossChainTxCompleted.valueOf();
+
+const txStepCount = (tx: Transaction) => {
+  switch (tx.display.txKind) {
+    case TxKind.BorrowUst:
+    case TxKind.DepositUst:
+    case TxKind.RedeemCollateral:
+    case TxKind.WithdrawAssets:
+    case TxKind.WithdrawUst:
+      return TWO_WAY_TX_STEPS;
+    default:
+      return ONE_WAY_TX_STEPS;
+  }
+};
 
 function TransactionDisplayBase(props: TransactionDisplayProps) {
   const { className, tx } = props;
@@ -23,37 +41,47 @@ function TransactionDisplayBase(props: TransactionDisplayProps) {
     successDuration: 2000,
   });
 
-  useResumeBackgroundTx(tx);
-  const { connectType, chainId } = useEvmWallet();
-  const theme = useTheme();
+  const [countdown, { start, stop }] = useCountdown({
+    seconds: differenceInSeconds(new Date(), tx.display.timestamp),
+    interval: 1000,
+    isIncrement: true,
+  });
 
+  useEffect(() => {
+    start();
+
+    return () => {
+      stop();
+    };
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useResumeBackgroundTx(tx);
   return (
     <div className={className} key={tx.txHash}>
       <div className="details">
         <span className="action">{formatTxKind(tx.display.txKind)}</span>
-        <span className="tx-hash" onClick={setCopied}>
-          <IconSpan className="copy">{isCopied && <Check />}</IconSpan>
-          <span className="hash">{truncateEvm(tx.txHash)}</span>
-          <CircleSpinner size={8} color={theme.colors.secondary} />
-        </span>
+        <div className="amount">{tx.display.amount ?? 'Unknown'}</div>
       </div>
 
       <div className="more-details">
-        <div className="amount">{tx.display.amount ?? 'Unknown'}</div>
+        <span className="tx-hash" onClick={setCopied}>
+          <span className="hash">{truncateEvm(tx.txHash)}</span>
+          {isCopied && (
+            <IconSpan className="copy">
+              <Check /> Copied
+            </IconSpan>
+          )}
+        </span>
         <div className="timestamp">
-          {formatDistance(tx.display.timestamp, new Date(), {
-            addSuffix: true,
-          })}
+          {formatEllapsedSimple(countdown * 1000)}
         </div>
       </div>
-      <div className="tx-message">
-        {txResultMessage(
-          tx.lastEventKind,
-          connectType!,
-          chainId!,
-          tx.display.txKind,
-        )}
-      </div>
+
+      <TransactionProgress
+        stepCount={txStepCount(tx)}
+        currStep={tx.lastEventKind}
+      />
     </div>
   );
 }
@@ -64,7 +92,7 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
   align-items: flex-start;
   font-weight: 500;
   font-size: 10px;
-  margin: 10px;
+  margin-bottom: 20px;
 
   .tx-hash {
     cursor: pointer;
@@ -72,16 +100,32 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
     align-items: center;
 
     .copy {
-      margin-right: 5px;
-
       > .MuiSvgIcon-root {
-        font-size: 14px;
+        font-size: 12px;
+        margin-right: -2px;
       }
+
+      padding: 0px 5px;
+      text-transform: uppercase;
+      border: 0;
+      outline: none;
+      border-radius: 12px;
+
+      background-color: ${({ theme }) =>
+        theme.palette.type === 'light' ? '#f1f1f1' : 'rgba(0, 0, 0, 0.15)'};
+      color: ${({ theme }) => theme.dimTextColor};
     }
 
     .hash {
       margin-right: 5px;
+      text-decoration: underline;
+      font-size: 12px;
+      color: ${({ theme }) => theme.textColor};
     }
+  }
+
+  .amount {
+    font-size: 12px;
   }
 
   .tx-message {
@@ -99,22 +143,22 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
   }
 
   .action {
+    text-transform: capitalize;
     font-size: 12px;
     width: auto;
-    height: 20px;
-    line-height: 20px;
   }
 
   .details {
     display: flex;
     width: 100%;
-    margin-bottom: 2px;
+    margin-bottom: 5px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
 
   .more-details {
+    margin-bottom: 5px;
     width: 100%;
     color: ${({ theme }) => theme.dimTextColor};
     display: flex;
@@ -122,5 +166,7 @@ export const TransactionDisplay = styled(TransactionDisplayBase)`
 
   .timestamp {
     margin-left: auto;
+    font-size: 12px;
+    font-weight: 400;
   }
 `;
