@@ -13,7 +13,7 @@ function AirdropBase({
 }: {
   className?: string;
   onClose: () => void;
-  isMobileLayout?: true;
+  isMobileLayout: boolean;
 }) {
   return (
     <div
