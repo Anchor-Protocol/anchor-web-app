@@ -18,18 +18,9 @@ export type CW20TokenDisplayInfos = {
   [network: string]: CW20NetworkTokenDisplayInfos;
 };
 
-//let cache: CW20TokenDisplayInfos;
-
 export async function cw20TokenDisplayInfosQuery(
   chain: Chain,
 ): Promise<CW20TokenDisplayInfos> {
-  console.log('cw20TokenDisplayInfosQuery:chain', chain);
-
-  // if (cache) {
-  //   console.log('cw20TokenDisplayInfosQuery:cached');
-  //   return cache;
-  // }
-
   // mainnet -> protocol === Wormhole (starts with wa)
   let data: CW20TokenDisplayInfos = await fetch(
     'https://assets.terra.money/cw20/tokens.json',
@@ -38,8 +29,6 @@ export async function cw20TokenDisplayInfosQuery(
   if (chain !== Chain.Terra) {
     data = trimWormholeSymbols(data);
   }
-
-  //cache = data;
 
   return data;
 }
