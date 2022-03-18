@@ -2,7 +2,10 @@ import {
   ANCHOR_DANGER_RATIO,
   ANCHOR_SAFE_RATIO,
 } from '@anchor-protocol/app-fns';
-import { useBorrowBorrowForm } from '@anchor-protocol/app-provider';
+import {
+  useBorrowBorrowForm,
+  useDeploymentTarget,
+} from '@anchor-protocol/app-provider';
 import {
   formatUST,
   formatUSTInput,
@@ -36,6 +39,7 @@ import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
 import { BroadcastTxStreamResult } from 'pages/earn/components/types';
 import big from 'big.js';
+import { BorrowCollateralInput } from './BorrowCollateralInput';
 
 export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   txResult: StreamResult<TxResultRendering> | null;
@@ -58,6 +62,10 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     onProceed,
     renderBroadcastTxResult,
   } = props;
+
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
 
   const { availablePost, connected } = useAccount();
 
@@ -224,6 +232,8 @@ function BorrowDialogBase(props: BorrowDialogProps) {
             {states.estimatedLiquidationPrice}
           </EstimatedLiquidationPrice>
         )}
+
+        {isNative === false && <BorrowCollateralInput />}
 
         {states.txFee && states.receiveAmount && states.receiveAmount.gt(0) && (
           <TxFeeList className="receipt">
