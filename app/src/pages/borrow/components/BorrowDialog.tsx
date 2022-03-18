@@ -12,7 +12,7 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Rate, u, UST } from '@anchor-protocol/types';
+import { CollateralAmount, Rate, u, UST } from '@anchor-protocol/types';
 import { TxResultRendering } from '@libs/app-fns';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -233,7 +233,13 @@ function BorrowDialogBase(props: BorrowDialogProps) {
           </EstimatedLiquidationPrice>
         )}
 
-        {isNative === false && <BorrowCollateralInput />}
+        {isNative === false && (
+          <BorrowCollateralInput
+            symbol="bETH"
+            amount={'123' as CollateralAmount}
+            onChange={(value) => {}}
+          />
+        )}
 
         {states.txFee && states.receiveAmount && states.receiveAmount.gt(0) && (
           <TxFeeList className="receipt">

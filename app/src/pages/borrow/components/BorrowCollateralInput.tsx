@@ -3,7 +3,7 @@ import {
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { Collateral } from '@anchor-protocol/types';
+import { CollateralAmount } from '@anchor-protocol/types';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import {
   SelectAndTextInputContainer,
@@ -18,8 +18,8 @@ import styled from 'styled-components';
 interface CollateralInputProps extends UIElementProps {
   symbol: string;
   path?: string;
-  amount: Collateral<BigSource>;
-  onChange: (amount: Collateral<BigSource>) => void;
+  amount: CollateralAmount<BigSource>;
+  onChange: (amount: CollateralAmount<BigSource>) => void;
 }
 
 const CollateralInputComponent = (props: CollateralInputProps) => {
@@ -40,7 +40,7 @@ const CollateralInputComponent = (props: CollateralInputProps) => {
         maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) => {
-          onChange(target.value as Collateral);
+          onChange(target.value as CollateralAmount);
         }}
       />
     </SelectAndTextInputContainer>
