@@ -1,4 +1,5 @@
 import { exportCW20Decimals } from '@anchor-protocol/app-fns/functions/cw20Decimals';
+import { BAssetInfoWithDisplay } from '@anchor-protocol/app-provider';
 import {
   basset,
   bAsset,
@@ -40,7 +41,7 @@ import { Observable } from 'rxjs';
 
 export function bAssetImportTx($: {
   walletAddr: HumanAddr;
-  //bAssetInfo: BAssetInfo;
+  bAssetInfo: BAssetInfoWithDisplay;
   converterAddr: HumanAddr;
   wormholeTokenAddr: CW20Addr;
   wormholeTokenAmount: bAsset;
@@ -90,14 +91,9 @@ export function bAssetImportTx($: {
         return helper.failedToFindEvents('from_contract');
       }
 
-      // TODO: need to fix this to pull the asset symbols, names, and decimals
-      // from the Terra asset info
-
       try {
         const amount = pickAttributeValue<u<bAsset>>(fromContract, 4);
         const mintedAmount = pickAttributeValue<u<bAsset>>(fromContract, 8);
-
-        //const exchangeRate = new Int(mintedAmount).div(new Int(amount));
 
         return {
           value: null,
@@ -105,21 +101,21 @@ export function bAssetImportTx($: {
           receipts: [
             amount && {
               name: 'Provided amount',
-              // value:
-              //   formatBAsset(demicrofy(burnAmount)) +
-              //   ` ${$.bAssetInfo.wormholeTokenInfo.symbol}`,
-              value: formatNumeric(amount, 8) + ` webETH`,
+              value:
+                formatNumeric(
+                  amount,
+                  $.bAssetInfo.tokenDisplay.anchor.decimals,
+                ) + ` ${$.bAssetInfo.tokenDisplay.anchor.symbol}`,
             },
             mintedAmount && {
               name: 'Converted amount',
-              // value:
-              //   formatBAsset(demicrofy(returnAmount)) +
-              //   ` ${$.bAssetInfo.bAsset.symbol}`,
-              value: formatNumeric(mintedAmount) + ` bETH`,
+              value:
+                formatNumeric(mintedAmount) +
+                ` ${$.bAssetInfo.tokenDisplay.anchor.symbol}`,
             },
             {
               name: 'Exchange rate',
-              value: `1 webETH per bETH`,
+              value: `1 ${$.bAssetInfo.tokenDisplay.wormhole.symbol} per ${$.bAssetInfo.tokenDisplay.anchor.symbol}`,
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

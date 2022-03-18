@@ -25,12 +25,18 @@ import {
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
+import { RewardBreakdown } from 'pages/basset/hooks/useRewardsBreakdown';
 import { Observable } from 'rxjs';
+
+type RewardLogWithDisplay = {
+  rewards: string;
+  contract: string;
+  symbol: string;
+};
 
 export function bAssetClaimTx($: {
   walletAddr: HumanAddr;
-  rewardAddrs: HumanAddr[];
-
+  rewardBreakdowns: RewardBreakdown[];
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
@@ -44,12 +50,16 @@ export function bAssetClaimTx($: {
 
   return pipe(
     _createTxOptions({
-      msgs: $.rewardAddrs.map((rewardAddr) => {
-        return new MsgExecuteContract($.walletAddr, rewardAddr, {
-          claim_rewards: {
-            recipient: undefined,
+      msgs: $.rewardBreakdowns.map((rewardBreakdown) => {
+        return new MsgExecuteContract(
+          $.walletAddr,
+          rewardBreakdown.rewardAddr,
+          {
+            claim_rewards: {
+              recipient: undefined,
+            },
           },
-        });
+        );
       }),
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
@@ -59,38 +69,54 @@ export function bAssetClaimTx($: {
     ({ value: txInfo }) => {
       const rawLogs = pickRawLogs(txInfo);
 
-      // for now just aggregate the total rewards, but we can split
-      // these in the receipts if we can map the contract addresses
-      const total = rawLogs.reduce((previous, current) => {
-        const wasm = pickEvent(current, 'wasm');
+      const rewardBreakdownByRewardContract = $.rewardBreakdowns.reduce(
+        (acc, curr) => ({ ...acc, [curr.rewardAddr]: curr }),
+        {} as { [k: string]: RewardBreakdown },
+      );
+
+      const rewardLogsWithDisplay = rawLogs.reduce((acc, curr) => {
+        const wasm = pickEvent(curr, 'wasm');
         if (wasm) {
           const rewards = pickAttributeValueByKey<string>(wasm, 'rewards');
-          if (rewards) {
-            return previous.add(rewards);
+          const contract = pickAttributeValueByKey<string>(
+            wasm,
+            'contract_address',
+          );
+
+          if (rewards && contract) {
+            return [
+              ...acc,
+              {
+                rewards,
+                contract,
+                symbol: rewardBreakdownByRewardContract[contract].symbol,
+              },
+            ];
           }
         }
-        return previous;
-      }, new Dec(0));
 
-      // const rawLog = pickRawLog(txInfo, 0);
+        return acc;
+      }, [] as RewardLogWithDisplay[]);
 
-      // if (!rawLog) {
-      //   return helper.failedToFindRawLog();
-      // }
-
-      // const wasm = pickEvent(rawLog, 'wasm');
-
-      // if (!wasm) {
-      //   return helper.failedToFindEvents('wasm');
-      // }
+      const total = rewardLogsWithDisplay.reduce(
+        (acc, curr) => acc.add(curr.rewards),
+        new Dec(0),
+      );
 
       try {
         return {
           value: null,
           phase: TxStreamPhase.SUCCEED,
           receipts: [
+            ...rewardLogsWithDisplay.map((rewardLog) => ({
+              name: `${rewardLog.symbol ?? '???'} Reward`,
+              value:
+                formatUSTWithPostfixUnits(
+                  demicrofy(rewardLog.rewards as u<UST>),
+                ) + ' UST',
+            })),
             total && {
-              name: 'Claimed Rewards',
+              name: 'Total Rewards',
               value:
                 formatUSTWithPostfixUnits(
                   demicrofy(total.toString() as u<UST>),

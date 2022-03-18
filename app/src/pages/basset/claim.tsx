@@ -1,20 +1,14 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import {
-  useAnchorBank,
-  useAnchorWebapp,
-  useBAssetClaimableRewardsTotalQuery,
-  useBAssetClaimTx,
-  useBLunaClaimableRewards,
-} from '@anchor-protocol/app-provider';
+import { useAnchorBank, useBAssetClaimTx } from '@anchor-protocol/app-provider';
 import { formatUST } from '@anchor-protocol/notation';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
-import { HumanAddr, u, UST } from '@libs/types';
+import { u, UST } from '@libs/types';
 import { StreamStatus } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
-import big, { Big } from 'big.js';
+import { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
 import { Sub } from 'components/Sub';
@@ -22,9 +16,10 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
-import { claimableRewards as _claimableRewards } from 'pages/basset/logics/claimableRewards';
 import React, { useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useClaimableRewardsBreakdown } from './hooks/useRewardsBreakdown';
 
 export interface BAssetClaimProps {
   className?: string;
@@ -35,23 +30,18 @@ function Component({ className }: BAssetClaimProps) {
   // dependencies
   // ---------------------------------------------
   const connectedWallet = useConnectedWallet();
+  const navigate = useNavigate();
 
   const fixedFee = useFixedFee();
 
   const [claim, claimResult] = useBAssetClaimTx();
-
-  const { contractAddress } = useAnchorWebapp();
 
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
   const { tokenBalances } = useAnchorBank();
 
-  const { data: { claimableReward, rewardState } = {} } =
-    useBLunaClaimableRewards();
-
-  const { data: { total, rewards } = {} } =
-    useBAssetClaimableRewardsTotalQuery();
+  const { totalRewardsUST, rewardBreakdowns } = useClaimableRewardsBreakdown();
 
   //const {} = useAnchorWebapp()
 
@@ -63,60 +53,27 @@ function Component({ className }: BAssetClaimProps) {
     [connectedWallet, tokenBalances.uUST, fixedFee],
   );
 
-  const claimableRewards = useMemo(
-    () =>
-      _claimableRewards(claimableReward, rewardState).plus(total ?? '0') as u<
-        UST<Big>
-      >,
-    [claimableReward, rewardState, total],
-  );
-
   const estimatedAmount = useMemo(() => {
-    const amount = claimableRewards.minus(fixedFee) as u<UST<Big>>;
+    const amount = totalRewardsUST.minus(fixedFee) as u<UST<Big>>;
     return amount.gt(fixedFee) ? amount : undefined;
-  }, [claimableRewards, fixedFee]);
+  }, [totalRewardsUST, fixedFee]);
 
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
   const proceed = useCallback(() => {
-    if (
-      !connectedWallet ||
-      !claim ||
-      !claimableReward ||
-      !rewardState ||
-      !rewards
-    ) {
+    if (!connectedWallet || !claim || !totalRewardsUST) {
       return;
     }
 
-    const balanceExistsRewardsAddrs: HumanAddr[] = [];
-
-    if (_claimableRewards(claimableReward, rewardState).gt(0)) {
-      balanceExistsRewardsAddrs.push(contractAddress.bluna.reward);
-    }
-
-    for (const [rewardAddr, reward] of rewards) {
-      if (big(reward.claimableReward.rewards).gt(0)) {
-        balanceExistsRewardsAddrs.push(rewardAddr);
-      }
-    }
-
-    if (balanceExistsRewardsAddrs.length === 0) {
+    if (rewardBreakdowns.length === 0) {
       throw new Error('There is no rewards');
     }
 
     claim({
-      rewardAddrs: balanceExistsRewardsAddrs,
+      rewardBreakdowns,
     });
-  }, [
-    claim,
-    claimableReward,
-    connectedWallet,
-    contractAddress.bluna.reward,
-    rewardState,
-    rewards,
-  ]);
+  }, [claim, totalRewardsUST, connectedWallet, rewardBreakdowns]);
 
   // ---------------------------------------------
   // presentation
@@ -137,6 +94,7 @@ function Component({ className }: BAssetClaimProps) {
                   break;
                 case StreamStatus.DONE:
                   claimResult.clear();
+                  navigate('/basset');
                   break;
               }
             }}
@@ -151,12 +109,12 @@ function Component({ className }: BAssetClaimProps) {
       <Section>
         <h1>Claim Rewards</h1>
 
-        {!!invalidTxFee && claimableRewards.gt(0) && (
+        {!!invalidTxFee && totalRewardsUST.gt(0) && (
           <MessageBox>{invalidTxFee}</MessageBox>
         )}
 
         <div className="amount">
-          {formatUST(demicrofy(claimableRewards))} <Sub>UST</Sub>
+          {formatUST(demicrofy(totalRewardsUST))} <Sub>UST</Sub>
         </div>
 
         <TxFeeList className="receipt">

@@ -51,8 +51,10 @@ export const computeLtvToRedeemAmount =
 
     const minAmount = min(total.mul(ltv), loanAmount);
 
-    const withdrawableAmount = amount.minus(
-      loanAmount.minus(minAmount).div(Big(maxLtv).mul(price).mul(ltv)),
+    const withdrawableAmount = Big(
+      amount.minus(
+        loanAmount.minus(minAmount).div(Big(maxLtv).mul(price).mul(ltv)),
+      ),
     );
 
     return max(withdrawableAmount, 0) as u<bAsset<Big>>;

@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -14,6 +15,8 @@ export interface AncGovernanceUnstakeTxParams {
 }
 
 export function useAncGovernanceUnstakeTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -25,13 +28,18 @@ export function useAncGovernanceUnstakeTx() {
 
   const stream = useCallback(
     ({ ancAmount, onTxSucceed }: AncGovernanceUnstakeTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return ancGovernanceUnstakeTx({
         // fabricateGovStakeVoting
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         ancAmount,
         govAddr: contractAddress.anchorToken.gov,
         // post
@@ -52,8 +60,11 @@ export function useAncGovernanceUnstakeTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       contractAddress.anchorToken.gov,
+      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,

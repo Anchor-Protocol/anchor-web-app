@@ -1,4 +1,4 @@
-import { useWallet, WalletStatus } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
 import { useNotification } from 'contexts/notification';
 import { useJobs } from 'jobs/Jobs';
 import React, { useMemo } from 'react';
@@ -12,14 +12,14 @@ export interface MobileNotificationProps {
 }
 
 function MobileNotificationBase({ className }: MobileNotificationProps) {
-  const { status } = useWallet();
+  const { status } = useAccount();
   const { permission } = useNotification();
   const { liquidationAlert } = useJobs();
 
   const [openDialog, dialogElement] = useNotificationDialog();
 
   const visible = useMemo(() => {
-    return status === WalletStatus.WALLET_CONNECTED && permission === 'granted';
+    return status === 'connected' && permission === 'granted';
   }, [permission, status]);
 
   return visible ? (

@@ -1,10 +1,11 @@
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { GasPrice, lastSyncedHeightQuery } from '@libs/app-fns';
 import {
   HiveQueryClient,
   LcdQueryClient,
   QueryClient,
 } from '@libs/query-client';
-import { NetworkInfo, useWallet } from '@terra-money/use-wallet';
+import { NetworkInfo } from '@terra-money/use-wallet';
 import React, {
   Consumer,
   Context,
@@ -99,7 +100,7 @@ export function AppProvider<
   txErrorReporter,
   refetchMap,
 }: AppProviderProps<ContractAddress, Constants>) {
-  const { network } = useWallet();
+  const { network } = useNetwork();
 
   const networkBoundStates = useMemo<
     Pick<

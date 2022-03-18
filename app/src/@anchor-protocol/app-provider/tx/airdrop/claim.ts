@@ -4,6 +4,7 @@ import { u, UST } from '@libs/types';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -14,6 +15,8 @@ export interface AirdropClaimTxParams {
 }
 
 export function useAirdropClaimTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, constants, contractAddress } =
@@ -25,14 +28,19 @@ export function useAirdropClaimTx() {
 
   const stream = useCallback(
     ({ airdrop, onTxSucceed }: AirdropClaimTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return airdropClaimTx({
         airdrop,
         airdropContract: contractAddress.bluna.airdropRegistry,
-        walletAddress: connectedWallet.walletAddress,
+        walletAddress: terraWalletAddress,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
@@ -51,8 +59,11 @@ export function useAirdropClaimTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       contractAddress.bluna.airdropRegistry,
+      terraWalletAddress,
       constants.gasAdjustment,
       constants.airdropGasWanted,
       airdropFee,

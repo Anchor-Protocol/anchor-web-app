@@ -26,13 +26,13 @@ import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpAncSimulation } from 'pages/trade/logics/ancUstLpAncSimulation';
 import { ancUstLpUstSimulation } from 'pages/trade/logics/ancUstLpUstSimulation';
@@ -49,7 +49,7 @@ export function AncUstLpProvide() {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const connectedWallet = useConnectedWallet();
+  const { availablePost, connected } = useAccount();
 
   const [openConfirm, confirmElement] = useConfirm();
 
@@ -107,21 +107,20 @@ export function AncUstLpProvide() {
   ]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidAncAmount = useMemo(() => {
-    if (ancAmount.length === 0 || !connectedWallet) return undefined;
+    if (ancAmount.length === 0 || !connected) return undefined;
 
     return big(microfy(ancAmount)).gt(bank.tokenBalances.uANC)
       ? 'Not enough assets'
       : undefined;
-  }, [ancAmount, bank.tokenBalances.uANC, connectedWallet]);
+  }, [ancAmount, bank.tokenBalances.uANC, connected]);
 
   const invalidUstAmount = useMemo(() => {
-    if (ustAmount.length === 0 || !connectedWallet || !simulation)
-      return undefined;
+    if (ustAmount.length === 0 || !connected || !simulation) return undefined;
 
     return big(microfy(ustAmount))
       .plus(simulation.txFee)
@@ -129,13 +128,7 @@ export function AncUstLpProvide() {
       .gt(bank.tokenBalances.uUST)
       ? 'Not enough assets'
       : undefined;
-  }, [
-    bank.tokenBalances.uUST,
-    connectedWallet,
-    fixedFee,
-    simulation,
-    ustAmount,
-  ]);
+  }, [bank.tokenBalances.uUST, connected, fixedFee, simulation, ustAmount]);
 
   // FIXME anc-ust lp withdraw real tx fee is fixed_gas (simulation.txFee is no matter)
   const invalidNextTransaction = useMemo(() => {
@@ -230,7 +223,7 @@ export function AncUstLpProvide() {
       txFee: u<UST>,
       confirm: ReactNode,
     ) => {
-      if (!connectedWallet || !provide) {
+      if (!connected || !provide) {
         return;
       }
 
@@ -255,7 +248,7 @@ export function AncUstLpProvide() {
         },
       });
     },
-    [connectedWallet, init, openConfirm, provide],
+    [connected, init, openConfirm, provide],
   );
 
   // ---------------------------------------------
@@ -424,8 +417,8 @@ export function AncUstLpProvide() {
               : undefined
           }
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !provide ||
             ancAmount.length === 0 ||
             ustAmount.length === 0 ||

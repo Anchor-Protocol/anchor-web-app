@@ -1,8 +1,8 @@
+import { useNetwork } from '@anchor-protocol/app-provider';
 import { Gas, HumanAddr } from '@libs/types';
-import { LCDClient, Msg } from '@terra-money/terra.js';
-import { useWallet } from '@terra-money/wallet-provider';
+import { Msg } from '@terra-money/terra.js';
 import big from 'big.js';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useApp } from '../contexts/app';
 
 export interface EstimatedFee {
@@ -13,15 +13,8 @@ export interface EstimatedFee {
 export function useEstimateFee(
   walletAddress: HumanAddr | undefined,
 ): (msgs: Msg[]) => Promise<EstimatedFee | undefined> {
-  const { network } = useWallet();
+  const { lcdClient } = useNetwork();
   const { gasPrice, constants } = useApp();
-
-  const lcd = useMemo(() => {
-    return new LCDClient({
-      chainID: network.chainID,
-      URL: network.lcd,
-    });
-  }, [network.chainID, network.lcd]);
 
   return useCallback(
     async (msgs: Msg[]) => {
@@ -30,7 +23,7 @@ export function useEstimateFee(
       }
 
       try {
-        const { auth_info } = await lcd.tx.create(
+        const { auth_info } = await lcdClient.tx.create(
           [{ address: walletAddress }],
           {
             msgs,
@@ -55,6 +48,6 @@ export function useEstimateFee(
         return undefined;
       }
     },
-    [constants.gasAdjustment, gasPrice, lcd.tx, walletAddress],
+    [constants.gasAdjustment, gasPrice, lcdClient.tx, walletAddress],
   );
 }

@@ -1,10 +1,10 @@
 import { MypageTxHistory } from '@anchor-protocol/app-fns';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
-import { useWallet } from '@terra-money/wallet-provider';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { CallMade } from '@material-ui/icons';
+import { useNetwork } from '@anchor-protocol/app-provider';
 
 export interface TransactionHistoryListProps {
   className?: string;
@@ -18,7 +18,7 @@ function TransactionHistoryListBase({
   breakpoint = 700,
 }: TransactionHistoryListProps) {
   const { ref, width = 1000 } = useResizeObserver();
-  const { network } = useWallet();
+  const { network } = useNetwork();
 
   return (
     <ul className={className} ref={ref} data-break={width < breakpoint}>

@@ -1,17 +1,24 @@
-import { menus, RouteMenu } from 'configurations/menu';
+import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
+import { useMenus, RouteMenu } from 'configurations/menu';
 import { screen } from 'env';
 import React from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import logoUrl from './assets/Logo.svg';
+import LogoAvax from './assets/LogoAvax.svg';
+// import LogoEth from './assets/LogoEth.svg';
+import LogoTerra from './assets/LogoTerra.svg';
+import { ChainSelector } from './chain/ChainSelector';
 import { DesktopNotification } from './desktop/DesktopNotification';
-import { WalletSelector } from './desktop/WalletSelector';
+import { TransactionWidget } from './transactions/TransactionWidget';
+import { EvmWalletSelector } from './wallet/evm/EvmWalletSelector';
+import { TerraWalletSelector } from './wallet/terra/TerraWalletSelector';
 
 export interface DesktopHeaderProps {
   className?: string;
 }
 
 function DesktopHeaderBase({ className }: DesktopHeaderProps) {
+  const menus = useMenus();
   return (
     <header className={className}>
       <a
@@ -20,7 +27,10 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
         target="_blank"
         rel="noreferrer"
       >
-        <img src={logoUrl} alt="logo" />
+        <DeploymentSwitch
+          terra={() => <img src={LogoTerra} alt="terraLogo" />}
+          ethereum={() => <img src={LogoAvax} alt="avaxLogo" />}
+        />
       </a>
 
       <nav className="menu">
@@ -34,7 +44,12 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
       <DesktopNotification className="notification" />
 
       <section className="wallet">
-        <WalletSelector />
+        <TransactionWidget className="transaction-widget" />
+        <ChainSelector className="chain-selector" />
+        <DeploymentSwitch
+          terra={() => <TerraWalletSelector />}
+          ethereum={() => <EvmWalletSelector />}
+        />
       </section>
 
       <GlobalStyle />
@@ -42,10 +57,9 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
   );
 }
 
-function NavMenu({ to, exact, title }: RouteMenu) {
-  const match = useRouteMatch({
+function NavMenu({ to, title }: RouteMenu) {
+  const match = useMatch({
     path: to,
-    exact,
   });
 
   return (
@@ -70,7 +84,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
-  background-color: #000000;
+  background-color: ${({ theme }) => theme.header.backgroundColor};
 
   a {
     text-decoration: none;
@@ -138,6 +152,14 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   .wallet {
     padding-bottom: 8px;
     text-align: right;
+
+    .chain-selector {
+      margin-right: 5px;
+    }
+
+    .transaction-widget {
+      margin-right: 5px;
+    }
   }
 
   .logo {

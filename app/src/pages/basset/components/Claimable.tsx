@@ -1,15 +1,11 @@
-import {
-  useBAssetClaimableRewardsTotalQuery,
-  useBLunaClaimableRewards,
-  useBLunaWithdrawableAmount,
-} from '@anchor-protocol/app-provider';
+import { useBLunaWithdrawableAmount } from '@anchor-protocol/app-provider';
 import { formatUTokenDecimal2 } from '@libs/formatter';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { horizontalRuler, verticalRuler } from '@libs/styled-neumorphism';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
-import { Luna, u, UST } from '@libs/types';
+import { Luna, u } from '@libs/types';
 import { AnimateNumber } from '@libs/ui';
 import big, { Big } from 'big.js';
 import { Sub } from 'components/Sub';
@@ -18,7 +14,7 @@ import { fixHMR } from 'fix-hmr';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { claimableRewards as _claimableRewards } from '../logics/claimableRewards';
+import { useClaimableRewardsBreakdown } from '../hooks/useRewardsBreakdown';
 
 const Heading = (props: { title: string; tooltip: string }) => {
   const { title, tooltip } = props;
@@ -36,21 +32,10 @@ export interface ClaimableProps {
 }
 
 function Component({ className }: ClaimableProps) {
-  const { data: { claimableReward, rewardState } = {} } =
-    useBLunaClaimableRewards();
-
-  const { data: { total } = {} } = useBAssetClaimableRewardsTotalQuery();
+  const { totalRewardsUST } = useClaimableRewardsBreakdown();
 
   const { data: { withdrawableUnbonded: _withdrawableAmount } = {} } =
     useBLunaWithdrawableAmount();
-
-  const claimableRewards = useMemo(
-    () =>
-      _claimableRewards(claimableReward, rewardState).plus(total ?? '0') as u<
-        UST<Big>
-      >,
-    [claimableReward, rewardState, total],
-  );
 
   const withdrawableLuna = useMemo(
     () => big(_withdrawableAmount?.withdrawable ?? 0) as u<Luna<Big>>,
@@ -67,7 +52,7 @@ function Component({ className }: ClaimableProps) {
           />
           <p>
             <AnimateNumber format={formatUTokenDecimal2}>
-              {claimableRewards}
+              {totalRewardsUST}
             </AnimateNumber>{' '}
             <Sub>UST</Sub>
           </p>

@@ -4,32 +4,52 @@ import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/Horizontal
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { AccessTime, Close, Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { GuardSpinner, PushSpinner } from 'react-spinners-kit';
 import styled, { useTheme } from 'styled-components';
 import { renderTxFailedReason } from './renderTxFailedReason';
+import { Container } from 'components/primitives/Container';
 
 export interface TxResultRendererProps {
   resultRendering: TxResultRendering;
-  onExit: () => void;
+  onExit?: () => void;
+  onMinimize?: () => void;
+  minimizable?: boolean;
 }
 
 export function TxResultRenderer({
   resultRendering,
   onExit,
+  minimizable,
+  onMinimize,
 }: TxResultRendererProps) {
-  const { dimTextColor } = useTheme();
+  const {
+    dimTextColor,
+    colors: { primary },
+  } = useTheme();
 
-  switch (resultRendering.phase) {
+  const {
+    phase,
+    message = 'Waiting for Terra Station...',
+    description = 'Transaction broadcasted. There is no need to send another until it has been complete.',
+    failedReason,
+  } = resultRendering;
+
+  const handleMinimize = useCallback(() => {
+    onMinimize?.();
+    onExit?.();
+  }, [onExit, onMinimize]);
+
+  switch (phase) {
     case TxStreamPhase.POST:
       return (
         <Layout>
           <article>
-            <figure data-state={resultRendering.phase}>
+            <figure data-state={phase}>
               <PushSpinner color={dimTextColor} />
             </figure>
 
-            <h2>Waiting for Terra Station...</h2>
+            <h2>{message}</h2>
 
             <Receipts resultRendering={resultRendering} />
 
@@ -41,19 +61,26 @@ export function TxResultRenderer({
       return (
         <Layout>
           <article>
-            <figure data-state={resultRendering.phase}>
-              <GuardSpinner />
+            <figure data-state={phase}>
+              <GuardSpinner frontColor={primary} />
             </figure>
 
             <h2>
-              <span>Waiting for receipt...</span>
-              <p>
-                Transaction broadcasted. There is no need to send another until
-                it has been complete.
-              </p>
+              <span>{message}</span>
+              <p>{description}</p>
             </h2>
 
             <Receipts resultRendering={resultRendering} />
+            {minimizable && (
+              <Container direction="row" gap={10}>
+                <ActionButton
+                  className="minimize-button"
+                  onClick={handleMinimize}
+                >
+                  Minimize
+                </ActionButton>
+              </Container>
+            )}
           </article>
         </Layout>
       );
@@ -61,7 +88,7 @@ export function TxResultRenderer({
       return (
         <Layout>
           <article>
-            <figure data-state={resultRendering.phase}>
+            <figure data-state={phase}>
               <DoneIcon />
             </figure>
 
@@ -77,18 +104,17 @@ export function TxResultRenderer({
       return (
         <Layout>
           <article>
-            {resultRendering.failedReason?.error instanceof PollingTimeout ? (
+            {failedReason?.error instanceof PollingTimeout ? (
               <figure data-state={TxStreamPhase.SUCCEED}>
                 <AccessTime />
               </figure>
             ) : (
-              <figure data-state={resultRendering.phase}>
+              <figure data-state={phase}>
                 <Close />
               </figure>
             )}
 
-            {resultRendering.failedReason &&
-              renderTxFailedReason(resultRendering.failedReason)}
+            {failedReason && renderTxFailedReason(failedReason)}
 
             <Receipts resultRendering={resultRendering} />
 
@@ -142,6 +168,13 @@ const SubmitButton = styled(ActionButton)`
 `;
 
 const Layout = styled.section`
+  .minimize-button {
+    margin-top: 20px;
+    width: 100%;
+    height: 60px;
+    border-radius: 30px;
+  }
+
   > article {
     div,
     p,

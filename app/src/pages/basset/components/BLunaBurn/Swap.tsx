@@ -40,6 +40,7 @@ import { SlippageSelectorNegativeHelpText } from 'components/SlippageSelector';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
+import { useAccount } from 'contexts/account';
 import React, {
   ChangeEvent,
   useCallback,
@@ -71,13 +72,14 @@ export function Component({
   getAmount,
   setGetAmount,
   setBurnAmount,
-  connectedWallet,
   fixedFee,
   setMode,
 }: SwapProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
+  const { availablePost, connected } = useAccount();
+
   const { queryClient, contractAddress: address } = useAnchorWebapp();
 
   const [swap, swapResult] = useBondSwapTx();
@@ -100,13 +102,13 @@ export function Component({
   // logics
   // ---------------------------------------------
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidBurnAmount = useMemo(
-    () => !!connectedWallet && validateBurnAmount(burnAmount, bank),
-    [bank, burnAmount, connectedWallet],
+    () => connected && validateBurnAmount(burnAmount, bank),
+    [bank, burnAmount, connected],
   );
 
   // ---------------------------------------------
@@ -249,7 +251,7 @@ export function Component({
 
   const proceed = useCallback(
     (burnAmount: bLuna, beliefPrice: Rate, maxSpread: number) => {
-      if (!connectedWallet || !swap) {
+      if (!connected || !swap) {
         return;
       }
 
@@ -262,7 +264,7 @@ export function Component({
         },
       });
     },
-    [connectedWallet, swap, init],
+    [connected, swap, init],
   );
 
   // ---------------------------------------------
@@ -325,7 +327,7 @@ export function Component({
         error={!!invalidBurnAmount}
         leftHelperText={invalidBurnAmount}
         rightHelperText={
-          !!connectedWallet && (
+          connected && (
             <span>
               Balance:{' '}
               <span
@@ -458,8 +460,8 @@ export function Component({
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
-            !connectedWallet.availablePost ||
+            !availablePost ||
+            !connected ||
             !swap ||
             !simulation ||
             burnAmount.length === 0 ||

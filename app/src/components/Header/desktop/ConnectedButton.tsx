@@ -1,11 +1,11 @@
 import { Wallet } from '@anchor-protocol/icons';
-import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
-import { AnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
-import { demicrofy, truncate } from '@libs/formatter';
+import { truncate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';
 import { useTnsReverseRecord } from '@libs/use-tns-reverse-record';
+import { u, UST } from '@anchor-protocol/types';
+import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 
 interface ConnectedButtonProps
   extends Omit<
@@ -16,16 +16,19 @@ interface ConnectedButtonProps
     'children'
   > {
   walletAddress: string;
-  bank: AnchorBank;
+  totalUST: u<UST>;
 }
 
 function ConnectedButtonBase({
   walletAddress,
-  bank,
+  totalUST,
   ...buttonProps
 }: ConnectedButtonProps) {
   const reverseRecord = useTnsReverseRecord(walletAddress);
 
+  const {
+    ust: { formatOutput, demicrofy, symbol },
+  } = useFormatters();
   return (
     <button {...buttonProps}>
       <IconSpan>
@@ -36,7 +39,7 @@ function ConnectedButtonBase({
           {reverseRecord || truncate(walletAddress)}
         </span>
         <div className="wallet-balance">
-          {formatUSTWithPostfixUnits(demicrofy(bank.tokenBalances.uUST))} UST
+          {`${formatOutput(demicrofy(totalUST))} ${symbol}`}
         </div>
       </IconSpan>
     </button>
@@ -59,14 +62,14 @@ export const ConnectedButton = styled(ConnectedButtonBase)`
     }
   }
 
-  color: ${({ theme }) => theme.colors.positive};
-  border: 1px solid ${({ theme }) => theme.colors.positive};
+  color: ${({ theme }) => theme.header.textColor};
+  border: 1px solid ${({ theme }) => theme.header.textColor};
   outline: none;
   background-color: transparent;
 
   .wallet-address {
     margin-left: 6px;
-    color: #8a8a8a;
+    color: ${({ theme }) => theme.header.textColor};
   }
 
   .wallet-balance {
@@ -84,12 +87,12 @@ export const ConnectedButton = styled(ConnectedButtonBase)`
       top: 1px;
       bottom: 1px;
       left: 0;
-      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      border-left: 1px solid ${({ theme }) => theme.header.textColor};
     }
   }
 
   &:hover {
-    border: 1px solid ${({ theme }) => theme.colors.positive};
+    border: 1px solid ${({ theme }) => theme.header.textColor};
     background-color: rgba(255, 255, 255, 0.04);
   }
 

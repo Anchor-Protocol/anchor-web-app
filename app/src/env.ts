@@ -70,14 +70,12 @@ export function ANCHOR_CONSTANTS(network: NetworkInfo): AnchorConstants {
   };
 }
 
-const COLUMNBUS_CONTRACT_ADDRESS = {
+const COLUMBUS_CONTRACT_ADDRESS = {
   bLunaHub: 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts',
   bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
   bLunaReward: 'terra17yap3mhph35pcwvhza38c2lkj7gzywzy05h7l0',
   bLunaAirdrop: 'terra199t7hg7w5vymehhg834r6799pju2q3a0ya7ae9',
   bLunaValidatorsRegistry: 'terra10wt548y4y3xeqfrqsgqlqh424lll8fqxp6dyed',
-  //bEthReward: 'terra1939tzfn4hn960ychpcsjshu8jds3zdwlp8jed9',
-  //bEthToken: 'terra1dzhzukyezv0etz22ud940z7adyv7xgcjkahuun',
   mmInterestModel: 'terra1kq8zzq5hufas9t0kjsjc62t2kucfnx8txf547n',
   mmOracle: 'terra1cgg6yef7qcdm070qftghfulaxmllgmvk77nc7t',
   mmMarket: 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s',
@@ -147,30 +145,7 @@ export const ANCHOR_CONTRACT_ADDRESS = (
 ): AnchorContractAddress => {
   const addressMap = network.chainID.startsWith('bombay')
     ? BOMBAY_CONTRACT_ADDRESS
-    : COLUMNBUS_CONTRACT_ADDRESS;
-  //const addressProvider: AddressProvider = new AddressProviderFromJson(
-  //  addressMap,
-  //);
-  //
-  //const bLunaCollateral: CollateralInfo = {
-  //  type: CollateralType.bLuna,
-  //  denom: COLLATERAL_DENOMS.UBLUNA,
-  //  custody: addressProvider.custody(
-  //    MARKET_DENOMS.UUSD,
-  //    COLLATERAL_DENOMS.UBLUNA,
-  //  ) as HumanAddr,
-  //  token: addressProvider.bLunaToken() as CW20Addr,
-  //};
-  //
-  //const bEthCollateral: CollateralInfo = {
-  //  type: CollateralType.bEth,
-  //  denom: COLLATERAL_DENOMS.UBETH,
-  //  custody: addressProvider.custody(
-  //    MARKET_DENOMS.UUSD,
-  //    COLLATERAL_DENOMS.UBETH,
-  //  ) as HumanAddr,
-  //  token: addressProvider.bEthToken() as CW20Addr,
-  //};
+    : COLUMBUS_CONTRACT_ADDRESS;
 
   return {
     bluna: {
@@ -220,6 +195,9 @@ export const ANCHOR_CONTRACT_ADDRESS = (
       ANC: addressMap.ANC as CW20Addr,
       AncUstLP: addressMap.ancUstLPToken as CW20Addr,
       bLunaLunaLP: addressMap.bLunaLunaLPToken as CW20Addr,
+    },
+    crossAnchor: {
+      core: '' as HumanAddr,
     },
   };
 };

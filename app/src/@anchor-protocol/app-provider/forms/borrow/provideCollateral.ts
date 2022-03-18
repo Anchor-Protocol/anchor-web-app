@@ -1,38 +1,34 @@
 import {
   BorrowBorrower,
-  BorrowMarket,
   borrowProvideCollateralForm,
 } from '@anchor-protocol/app-fns';
+import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
 import { bAsset } from '@anchor-protocol/types';
-import { useCW20Balance, useFixedFee } from '@libs/app-provider';
-import { CW20Addr } from '@libs/types';
+import { useFixedFee } from '@libs/app-provider';
+import { CW20Addr, u } from '@libs/types';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
-import { useAnchorBank } from '../../hooks/useAnchorBank';
+import { useAccount } from 'contexts/account';
+import { useBalances } from 'contexts/balances';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export function useBorrowProvideCollateralForm(
   collateralToken: CW20Addr,
-  fallbackBorrowMarket: BorrowMarket,
+  collateralTokenDecimals: number,
+  balance: u<bAsset>,
+  fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
 ) {
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
-  const { tokenBalances } = useAnchorBank();
-
-  const ubAssetBalance = useCW20Balance<bAsset>(
-    collateralToken,
-    connectedWallet?.walletAddress,
-  );
+  const { uUST } = useBalances();
 
   const {
     data: {
       oraclePrices,
       bAssetLtvs,
-      bAssetLtvsAvg,
       overseerWhitelist,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
@@ -45,15 +41,15 @@ export function useBorrowProvideCollateralForm(
     borrowProvideCollateralForm,
     {
       collateralToken,
-      userBAssetBalance: ubAssetBalance,
-      userUSTBalance: tokenBalances.uUST,
-      connected: !!connectedWallet,
+      userBAssetBalance: balance,
+      userUSTBalance: uUST,
+      collateralTokenDecimals,
+      connected,
       oraclePrices,
       overseerCollaterals,
       marketBorrowerInfo,
       overseerWhitelist,
       fixedFee,
-      bAssetLtvsAvg,
       bAssetLtvs,
     },
     () => ({ depositAmount: '' as bAsset }),

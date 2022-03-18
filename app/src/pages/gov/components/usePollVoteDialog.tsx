@@ -23,11 +23,11 @@ import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { ThumbDownOutlined, ThumbUpOutlined } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, {
   ChangeEvent,
@@ -59,7 +59,7 @@ function ComponentBase({
 }: DialogProps<FormParams, FormReturn>) {
   const [vote, voteResult] = useGovVoteTx();
 
-  const connectedWallet = useConnectedWallet();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -82,23 +82,23 @@ function ComponentBase({
   }, [userGovStakingInfo]);
 
   const invalidTxFee = useMemo(
-    () => !!connectedWallet && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connectedWallet],
+    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
+    [bank, fixedFee, connected],
   );
 
   const invalidAmount = useMemo(() => {
-    if (amount.length === 0 || !connectedWallet) return undefined;
+    if (amount.length === 0 || !connected) return undefined;
 
     const uanc = microfy(amount);
 
     return maxVote && uanc.gt(maxVote) ? 'Not enough assets' : undefined;
-  }, [amount, maxVote, connectedWallet]);
+  }, [amount, maxVote, connected]);
 
   const txFee = fixedFee;
 
   const submit = useCallback(
     (voteFor: 'yes' | 'no', amount: ANC) => {
-      if (!connectedWallet || !vote) {
+      if (!connected || !vote) {
         return;
       }
 
@@ -108,7 +108,7 @@ function ComponentBase({
         amount,
       });
     },
-    [connectedWallet, pollId, vote],
+    [connected, pollId, vote],
   );
 
   if (
@@ -208,7 +208,7 @@ function ComponentBase({
         <ActionButton
           className="submit"
           disabled={
-            !connectedWallet ||
+            !connected ||
             !canIVote ||
             !vote ||
             amount.length === 0 ||

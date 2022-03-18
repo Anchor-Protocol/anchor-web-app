@@ -27,28 +27,8 @@ class HorizontalGraphSliderBase extends Component<
   HorizontalGraphSliderProps,
   HorizontalGraphSliderState
 > {
-  private active: boolean = false;
-  private cursorStart: number = 0;
-  private thumbStart: number = 0;
-  private thumbMin: number = 0;
-  private thumbMax: number = Number.MAX_SAFE_INTEGER;
-
   private thumb!: HTMLDivElement;
-
-  constructor(props: HorizontalGraphSliderProps) {
-    super(props);
-
-    this.state = {
-      position: Math.max(
-        Math.min(
-          ((props.value - props.min) / (props.max - props.min)) *
-            props.coordinateSpace.width,
-          props.coordinateSpace.width,
-        ),
-        0,
-      ),
-    };
-  }
+  private slider!: HTMLDivElement;
 
   render() {
     const thumb = this.props.children ? (
@@ -58,17 +38,23 @@ class HorizontalGraphSliderBase extends Component<
     );
 
     return (
-      <div className={this.props.className} style={this.props.style}>
-        <div ref={this.takeThumb} style={{ left: this.state.position }}>
+      <div
+        className={this.props.className}
+        style={this.props.style}
+        onClick={this.onClick}
+        ref={this.takeSlider}
+      >
+        <div
+          ref={this.takeThumb}
+          style={{
+            left: this.thumbLeft(),
+          }}
+        >
           {thumb}
         </div>
       </div>
     );
   }
-
-  takeThumb = (thumb: HTMLDivElement) => {
-    this.thumb = thumb;
-  };
 
   componentDidMount() {
     this.thumb.addEventListener('pointerdown', this.onDown);
@@ -80,60 +66,7 @@ class HorizontalGraphSliderBase extends Component<
     window.removeEventListener('pointermove', this.onMove);
   }
 
-  componentDidUpdate(
-    prevProps: Readonly<HorizontalGraphSliderProps>,
-    prevState: Readonly<HorizontalGraphSliderState>,
-  ) {
-    if (this.active) {
-      return;
-    }
-
-    if (
-      prevProps.value !== this.props.value ||
-      prevProps.coordinateSpace.width !== this.props.coordinateSpace.width
-    ) {
-      this.setState({
-        position: Math.max(
-          Math.min(
-            ((this.props.value - this.props.min) /
-              (this.props.max - this.props.min)) *
-              this.props.coordinateSpace.width,
-            this.props.coordinateSpace.width,
-          ),
-          0,
-        ),
-      });
-    }
-  }
-
   onDown = (event: PointerEvent) => {
-    if (this.props.min === this.props.max) {
-      return;
-    }
-
-    this.active = true;
-    this.cursorStart = event.screenX;
-    this.thumbStart = this.thumb.offsetLeft;
-    this.thumbMin =
-      ((this.props.start - this.props.min) /
-        (this.props.max - this.props.min)) *
-      this.props.coordinateSpace.width;
-    this.thumbMax =
-      ((this.props.end - this.props.min) / (this.props.max - this.props.min)) *
-      this.props.coordinateSpace.width;
-
-    //console.warn('HorizontalGraphSlider.tsx..onDown()', JSON.stringify({
-    //  min: this.props.min,
-    //  max: this.props.max,
-    //  thumbStart: this.thumbStart,
-    //  thumbMin: this.thumbMin,
-    //  thumbMax: this.thumbMax,
-    //}, null, 2));
-
-    if (this.thumbMax - this.thumbMin < 1) {
-      return;
-    }
-
     this.thumb.removeEventListener('pointerdown', this.onDown);
     window.addEventListener('pointerup', this.onUp);
     window.addEventListener('pointermove', this.onMove);
@@ -146,9 +79,11 @@ class HorizontalGraphSliderBase extends Component<
     event.stopImmediatePropagation();
   };
 
-  onUp = (event: PointerEvent) => {
-    this.active = false;
+  onClick = (event: React.MouseEvent) => {
+    this.onMove(event);
+  };
 
+  onUp = (event: PointerEvent) => {
     window.removeEventListener('pointerup', this.onUp);
     window.removeEventListener('pointermove', this.onMove);
     this.thumb.addEventListener('pointerdown', this.onDown);
@@ -161,37 +96,57 @@ class HorizontalGraphSliderBase extends Component<
     event.stopImmediatePropagation();
   };
 
-  onMove = (event: PointerEvent) => {
-    const moved: number = event.screenX - this.cursorStart;
+  onMove = (event: PointerEvent | React.MouseEvent) => {
+    const sliderPos = event.clientX - this.slider.getBoundingClientRect().left;
+    const sliderRatio = this.boundedRatio(
+      sliderPos / this.props.coordinateSpace.width,
+    );
 
-    let moveTo: number = this.thumbStart + moved;
+    const newValue = this.boundedValue(
+      this.stepForward(this.valueRange() * sliderRatio),
+    );
 
-    if (moveTo < this.thumbMin) {
-      moveTo = this.thumbMin;
-    } else if (moveTo > this.thumbMax) {
-      moveTo = this.thumbMax;
-    }
-
-    const nextRatio = moveTo / this.props.coordinateSpace.width;
-
-    let nextValue =
-      (this.props.max - this.props.min) * nextRatio + this.props.min;
-
-    if (typeof this.props.stepFunction === 'function') {
-      nextValue = this.props.stepFunction(nextValue);
-      moveTo =
-        ((nextValue - this.props.min) / (this.props.max - this.props.min)) *
-        this.props.coordinateSpace.width;
-    }
-
-    this.setState({
-      position: moveTo,
-    });
-
-    this.props.onChange(nextValue);
-
+    this.props.onChange(newValue);
     event.stopPropagation();
-    event.stopImmediatePropagation();
+  };
+
+  takeThumb = (thumb: HTMLDivElement) => {
+    this.thumb = thumb;
+  };
+
+  takeSlider = (slider: HTMLDivElement) => {
+    this.slider = slider;
+  };
+
+  thumbLeft = () => {
+    return (
+      this.boundedRatio(this.props.value / this.valueRange()) *
+      this.props.coordinateSpace.width
+    );
+  };
+
+  valueRange = () => {
+    return this.props.max - this.props.min;
+  };
+
+  startRatio = () => {
+    return this.props.start / this.valueRange();
+  };
+
+  endRatio = () => {
+    return this.props.end / this.valueRange();
+  };
+
+  boundedRatio = (ratio: number) => {
+    return Math.max(this.startRatio(), Math.min(ratio, this.endRatio()));
+  };
+
+  stepForward = (prev: number) => {
+    return this.props.stepFunction?.(prev) ?? prev;
+  };
+
+  boundedValue = (value: number) => {
+    return Math.max(this.props.start, Math.min(value, this.props.end));
   };
 }
 
@@ -213,6 +168,7 @@ export const HorizontalGraphSliderThumb = withTheme(
 
 export const HorizontalGraphSlider = styled(HorizontalGraphSliderBase)`
   position: absolute;
+  cursor: pointer;
 
   left: ${({ coordinateSpace }) => coordinateSpace.x}px;
   top: ${({ coordinateSpace }) => coordinateSpace.y}px;

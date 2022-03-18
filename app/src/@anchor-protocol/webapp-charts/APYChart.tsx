@@ -1,7 +1,5 @@
 import { Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
-import { darkTheme } from '@libs/neumorphism-ui/themes/darkTheme';
-import { lightTheme } from '@libs/neumorphism-ui/themes/lightTheme';
 import { scaleLinear } from 'd3-scale';
 import { curveNatural, line } from 'd3-shape';
 import { format } from 'date-fns';
@@ -50,47 +48,31 @@ type ColorPalette = {
   };
 };
 
-const lightColorPalette: ColorPalette = {
-  line: {
-    stroke: lightTheme.colors.positive,
-    strokeWidth: 4,
-  },
-  pointing: {
-    line: {
-      stroke: '#979797',
-      strokeWidth: 1,
-      strokeDasharray: '3 3',
-    },
-    date: {
-      fill: lightTheme.textColor,
-    },
-  },
-  slider: {
-    backgroundColor: lightTheme.label.backgroundColor,
-    strokeColor: lightTheme.textColor,
-  },
-};
-
-const darkColorPalette: ColorPalette = {
-  line: {
-    stroke: darkTheme.colors.positive,
-    strokeWidth: 4,
-  },
-  pointing: {
-    line: {
-      stroke: '#4d4f70',
-      strokeWidth: 1,
-      strokeDasharray: '3 3',
-    },
-    date: {
-      fill: darkTheme.textColor,
-    },
-  },
-  slider: {
-    backgroundColor: darkTheme.label.backgroundColor,
-    strokeColor: darkTheme.dimTextColor,
-  },
-};
+function useColorPalette(): ColorPalette {
+  const theme = useTheme();
+  return useMemo<ColorPalette>(() => {
+    return {
+      line: {
+        stroke: theme.colors.primary,
+        strokeWidth: 4,
+      },
+      pointing: {
+        line: {
+          stroke: '#9E9FB3',
+          strokeWidth: 1,
+          strokeDasharray: '3 3',
+        },
+        date: {
+          fill: theme.textColor,
+        },
+      },
+      slider: {
+        backgroundColor: theme.label.backgroundColor,
+        strokeColor: theme.textColor,
+      },
+    };
+  }, [theme.colors.primary, theme.label.backgroundColor, theme.textColor]);
+}
 
 export function APYChartBase({
   data,
@@ -106,11 +88,7 @@ export function APYChartBase({
     height = 200,
   } = useResizeObserver<HTMLDivElement>({});
 
-  const theme = useTheme();
-
-  const palette = useMemo(() => {
-    return theme.palette.type === 'dark' ? darkColorPalette : lightColorPalette;
-  }, [theme.palette.type]);
+  const palette = useColorPalette();
 
   const { coordinateSpace, canvasStyle } = useCoordinateSpace({
     width,
@@ -281,12 +259,8 @@ export function APYChartBase({
 
 export const APYChart = styled(APYChartBase)`
   min-width: 0;
-  //background-color: rgba(0, 0, 0, 0.05);
-
   svg {
     min-width: 0;
-    //background-color: rgba(0, 0, 0, 0.02);
-
     user-select: none;
   }
 `;

@@ -37,7 +37,7 @@ export const earnWithdrawForm =
     EarnWithdrawFormStates,
     EarnWithdrawFormAsyncStates
   > => {
-    if (withdrawAmount.length === 0 || withdrawAmount.trim() === '0') {
+    if (withdrawAmount.length === 0) {
       return [
         {
           withdrawAmount: '' as UST,

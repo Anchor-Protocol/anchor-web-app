@@ -1,11 +1,11 @@
 import type { ComponentType, ReactNode } from 'react';
 import { createElement, useCallback, useMemo, useState } from 'react';
 
-export type DialogProps<Param, Return> = Param & {
+export type DialogProps<Param, Return = void> = Param & {
   closeDialog: (returnValue: Return) => void;
 };
 
-export type OpenDialog<Param, Return> = (p: Param) => Promise<Return>;
+export type OpenDialog<Param, Return = void> = (p: Param) => Promise<Return>;
 
 export function useDialog<Param = {}, Return = void>(
   DialogComponent: ComponentType<DialogProps<Param, Return>>,

@@ -1,22 +1,13 @@
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
+import { UIElementProps } from '@libs/ui';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { fixHMR } from 'fix-hmr';
 import { BLunaBurn } from 'pages/basset/components/BLunaBurn';
 import { BLunaMint } from 'pages/basset/components/BLunaMint';
 import React, { useCallback, useMemo } from 'react';
-import {
-  Redirect,
-  Route,
-  RouteComponentProps,
-  Switch,
-  useRouteMatch,
-} from 'react-router-dom';
+import { useMatch, useNavigate, Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-
-export interface BlunaConvertProps extends RouteComponentProps {
-  className?: string;
-}
 
 interface Item {
   label: string;
@@ -33,20 +24,20 @@ const tabItems: Item[] = [
   },
 ];
 
-function Component({ className, match, history }: BlunaConvertProps) {
-  const pageMatch = useRouteMatch<{ page: string }>(`${match.path}/:page`);
+function Component({ className }: UIElementProps) {
+  const navigate = useNavigate();
+
+  const match = useMatch({ path: '/basset/bluna/:page', end: true });
 
   const tab = useMemo<Item | undefined>(() => {
-    return tabItems.find(({ value }) => value === pageMatch?.params.page);
-  }, [pageMatch?.params.page]);
+    return tabItems.find(({ value }) => value === match?.params.page);
+  }, [match?.params.page]);
 
   const tabChange = useCallback(
     (nextTab: Item) => {
-      history.push({
-        pathname: `${match.path}/${nextTab.value}`,
-      });
+      navigate(`/basset/bluna/${nextTab.value}`);
     },
-    [history, match.path],
+    [navigate],
   );
 
   return (
@@ -63,12 +54,7 @@ function Component({ className, match, history }: BlunaConvertProps) {
         keyFunction={({ value }) => value}
         tooltipFunction={({ tooltip }) => tooltip}
       />
-      <Switch>
-        <Redirect exact path={`${match.path}/`} to={`${match.path}/mint`} />
-        <Route path={`${match.path}/mint`} component={BLunaMint} />
-        <Route path={`${match.path}/burn`} component={BLunaBurn} />
-        <Redirect path={`${match.path}/*`} to={`${match.path}/mint`} />
-      </Switch>
+      <Outlet />
     </CenteredLayout>
   );
 }
@@ -80,3 +66,5 @@ const StyledComponent = styled(Component)`
 `;
 
 export const BlunaConvert = fixHMR(StyledComponent);
+
+export { BLunaMint, BLunaBurn };

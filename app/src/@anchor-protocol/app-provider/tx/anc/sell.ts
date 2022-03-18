@@ -7,6 +7,7 @@ import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useAncPriceQuery } from '../../queries/anc/price';
@@ -19,6 +20,8 @@ export interface AncSellTxParams {
 }
 
 export function useAncSellTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -34,13 +37,19 @@ export function useAncSellTx() {
 
   const stream = useCallback(
     ({ burnAmount, maxSpread, onTxSucceed }: AncSellTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost || !ancPrice) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress ||
+        !ancPrice
+      ) {
         throw new Error('Can not post!');
       }
 
       return ancSellTx({
         // fabricatebSell
-        walletAddr: connectedWallet.walletAddress,
+        walletAddr: terraWalletAddress,
         burnAmount,
         beliefPrice: formatExecuteMsgNumber(
           big(ancPrice.ANCPoolSize).div(ancPrice.USTPoolSize),
@@ -67,10 +76,13 @@ export function useAncSellTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       ancPrice,
       contractAddress.cw20.ANC,
       contractAddress.terraswap.ancUstPair,
+      terraWalletAddress,
       fixedFee,
       bank.tax,
       constants.gasWanted,
