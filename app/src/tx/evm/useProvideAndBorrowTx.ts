@@ -9,7 +9,7 @@ import {
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import {
@@ -22,7 +22,7 @@ import { bAsset, NoMicro } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
-type ProvideAndBorrowTxResult = OneWayTxResponse<ContractReceipt> | null;
+type ProvideAndBorrowTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type ProvideAndBorrowTxRender = TxResultRendering<ProvideAndBorrowTxResult>;
 
 export interface ProvideAndBorrowTxParams {
@@ -46,7 +46,7 @@ export function useProvideAndBorrowTx():
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
   const { ust } = useFormatters();
 
-  const provideTx = useCallback(
+  const provideAndBorrowTx = useCallback(
     async (
       txParams: ProvideAndBorrowTxParams,
       renderTxResults: Subject<ProvideAndBorrowTxRender>,
@@ -125,11 +125,11 @@ export function useProvideAndBorrowTx():
     [xAnchor, address, connectType, chainId, refetchQueries, ust],
   );
 
-  const persistedTxResult = useBackgroundTx<
+  const backgroundTxResult = useBackgroundTx<
     ProvideAndBorrowTxParams,
     ProvideAndBorrowTxResult
   >(
-    provideTx,
+    provideAndBorrowTx,
     (resp) => resp.tx,
     null,
     (txParams) => {
@@ -147,5 +147,5 @@ export function useProvideAndBorrowTx():
     },
   );
 
-  return chainId && connection && address ? persistedTxResult : undefined;
+  return chainId && connection && address ? backgroundTxResult : undefined;
 }
