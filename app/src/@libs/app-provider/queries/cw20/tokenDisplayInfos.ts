@@ -19,10 +19,17 @@ export function useCW20TokenDisplayInfosQuery(): UseQueryResult<CW20TokenDisplay
 
   const result = useQuery(
     [TERRA_QUERY_KEY.CW20_TOKEN_DISPLAY_INFOS, chain],
+    //TERRA_QUERY_KEY.CW20_TOKEN_DISPLAY_INFOS,
     queryFn,
+    // () => {
+    //   return cw20TokenDisplayInfosQuery(chain);
+    // },
     {
-      keepPreviousData: true,
+      keepPreviousData: false,
       onError: queryErrorReporter,
+      onSuccess: () => {
+        console.log('useCW20TokenDisplayInfosQuery:success');
+      },
     },
   );
 

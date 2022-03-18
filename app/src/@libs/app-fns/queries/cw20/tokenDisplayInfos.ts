@@ -18,17 +18,17 @@ export type CW20TokenDisplayInfos = {
   [network: string]: CW20NetworkTokenDisplayInfos;
 };
 
-let cache: CW20TokenDisplayInfos;
+//let cache: CW20TokenDisplayInfos;
 
 export async function cw20TokenDisplayInfosQuery(
   chain: Chain,
 ): Promise<CW20TokenDisplayInfos> {
   console.log('cw20TokenDisplayInfosQuery:chain', chain);
 
-  if (cache) {
-    console.log('cw20TokenDisplayInfosQuery:cached');
-    return cache;
-  }
+  // if (cache) {
+  //   console.log('cw20TokenDisplayInfosQuery:cached');
+  //   return cache;
+  // }
 
   // mainnet -> protocol === Wormhole (starts with wa)
   let data: CW20TokenDisplayInfos = await fetch(
@@ -39,7 +39,7 @@ export async function cw20TokenDisplayInfosQuery(
     data = trimWormholeSymbols(data);
   }
 
-  cache = data;
+  //cache = data;
 
   return data;
 }
