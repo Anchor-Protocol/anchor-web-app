@@ -1,4 +1,3 @@
-import { AddressProvider } from '@anchor-protocol/anchor.js';
 import { formatLP } from '@anchor-protocol/notation';
 import {
   AncUstLP,
@@ -24,14 +23,12 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatTokenInput } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
 import {
   CreateTxOptions,
-  Dec,
   Fee,
-  Int,
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
@@ -41,13 +38,12 @@ export function ancAncUstLpUnstakeTx($: {
   walletAddr: HumanAddr;
   generatorAddr: HumanAddr;
   ancUstLpTokenAddr: CW20Addr;
-  amount: AncUstLP;
+  lpAmount: AncUstLP;
 
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
   network: NetworkInfo;
-  addressProvider: AddressProvider;
   queryClient: QueryClient;
   post: (tx: CreateTxOptions) => Promise<TxResult>;
   txErrorReporter?: (error: unknown) => string;
@@ -61,9 +57,10 @@ export function ancAncUstLpUnstakeTx($: {
         new MsgExecuteContract($.walletAddr, $.generatorAddr, {
           withdraw: {
             lp_token: $.ancUstLpTokenAddr,
-            amount: new Int(new Dec($.amount).mul(1000000)).toString(),
+            amount: formatTokenInput($.lpAmount),
           },
         }),
+        // TODO execute_msg type
       ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,

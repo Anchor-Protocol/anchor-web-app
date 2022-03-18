@@ -1,14 +1,11 @@
-import { Rate } from '@anchor-protocol/types';
-import { useBorrowMarketQuery } from '@anchor-protocol/app-provider';
 import { Slider, Switch } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { NotificationsNone } from '@material-ui/icons';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
-import big from 'big.js';
 import { useJobs } from 'jobs/Jobs';
-import React, { ChangeEvent, useCallback, useMemo } from 'react';
+import React, { ChangeEvent, useCallback } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 
 export interface NotificationContentProps {
@@ -23,36 +20,19 @@ function createMark(percent: number) {
   return { value: percent, label: percent + '%' };
 }
 
+const notificationMin = 75.0;
+const notificationMax = 99.0;
+
+const sliderMarks = [createMark(75.0), createMark(87.0), createMark(99.0)];
+
 function NotificationContentBase({ className }: NotificationContentProps) {
-  const {
-    data: { bAssetLtvsAvg = { safe: '0.45' as Rate, max: '0.6' as Rate } } = {},
-  } = useBorrowMarketQuery();
-
-  const { safe, max, sliderMarks } = useMemo(() => {
-    const safe = big(bAssetLtvsAvg.safe).mul(100).toNumber();
-    const max = big(bAssetLtvsAvg.max).mul(100).toNumber();
-
-    const gap = Math.floor((max - safe) / 3);
-
-    return {
-      safe,
-      max: max - 1,
-      sliderMarks: [
-        createMark(safe),
-        createMark(safe + gap),
-        createMark(safe + gap * 2),
-        createMark(safe + gap * 3 - 1),
-      ],
-    };
-  }, [bAssetLtvsAvg.max, bAssetLtvsAvg.safe]);
-
   const { liquidationAlert, updateLiquidationAlert } = useJobs();
 
   const { focusVisible, ...switchClasses } = useSwitchStyle();
   const sliderClasses = useSliderStyle();
 
   const testNotifications = useCallback(() => {
-    new Notification('Anchor Borrow LTV Notification', {
+    new Notification('Anchor Borrow Usage Notification', {
       body: 'Notifications have been enabled.',
     });
   }, []);
@@ -71,7 +51,7 @@ function NotificationContentBase({ className }: NotificationContentProps) {
       </h2>
 
       <div className="switch">
-        <p>Anchor Borrow LTV</p>
+        <p>Anchor Borrow Usage</p>
         <Switch
           focusVisibleClassName={focusVisible}
           classes={switchClasses}
@@ -92,8 +72,8 @@ function NotificationContentBase({ className }: NotificationContentProps) {
           valueLabelFormat={valueLabelFormat}
           marks={sliderMarks}
           value={liquidationAlert.ratio * 100}
-          min={safe}
-          max={max}
+          min={notificationMin}
+          max={notificationMax}
           onChange={(_: any, newValue: number) => {
             updateLiquidationAlert({
               ...liquidationAlert,

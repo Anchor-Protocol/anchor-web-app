@@ -15,6 +15,7 @@ import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { ChartItem, DoughnutChart } from './graphics/DoughnutGraph';
+import { useTheme } from 'contexts/theme';
 
 export interface CollateralItem {
   label: string;
@@ -29,14 +30,14 @@ export interface TotalCollateralValueProps {
   collaterals: CollateralItem[];
 }
 
-const colors = ['#4bdb4b', '#1f1f1f'];
-
 function TotalCollateralValueBase({
   className,
   total,
   collaterals,
 }: TotalCollateralValueProps) {
   const [focusedIndex, setFocusedIndex] = useState(-1);
+
+  const { theme } = useTheme();
 
   const { ref, width = 400 } = useResizeObserver();
 
@@ -48,9 +49,9 @@ function TotalCollateralValueBase({
     return collaterals.map(({ label, ust, asset, ratio }, i) => ({
       label,
       value: +ust,
-      color: colors[i % colors.length],
+      color: theme.chart[i % theme.chart.length],
     }));
-  }, [collaterals]);
+  }, [collaterals, theme]);
 
   return (
     <Section className={className}>
@@ -77,7 +78,7 @@ function TotalCollateralValueBase({
             {collaterals.map(({ label, ust, asset, ratio }, i) => (
               <tr
                 key={label}
-                style={{ color: colors[i] }}
+                style={{ color: theme.chart[i] }}
                 data-focus={i === focusedIndex}
               >
                 <th>

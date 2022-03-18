@@ -1,9 +1,10 @@
 import { bondMintTx } from '@anchor-protocol/app-fns';
-import { Gas, Luna, u, UST } from '@anchor-protocol/types';
+import { Gas, Luna, Rate, u, UST } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -11,34 +12,49 @@ export interface BondMintTxParams {
   bondAmount: Luna;
   gasWanted: Gas;
   txFee: u<UST>;
+  exchangeRate: Rate<string>;
   onTxSucceed?: () => void;
 }
 
 export function useBondMintTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
-    ({ bondAmount, gasWanted, txFee, onTxSucceed }: BondMintTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+    ({
+      bondAmount,
+      gasWanted,
+      txFee,
+      exchangeRate,
+      onTxSucceed,
+    }: BondMintTxParams) => {
+      if (
+        !connected ||
+        !availablePost ||
+        !terraWalletAddress ||
+        !connectedWallet
+      ) {
         throw new Error('Can not post!');
       }
 
       return bondMintTx({
         // fabricatebAssetBond
-        amount: bondAmount,
-        address: connectedWallet.walletAddress,
+        bondAmount,
+        walletAddr: terraWalletAddress,
+        bAssetHubAddr: contractAddress.bluna.hub,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: txFee,
+        exchangeRate,
         gasFee: gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -51,9 +67,12 @@ export function useBondMintTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      contractAddress.bluna.hub,
+      terraWalletAddress,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

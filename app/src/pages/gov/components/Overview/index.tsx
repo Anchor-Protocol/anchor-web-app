@@ -11,6 +11,7 @@ import {
   useAncPriceQuery,
   useAncTokenInfoQuery,
   useBorrowAPYQuery,
+  useDeploymentTarget,
   useGovStateQuery,
   useRewardsAnchorLpRewardsQuery,
 } from '@anchor-protocol/app-provider';
@@ -29,7 +30,7 @@ import { Sub } from 'components/Sub';
 import { screen } from 'env';
 import { ancGovernancePathname, ancUstLpPathname } from 'pages/trade/env';
 import React, { useMemo } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 export interface OverviewProps {
@@ -37,6 +38,10 @@ export interface OverviewProps {
 }
 
 function OverviewBase({ className }: OverviewProps) {
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
+
   const { contractAddress } = useAnchorWebapp();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
@@ -46,7 +51,7 @@ function OverviewBase({ className }: OverviewProps) {
   const { data: { anchorLpRewards: apyLPRewards } = {} } =
     useRewardsAnchorLpRewardsQuery();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { data: { ancTokenInfo } = {} } = useAncTokenInfoQuery();
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
@@ -199,26 +204,28 @@ function OverviewBase({ className }: OverviewProps) {
             %
           </span>
         </div>
-        <div className="staking-buttons">
-          <BorderButton component={Link} to={`/trade`}>
-            Trade ANC
-          </BorderButton>
-          <Tooltip
-            title="Stake ANC to participate in governance voting or to obtain governance rewards"
-            placement="top"
-          >
-            <BorderButton
-              component={Link}
-              to={`/${ancGovernancePathname}/stake`}
-            >
-              Gov Stake
+        {isNative && (
+          <div className="staking-buttons">
+            <BorderButton component={Link} to={`/trade`}>
+              Trade ANC
             </BorderButton>
-          </Tooltip>
-        </div>
+            <Tooltip
+              title="Stake ANC to participate in governance voting or to obtain governance rewards"
+              placement="top"
+            >
+              <BorderButton
+                component={Link}
+                to={`/${ancGovernancePathname}/stake`}
+              >
+                Gov Stake
+              </BorderButton>
+            </Tooltip>
+          </div>
+        )}
       </Section>
       <Section
-        className="lp"
-        onClick={() => history.push(`/${ancUstLpPathname}/provide`)}
+        className={isNative ? 'lp lp-action' : 'lp'}
+        onClick={() => isNative && navigate(`/${ancUstLpPathname}/provide`)}
       >
         <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
           <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
@@ -228,9 +235,7 @@ function OverviewBase({ className }: OverviewProps) {
           />
         </Circles>
         <h2>
-          <IconSpan>
-            ANC-UST LP <ChevronRight />
-          </IconSpan>
+          <IconSpan>ANC-UST LP {isNative && <ChevronRight />}</IconSpan>
         </h2>
         <div className="lp-labels">
           <div>
@@ -268,7 +273,7 @@ function OverviewBase({ className }: OverviewProps) {
 }
 
 export const Overview = styled(OverviewBase)`
-  .lp {
+  .lp-action {
     cursor: pointer;
 
     &:hover {

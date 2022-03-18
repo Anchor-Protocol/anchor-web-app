@@ -1,9 +1,10 @@
-import { ANC } from '@anchor-protocol/types';
 import { ancGovernanceStakeTx } from '@anchor-protocol/app-fns';
+import { ANC } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -14,9 +15,11 @@ export interface AncGovernanceStakeTxParams {
 }
 
 export function useAncGovernanceStakeTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const fixedFee = useFixedFee();
@@ -25,21 +28,27 @@ export function useAncGovernanceStakeTx() {
 
   const stream = useCallback(
     ({ ancAmount, onTxSucceed }: AncGovernanceStakeTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return ancGovernanceStakeTx({
         // fabricateGovStakeVoting
-        address: connectedWallet.walletAddress,
-        amount: ancAmount,
+        walletAddr: terraWalletAddress,
+        ancAmount,
+        govAddr: contractAddress.anchorToken.gov,
+        ancTokenAddr: contractAddress.cw20.ANC,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -52,11 +61,15 @@ export function useAncGovernanceStakeTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      contractAddress.anchorToken.gov,
+      contractAddress.cw20.ANC,
+      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

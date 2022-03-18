@@ -1,34 +1,21 @@
 import {
-  formatBAssetWithPostfixUnits,
-  formatLunaWithPostfixUnits,
   formatUST,
-  formatUSTWithPostfixUnits,
   formatUTokenInteger,
   formatUTokenIntegerWithoutPostfixUnits,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import {
-  bAsset,
-  bEth,
-  bLuna,
-  Luna,
-  Rate,
-  u,
-  UST,
-} from '@anchor-protocol/types';
+import { Rate, u, UST } from '@anchor-protocol/types';
 import {
   useAnchorWebapp,
   useEarnEpochStatesQuery,
   useMarketAncQuery,
-  useMarketBEthQuery,
-  useMarketBLunaQuery,
   useMarketBuybackQuery,
   useMarketCollateralsQuery,
   useMarketDepositAndBorrowQuery,
   useMarketStableCoinQuery,
   useMarketUstQuery,
 } from '@anchor-protocol/app-provider';
-import { demicrofy, formatRate } from '@libs/formatter';
+import { formatRate } from '@libs/formatter';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -39,7 +26,7 @@ import {
   verticalRuler,
 } from '@libs/styled-neumorphism';
 import { AnimateNumber } from '@libs/ui';
-import big, { Big, BigSource } from 'big.js';
+import big, { Big } from 'big.js';
 import { Footer } from 'components/Footer';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { screen } from 'env';
@@ -47,10 +34,10 @@ import { fixHMR } from 'fix-hmr';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled, { css, useTheme } from 'styled-components';
 import { ANCPriceChart } from './components/ANCPriceChart';
-import { CollateralsChart } from './components/CollateralsChart';
 import { findPrevDay } from './components/internal/axisUtils';
 import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
+import { CollateralMarket } from './components/CollateralMarket';
 
 export interface DashboardProps {
   className?: string;
@@ -99,8 +86,6 @@ function DashboardBase({ className }: DashboardProps) {
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
   const { data: marketUST } = useMarketUstQuery();
-  const { data: marketBLuna } = useMarketBLunaQuery();
-  const { data: marketBEth } = useMarketBEthQuery();
   const { data: marketANC } = useMarketAncQuery();
   const { data: marketDepositAndBorrow } = useMarketDepositAndBorrowQuery();
   const { data: marketCollaterals } = useMarketCollateralsQuery();
@@ -175,56 +160,6 @@ function DashboardBase({ className }: DashboardProps) {
     };
   }, [blocksPerYear, marketDepositAndBorrow, marketUST]);
 
-  const collaterals = useMemo(() => {
-    if (
-      !marketCollaterals ||
-      !marketBLuna ||
-      !marketBEth ||
-      marketCollaterals.history.length === 0
-    ) {
-      return undefined;
-    }
-
-    const last = marketCollaterals.now;
-    const last1DayBefore =
-      marketCollaterals.history.find(findPrevDay(last.timestamp)) ??
-      marketCollaterals.history[marketCollaterals.history.length - 2];
-
-    const bLunaCollateral = last.collaterals.find(
-      ({ symbol }) => symbol.toLowerCase() === 'bluna',
-    );
-
-    const bEthCollateral = last.collaterals.find(
-      ({ symbol }) => symbol.toLowerCase() === 'beth',
-    );
-
-    return {
-      mainTotalCollateralValue: last.total_value,
-      totalCollateralValueGraph: 'TODO: API not ready...',
-      totalCollateralDiff: big(
-        big(last.total_value).minus(last1DayBefore.total_value),
-      ).div(last1DayBefore.total_value) as Rate<Big>,
-      totalCollateralValue: big(
-        last.collaterals.reduce((total, { collateral, price }) => {
-          return total.plus(big(collateral).mul(price));
-        }, big(0)) as u<UST<Big>>,
-      ).mul(marketBLuna.bLuna_price) as u<UST<Big>>,
-      totalCollateralValueDiff: 'TODO: API not ready...',
-      bLunaPrice: marketBLuna.bLuna_price,
-      bLunaPriceDiff: 'TODO: API not ready...',
-      bLunaTotalCollateral: (bLunaCollateral?.collateral ?? '0') as u<bLuna>,
-      bLunaTotalCollateralValue: (bLunaCollateral
-        ? big(bLunaCollateral.collateral).mul(bLunaCollateral.price)
-        : '0') as u<UST<BigSource>>,
-      bEthPrice: marketBEth.beth_price,
-      bEthPriceDiff: 'TODO: API not ready...',
-      bEthTotalCollateral: (bEthCollateral?.collateral ?? '0') as u<bEth>,
-      bEthTotalCollateralValue: (bEthCollateral
-        ? big(bEthCollateral.collateral).mul(bEthCollateral.price)
-        : '0') as u<UST<BigSource>>,
-    };
-  }, [marketBEth, marketBLuna, marketCollaterals]);
-
   return (
     <div className={className}>
       <main>
@@ -264,13 +199,13 @@ function DashboardBase({ className }: DashboardProps) {
                       totalCollaterals={
                         totalValueLocked?.totalCollaterals ?? ('1' as u<UST>)
                       }
-                      totalDepositColor={theme.colors.positive}
+                      totalDepositColor={theme.colors.secondary}
                       totalCollateralsColor={theme.textColor}
                     />
                   </div>
                   <div>
                     <h3>
-                      <i style={{ backgroundColor: theme.colors.positive }} />{' '}
+                      <i style={{ backgroundColor: theme.colors.secondary }} />{' '}
                       Total Deposit
                     </h3>
                     <p>
@@ -420,8 +355,8 @@ function DashboardBase({ className }: DashboardProps) {
             <header>
               <div>
                 <h2>
-                  <i style={{ backgroundColor: theme.colors.positive }} /> TOTAL
-                  DEPOSIT
+                  <i style={{ backgroundColor: theme.colors.secondary }} />{' '}
+                  TOTAL DEPOSIT
                   {stableCoin && (
                     <span
                       data-negative={big(stableCoin.totalDepositDiff).lt(0)}
@@ -578,168 +513,7 @@ function DashboardBase({ className }: DashboardProps) {
             </HorizontalScrollTable>
           </Section>
 
-          <Section className="collaterals">
-            <header>
-              <div>
-                <h2>
-                  TOTAL COLLATERAL VALUE
-                  {collaterals && (
-                    <span
-                      data-negative={big(collaterals.totalCollateralDiff).lt(0)}
-                    >
-                      {big(collaterals.totalCollateralDiff).gte(0) ? '+' : ''}
-                      {formatRate(collaterals.totalCollateralDiff)}%
-                    </span>
-                  )}
-                </h2>
-                <p className="amount">
-                  <AnimateNumber
-                    format={formatUTokenIntegerWithoutPostfixUnits}
-                  >
-                    {collaterals
-                      ? collaterals.mainTotalCollateralValue
-                      : (0 as u<UST<number>>)}
-                  </AnimateNumber>
-                  <span> UST</span>
-                </p>
-              </div>
-            </header>
-
-            <figure>
-              <div>
-                <CollateralsChart
-                  data={marketCollaterals?.history ?? EMPTY_ARRAY}
-                  theme={theme}
-                  isMobile={isMobile}
-                />
-              </div>
-            </figure>
-
-            <HorizontalScrollTable minWidth={800} className="basset-market">
-              <colgroup>
-                <col style={{ width: 300 }} />
-                <col style={{ width: 300 }} />
-                <col style={{ width: 300 }} />
-                <col style={{ width: 300 }} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>bASSET MARKET</th>
-                  <th>
-                    <IconSpan>
-                      Price <InfoTooltip>Oracle price of bAsset</InfoTooltip>
-                    </IconSpan>
-                  </th>
-                  <th>
-                    <IconSpan>
-                      Total Collateral{' '}
-                      <InfoTooltip>
-                        Total collateral value in bASSET
-                      </InfoTooltip>
-                    </IconSpan>
-                  </th>
-                  <th>
-                    <IconSpan>
-                      Total Collateral Value{' '}
-                      <InfoTooltip>Total collateral value in USD</InfoTooltip>
-                    </IconSpan>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <div>
-                      <i>
-                        <TokenIcon token="bluna" />
-                      </i>
-                      <div>
-                        <div className="coin">bLUNA</div>
-                        <p className="name">Bonded Luna</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="value">
-                      ${' '}
-                      <AnimateNumber format={formatUST}>
-                        {collaterals
-                          ? collaterals.bLunaPrice
-                          : (0 as UST<number>)}
-                      </AnimateNumber>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="value">
-                      <AnimateNumber format={formatLunaWithPostfixUnits}>
-                        {collaterals?.bLunaTotalCollateral
-                          ? demicrofy(collaterals.bLunaTotalCollateral)
-                          : (0 as Luna<number>)}
-                      </AnimateNumber>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="value">
-                      ${' '}
-                      <AnimateNumber
-                        format={formatUSTWithPostfixUnits}
-                        id="collateral-value"
-                      >
-                        {collaterals
-                          ? demicrofy(collaterals.bLunaTotalCollateralValue)
-                          : (0 as UST<number>)}
-                      </AnimateNumber>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div>
-                      <i>
-                        <TokenIcon token="beth" />
-                      </i>
-                      <div>
-                        <div className="coin">bETH</div>
-                        <p className="name">Bonded ETH</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="value">
-                      ${' '}
-                      <AnimateNumber format={formatUST}>
-                        {collaterals?.bEthPrice
-                          ? collaterals.bEthPrice
-                          : (0 as UST<number>)}
-                      </AnimateNumber>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="value">
-                      <AnimateNumber format={formatBAssetWithPostfixUnits}>
-                        {collaterals?.bEthTotalCollateral
-                          ? demicrofy(collaterals.bEthTotalCollateral)
-                          : (0 as bAsset<number>)}
-                      </AnimateNumber>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="value">
-                      ${' '}
-                      <AnimateNumber
-                        format={formatUSTWithPostfixUnits}
-                        id="collateral-value"
-                      >
-                        {collaterals?.bEthTotalCollateralValue
-                          ? demicrofy(collaterals.bEthTotalCollateralValue)
-                          : (0 as UST<number>)}
-                      </AnimateNumber>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </HorizontalScrollTable>
-          </Section>
+          <CollateralMarket className="collaterals" />
         </div>
 
         <Footer style={{ margin: '60px 0' }} />

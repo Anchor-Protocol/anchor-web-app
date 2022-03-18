@@ -9,6 +9,7 @@ import { NetworkInfo } from '@terra-money/use-wallet';
 import { AccAddress } from '@terra-money/terra.js';
 import React, {
   ChangeEvent,
+  KeyboardEvent,
   ReactNode,
   useCallback,
   useMemo,
@@ -94,7 +95,6 @@ function ComponentBase({
         <TextInput
           className="address"
           fullWidth
-          multiline
           placeholder="ADDRESS"
           value={address}
           error={!!invalidAddress}
@@ -102,6 +102,11 @@ function ComponentBase({
           onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
             setAddress(target.value)
           }
+          onKeyPress={({ key }: KeyboardEvent<HTMLInputElement>) => {
+            if (key === 'Enter') {
+              submit(address, chainID);
+            }
+          }}
         />
 
         <ActionButton

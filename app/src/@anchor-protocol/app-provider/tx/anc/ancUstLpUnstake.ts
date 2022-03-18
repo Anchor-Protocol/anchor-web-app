@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -13,15 +14,12 @@ export interface AncAncUstLpUnstakeTxParams {
 }
 
 export function useAncAncUstLpUnstakeTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
-  const {
-    queryClient,
-    txErrorReporter,
-    addressProvider,
-    contractAddress,
-    constants,
-  } = useAnchorWebapp();
+  const { queryClient, txErrorReporter, contractAddress, constants } =
+    useAnchorWebapp();
 
   const fixedFee = useFixedFee();
 
@@ -29,23 +27,27 @@ export function useAncAncUstLpUnstakeTx() {
 
   const stream = useCallback(
     ({ lpAmount, onTxSucceed }: AncAncUstLpUnstakeTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return ancAncUstLpUnstakeTx({
         // fabricateStakingUnbond
-        walletAddr: connectedWallet.walletAddress,
-        ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
+        walletAddr: terraWalletAddress,
+        lpAmount: lpAmount,
         generatorAddr: contractAddress.astroport.generator,
-        amount: lpAmount,
+        ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.astroportGasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -58,13 +60,15 @@ export function useAncAncUstLpUnstakeTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      terraWalletAddress,
       contractAddress.cw20.AncUstLP,
       contractAddress.astroport.generator,
       fixedFee,
       constants.astroportGasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

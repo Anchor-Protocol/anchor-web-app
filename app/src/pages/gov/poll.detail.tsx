@@ -3,6 +3,7 @@ import { Rate } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
   useAnchorWebapp,
+  useDeploymentTarget,
   useGovPollQuery,
   useGovStateQuery,
   useGovVoteAvailableQuery,
@@ -36,17 +37,20 @@ import { usePollVoteDialog } from 'pages/gov/components/usePollVoteDialog';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
 import { isLinkHttp } from 'pages/gov/logics/isLinkHttp';
 import React, { useMemo } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { UIElementProps } from '@libs/ui';
 
-export interface PollDetailProps extends RouteComponentProps<{ id: string }> {
-  className?: string;
-}
+function PollDetailBase({ className }: UIElementProps) {
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
 
-function PollDetailBase({ className, match }: PollDetailProps) {
   const { contractAddress } = useAnchorWebapp();
 
-  const { data: { poll } = {} } = useGovPollQuery(+match.params.id);
+  const { id = '0' } = useParams();
+
+  const { data: { poll } = {} } = useGovPollQuery(+id);
 
   if (poll?.id === 11) {
     poll.link =
@@ -104,18 +108,20 @@ function PollDetailBase({ className, match }: PollDetailProps) {
             </p>
             <h2>{pollDetail.poll.title}</h2>
           </div>
-          <ActionButton
-            disabled={
-              !canIVote ||
-              !poll ||
-              !lastSyncedHeight ||
-              poll.status !== 'in_progress' ||
-              poll.end_height < lastSyncedHeight
-            }
-            onClick={() => openVoteDialog({ pollId: +match.params.id })}
-          >
-            Vote
-          </ActionButton>
+          {isNative && (
+            <ActionButton
+              disabled={
+                !canIVote ||
+                !poll ||
+                !lastSyncedHeight ||
+                poll.status !== 'in_progress' ||
+                poll.end_height < lastSyncedHeight
+              }
+              onClick={() => openVoteDialog({ pollId: +id })}
+            >
+              Vote
+            </ActionButton>
+          )}
         </div>
 
         <HorizontalHeavyRuler />

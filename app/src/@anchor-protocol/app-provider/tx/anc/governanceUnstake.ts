@@ -1,9 +1,10 @@
-import { ANC } from '@anchor-protocol/types';
 import { ancGovernanceUnstakeTx } from '@anchor-protocol/app-fns';
+import { ANC } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -14,9 +15,11 @@ export interface AncGovernanceUnstakeTxParams {
 }
 
 export function useAncGovernanceUnstakeTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const fixedFee = useFixedFee();
@@ -25,21 +28,26 @@ export function useAncGovernanceUnstakeTx() {
 
   const stream = useCallback(
     ({ ancAmount, onTxSucceed }: AncGovernanceUnstakeTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return ancGovernanceUnstakeTx({
         // fabricateGovStakeVoting
-        address: connectedWallet.walletAddress,
-        amount: ancAmount,
+        walletAddr: terraWalletAddress,
+        ancAmount,
+        govAddr: contractAddress.anchorToken.gov,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -52,11 +60,14 @@ export function useAncGovernanceUnstakeTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      contractAddress.anchorToken.gov,
+      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

@@ -3,9 +3,9 @@ import {
   computeBorrowedAmount,
   computeBorrowLimit,
   computeCollateralsTotalUST,
-  computeCurrentLtv,
   computeNetAPR,
 } from '@anchor-protocol/app-fns';
+import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
 import {
   useAnchorWebapp,
   useBorrowAPYQuery,
@@ -27,7 +27,7 @@ export function useBorrowOverviewData() {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { data: { borrowRate, oraclePrices, bAssetLtvsAvg, bAssetLtvs } = {} } =
+  const { data: { borrowRate, oraclePrices, bAssetLtvs } = {} } =
     useBorrowMarketQuery();
 
   const { data: { marketBorrowerInfo, overseerCollaterals } = {} } =
@@ -45,15 +45,6 @@ export function useBorrowOverviewData() {
           ? computeCollateralsTotalUST(overseerCollaterals, oraclePrices)
           : (big(0) as u<UST<Big>>);
 
-      const currentLtv =
-        marketBorrowerInfo && overseerCollaterals && oraclePrices
-          ? computeCurrentLtv(
-              marketBorrowerInfo,
-              overseerCollaterals,
-              oraclePrices,
-            )
-          : undefined;
-
       const borrowAPR = computeBorrowAPR(borrowRate, blocksPerYear);
 
       const borrowedValue = computeBorrowedAmount(marketBorrowerInfo);
@@ -62,6 +53,10 @@ export function useBorrowOverviewData() {
         overseerCollaterals && oraclePrices && bAssetLtvs
           ? computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs)
           : undefined;
+
+      const currentLtv = (
+        borrowLimit && borrowLimit.gt(0) ? borrowedValue.div(borrowLimit) : 0
+      ) as Rate<big>;
 
       return {
         currentLtv,
@@ -84,16 +79,17 @@ export function useBorrowOverviewData() {
   }, [borrowAPR, borrowerDistributionAPYs]);
 
   const dangerLtv = useMemo(() => {
-    return (
-      bAssetLtvsAvg ? big(bAssetLtvsAvg.max).minus(0.1) : big(0.5)
-    ) as Rate<Big>;
-  }, [bAssetLtvsAvg]);
+    if (bAssetLtvs) {
+      const bAssetLtvsAvg = computebAssetLtvsAvg(bAssetLtvs);
+      return big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
+    }
+    return big(0.5) as Rate<Big>;
+  }, [bAssetLtvs]);
 
   return {
     blocksPerYear,
     borrowRate,
     oraclePrices,
-    bAssetLtvsAvg,
     bAssetLtvs,
     currentLtv,
     borrowAPR,

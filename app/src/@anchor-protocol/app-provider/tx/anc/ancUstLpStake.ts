@@ -4,6 +4,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -13,15 +14,12 @@ export interface AncAncUstLpStakeTxParams {
 }
 
 export function useAncAncUstLpStakeTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
-  const {
-    queryClient,
-    txErrorReporter,
-    addressProvider,
-    contractAddress,
-    constants,
-  } = useAnchorWebapp();
+  const { queryClient, txErrorReporter, contractAddress, constants } =
+    useAnchorWebapp();
 
   const fixedFee = useFixedFee();
 
@@ -29,23 +27,27 @@ export function useAncAncUstLpStakeTx() {
 
   const stream = useCallback(
     ({ lpAmount, onTxSucceed }: AncAncUstLpStakeTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return ancAncUstLpStakeTx({
         // fabricateStakingBond
-        walletAddr: connectedWallet.walletAddress,
+        lpAmount: lpAmount,
+        walletAddr: terraWalletAddress,
         ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
         generatorAddr: contractAddress.astroport.generator,
-        amount: lpAmount,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.astroportGasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -58,13 +60,15 @@ export function useAncAncUstLpStakeTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
+      terraWalletAddress,
       contractAddress.cw20.AncUstLP,
       contractAddress.astroport.generator,
       fixedFee,
       constants.astroportGasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

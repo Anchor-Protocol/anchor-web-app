@@ -1,6 +1,6 @@
+import React, { useMemo } from 'react';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { Rate, u, UST } from '@anchor-protocol/types';
-import { BAssetLtv } from '@anchor-protocol/app-fns';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -10,11 +10,10 @@ import { AnimateNumber } from '@libs/ui';
 import { Big, BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import { fixHMR } from 'fix-hmr';
-import { BorrowLimitGraph } from 'pages/borrow/components/BorrowLimitGraph';
-import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
+import { BorrowUsageGraph } from 'pages/borrow/components/BorrowUsageGraph';
 
 export interface BorrowedValueProps {
   className?: string;
@@ -22,8 +21,7 @@ export interface BorrowedValueProps {
   netAPR: Rate<BigSource>;
   currentLtv: Rate<Big> | undefined;
   dangerLtv: Rate<Big> | undefined;
-  bAssetLtvsAvg: BAssetLtv | undefined;
-  borrowLimit: u<UST<BigSource>> | undefined;
+  borrowLimit: u<UST<Big>> | undefined;
 }
 
 function BorrowedValueBase({
@@ -31,7 +29,6 @@ function BorrowedValueBase({
   borrowedValue,
   borrowLimit,
   currentLtv,
-  bAssetLtvsAvg,
   dangerLtv,
   netAPR,
 }: BorrowedValueProps) {
@@ -79,15 +76,9 @@ function BorrowedValueBase({
         <p>{formatRate(netAPR)}%</p>
       </div>
 
-      {currentLtv && bAssetLtvsAvg && dangerLtv && borrowLimit && (
+      {currentLtv && dangerLtv && borrowLimit && (
         <figure>
-          <BorrowLimitGraph
-            currentLtv={currentLtv}
-            dangerLtv={dangerLtv}
-            safeLtv={bAssetLtvsAvg.safe}
-            maxLtv={bAssetLtvsAvg.max}
-            borrowLimit={borrowLimit}
-          />
+          <BorrowUsageGraph currentLtv={currentLtv} borrowLimit={borrowLimit} />
         </figure>
       )}
     </Section>

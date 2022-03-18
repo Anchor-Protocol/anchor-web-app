@@ -1,9 +1,12 @@
-import { AnchorTax, AnchorTokenBalances } from '@anchor-protocol/app-fns';
+import {
+  AnchorTax,
+  AnchorTokenBalances,
+  DefaultAnchorTokenBalances,
+} from '@anchor-protocol/app-fns';
 import {
   ANC,
   AncUstLP,
   aUST,
-  bEth,
   bLuna,
   bLunaLunaLP,
 } from '@anchor-protocol/types';
@@ -12,56 +15,47 @@ import {
   useTerraNativeBalances,
   useUstTax,
 } from '@libs/app-provider';
-import { useConnectedWallet } from '@terra-money/use-wallet';
 import { useMemo } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../contexts/context';
 
 export interface AnchorBank {
   tax: AnchorTax;
   tokenBalances: AnchorTokenBalances;
-  refetchTax: () => void;
-  refetchUserBalances: () => void;
 }
 
 export function useAnchorBank(): AnchorBank {
   const { contractAddress } = useAnchorWebapp();
 
-  const connectedWallet = useConnectedWallet();
+  const { terraWalletAddress } = useAccount();
 
   const { taxRate, maxTax } = useUstTax();
 
-  const { uUST, uLuna } = useTerraNativeBalances(
-    connectedWallet?.walletAddress,
-  );
+  const { uUST, uLuna } = useTerraNativeBalances(terraWalletAddress);
 
   const uANC = useCW20Balance<ANC>(
     contractAddress.cw20.ANC,
-    connectedWallet?.walletAddress,
+    terraWalletAddress,
   );
 
   const uAncUstLP = useCW20Balance<AncUstLP>(
     contractAddress.cw20.AncUstLP,
-    connectedWallet?.walletAddress,
+    terraWalletAddress,
   );
 
   const uaUST = useCW20Balance<aUST>(
     contractAddress.cw20.aUST,
-    connectedWallet?.walletAddress,
-  );
-
-  const ubEth = useCW20Balance<bEth>(
-    contractAddress.cw20.bEth,
-    connectedWallet?.walletAddress,
+    terraWalletAddress,
   );
 
   const ubLuna = useCW20Balance<bLuna>(
     contractAddress.cw20.bLuna,
-    connectedWallet?.walletAddress,
+    terraWalletAddress,
   );
 
   const ubLunaLunaLP = useCW20Balance<bLunaLunaLP>(
     contractAddress.cw20.bLunaLunaLP,
-    connectedWallet?.walletAddress,
+    terraWalletAddress,
   );
 
   return useMemo(() => {
@@ -71,17 +65,15 @@ export function useAnchorBank(): AnchorBank {
         maxTaxUUSD: maxTax,
       },
       tokenBalances: {
+        ...DefaultAnchorTokenBalances,
         uUST,
         uANC,
         uAncUstLP,
         uaUST,
-        ubEth,
         ubLuna,
         ubLunaLunaLP,
         uLuna,
       },
-      refetchTax: () => {},
-      refetchUserBalances: () => {},
     };
   }, [
     maxTax,
@@ -91,7 +83,6 @@ export function useAnchorBank(): AnchorBank {
     uLuna,
     uUST,
     uaUST,
-    ubEth,
     ubLuna,
     ubLunaLunaLP,
   ]);

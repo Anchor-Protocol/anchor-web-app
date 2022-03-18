@@ -1,13 +1,20 @@
 import {
-  AddressProvider,
-  fabricateExchangeProvideLiquidityANC,
-} from '@anchor-protocol/anchor.js';
-import {
   formatANCWithPostfixUnits,
   formatLP,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { ANC, AncUstLP, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  ANC,
+  AncUstLP,
+  cw20,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  terraswap,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -23,37 +30,83 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor, min } from '@libs/big-math';
-import { demicrofy, stripUUSD } from '@libs/formatter';
+import { demicrofy, formatTokenInput, stripUUSD } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  Coin,
+  Coins,
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
 import { Observable } from 'rxjs';
 import { AncPrice } from '../../queries/anc/price';
 import { AnchorTax } from '../../types';
 
-export function ancAncUstLpProvideTx(
-  $: Parameters<typeof fabricateExchangeProvideLiquidityANC>[0] & {
-    ancPrice: AncPrice | undefined;
-    tax: AnchorTax;
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    txFee: u<UST>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function ancAncUstLpProvideTx($: {
+  walletAddr: HumanAddr;
+  ancUstPairAddr: HumanAddr;
+  ancTokenAddr: CW20Addr;
+  ancAmount: ANC;
+  ustAmount: UST;
+  slippageTolerance?: Rate;
+
+  ancPrice: AncPrice | undefined;
+  tax: AnchorTax;
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  txFee: u<UST>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper($);
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateExchangeProvideLiquidityANC($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract($.walletAddr, $.ancTokenAddr, {
+          increase_allowance: {
+            spender: $.ancUstPairAddr,
+            amount: formatTokenInput($.ancAmount),
+            expires: { never: {} },
+          },
+        } as cw20.IncreaseAllowance),
+        new MsgExecuteContract(
+          $.walletAddr,
+          $.ancUstPairAddr,
+          {
+            provide_liquidity: {
+              assets: [
+                {
+                  info: {
+                    token: {
+                      contract_addr: $.ancTokenAddr,
+                    },
+                  },
+                  amount: formatTokenInput($.ancAmount),
+                },
+                {
+                  info: {
+                    native_token: {
+                      denom: 'uusd',
+                    },
+                  },
+                  amount: formatTokenInput($.ustAmount),
+                },
+              ],
+              slippage_tolerance: $.slippageTolerance,
+            },
+          } as terraswap.pair.ProvideLiquidity<ANC, UST>,
+          new Coins([new Coin('uusd', formatTokenInput($.ustAmount))]),
+        ),
+      ],
       fee: new Fee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

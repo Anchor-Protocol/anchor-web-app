@@ -9,11 +9,12 @@ import { AncGovernanceUnstake } from 'pages/trade/components/AncGovernanceUnstak
 import { ancGovernancePathname } from 'pages/trade/env';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
-  Redirect,
+  Navigate,
   Route,
-  Switch,
-  useHistory,
-  useRouteMatch,
+  Routes,
+  useNavigate,
+  useMatch,
+  Outlet,
 } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -33,11 +34,9 @@ const stakeItems: Item[] = [
 ];
 
 function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
-  const pageMatch = useRouteMatch<{ view: string }>(
-    `/${ancGovernancePathname}/:view`,
-  );
+  const pageMatch = useMatch(`/${ancGovernancePathname}/:view`);
 
   const subTab = useMemo<Item | undefined>(() => {
     switch (pageMatch?.params.view) {
@@ -50,11 +49,11 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
 
   const subTabChange = useCallback(
     (nextTab: Item) => {
-      history.push({
+      navigate({
         pathname: `/${ancGovernancePathname}/${nextTab.value}`,
       });
     },
-    [history],
+    [navigate],
   );
 
   return (
@@ -83,25 +82,19 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
         />
 
         <div className="form">
-          <Switch>
+          <Routes>
+            <Route path="/stake" element={<AncGovernanceStake />} />
+            <Route path="unstake" element={<AncGovernanceUnstake />} />
             <Route
-              path={`/${ancGovernancePathname}/stake`}
-              component={AncGovernanceStake}
+              index={true}
+              element={<Navigate to={`/${ancGovernancePathname}/stake`} />}
             />
             <Route
-              path={`/${ancGovernancePathname}/unstake`}
-              component={AncGovernanceUnstake}
+              path="*"
+              element={<Navigate to={`/${ancGovernancePathname}/stake`} />}
             />
-            <Redirect
-              exact
-              path={`/${ancGovernancePathname}`}
-              to={`/${ancGovernancePathname}/stake`}
-            />
-            <Redirect
-              path={`/${ancGovernancePathname}/*`}
-              to={`/${ancGovernancePathname}/stake`}
-            />
-          </Switch>
+          </Routes>
+          <Outlet />
         </div>
       </Section>
     </CenteredLayout>

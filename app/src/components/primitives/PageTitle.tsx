@@ -1,19 +1,30 @@
 import { Launch } from '@material-ui/icons';
 import { screen } from 'env';
 import { fixHMR } from 'fix-hmr';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
 export interface PageTitleProps {
   className?: string;
   title: ReactNode;
+  tooltip?: string;
   docs?: string;
 }
 
-function PageTitleBase({ className, title, docs }: PageTitleProps) {
+function PageTitleBase({ className, title, tooltip, docs }: PageTitleProps) {
   return (
     <h1 className={className}>
-      {title}
+      <IconSpan>
+        {title}
+        {tooltip && (
+          <>
+            {' '}
+            <InfoTooltip>{tooltip}</InfoTooltip>
+          </>
+        )}
+      </IconSpan>
       {docs && (
         <a href={docs} target="anchor-docs" rel="noreferrer">
           Docs

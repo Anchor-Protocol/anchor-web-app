@@ -1,9 +1,9 @@
-import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
 import { bondClaimTx } from '@anchor-protocol/app-fns';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -11,10 +11,12 @@ export interface BondClaimTxParams {
   onTxSucceed?: () => void;
 }
 
-export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
+export function useBondClaimTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const fixedFee = useFixedFee();
@@ -23,21 +25,25 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
 
   const stream = useCallback(
     ({ onTxSucceed }: BondClaimTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return bondClaimTx({
         // fabricatebAssetClaimRewards
-        address: connectedWallet.walletAddress,
-        rewardDenom,
+        walletAddr: terraWalletAddress,
+        bAssetRewardAddr: contractAddress.bluna.reward,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -50,12 +56,14 @@ export function useBondClaimTx(rewardDenom: COLLATERAL_DENOMS) {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
-      rewardDenom,
+      contractAddress.bluna.reward,
+      terraWalletAddress,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

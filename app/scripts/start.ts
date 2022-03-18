@@ -1,4 +1,4 @@
-import { launch } from 'puppeteer';
+import puppeteer from 'puppeteer';
 
 (async () => {
   // chromium debugging port
@@ -8,10 +8,11 @@ import { launch } from 'puppeteer';
 
   const port: number = +(process.env.PORT ?? 3000);
 
-  const browser = await launch({
+  const browser = await puppeteer.launch({
     userDataDir: process.env.CHROMIUM_USER_DATA_DEBUG,
     headless: false,
     defaultViewport: null,
+    // ignoreHTTPSErrors: true,
     args: [
       '--start-fullscreen',
       `--remote-debugging-port=${remoteDebuggingPort}`,
@@ -25,11 +26,12 @@ import { launch } from 'puppeteer';
     `${process.env.HTTPS ? 'https' : 'http'}://localhost:${port}`,
   );
 
-  //await page.waitForFunction(
+  // await page.waitForFunction(
   //  `document.querySelector('#app h1').innerHTML === 'Hello World!'`,
   //  {
   //    timeout: 1000 * 60,
   //    polling: 1000 * 3,
   //  },
-  //);
+  // );
+  
 })();

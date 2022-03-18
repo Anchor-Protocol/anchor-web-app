@@ -222,6 +222,13 @@ export function pickRawLog(
   return Array.isArray(txInfo[0].RawLog) ? txInfo[0].RawLog[index] : undefined;
 }
 
+export function pickRawLogs(txInfo: TxInfoData): RawLogMsg[] {
+  if (Array.isArray(txInfo[0].RawLog)) {
+    return txInfo[0].RawLog;
+  }
+  return [];
+}
+
 export function pickEvent(
   rawLog: RawLogMsg,
   type: string,

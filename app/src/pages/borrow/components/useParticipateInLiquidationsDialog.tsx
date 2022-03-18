@@ -6,6 +6,8 @@ import { Launch } from '@material-ui/icons';
 import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import kujira from './assets/kujira.png';
+import lighthouse from './assets/lighthouse.png';
+import freewilly from './assets/freewilly.png';
 
 interface FormParams {
   className?: string;
@@ -32,6 +34,22 @@ function ComponentBase({
         <section>
           <EmbossButton
             component="a"
+            href="https://app.lighthousedefi.com/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Lighthouse Defi{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={lighthouse} alt="Lighthouse Defi" />
+            </i>
+          </EmbossButton>
+          <EmbossButton
+            component="a"
             href="https://orca.kujira.app/"
             target="_blank"
             rel="noreferrer"
@@ -44,6 +62,23 @@ function ComponentBase({
             </span>
             <i>
               <img src={kujira} alt="Kujira" />
+            </i>
+          </EmbossButton>
+
+          <EmbossButton
+            component="a"
+            href="https://www.terratoolbox.com/freewilly"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Terra Toolbox{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={freewilly} alt="Terra Toolbox" id="free-willy" />
             </i>
           </EmbossButton>
         </section>
@@ -105,6 +140,12 @@ export const dialogStyle = css`
     &:not(:first-of-type) {
       margin-top: 16px;
     }
+  }
+
+  img,
+  #free-willy {
+    width: 32px;
+    height: 32px;
   }
 `;
 

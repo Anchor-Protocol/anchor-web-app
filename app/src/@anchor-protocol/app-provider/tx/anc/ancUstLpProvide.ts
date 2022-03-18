@@ -1,9 +1,10 @@
 import { ancAncUstLpProvideTx } from '@anchor-protocol/app-fns';
-import { ANC, u, UST } from '@anchor-protocol/types';
+import { ANC, Rate, u, UST } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useAnchorBank } from '../../hooks/useAnchorBank';
@@ -17,9 +18,11 @@ export interface AncAncUstLpProvideTxParams {
 }
 
 export function useAncAncUstLpProvideTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, constants, contractAddress } =
     useAnchorWebapp();
 
   const { tax } = useAnchorBank();
@@ -37,17 +40,24 @@ export function useAncAncUstLpProvideTx() {
       txFee,
       onTxSucceed,
     }: AncAncUstLpProvideTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost || !ancPrice) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress ||
+        !ancPrice
+      ) {
         throw new Error('Can not post!');
       }
 
       return ancAncUstLpProvideTx({
         // fabricateTerraswapProvideLiquidityANC
-        address: connectedWallet.walletAddress,
-        token_amount: ancAmount,
-        native_amount: ustAmount,
-        slippage_tolerance: '0.01',
-        quote: 'uusd',
+        ancTokenAddr: contractAddress.cw20.ANC,
+        ancUstPairAddr: contractAddress.terraswap.ancUstPair,
+        walletAddr: terraWalletAddress,
+        ancAmount,
+        ustAmount,
+        slippageTolerance: '0.01' as Rate,
         // receipts
         ancPrice,
         tax,
@@ -58,7 +68,6 @@ export function useAncAncUstLpProvideTx() {
         fixedGas: fixedFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         // error
@@ -71,13 +80,17 @@ export function useAncAncUstLpProvideTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       ancPrice,
+      contractAddress.cw20.ANC,
+      contractAddress.terraswap.ancUstPair,
+      terraWalletAddress,
       tax,
       fixedFee,
       constants.gasWanted,
       constants.gasAdjustment,
-      addressProvider,
       queryClient,
       txErrorReporter,
       refetchQueries,

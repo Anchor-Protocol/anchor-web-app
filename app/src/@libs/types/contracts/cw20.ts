@@ -8,6 +8,7 @@ export namespace cw20 {
     increase_allowance: {
       spender: HumanAddr;
       amount: u<Token>;
+      expires?: { at_height: number } | { at_time: number } | { never: {} };
     };
   }
 
@@ -41,5 +42,14 @@ export namespace cw20 {
     name: string;
     symbol: string;
     total_supply: u<T>;
+  }
+
+  export interface Minter {
+    minter: {};
+  }
+
+  export interface MinterResponse {
+    minter: HumanAddr;
+    cap: null;
   }
 }

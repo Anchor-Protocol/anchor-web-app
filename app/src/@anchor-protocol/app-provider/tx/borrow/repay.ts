@@ -1,10 +1,10 @@
-import { MARKET_DENOMS } from '@anchor-protocol/anchor.js';
-import { u, UST } from '@anchor-protocol/types';
 import { borrowRepayTx } from '@anchor-protocol/app-fns';
+import { u, UST } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
@@ -17,33 +17,40 @@ export interface BorrowRepayTxParams {
 }
 
 export function useBorrowRepayTx() {
+  const { availablePost, connected, terraWalletAddress } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
-  const { queryClient, txErrorReporter, addressProvider, constants } =
+  const { queryClient, txErrorReporter, contractAddress, constants } =
     useAnchorWebapp();
 
   const { refetch: borrowMarketQuery } = useBorrowMarketQuery();
+
   const { refetch: borrowBorrowerQuery } = useBorrowBorrowerQuery();
 
   const refetchQueries = useRefetchQueries();
 
   const stream = useCallback(
     ({ repayAmount, onTxSucceed, txFee }: BorrowRepayTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (
+        !availablePost ||
+        !connected ||
+        !connectedWallet ||
+        !terraWalletAddress
+      ) {
         throw new Error('Can not post!');
       }
 
       return borrowRepayTx({
-        address: connectedWallet.walletAddress,
-        amount: repayAmount,
-        market: MARKET_DENOMS.UUSD,
+        walletAddr: terraWalletAddress,
+        repayAmount,
+        marketAddr: contractAddress.moneyMarket.market,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
         txFee,
         gasFee: constants.gasWanted,
         gasAdjustment: constants.gasAdjustment,
-        addressProvider,
         // query
         queryClient,
         borrowMarketQuery,
@@ -58,14 +65,17 @@ export function useBorrowRepayTx() {
       });
     },
     [
-      addressProvider,
+      availablePost,
       borrowBorrowerQuery,
       borrowMarketQuery,
+      connected,
       connectedWallet,
       constants.gasAdjustment,
       constants.gasWanted,
+      contractAddress.moneyMarket.market,
       queryClient,
       refetchQueries,
+      terraWalletAddress,
       txErrorReporter,
     ],
   );

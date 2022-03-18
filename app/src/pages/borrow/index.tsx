@@ -1,17 +1,24 @@
+import React from 'react';
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { FlexTitleContainer, PageTitle } from 'components/primitives/PageTitle';
 import { links, screen } from 'env';
 import { Overview } from 'pages/borrow/components/Overview';
 import { ParticipateInLiquidationsButton } from 'pages/borrow/components/ParticipateInLiquidationsButton';
-import React from 'react';
 import styled from 'styled-components';
 import { CollateralList } from './components/CollateralList';
+import { ReactComponent as InfoIcon } from './assets/info.svg';
+import { ReactComponent as LinkIcon } from './assets/link.svg';
+import { MessageBox } from 'components/MessageBox';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 
 export interface BorrowProps {
   className?: string;
 }
 
 function BorrowBase({ className }: BorrowProps) {
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
   return (
     <PaddedLayout className={className}>
       <FlexTitleContainer>
@@ -23,6 +30,28 @@ function BorrowBase({ className }: BorrowProps) {
 
       <Overview className="borrow" />
       <CollateralList className="collateral-list" />
+
+      {isNative && (
+        <MessageBox
+          className="message-box"
+          variant="highlight"
+          textAlign="left"
+          icon={<InfoIcon />}
+          level="info"
+          hide={{
+            id: 'borrow_wormhole_transfer',
+            period: 1000 * 60 * 60 * 24 * 7,
+          }}
+        >
+          bAssets that have been transferred to Terra through Wormhole (e.g.
+          webETH) must go through the convert operation to be used as collateral
+          on Anchor.{' '}
+          <a href="/basset">
+            Convert Wormhole bAsset
+            <LinkIcon />
+          </a>
+        </MessageBox>
+      )}
     </PaddedLayout>
   );
 }
@@ -164,6 +193,25 @@ export const Borrow = styled(BorrowBase)`
             }
           }
         }
+      }
+    }
+  }
+
+  .message-box {
+    font-size: 13px;
+    color: ${({ theme }) => theme.messageBox.textColor};
+    svg: {
+      path {
+        fill: ${({ theme }) => theme.messageBox.textColor};
+      }
+    }
+    a {
+      color: ${({ theme }) => theme.messageBox.linkColor};
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      svg {
+        margin-left: 4px;
       }
     }
   }

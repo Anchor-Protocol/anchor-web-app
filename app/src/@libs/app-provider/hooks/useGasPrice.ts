@@ -1,7 +1,7 @@
+import { computeGasPrice } from '@anchor-protocol/app-fns';
 import { GasPrice } from '@libs/app-fns';
-import { floor } from '@libs/big-math';
 import { Gas, u, UST } from '@libs/types';
-import big, { BigSource } from 'big.js';
+import { BigSource } from 'big.js';
 import { useMemo } from 'react';
 import { useApp } from '../contexts/app';
 
@@ -11,12 +11,12 @@ export function useGasPrice<Denom extends keyof GasPrice>(
 ): GasPrice[Denom] {
   const { gasPrice } = useApp();
 
-  // TODO global memoization?
+  // pretty sure this shouldnt need to be memoized
   return useMemo(() => {
-    return floor(big(gas).mul(gasPrice[denom])).toFixed() as GasPrice[Denom];
-  }, [denom, gas, gasPrice]);
+    return computeGasPrice(gasPrice, gas, denom) as GasPrice[Denom];
+  }, [gas, denom, gasPrice]);
 }
 
 export function useGasToUst(gas: Gas<BigSource>): u<UST> {
-  return useGasPrice(gas, 'uusd');
+  return useGasPrice(gas, 'uusd') as u<UST>;
 }

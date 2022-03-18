@@ -1,4 +1,8 @@
-import { COLLATERAL_DENOMS } from '@anchor-protocol/anchor.js';
+import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
+import {
+  computeBorrowedAmount,
+  computeBorrowLimit,
+} from '@anchor-protocol/app-fns';
 import {
   bAsset,
   CW20Addr,
@@ -9,17 +13,18 @@ import {
 } from '@anchor-protocol/types';
 import { FormReturn } from '@libs/use-form';
 import big, { Big } from 'big.js';
-import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
+import { computeLtv } from '../../logics/borrow/computeLtv';
 import { computeDepositAmountToBorrowLimit } from '../../logics/borrow/computeDepositAmountToBorrowLimit';
 import { computeDepositAmountToLtv } from '../../logics/borrow/computeDepositAmountToLtv';
 import { computeLtvToDepositAmount } from '../../logics/borrow/computeLtvToDepositAmount';
 import { computeProvideCollateralBorrowLimit } from '../../logics/borrow/computeProvideCollateralBorrowLimit';
 import { computeProvideCollateralNextLtv } from '../../logics/borrow/computeProvideCollateralNextLtv';
 import { pickCollateral } from '../../logics/borrow/pickCollateral';
-import { pickCollateralDenom } from '../../logics/borrow/pickCollateralDenom';
 import { validateDepositAmount } from '../../logics/borrow/validateDepositAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
-import { BAssetLtv, BAssetLtvs } from '../../queries/borrow/market';
+import { BAssetLtvs } from '../../queries/borrow/market';
+import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
+import { microfy } from '@anchor-protocol/formatter';
 
 export interface BorrowProvideCollateralFormInput {
   depositAmount: bAsset;
@@ -27,13 +32,13 @@ export interface BorrowProvideCollateralFormInput {
 
 export interface BorrowProvideCollateralFormDependency {
   collateralToken: CW20Addr;
+  collateralTokenDecimals: number;
   fixedFee: u<UST>;
   userUSTBalance: u<UST>;
   userBAssetBalance: u<bAsset>;
   oraclePrices: moneyMarket.oracle.PricesResponse;
-  overseerWhitelist: moneyMarket.overseer.WhitelistResponse;
+  overseerWhitelist: OverseerWhitelistWithDisplay;
   bAssetLtvs: BAssetLtvs;
-  bAssetLtvsAvg: BAssetLtv;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse;
   connected: boolean;
@@ -44,20 +49,14 @@ export interface BorrowProvideCollateralFormStates
   amountToLtv: (depositAmount: u<bAsset>) => Rate<Big>;
   ltvToAmount: (ltv: Rate<Big>) => u<bAsset<Big>>;
   ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
-
-  bAssetLtvsAvg: BAssetLtv;
-
   dangerLtv: Rate<Big>;
-  collateral: moneyMarket.overseer.WhitelistResponse['elems'][number];
-  collateralDenom: COLLATERAL_DENOMS | undefined;
-
+  collateral: OverseerWhitelistWithDisplay['elems'][0];
   txFee: u<UST>;
   currentLtv: Rate<Big> | undefined;
   nextLtv: Rate<Big> | undefined;
-  borrowLimit: u<UST<Big>> | undefined;
+  borrowLimit: u<UST<Big>>;
   invalidTxFee: string | undefined;
   invalidDepositAmount: string | undefined;
-
   userBAssetBalance: u<bAsset>;
   availablePost: boolean;
 }
@@ -66,11 +65,11 @@ export interface BorrowProvideCollateralFormAsyncStates {}
 
 export const borrowProvideCollateralForm = ({
   collateralToken,
+  collateralTokenDecimals,
   fixedFee,
   userUSTBalance,
   userBAssetBalance,
   bAssetLtvs,
-  bAssetLtvsAvg,
   overseerWhitelist,
   overseerCollaterals,
   oraclePrices,
@@ -82,6 +81,7 @@ export const borrowProvideCollateralForm = ({
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
+    bAssetLtvs,
   );
 
   const ltvToAmount = computeLtvToDepositAmount(
@@ -89,6 +89,7 @@ export const borrowProvideCollateralForm = ({
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
+    bAssetLtvs,
   );
 
   const amountToBorrowLimit = computeDepositAmountToBorrowLimit(
@@ -98,17 +99,21 @@ export const borrowProvideCollateralForm = ({
     bAssetLtvs,
   );
 
-  const currentLtv = computeCurrentLtv(
-    marketBorrowerInfo,
+  const borrowedAmount = computeBorrowedAmount(marketBorrowerInfo);
+
+  const borrowLimit = computeBorrowLimit(
     overseerCollaterals,
     oraclePrices,
+    bAssetLtvs,
   );
+
+  const currentLtv = computeLtv(borrowLimit, borrowedAmount);
+
+  const bAssetLtvsAvg = computebAssetLtvsAvg(bAssetLtvs);
 
   const dangerLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
 
   const collateral = pickCollateral(collateralToken, overseerWhitelist);
-
-  const collateralDenom = pickCollateralDenom(collateral);
 
   const invalidTxFee = connected
     ? validateTxFee(userUSTBalance, fixedFee)
@@ -116,8 +121,7 @@ export const borrowProvideCollateralForm = ({
 
   const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
     try {
-      const draftAmount = ltvToAmount(draftLtv);
-      return amountToLtv(draftAmount);
+      return amountToLtv(ltvToAmount(draftLtv));
     } catch {
       return draftLtv;
     }
@@ -129,26 +133,31 @@ export const borrowProvideCollateralForm = ({
     BorrowProvideCollateralFormStates,
     BorrowProvideCollateralFormAsyncStates
   > => {
+    const amount =
+      depositAmount.length > 0
+        ? microfy(depositAmount, collateralTokenDecimals)
+        : ('0' as u<bAsset>);
+
     const nextLtv = computeProvideCollateralNextLtv(
-      depositAmount,
+      amount,
       currentLtv,
       amountToLtv,
     );
 
     const borrowLimit = computeProvideCollateralBorrowLimit(
-      depositAmount,
+      amount,
       amountToBorrowLimit,
     );
 
     const invalidDepositAmount = validateDepositAmount(
-      depositAmount,
+      amount,
       userBAssetBalance,
     );
 
     const availablePost =
       connected &&
       depositAmount.length > 0 &&
-      big(depositAmount).gt(0) &&
+      big(amount).gt(0) &&
       !invalidTxFee &&
       !invalidDepositAmount;
 
@@ -157,18 +166,16 @@ export const borrowProvideCollateralForm = ({
         depositAmount,
         collateral,
         borrowLimit,
-        collateralDenom,
         currentLtv,
         amountToLtv,
+        ltvStepFunction,
         dangerLtv,
         invalidDepositAmount,
         invalidTxFee,
         nextLtv,
-        ltvStepFunction,
         ltvToAmount,
         userBAssetBalance,
         availablePost,
-        bAssetLtvsAvg,
         txFee: fixedFee,
       },
       undefined,

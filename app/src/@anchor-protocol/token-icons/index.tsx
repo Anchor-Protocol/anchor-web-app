@@ -105,16 +105,34 @@ export interface IconProps
     DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>,
     'src'
   > {
-  token: Tokens;
+  token?: Tokens;
+  symbol?: string;
+  path?: string;
   variant?: IconVariant;
 }
 
+const displayTokenIconAsPredefined = (variant: IconVariant, symbol: string) =>
+  symbol.toLowerCase() in tokens
+    ? tokenImages[symbol.toLowerCase() as Tokens][variant].src
+    : undefined;
+
+const displayPredefinedIcon = (token: Tokens, variant: IconVariant) =>
+  tokenImages[token][variant].src;
+
 export function TokenIconBase({
+  symbol,
+  path,
   token,
   variant = 'svg',
   ...imgProps
 }: IconProps) {
-  return <img alt="" {...imgProps} src={tokenImages[token][variant].src} />;
+  const icon = token
+    ? displayPredefinedIcon(token, variant)
+    : symbol
+    ? displayTokenIconAsPredefined(variant, symbol) ?? path
+    : path;
+
+  return <img alt="" {...imgProps} src={icon} />;
 }
 
 export const TokenIcon = styled(TokenIconBase)`

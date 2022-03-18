@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`bAssetInfoQuery should get result from query 1`] = `
+Object {
+  "bAsset": Object {
+    "collateral_token": "terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l",
+    "custody_contract": "terra1j6fey5tl70k9fvrv7mea7ahfr8u2yv7l23w5e6",
+    "max_ltv": "0.6",
+    "name": "Bonded ETH",
+    "symbol": "BETH",
+  },
+  "converterConfig": Object {
+    "anchor_token_address": "terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l",
+    "owner": "terra1pgsdhcc584ms5ncwp9qelyxycgaef5swt2fwue",
+    "wormhole_token_address": "terra1d74gfj8gs6rskcuu80x3deus7gut77udhdajv7",
+  },
+  "custodyConfig": Object {
+    "basset_info": Object {
+      "decimals": 6,
+      "name": "Bonded ETH",
+      "symbol": "BETH",
+    },
+    "collateral_token": "terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l",
+    "liquidation_contract": "terra18j0wd0f62afcugw2rx5y8e6j5qjxd7d6qsc87r",
+    "market_contract": "terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal",
+    "overseer_contract": "terra1qljxd0y3j3gk97025qvl3lgq8ygup4gsksvaxv",
+    "owner": "terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu",
+    "reward_contract": "terra1ja3snkedk4t0zp7z3ljd064hcln8dsv5x004na",
+    "stable_denom": "uusd",
+  },
+  "minter": Object {
+    "cap": null,
+    "minter": "terra1g68g7l3xkpm4hvadrqrfc53vtnfhl4dlnjm45u",
+  },
+  "wormholeTokenInfo": Object {
+    "decimals": 8,
+    "name": "bETH (Wormhole)",
+    "symbol": "bETH",
+    "total_supply": "10191140463",
+  },
+}
+`;

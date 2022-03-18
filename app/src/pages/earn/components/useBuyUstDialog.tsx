@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import bitfinex from './assets/bitfinex.svg';
 import kucoin from './assets/kucoin.svg';
 import transak from './assets/transak.svg';
+import kado from './assets/kado.svg';
 import binance from './assets/binance.svg';
 import { dialogStyle } from './useInsuranceCoverageDialog';
 import okex from './assets/okex.svg';
@@ -109,7 +110,22 @@ function ComponentBase({
 
         <section>
           <h2>With Fiat</h2>
-
+          <EmbossButton
+            component="a"
+            href="https://ramp.kado.money"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Kado Ramp{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={kado} alt="Kado Ramp" />
+            </i>
+          </EmbossButton>
           <EmbossButton
             component="a"
             href="https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra"

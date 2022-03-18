@@ -3,6 +3,7 @@ import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
+import { useAccount } from 'contexts/account';
 import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
@@ -11,6 +12,8 @@ export interface RewardsAncUstLpClaimTxParams {
 }
 
 export function useRewardsAncUstLpClaimTx() {
+  const { availablePost, connected } = useAccount();
+
   const connectedWallet = useConnectedWallet();
 
   const { queryClient, txErrorReporter, contractAddress, constants } =
@@ -22,7 +25,7 @@ export function useRewardsAncUstLpClaimTx() {
 
   const stream = useCallback(
     ({ onTxSucceed }: RewardsAncUstLpClaimTxParams) => {
-      if (!connectedWallet || !connectedWallet.availablePost) {
+      if (!availablePost || !connected || !connectedWallet) {
         throw new Error('Can not post!');
       }
 
@@ -48,6 +51,8 @@ export function useRewardsAncUstLpClaimTx() {
       });
     },
     [
+      availablePost,
+      connected,
       connectedWallet,
       contractAddress.cw20.AncUstLP,
       contractAddress.astroport.generator,

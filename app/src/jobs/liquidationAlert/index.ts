@@ -1,11 +1,11 @@
+import { useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
-import big from 'big.js';
+import { useAccount } from 'contexts/account';
+import big, { Big } from 'big.js';
 import { useNotification } from 'contexts/notification';
-import { useCallback, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
 import { userLtvQuery } from './userLtv';
 
 export interface LiquidationAlert {
@@ -15,50 +15,53 @@ export interface LiquidationAlert {
 
 export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   const { hiveQueryClient, contractAddress: address } = useAnchorWebapp();
-  const connectedWallet = useConnectedWallet();
+  const { terraWalletAddress } = useAccount();
   const { permission, create } = useNotification();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const jobCallback = useCallback(async () => {
-    if (!connectedWallet || permission !== 'granted') {
+    if (!terraWalletAddress || permission !== 'granted') {
       return;
     }
 
     try {
       const ltv = await userLtvQuery({
-        walletAddress: connectedWallet.walletAddress,
+        walletAddress: terraWalletAddress,
         address,
         hiveQueryClient,
       });
 
       if (ltv && big(ltv).gte(ratio)) {
-        const noti = create(`LTV is ${formatRate(ltv as Rate)}%`, {
-          body: `Lower borrow LTV on Anchor webapp to prevent liquidation.`,
-          icon: '/logo.png',
-        });
+        const notification = create(
+          `Borrow Usage is ${formatRate(ltv as Rate<Big>)}%`,
+          {
+            body: `Lower borrow usage on Anchor webapp to prevent liquidation.`,
+            icon: '/logo.png',
+          },
+        );
 
-        if (noti) {
+        if (notification) {
           const click = () => {
-            history.push('/borrow');
+            navigate('/borrow');
           };
 
-          noti.addEventListener('click', click);
+          notification.addEventListener('click', click);
 
           setTimeout(() => {
-            noti.removeEventListener('click', click);
+            notification.removeEventListener('click', click);
           }, 1000 * 10);
         }
       }
     } catch {}
   }, [
     address,
-    connectedWallet,
     create,
-    history,
     hiveQueryClient,
     permission,
     ratio,
+    navigate,
+    terraWalletAddress,
   ]);
 
   const jobCallbackRef = useRef(jobCallback);
@@ -68,7 +71,7 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
   }, [jobCallback]);
 
   useEffect(() => {
-    if (connectedWallet && permission === 'granted' && enabled) {
+    if (terraWalletAddress && permission === 'granted' && enabled) {
       //console.log('LIQUIDATION ALERT: ON');
       const intervalId = setInterval(() => {
         jobCallbackRef.current();
@@ -81,5 +84,5 @@ export function useLiquidationAlert({ enabled, ratio }: LiquidationAlert) {
       };
     }
     //console.log('LIQUIDATION ALERT: OFF');
-  }, [connectedWallet, enabled, permission]);
+  }, [enabled, permission, terraWalletAddress]);
 }

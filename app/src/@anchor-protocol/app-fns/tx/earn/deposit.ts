@@ -1,12 +1,8 @@
 import {
-  AddressProvider,
-  fabricateMarketDepositStableCoin,
-} from '@anchor-protocol/anchor.js';
-import {
   formatAUSTWithPostfixUnits,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { aUST, Gas, Rate, u, UST } from '@anchor-protocol/types';
+import { aUST, Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
 import {
   pickAttributeValue,
   pickEvent,
@@ -22,32 +18,55 @@ import {
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, formatFluidDecimalPoints } from '@libs/formatter';
+import {
+  demicrofy,
+  formatFluidDecimalPoints,
+  formatTokenInput,
+} from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  Coin,
+  Coins,
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import big, { BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 
-export function earnDepositTx(
-  $: Parameters<typeof fabricateMarketDepositStableCoin>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    txFee: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function earnDepositTx($: {
+  walletAddr: HumanAddr;
+  marketAddr: HumanAddr;
+  depositAmount: UST;
+
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  txFee: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper($);
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateMarketDepositStableCoin($)($.addressProvider),
+      msgs: [
+        new MsgExecuteContract(
+          $.walletAddr,
+          $.marketAddr,
+          {
+            // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/market/src/msg.rs#L65
+            deposit_stable: {},
+          },
+
+          // coins
+          new Coins([new Coin('uusd', formatTokenInput($.depositAmount))]),
+        ),
+      ],
       fee: new Fee($.gasFee, floor($.txFee) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),

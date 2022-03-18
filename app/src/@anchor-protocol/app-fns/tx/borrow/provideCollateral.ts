@@ -1,10 +1,26 @@
 import {
-  AddressProvider,
-  fabricateProvideCollateral,
-} from '@anchor-protocol/anchor.js';
-import { formatLuna } from '@anchor-protocol/notation';
-import { bLuna, Gas, Rate, u, UST } from '@anchor-protocol/types';
+  computeBorrowedAmount,
+  computeBorrowLimit,
+  computeLtv,
+} from '@anchor-protocol/app-fns';
 import {
+  formatInput,
+  formatOutput,
+  microfy,
+  demicrofy,
+} from '@anchor-protocol/formatter';
+import {
+  bAsset,
+  bLuna,
+  CW20Addr,
+  Gas,
+  HumanAddr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
+import {
+  CW20TokenDisplayInfo,
   pickAttributeValue,
   pickEvent,
   pickRawLog,
@@ -16,46 +32,83 @@ import {
   _createTxOptions,
   _pollTxInfo,
   _postTx,
+  createHookMsg,
   TxHelper,
 } from '@libs/app-fns/tx/internal';
 import { floor } from '@libs/big-math';
-import { demicrofy, formatRate } from '@libs/formatter';
+import { formatRate } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
+import {
+  CreateTxOptions,
+  Fee,
+  MsgExecuteContract,
+} from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
-import { CreateTxOptions, Fee } from '@terra-money/terra.js';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
-import { getCollateralSymbol } from '../../functions/getCollateralSymbol';
-import { computeCurrentLtv } from '../../logics/borrow/computeCurrentLtv';
 import { BorrowBorrower } from '../../queries/borrow/borrower';
 import { BorrowMarket } from '../../queries/borrow/market';
 import { _fetchBorrowData } from './_fetchBorrowData';
 
-export function borrowProvideCollateralTx(
-  $: Parameters<typeof fabricateProvideCollateral>[0] & {
-    gasFee: Gas;
-    gasAdjustment: Rate<number>;
-    fixedGas: u<UST>;
-    network: NetworkInfo;
-    addressProvider: AddressProvider;
-    queryClient: QueryClient;
-    post: (tx: CreateTxOptions) => Promise<TxResult>;
-    txErrorReporter?: (error: unknown) => string;
-    borrowMarketQuery: () => Promise<
-      QueryObserverResult<BorrowMarket | undefined>
-    >;
-    borrowBorrowerQuery: () => Promise<
-      QueryObserverResult<BorrowBorrower | undefined>
-    >;
-    onTxSucceed?: () => void;
-  },
-): Observable<TxResultRendering> {
+export function borrowProvideCollateralTx($: {
+  tokenDisplay?: CW20TokenDisplayInfo;
+  walletAddr: HumanAddr;
+  depositAmount: bAsset;
+  overseerAddr: HumanAddr;
+  bAssetTokenAddr: CW20Addr;
+  bAssetCustodyAddr: HumanAddr;
+  bAssetSymbol: string;
+  gasFee: Gas;
+  gasAdjustment: Rate<number>;
+  fixedGas: u<UST>;
+  network: NetworkInfo;
+  queryClient: QueryClient;
+  post: (tx: CreateTxOptions) => Promise<TxResult>;
+  txErrorReporter?: (error: unknown) => string;
+  borrowMarketQuery: () => Promise<
+    QueryObserverResult<BorrowMarket | undefined>
+  >;
+  borrowBorrowerQuery: () => Promise<
+    QueryObserverResult<BorrowBorrower | undefined>
+  >;
+  onTxSucceed?: () => void;
+}): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
+  const collateralDecimals = $.tokenDisplay?.decimals ?? 6;
 
   return pipe(
     _createTxOptions({
-      msgs: fabricateProvideCollateral($)($.addressProvider),
+      msgs: [
+        // provide_collateral call
+        new MsgExecuteContract($.walletAddr, $.bAssetTokenAddr, {
+          send: {
+            contract: $.bAssetCustodyAddr,
+            amount: formatInput(
+              microfy($.depositAmount, collateralDecimals),
+              collateralDecimals,
+            ),
+            msg: createHookMsg({
+              deposit_collateral: {},
+            }),
+          },
+        }),
+        // lock_collateral call
+        new MsgExecuteContract($.walletAddr, $.overseerAddr, {
+          // @see https://github.com/Anchor-Protocol/money-market-contracts/blob/master/contracts/overseer/src/msg.rs#L75
+          lock_collateral: {
+            collaterals: [
+              [
+                $.bAssetTokenAddr,
+                formatInput(
+                  microfy($.depositAmount, collateralDecimals),
+                  collateralDecimals,
+                ),
+              ],
+            ],
+          },
+        }),
+      ],
       fee: new Fee($.gasFee, floor($.fixedGas) + 'uusd'),
       gasAdjustment: $.gasAdjustment,
     }),
@@ -87,12 +140,14 @@ export function borrowProvideCollateralTx(
           7,
         );
 
-        const newLtv =
-          computeCurrentLtv(
-            borrowBorrower.marketBorrowerInfo,
+        const ltv = computeLtv(
+          computeBorrowLimit(
             borrowBorrower.overseerCollaterals,
             borrowMarket.oraclePrices,
-          ) ?? ('0' as Rate);
+            borrowMarket.bAssetLtvs,
+          ),
+          computeBorrowedAmount(borrowBorrower.marketBorrowerInfo),
+        );
 
         return {
           value: null,
@@ -101,13 +156,14 @@ export function borrowProvideCollateralTx(
           receipts: [
             collateralizedAmount && {
               name: 'Collateralized Amount',
-              value: `${formatLuna(
-                demicrofy(collateralizedAmount),
-              )} ${getCollateralSymbol($.collateral)}`,
+              value: `${formatOutput(
+                demicrofy(collateralizedAmount, collateralDecimals),
+                { decimals: collateralDecimals },
+              )} ${$.bAssetSymbol}`,
             },
-            newLtv && {
-              name: 'New LTV',
-              value: formatRate(newLtv) + ' %',
+            ltv && {
+              name: 'New Borrow Usage',
+              value: formatRate(ltv) + ' %',
             },
             helper.txHashReceipt(),
             helper.txFeeReceipt(),

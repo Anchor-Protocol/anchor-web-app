@@ -1,22 +1,24 @@
+import { BorrowBorrower, borrowRepayForm } from '@anchor-protocol/app-fns';
 import {
-  BorrowBorrower,
-  BorrowMarket,
-  borrowRepayForm,
-} from '@anchor-protocol/app-fns';
-import { useFixedFee } from '@libs/app-provider';
+  BorrowMarketWithDisplay,
+  useDeploymentTarget,
+} from '@anchor-protocol/app-provider';
+import { useFixedFee, useUstTax } from '@libs/app-provider';
 import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
+import { useAccount } from 'contexts/account';
+import { useBalances } from 'contexts/balances';
 import { useAnchorWebapp } from '../../contexts/context';
-import { useAnchorBank } from '../../hooks/useAnchorBank';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export function useBorrowRepayForm(
-  fallbackBorrowMarket: BorrowMarket,
+  fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
 ) {
-  const connectedWallet = useConnectedWallet();
+  const { target } = useDeploymentTarget();
+
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -24,14 +26,16 @@ export function useBorrowRepayForm(
     constants: { blocksPerYear },
   } = useAnchorWebapp();
 
-  const { tokenBalances, tax } = useAnchorBank();
+  const { taxRate, maxTax } = useUstTax();
+
+  const { uUST } = useBalances();
 
   const {
     data: {
       borrowRate,
       oraclePrices,
       marketState,
-      bAssetLtvsAvg,
+      bAssetLtvs,
       overseerWhitelist,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
@@ -47,10 +51,11 @@ export function useBorrowRepayForm(
   return useForm(
     borrowRepayForm,
     {
-      maxTaxUUSD: tax.maxTaxUUSD,
-      taxRate: tax.taxRate,
-      userUSTBalance: tokenBalances.uUST,
-      connected: !!connectedWallet,
+      target,
+      maxTaxUUSD: maxTax,
+      taxRate: taxRate,
+      userUSTBalance: uUST,
+      connected,
       oraclePrices,
       borrowRate,
       overseerCollaterals,
@@ -60,7 +65,7 @@ export function useBorrowRepayForm(
       fixedFee,
       blockHeight,
       marketState,
-      bAssetLtvsAvg,
+      bAssetLtvs,
     },
     () => ({ repayAmount: '' as UST }),
   );

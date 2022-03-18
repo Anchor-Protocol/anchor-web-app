@@ -1,3 +1,4 @@
+import { floor } from '@libs/big-math';
 import { NoMicro, Token, u } from '@libs/types';
 import big, { BigSource } from 'big.js';
 import { demicrofy, MICRO } from './currency';
@@ -64,6 +65,17 @@ export function formatUTokenWithPostfixUnits(n: u<Token<BigSource>>): string {
   return bn.gte(M) ? d3Formatter(bn.div(M)) + 'M' : formatToken(bn);
 }
 
+export function formatNumeric(
+  n: u<Token<BigSource>>,
+  decimals: number = 6,
+): string {
+  const formatter = formatDemimal({
+    decimalPoints: decimals,
+    delimiter: true,
+  });
+  return formatter(big(n).div(Math.pow(10, decimals)));
+}
+
 // ---------------------------------------------
 // unspecific format functions
 // ---------------------------------------------
@@ -94,4 +106,13 @@ export function formatUTokenInteger(n: u<Token<BigSource>>): string {
 
 export function formatTokenInteger(n: u<Token<BigSource>>): string {
   return iFormatter(n);
+}
+
+export function formatTokenInput(n: Token<BigSource>): string {
+  const bn = big(n).mul(MICRO);
+  return floor(bn).toFixed();
+}
+
+export function formatUTokenInput(n: u<Token<BigSource>>): string {
+  return floor(n).toFixed();
 }

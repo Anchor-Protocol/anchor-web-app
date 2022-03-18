@@ -8,7 +8,6 @@ export interface SnackbarContainerProps {
 
 function SnackbarContainerBase({ className }: SnackbarContainerProps) {
   const { snackbarContainerRef } = useSnackbar();
-
   return <div ref={snackbarContainerRef} className={className} />;
 }
 

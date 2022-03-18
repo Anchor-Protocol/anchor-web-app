@@ -1,4 +1,3 @@
-import { CollateralType } from '@anchor-protocol/types';
 import { MarketBAsset, marketBAssetQuery } from '@anchor-protocol/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
 import { useQuery, UseQueryResult } from 'react-query';
@@ -18,7 +17,7 @@ export function useMarketBAssetQuery(): UseQueryResult<
       ANCHOR_QUERY_KEY.MARKET_BASSET,
       contractAddress.cw20.bLuna,
       contractAddress.moneyMarket.oracle,
-      contractAddress.moneyMarket.collaterals[CollateralType.bLuna].custody,
+      contractAddress.bluna.custody,
       queryClient,
     ],
     queryFn,
