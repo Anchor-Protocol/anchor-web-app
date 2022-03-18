@@ -6,6 +6,7 @@ import useClipboard from 'react-use-clipboard';
 import styled from 'styled-components';
 import { UIElementProps } from '@libs/ui';
 import { ConnectionIcons } from './ConnectionIcons';
+import { useTnsReverseRecordQuery } from '@libs/use-tns-reverse-record-query';
 
 interface WalletContentProps extends UIElementProps {
   walletAddress: string;
@@ -26,6 +27,7 @@ export function WalletContentBase(props: WalletContentProps) {
     onDisconnectWallet,
   } = props;
 
+  const { data: reverseRecord } = useTnsReverseRecordQuery(walletAddress);
   const [isCopied, setCopied] = useClipboard(walletAddress, {
     successDuration: 1000 * 5,
   });
@@ -39,7 +41,9 @@ export function WalletContentBase(props: WalletContentProps) {
           icon={connectionIcon}
           readonly={readonly}
         />
-        <h2 className="wallet-address">{truncate(walletAddress)}</h2>
+        <h2 className="wallet-address">
+          {reverseRecord || truncate(walletAddress)}
+        </h2>
         <button className="copy-wallet-address" onClick={setCopied}>
           <IconSpan>COPY ADDRESS {isCopied && <Check />}</IconSpan>
         </button>

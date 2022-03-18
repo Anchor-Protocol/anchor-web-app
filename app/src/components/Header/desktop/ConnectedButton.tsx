@@ -3,7 +3,7 @@ import { truncate } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 import styled from 'styled-components';
-import { useTnsReverseRecord } from '@libs/use-tns-reverse-record';
+import { useTnsReverseRecordQuery } from '@libs/use-tns-reverse-record-query';
 import { u, UST } from '@anchor-protocol/types';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 
@@ -24,7 +24,7 @@ function ConnectedButtonBase({
   totalUST,
   ...buttonProps
 }: ConnectedButtonProps) {
-  const reverseRecord = useTnsReverseRecord(walletAddress);
+  const { data: reverseRecord } = useTnsReverseRecordQuery(walletAddress);
 
   const {
     ust: { formatOutput, demicrofy, symbol },
