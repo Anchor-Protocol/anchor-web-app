@@ -1,14 +1,12 @@
 import { computeBorrowLimit } from '@anchor-protocol/app-fns';
 import type { bAsset, CW20Addr, u, UST } from '@anchor-protocol/types';
 import { moneyMarket } from '@anchor-protocol/types';
-import { microfy } from '@libs/formatter';
 import big, { Big, BigSource } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
 
 export function computeRedeemCollateralBorrowLimit(
   collateralToken: CW20Addr,
-  collateralTokenDecimals: number,
-  redeemAmount: bAsset,
+  redeemAmount: u<bAsset>,
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   bAssetLtvs: BAssetLtvs,
@@ -18,8 +16,6 @@ export function computeRedeemCollateralBorrowLimit(
   }
   return computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs, [
     collateralToken,
-    big(microfy(redeemAmount, collateralTokenDecimals)).mul(-1) as u<
-      bAsset<BigSource>
-    >,
+    big(redeemAmount).mul(-1) as u<bAsset<BigSource>>,
   ]);
 }
