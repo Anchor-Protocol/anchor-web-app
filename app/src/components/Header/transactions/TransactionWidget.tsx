@@ -9,6 +9,7 @@ import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { useBackgroundTransactions } from 'tx/evm/storage/useBackgroundTransactions';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { useNavigate } from 'react-router-dom';
+import { screen } from 'env';
 
 const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
   const theme = useTheme();
@@ -41,7 +42,7 @@ const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
           closeWidget={() => setOpen(false)}
         />
         {open && (
-          <DropdownContainer>
+          <DropdownContainer className="transaction-dropdown">
             <DropdownBox>
               <TransactionList
                 backgroundTransactions={backgroundTransactions}
@@ -79,6 +80,12 @@ export const TransactionWidget = styled(TransactionWidgetBase)`
       font-size: 12px;
       margin-bottom: 8px;
       height: 25px !important;
+    }
+  }
+
+  @media (max-width: ${screen.mobile.max}px) {
+    .transaction-dropdown {
+      right: -150px;
     }
   }
 `;
