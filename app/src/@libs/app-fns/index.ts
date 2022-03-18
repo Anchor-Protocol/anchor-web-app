@@ -27,7 +27,6 @@ export * from './queries/lp/minter';
 export * from './queries/terra/balances';
 export * from './queries/terra/balancesWithTokenInfo';
 export * from './queries/terra/nativeBalances';
-export * from './queries/terra/tokenDisplayInfos';
 export * from './queries/terra/tokenInfo';
 export * from './queries/terra/treasuryTaxCap';
 export * from './queries/terra/treasuryTaxRate';
