@@ -10,7 +10,6 @@ import {
   SelectAndTextInputContainerLabel,
 } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { UIElementProps } from '@libs/ui';
-import { BigSource } from 'big.js';
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 //import { LTVGraph } from './LTVGraph';
@@ -18,10 +17,11 @@ import styled from 'styled-components';
 interface CollateralInputProps extends UIElementProps {
   symbol: string;
   path?: string;
-  amount: CollateralAmount<BigSource>;
-  onChange: (amount: CollateralAmount<BigSource>) => void;
+  amount: CollateralAmount;
+  onChange: (amount: CollateralAmount) => void;
 }
 
+// TODO: this could probably be a shared component amonst the bAsset pages too
 const CollateralInputComponent = (props: CollateralInputProps) => {
   const { className, symbol, path, amount, onChange } = props;
 
@@ -60,11 +60,12 @@ const BorrowCollateralInputComponent = (props: BorrowCollateralInputProps) => {
     // symbol,
     // path,
     amount,
-    //onChange
+    onChange,
   } = props;
 
   return (
     <>
+      <CollateralInput symbol="bETH" amount={amount} onChange={onChange} />
       <figure className="graph">
         {/* <LTVGraph
           disabled={!connected || states.max.lte(0)}
@@ -76,7 +77,6 @@ const BorrowCollateralInputComponent = (props: BorrowCollateralInputProps) => {
           onStep={states.ltvStepFunction}
         /> */}
       </figure>
-      <CollateralInput symbol="bETH" amount={amount} onChange={(value) => {}} />
     </>
   );
 };

@@ -13,9 +13,9 @@ import {
   DeploymentTarget,
   OverseerWhitelistWithDisplay,
 } from '@anchor-protocol/app-provider';
-import { moneyMarket, Rate } from '@anchor-protocol/types';
+import { CollateralAmount, moneyMarket, Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
-import { u, UST } from '@libs/types';
+import { CW20Addr, u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';
 import big, { Big, BigSource } from 'big.js';
 import { computeBorrowAPR } from '../../logics/borrow/computeBorrowAPR';
@@ -29,6 +29,8 @@ import { BAssetLtvs } from '../../queries/borrow/market';
 
 export interface BorrowBorrowFormInput {
   borrowAmount: UST;
+  collateralToken?: CW20Addr;
+  collateralAmount?: CollateralAmount;
 }
 
 export interface BorrowBorrowFormDependency {
@@ -121,6 +123,8 @@ export const borrowBorrowForm = ({
 
   return ({
     borrowAmount,
+    collateralAmount,
+    collateralToken,
   }: BorrowBorrowFormInput): FormReturn<
     BorrowBorrowFormStates,
     BorrowBorrowFormAsyncStates
@@ -181,6 +185,8 @@ export const borrowBorrowForm = ({
         invalidOverMaxLtv,
         warningOverSafeLtv,
         borrowAmount,
+        collateralAmount,
+        collateralToken,
         availablePost,
       },
       undefined,

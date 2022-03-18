@@ -236,8 +236,12 @@ function BorrowDialogBase(props: BorrowDialogProps) {
         {isNative === false && (
           <BorrowCollateralInput
             symbol="bETH"
-            amount={'123' as CollateralAmount}
-            onChange={(value) => {}}
+            amount={states.collateralAmount ?? ('0' as CollateralAmount)}
+            onChange={(collateralAmount) => {
+              input({
+                collateralAmount,
+              });
+            }}
           />
         )}
 
