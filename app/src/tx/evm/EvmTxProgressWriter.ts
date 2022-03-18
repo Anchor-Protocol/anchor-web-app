@@ -212,4 +212,29 @@ export class EvmTxProgressWriter<
       };
     });
   }
+
+  public provideAndBorrow(
+    symbol: string,
+    event?: CrossChainEvent<ContractReceipt>,
+  ) {
+    const map = new Map<CrossChainEventKind, string>([
+      ...DEFAULT_STATUS,
+      [
+        CrossChainEventKind.RemoteChainReturnTxSubmitted,
+        `Providing ${symbol} and Borrowing UST`,
+      ],
+      [
+        CrossChainEventKind.RemoteChainReturnTxRequested,
+        `Providing ${symbol} and Borrowing UST`,
+      ],
+    ]);
+    this.write((current) => {
+      return {
+        ...current,
+        message: `Providing your ${symbol} and Borrowing UST`,
+        description: this._description,
+        receipts: this.mergeEventKind(current.receipts, map, event),
+      };
+    });
+  }
 }

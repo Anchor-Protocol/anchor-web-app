@@ -114,6 +114,7 @@ export enum TxKind {
   ClaimRewards,
   BorrowUst,
   WithdrawAssets,
+  ProvideAndBorrow,
 }
 
 export const formatTxKind = (txKind: TxKind) => {
@@ -134,6 +135,8 @@ export const formatTxKind = (txKind: TxKind) => {
       return 'borrow';
     case TxKind.WithdrawAssets:
       return 'withdraw';
+    case TxKind.ProvideAndBorrow:
+      return 'borrow';
   }
 };
 
@@ -155,6 +158,8 @@ export const refetchQueryByTxKind = (txKind: TxKind): ANCHOR_TX_KEY => {
       return ANCHOR_TX_KEY.BORROW_BORROW;
     case TxKind.WithdrawAssets:
       return ANCHOR_TX_KEY.EARN_WITHDRAW;
+    case TxKind.ProvideAndBorrow:
+      return ANCHOR_TX_KEY.BORROW_PROVIDE_COLLATERAL;
   }
 };
 
@@ -209,6 +214,7 @@ export enum TxError {
   TxHashInvalid = 'invalid hash',
   TxAlreadyProcessed = 'execution reverted: transfer info already processed',
   TxInvalid = 'Transaction invalid. Action sequence missing.',
+  TxOutgoingSequenceMissing = 'Outgoing sequence expected.',
 }
 
 export const formatError = (error: any, txError: TxError) => {
@@ -225,5 +231,7 @@ const formatTxError = (txError: TxError) => {
       return 'Transaction already processed.';
     case TxError.TxInvalid:
       return 'Not a valid xAnchor transaction (action sequence missing).';
+    case TxError.TxOutgoingSequenceMissing:
+      return 'Transaction not fully completed. (outgoing sequence missing).';
   }
 };
