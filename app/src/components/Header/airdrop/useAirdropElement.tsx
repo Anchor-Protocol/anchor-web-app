@@ -5,7 +5,7 @@ import { AirdropContent } from './AirdropContent';
 
 let _airdropClosed: boolean = false;
 
-export function useAirdropElement(open: boolean) {
+export function useAirdropElement(open: boolean, isMobileLayout: boolean) {
   const { data: airdrop, isLoading: airdropIsLoading } = useAirdropCheckQuery();
   const matchAirdrop = useMatch('/airdrop');
   const [airdropClosed, setAirdropClosed] = useState(() => _airdropClosed);
@@ -21,7 +21,7 @@ export function useAirdropElement(open: boolean) {
       !airdropClosed &&
       !airdropIsLoading &&
       !matchAirdrop ? (
-      <AirdropContent onClose={closeAirdrop} isMobileLayout />
+      <AirdropContent onClose={closeAirdrop} isMobileLayout={isMobileLayout} />
     ) : null;
   }, [
     airdrop,
@@ -30,5 +30,6 @@ export function useAirdropElement(open: boolean) {
     closeAirdrop,
     matchAirdrop,
     open,
+    isMobileLayout,
   ]);
 }
