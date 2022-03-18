@@ -4,7 +4,8 @@ import { ButtonList } from '../shared';
 import { screen } from 'env';
 import styled from 'styled-components';
 import { TransactionDisplay } from './TransactionDisplay';
-import { Transaction } from 'tx/evm';
+import { Transaction, useTransactions } from 'tx/evm';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 
 interface TransactionListProps extends UIElementProps {
   onClose: () => void;
@@ -15,11 +16,16 @@ interface TransactionListProps extends UIElementProps {
 function TransactionListBase(props: TransactionListProps) {
   const { className, footer } = props;
 
+  const { removeAll } = useTransactions();
+
   return (
     <ButtonList className={className} title="Transactions" footer={footer}>
       {props.backgroundTransactions.map((tx) => (
         <TransactionDisplay key={tx.txHash} tx={tx} />
       ))}
+      <BorderButton className="clear-all" onClick={removeAll}>
+        Clear all
+      </BorderButton>
     </ButtonList>
   );
 }
@@ -30,5 +36,10 @@ export const TransactionList = styled(TransactionListBase)`
 
   @media (max-width: ${screen.mobile.max}px) {
     width: 300px;
+  }
+
+  .clear-all {
+    height: 25px !important;
+    margin-top: 5px;
   }
 `;

@@ -49,11 +49,11 @@ export const txResultMessage = (
       return `${capitalize(
         chain(chainId),
       )} transaction successful, waiting for Wormhole bridge...`;
-    case CrossChainEventKind.RemoteChainWormholeEntered:
+    case CrossChainEventKind.RemoteChainVAAsRetrieved:
       return `Entering Wormhole bridge on ${capitalize(chain(chainId))}...`;
-    case CrossChainEventKind.TerraWormholeEntered:
+    case CrossChainEventKind.OutgoingSequenceRetrieved:
       return `Entering Terra, executing ${formatTxKind(txKind)} action...`;
-    case CrossChainEventKind.TerraWormholeExited:
+    case CrossChainEventKind.TerraVAAsRetrieved:
       return `Terra action executed, exiting Wormhole bridge on Terra...`;
     case CrossChainEventKind.RemoteChainTxSubmitted:
       return `Waiting for ${formatTxKind(txKind)} transaction on ${capitalize(
