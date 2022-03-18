@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { ClickAwayListener } from '@material-ui/core';
 import styled, { useTheme } from 'styled-components';
 import { TransactionButton } from './TransactionButton';
 import { DropdownBox, DropdownContainer } from '../desktop/DropdownContainer';
 import { TransactionList } from './TransactionList';
-import { Link } from 'react-router-dom';
 import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { useBackgroundTransactions } from 'tx/evm/storage/useBackgroundTransactions';
-import { useTransactions } from 'tx/evm';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { useNavigate } from 'react-router-dom';
+import { screen } from 'env';
 
 const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
   const theme = useTheme();
@@ -21,7 +22,11 @@ const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
     target: { chain },
   } = useDeploymentTarget();
 
-  const { removeAll } = useTransactions();
+  const navigate = useNavigate();
+  const restoreTx = useCallback(() => {
+    setOpen(false);
+    navigate('/bridge/restore');
+  }, [navigate, setOpen]);
 
   if (backgroundTransactions.length === 0 || chain === Chain.Terra) {
     return null;
@@ -37,26 +42,17 @@ const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
           closeWidget={() => setOpen(false)}
         />
         {open && (
-          <DropdownContainer>
+          <DropdownContainer className="transaction-dropdown">
             <DropdownBox>
               <TransactionList
                 backgroundTransactions={backgroundTransactions}
                 onClose={() => setOpen((v) => !v)}
                 footer={
                   <div className="restore-tx">
-                    <div className="restore-tx-inner">
-                      <p>Having transaction issues?</p>
-                      <Link
-                        className="link"
-                        to="/bridge/restore"
-                        onClick={() => setOpen(false)}
-                      >
-                        Restore transaction
-                      </Link>
-                      <div className="clear-all" onClick={removeAll}>
-                        Clear all
-                      </div>
-                    </div>
+                    <div>Having transaction issues?</div>
+                    <BorderButton onClick={restoreTx}>
+                      Restore transaction
+                    </BorderButton>
                   </div>
                 }
               />
@@ -74,39 +70,22 @@ export const TransactionWidget = styled(TransactionWidgetBase)`
   text-align: left;
 
   .restore-tx {
-    margin-top: 1em;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: ${({ theme }) => theme.textColor};
     font-size: 12px;
-    font-weight: 500;
-    color: ${({ theme }) => theme.dimTextColor};
 
-    .restore-tx-inner {
-      width: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .link {
-      margin-top: 5px;
-      cursor: pointer;
-      color: ${({ theme }) => theme.colors.secondaryDark};
-    }
-
-    .clear-all {
-      margin-left: auto;
-      margin-right: auto;
-      width: 60px;
-      display: flex;
-      font-size: 12px;
+    button {
+      margin-top: 10px;
+      width: 100%;
       font-weight: 500;
-      justify-content: center;
-      cursor: pointer;
-      margin-top: 5px;
-      color: ${({ theme }) => theme.colors.secondaryDark};
+      font-size: 12px;
+      margin-bottom: 8px;
+      height: 25px !important;
+    }
+  }
+
+  @media (max-width: ${screen.mobile.max}px) {
+    .transaction-dropdown {
+      right: -150px;
     }
   }
 `;

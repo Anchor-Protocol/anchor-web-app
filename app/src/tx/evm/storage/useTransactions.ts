@@ -47,9 +47,20 @@ export const useTransactions = () => {
   );
 
   const updateTransaction = useCallback(
-    (txHash: string, transaction: Partial<Transaction>) => {
+    (txHash: string, updates: Partial<Transaction>) => {
       if (transactionExists(txHash)) {
-        saveTransaction({ ...getTransaction(txHash), ...transaction });
+        const tx = getTransaction(txHash);
+
+        // prevent historic updates
+        if (
+          updates.lastEventKind &&
+          tx.lastEventKind &&
+          updates.lastEventKind < tx.lastEventKind
+        ) {
+          return;
+        }
+
+        saveTransaction({ ...tx, ...updates });
       }
     },
     [getTransaction, saveTransaction, transactionExists],
