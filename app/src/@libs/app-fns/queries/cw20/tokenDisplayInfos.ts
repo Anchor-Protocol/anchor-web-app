@@ -1,3 +1,4 @@
+import { Chain } from '@anchor-protocol/app-provider';
 import { CW20Addr } from '@libs/types';
 
 export type CW20TokenDisplayInfo = {
@@ -19,17 +20,24 @@ export type CW20TokenDisplayInfos = {
 
 let cache: CW20TokenDisplayInfos;
 
-export async function cw20TokenDisplayInfosQuery(): Promise<CW20TokenDisplayInfos> {
+export async function cw20TokenDisplayInfosQuery(
+  chain: Chain,
+): Promise<CW20TokenDisplayInfos> {
+  console.log('cw20TokenDisplayInfosQuery:chain', chain);
+
   if (cache) {
+    console.log('cw20TokenDisplayInfosQuery:cached');
     return cache;
   }
 
   // mainnet -> protocol === Wormhole (starts with wa)
-  const data: CW20TokenDisplayInfos = await fetch(
-    `https://assets.terra.money/cw20/tokens.json`,
-  )
-    .then((res) => res.json())
-    .then(trimWormholeSymbols);
+  let data: CW20TokenDisplayInfos = await fetch(
+    'https://assets.terra.money/cw20/tokens.json',
+  ).then((res) => res.json());
+
+  if (chain !== Chain.Terra) {
+    data = trimWormholeSymbols(data);
+  }
 
   cache = data;
 
@@ -61,11 +69,11 @@ const trimWormholeSymbolPrefix = ([contract, info]: [
   string,
   CW20TokenDisplayInfo,
 ]): [string, CW20TokenDisplayInfo] => {
-  // if (info.protocol.includes('Wormhole')) {
-  //   // remove first two characters, example:
-  //   // - wasAVAX (Wormhole Avalanche) -> sAVAX
-  //   return [contract, { ...info, symbol: info.symbol.slice(2) }];
-  // }
+  if (info.protocol.includes('Wormhole')) {
+    // remove first two characters, example:
+    // - wasAVAX (Wormhole Avalanche) -> sAVAX
+    return [contract, { ...info, symbol: info.symbol.slice(2) }];
+  }
 
   return [contract, info];
 };
