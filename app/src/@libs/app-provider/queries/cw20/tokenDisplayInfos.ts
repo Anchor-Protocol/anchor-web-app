@@ -1,21 +1,28 @@
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import {
   CW20TokenDisplayInfos,
   cw20TokenDisplayInfosQuery,
 } from '@libs/app-fns';
 import { createQueryFn } from '@libs/react-query-utils';
-import { useQuery, UseQueryResult } from 'react-query';
-import { useApp } from '../../contexts/app';
+import { useAnchorQuery } from 'queries';
+import { UseQueryResult } from 'react-query';
 import { TERRA_QUERY_KEY } from '../../env';
 
 const queryFn = createQueryFn(cw20TokenDisplayInfosQuery);
 
 export function useCW20TokenDisplayInfosQuery(): UseQueryResult<CW20TokenDisplayInfos> {
-  const { queryErrorReporter } = useApp();
+  const {
+    target: { chain },
+  } = useDeploymentTarget();
 
-  const result = useQuery([TERRA_QUERY_KEY.CW20_TOKEN_DISPLAY_INFOS], queryFn, {
-    keepPreviousData: true,
-    onError: queryErrorReporter,
-  });
+  const result = useAnchorQuery(
+    [TERRA_QUERY_KEY.CW20_TOKEN_DISPLAY_INFOS, chain],
+    queryFn,
+    {
+      keepPreviousData: false,
+      refetchOnMount: false,
+    },
+  );
 
   return result;
 }
