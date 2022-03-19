@@ -23,20 +23,18 @@ type LPReward = {
 };
 
 type LpRewardsQueryResult = {
-  pools: {
-    token_symbol: string | null;
+  pool: {
     total_rewards: {
       apr: number;
       apy: number;
     };
-  }[];
+  };
 };
 
 // language=graphql
 const LP_REWARDS_QUERY = `
-  query {
-    pools {
-      token_symbol,
+  query LpRewardsQuery($address: String!) {
+    pool(address: $address) {
       total_rewards {
         apr
         apy
@@ -45,7 +43,10 @@ const LP_REWARDS_QUERY = `
   }
 `;
 
-export async function borrowAPYQuery(endpoint: string): Promise<BorrowAPYData> {
+export async function borrowAPYQuery(
+  endpoint: string,
+  ancUstPair: string,
+): Promise<BorrowAPYData> {
   const borrowerDistributionAPYs = await fetch(
     `${endpoint}/v2/distribution-apy`,
   )
@@ -90,19 +91,19 @@ export async function borrowAPYQuery(endpoint: string): Promise<BorrowAPYData> {
 
   const ancAstroLPRewards = await hiveFetch<any, {}, LpRewardsQueryResult>({
     hiveEndpoint: 'https://api.astroport.fi/graphql',
-    variables: {},
+    variables: {
+      address: ancUstPair,
+    },
     wasmQuery: {},
     query: LP_REWARDS_QUERY,
   }).then((res) => {
     console.log(res, 'result');
 
-    const ancPool = res.pools.find((p) => p.token_symbol === 'ANC');
-
-    if (!ancPool) {
+    if (!res.pool) {
       return { apr: 0, apy: 0 };
     }
 
-    return ancPool.total_rewards;
+    return res.pool.total_rewards;
   });
 
   return {
@@ -110,10 +111,4 @@ export async function borrowAPYQuery(endpoint: string): Promise<BorrowAPYData> {
     govRewards: [govRewards],
     lpRewards: [ancAstroLPRewards as LPReward],
   };
-
-  //return await mantleFetch<{}, BorrowAPYData>(
-  //  BORROW_APY_QUERY,
-  //  {},
-  //  `${mantleEndpoint}?borrow--apy`,
-  //);
 }
