@@ -1,4 +1,5 @@
 import { DateTime, Rate } from '@anchor-protocol/types';
+import { hiveFetch } from '@libs/query-client';
 
 export interface BorrowAPYData {
   borrowerDistributionAPYs: Array<{
@@ -13,12 +14,36 @@ export interface BorrowAPYData {
     Height: number;
   }>;
 
-  lpRewards: Array<{
-    APY: Rate;
-    Height: number;
-    Timestamp: DateTime;
-  }>;
+  lpRewards: Array<LPReward>;
 }
+
+type LPReward = {
+  apr: Rate<number>;
+  apy: Rate<number>;
+};
+
+type LpRewardsQueryResult = {
+  pools: {
+    token_symbol: string | null;
+    total_rewards: {
+      apr: number;
+      apy: number;
+    };
+  }[];
+};
+
+// language=graphql
+const LP_REWARDS_QUERY = `
+  query {
+    pools {
+      token_symbol,
+      total_rewards {
+        apr
+        apy
+      }
+    }
+  }
+`;
 
 export async function borrowAPYQuery(endpoint: string): Promise<BorrowAPYData> {
   const borrowerDistributionAPYs = await fetch(
@@ -63,30 +88,27 @@ export async function borrowAPYQuery(endpoint: string): Promise<BorrowAPYData> {
       },
     );
 
-  const lpRewards = await fetch(`${endpoint}/v2/ust-lp-reward`)
-    .then((res) => res.json())
-    .then(
-      ({
-        height,
-        timestamp,
-        apy,
-      }: {
-        height: number;
-        timestamp: DateTime;
-        apy: Rate;
-      }) => {
-        return {
-          APY: apy,
-          Height: height,
-          Timestamp: timestamp,
-        };
-      },
-    );
+  const ancAstroLPRewards = await hiveFetch<any, {}, LpRewardsQueryResult>({
+    hiveEndpoint: 'https://api.astroport.fi/graphql',
+    variables: {},
+    wasmQuery: {},
+    query: LP_REWARDS_QUERY,
+  }).then((res) => {
+    console.log(res, 'result');
+
+    const ancPool = res.pools.find((p) => p.token_symbol === 'ANC');
+
+    if (!ancPool) {
+      return { apr: 0, apy: 0 };
+    }
+
+    return ancPool.total_rewards;
+  });
 
   return {
     borrowerDistributionAPYs: [borrowerDistributionAPYs],
     govRewards: [govRewards],
-    lpRewards: [lpRewards],
+    lpRewards: [ancAstroLPRewards as LPReward],
   };
 
   //return await mantleFetch<{}, BorrowAPYData>(
