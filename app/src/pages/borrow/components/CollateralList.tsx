@@ -22,6 +22,7 @@ import { BuyLink } from 'components/BuyButton';
 import { useAccount } from 'contexts/account';
 import { useBridgeAssetsQuery } from 'queries/bridge/useBridgeAssetsQuery';
 import React, { ReactNode, useMemo } from 'react';
+import { microfyPrice } from 'utils/microfyPrice';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
 
@@ -42,15 +43,6 @@ interface CollateralInfo {
   lockedAmountInUST: u<UST<BigSource>>;
   tokenDisplay?: CW20TokenDisplayInfo;
 }
-
-const microfyPrice = (price: UST | undefined, decimals: number): UST => {
-  if (price) {
-    return big(price)
-      .mul(Math.pow(10, decimals - 6))
-      .toString() as UST;
-  }
-  return '0' as UST;
-};
 
 export function CollateralList({ className }: CollateralListProps) {
   const { connected } = useAccount();
@@ -107,13 +99,16 @@ export function CollateralList({ className }: CollateralListProps) {
           borrowBorrower &&
           borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
           collateral
-            ? computeLiquidationPrice(
-                collateral_token,
-                borrowBorrower.marketBorrowerInfo,
-                borrowBorrower.overseerBorrowLimit,
-                borrowBorrower.overseerCollaterals,
-                borrowMarket.overseerWhitelist,
-                borrowMarket.oraclePrices,
+            ? microfyPrice(
+                computeLiquidationPrice(
+                  collateral_token,
+                  borrowBorrower.marketBorrowerInfo,
+                  borrowBorrower.overseerBorrowLimit,
+                  borrowBorrower.overseerCollaterals,
+                  borrowMarket.overseerWhitelist,
+                  borrowMarket.oraclePrices,
+                ),
+                tokenDisplay?.decimals ?? 6,
               )
             : undefined,
         lockedAmount: collateral?.[1] ?? ('0' as u<bAsset>),

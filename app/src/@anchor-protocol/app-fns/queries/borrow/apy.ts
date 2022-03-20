@@ -97,12 +97,9 @@ export async function borrowAPYQuery(
     wasmQuery: {},
     query: LP_REWARDS_QUERY,
   }).then((res) => {
-    console.log(res, 'result');
-
     if (!res.pool) {
       return { apr: 0, apy: 0 };
     }
-
     return res.pool.total_rewards;
   });
 
