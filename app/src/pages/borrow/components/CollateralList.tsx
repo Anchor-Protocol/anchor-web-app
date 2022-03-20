@@ -202,9 +202,7 @@ export function CollateralList({ className }: CollateralListProps) {
                   <div className="value">{formatUSTOutput(price)} UST</div>
                   <p className="volatility">
                     {Boolean(Number(liquidationPrice)) &&
-                      formatOutput(liquidationPrice!, {
-                        decimals: tokenDisplay?.decimals ?? 6,
-                      }) + ' UST'}
+                      formatUSTOutput(liquidationPrice!) + ' UST'}
                   </p>
                 </td>
                 <td>

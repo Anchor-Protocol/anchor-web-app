@@ -43,9 +43,7 @@ export function computeEstimateLiquidationPrice(
       .toString() as UST<string>;
     return `Estimated ${
       whitelist?.tokenDisplay?.symbol ?? '???'
-    } liquidation price: ${formatOutput(microfyPrice(liqPrice, decimals), {
-      decimals: decimals,
-    })}`;
+    } liquidation price: ${formatOutput(microfyPrice(liqPrice, decimals))}`;
   }
 
   return null;
