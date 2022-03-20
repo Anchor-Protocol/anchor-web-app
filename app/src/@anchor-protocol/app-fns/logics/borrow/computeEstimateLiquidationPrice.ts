@@ -3,7 +3,7 @@ import { formatOutput } from '@anchor-protocol/formatter';
 import type { Rate, UST } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
 import { Big } from 'big.js';
-import { microfyPrice } from 'pages/borrow/components/CollateralList';
+import { microfyPrice } from 'utils/microfyPrice';
 
 export function computeEstimateLiquidationPrice(
   nextLtv: Rate<Big>,
@@ -36,11 +36,13 @@ export function computeEstimateLiquidationPrice(
   }
 
   // formula: oracle price * (nextLtv / maxLtv)
+
   if (nextLtv) {
     const decimals = whitelist?.tokenDisplay.decimals ?? 6;
     const liqPrice = Big(oracle.price)
       .mul(Big(nextLtv))
       .toString() as UST<string>;
+
     return `Estimated ${
       whitelist?.tokenDisplay?.symbol ?? '???'
     } liquidation price: ${formatOutput(microfyPrice(liqPrice, decimals))}`;

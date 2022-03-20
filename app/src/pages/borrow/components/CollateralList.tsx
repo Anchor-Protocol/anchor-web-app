@@ -22,6 +22,7 @@ import { BuyLink } from 'components/BuyButton';
 import { useAccount } from 'contexts/account';
 import { useBridgeAssetsQuery } from 'queries/bridge/useBridgeAssetsQuery';
 import React, { ReactNode, useMemo } from 'react';
+import { microfyPrice } from 'utils/microfyPrice';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
 
@@ -42,15 +43,6 @@ interface CollateralInfo {
   lockedAmountInUST: u<UST<BigSource>>;
   tokenDisplay?: CW20TokenDisplayInfo;
 }
-
-export const microfyPrice = (price: UST | undefined, decimals: number): UST => {
-  if (price) {
-    return big(price)
-      .mul(Math.pow(10, decimals - 6))
-      .toString() as UST;
-  }
-  return '0' as UST;
-};
 
 export function CollateralList({ className }: CollateralListProps) {
   const { connected } = useAccount();
