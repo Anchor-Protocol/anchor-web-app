@@ -43,7 +43,7 @@ interface CollateralInfo {
   tokenDisplay?: CW20TokenDisplayInfo;
 }
 
-const microfyPrice = (price: UST | undefined, decimals: number): UST => {
+export const microfyPrice = (price: UST | undefined, decimals: number): UST => {
   if (price) {
     return big(price)
       .mul(Math.pow(10, decimals - 6))

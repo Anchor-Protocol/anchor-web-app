@@ -1,9 +1,9 @@
 import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
-import { normalize } from '@anchor-protocol/formatter';
-import { formatUST } from '@anchor-protocol/notation';
-import type { Rate, u, UST } from '@anchor-protocol/types';
+import { formatOutput } from '@anchor-protocol/formatter';
+import type { Rate, UST } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
 import { Big } from 'big.js';
+import { microfyPrice } from 'pages/borrow/components/CollateralList';
 
 export function computeEstimateLiquidationPrice(
   nextLtv: Rate<Big>,
@@ -37,16 +37,15 @@ export function computeEstimateLiquidationPrice(
 
   // formula: oracle price * (nextLtv / maxLtv)
   if (nextLtv) {
-    const liqPrice = Big(
-      normalize(
-        oracle.price as u<UST>,
-        6,
-        whitelist.tokenDisplay.decimals ?? 6,
-      ),
-    ).mul(Big(nextLtv)) as UST<Big>;
+    const decimals = whitelist?.tokenDisplay.decimals ?? 6;
+    const liqPrice = Big(oracle.price)
+      .mul(Big(nextLtv))
+      .toString() as UST<string>;
     return `Estimated ${
       whitelist?.tokenDisplay?.symbol ?? '???'
-    } liquidation price: ${formatUST(liqPrice)}`;
+    } liquidation price: ${formatOutput(microfyPrice(liqPrice, decimals), {
+      decimals: decimals,
+    })}`;
   }
 
   return null;
