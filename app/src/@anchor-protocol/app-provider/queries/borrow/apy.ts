@@ -7,11 +7,20 @@ import { ANCHOR_QUERY_KEY } from '../../env';
 const queryFn = createQueryFn(borrowAPYQuery);
 
 export function useBorrowAPYQuery(): UseQueryResult<BorrowAPYData | undefined> {
-  const { queryErrorReporter, indexerApiEndpoint } = useAnchorWebapp();
+  const { queryErrorReporter, indexerApiEndpoint, contractAddress } =
+    useAnchorWebapp();
 
-  return useQuery([ANCHOR_QUERY_KEY.BORROW_APY, indexerApiEndpoint], queryFn, {
-    refetchInterval: 1000 * 60 * 5,
-    keepPreviousData: true,
-    onError: queryErrorReporter,
-  });
+  return useQuery(
+    [
+      ANCHOR_QUERY_KEY.BORROW_APY,
+      indexerApiEndpoint,
+      contractAddress.terraswap.ancUstPair,
+    ],
+    queryFn,
+    {
+      refetchInterval: 1000 * 60 * 5,
+      keepPreviousData: true,
+      onError: queryErrorReporter,
+    },
+  );
 }
