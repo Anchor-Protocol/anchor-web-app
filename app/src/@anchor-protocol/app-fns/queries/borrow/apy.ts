@@ -94,8 +94,6 @@ export async function borrowAPYQuery(endpoint: string): Promise<BorrowAPYData> {
     wasmQuery: {},
     query: LP_REWARDS_QUERY,
   }).then((res) => {
-    console.log(res, 'result');
-
     const ancPool = res.pools.find((p) => p.token_symbol === 'ANC');
 
     if (!ancPool) {

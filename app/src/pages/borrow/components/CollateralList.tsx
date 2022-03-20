@@ -107,13 +107,15 @@ export function CollateralList({ className }: CollateralListProps) {
           borrowBorrower &&
           borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
           collateral
-            ? computeLiquidationPrice(
-                collateral_token,
-                borrowBorrower.marketBorrowerInfo,
-                borrowBorrower.overseerBorrowLimit,
-                borrowBorrower.overseerCollaterals,
-                borrowMarket.overseerWhitelist,
-                borrowMarket.oraclePrices,
+            ? microfyPrice(
+                computeLiquidationPrice(
+                  collateral_token,
+                  borrowBorrower.marketBorrowerInfo,
+                  borrowBorrower.overseerBorrowLimit,
+                  borrowBorrower.overseerCollaterals,
+                  borrowMarket.overseerWhitelist,
+                  borrowMarket.oraclePrices,
+                ),
                 tokenDisplay?.decimals ?? 6,
               )
             : undefined,
@@ -200,7 +202,9 @@ export function CollateralList({ className }: CollateralListProps) {
                   <div className="value">{formatUSTOutput(price)} UST</div>
                   <p className="volatility">
                     {Boolean(Number(liquidationPrice)) &&
-                      formatUSTOutput(liquidationPrice!) + ' UST'}
+                      formatOutput(liquidationPrice!, {
+                        decimals: tokenDisplay?.decimals ?? 6,
+                      }) + ' UST'}
                   </p>
                 </td>
                 <td>

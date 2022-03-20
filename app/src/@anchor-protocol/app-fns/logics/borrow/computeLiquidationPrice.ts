@@ -1,4 +1,3 @@
-import { normalize } from '@anchor-protocol/formatter';
 import { CW20Addr, moneyMarket, Rate, UST } from '@anchor-protocol/types';
 import big from 'big.js';
 
@@ -9,7 +8,6 @@ export function computeLiquidationPrice(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   overseerWhitelist: moneyMarket.overseer.WhitelistResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
-  tokenDecimals: number,
 ): UST {
   const collateral = overseerCollaterals.collaterals.find(
     ([collateralToken]) => collateralToken === token,
@@ -30,7 +28,7 @@ export function computeLiquidationPrice(
     return '0' as UST;
   }
 
-  return big(normalize(marketBorrowerInfo.loan_amount, 6, tokenDecimals))
+  return big(marketBorrowerInfo.loan_amount)
     .div(big(collateral[1]).mul(maxLtv))
     .toFixed() as UST;
 }
