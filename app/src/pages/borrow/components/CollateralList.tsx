@@ -114,6 +114,7 @@ export function CollateralList({ className }: CollateralListProps) {
                 borrowBorrower.overseerCollaterals,
                 borrowMarket.overseerWhitelist,
                 borrowMarket.oraclePrices,
+                tokenDisplay?.decimals ?? 6,
               )
             : undefined,
         lockedAmount: collateral?.[1] ?? ('0' as u<bAsset>),
