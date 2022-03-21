@@ -6,14 +6,17 @@ import { useCallback } from 'react';
 import { BorrowDialog } from '../BorrowDialog';
 import { BorrowFormParams } from '../types';
 import { useBorrowUstTx } from 'tx/evm';
-import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 
 export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   const { connected } = useAccount();
 
   const borrowUstTx = useBorrowUstTx();
   const { isTxMinimizable } = borrowUstTx?.utils ?? {};
-  const [postTx, txResult] = borrowUstTx?.stream ?? [null, null];
+  const [postBorrowUstTx, borrowUstTxResult] = borrowUstTx?.stream ?? [
+    null,
+    null,
+  ];
 
   //const provideAndBorrowTx = useProvideAndBorrowTx();
 
@@ -24,26 +27,26 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
       collateral?: CW20Addr,
       collateralAmount?: CollateralAmount,
     ) => {
-      if (connected && postTx) {
-        postTx({ amount });
+      if (connected && postBorrowUstTx) {
+        postBorrowUstTx({ amount });
       }
     },
-    [postTx, connected],
+    [postBorrowUstTx, connected],
   );
 
   return (
     <BorrowDialog
       {...props}
-      txResult={txResult}
-      proceedable={postTx !== undefined}
+      txResult={borrowUstTxResult}
+      proceedable={postBorrowUstTx !== undefined}
       onProceed={proceed}
-      renderBroadcastTxResult={
-        <EvmTxResultRenderer
-          onExit={props.closeDialog}
-          txStreamResult={txResult}
+      renderBroadcastTxResult={({ txResult, closeDialog }) => (
+        <TxResultRenderer
+          onExit={closeDialog}
+          resultRendering={txResult.value}
           minimizable={isTxMinimizable}
         />
-      }
+      )}
     />
   );
 };

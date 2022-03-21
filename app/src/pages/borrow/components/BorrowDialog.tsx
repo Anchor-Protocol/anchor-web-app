@@ -32,20 +32,24 @@ import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
 import { UIElementProps } from '@libs/ui';
 import type { DialogProps } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { StreamResult, StreamStatus } from '@rx-stream/react';
+import {
+  StreamDone,
+  StreamInProgress,
+  StreamResult,
+  StreamStatus,
+} from '@rx-stream/react';
 import { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import { ChangeEvent, ReactNode, useMemo } from 'react';
+import { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
-import { BroadcastTxStreamResult } from 'pages/earn/components/types';
 import big from 'big.js';
 import { BorrowCollateralInput } from './BorrowCollateralInput';
 
@@ -60,8 +64,18 @@ export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   ) => void;
 }
 
+interface TxRenderFnProps {
+  txResult:
+    | StreamInProgress<TxResultRendering<unknown>>
+    | StreamDone<TxResultRendering<unknown>>;
+  closeDialog: () => void;
+}
+
+type TxRenderFn = (props: TxRenderFnProps) => JSX.Element;
+
 export type BorrowDialogProps = DialogProps<BorrowDialogParams> & {
-  renderBroadcastTxResult?: JSX.Element;
+  //renderBroadcastTxResult?: JSX.Element;
+  renderBroadcastTxResult?: TxRenderFn;
 };
 
 function BorrowDialogBase(props: BorrowDialogProps) {
@@ -154,26 +168,22 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     [input, states.borrowLimit, states.borrowedAmount],
   );
 
-  const renderBroadcastTx = useMemo(() => {
-    if (renderBroadcastTxResult) {
-      return renderBroadcastTxResult;
-    }
-
-    return (
-      <TxResultRenderer
-        resultRendering={(txResult as BroadcastTxStreamResult).value}
-        onExit={closeDialog}
-      />
-    );
-  }, [renderBroadcastTxResult, closeDialog, txResult]);
-
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
     txResult?.status === StreamStatus.DONE
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
-        <Dialog className={className}>{renderBroadcastTx}</Dialog>
+        <Dialog className={className}>
+          {renderBroadcastTxResult ? (
+            renderBroadcastTxResult({ txResult, closeDialog })
+          ) : (
+            <TxResultRenderer
+              resultRendering={txResult.value}
+              onExit={closeDialog}
+            />
+          )}
+        </Dialog>
       </Modal>
     );
   }
