@@ -58,7 +58,9 @@ function Component({ className }: BAssetMainProps) {
               <AssetCard
                 key={custodyConfig.collateral_token}
                 to={`/basset/wh/${bAsset.symbol.toLowerCase()}`}
-                title={`${tokenDisplay.anchor.symbol}/${tokenDisplay.wormhole.symbol}`}
+                title={`${tokenDisplay.anchor.symbol}/${
+                  tokenDisplay.wormhole?.symbol ?? bAsset.symbol
+                }`}
                 bAssetIcon={<TokenIcon token="beth" />}
                 originAssetIcon={
                   <TokenIcon
