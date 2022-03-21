@@ -13,16 +13,21 @@ import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
-import { UST } from '@libs/types';
+import { CW20Addr, ERC20Addr, u, UST } from '@libs/types';
 import { TxEvent } from './useTx';
 import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
+import { CollateralAmount } from '@anchor-protocol/types';
 
 type BorrowUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type BorrowUstTxRender = TxResultRendering<BorrowUstTxResult>;
 
 export interface BorrowUstTxParams {
-  amount: UST;
+  borrowAmount: u<UST>;
+  collateralToken?: CW20Addr;
+  collateralAmount?: u<CollateralAmount>;
+  erc20ContractAddress?: ERC20Addr;
+  erc20Symbol?: string;
 }
 
 export function useBorrowUstTx():
@@ -35,9 +40,7 @@ export function useBorrowUstTx():
     chainId = EvmChainId.ETHEREUM_ROPSTEN,
   } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
-  const {
-    ust: { microfy, formatInput, formatOutput },
-  } = useFormatters();
+
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const borrowTx = useCallback(
@@ -46,20 +49,46 @@ export function useBorrowUstTx():
       renderTxResults: Subject<BorrowUstTxRender>,
       txEvents: Subject<TxEvent<BorrowUstTxParams>>,
     ) => {
-      const amount = microfy(formatInput(txParams.amount)).toString();
+      const {
+        borrowAmount,
+        collateralToken,
+        collateralAmount,
+        erc20ContractAddress,
+        erc20Symbol,
+      } = txParams;
 
       const writer = new EvmTxProgressWriter(
         renderTxResults,
         chainId,
         connectType,
       );
-      writer.approveUST();
       writer.timer.start();
 
       try {
+        if (
+          collateralToken &&
+          collateralAmount &&
+          erc20ContractAddress &&
+          erc20Symbol
+        ) {
+          writer.approveCollateral(erc20Symbol);
+
+          await xAnchor.approveLimit(
+            { contract: erc20ContractAddress },
+            collateralAmount,
+            address!,
+            TX_GAS_LIMIT,
+            (event) => {
+              txEvents.next({ event, txParams });
+            },
+          );
+        }
+
+        writer.approveUST();
+
         await xAnchor.approveLimit(
           { token: 'ust' },
-          amount,
+          borrowAmount,
           address!,
           TX_GAS_LIMIT,
           (event) => {
@@ -70,33 +99,55 @@ export function useBorrowUstTx():
         writer.borrowUST();
         writer.timer.reset();
 
-        const result = await xAnchor.borrowStable(
-          amount,
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
-            writer.borrowUST(event);
-            txEvents.next({ event, txParams });
-          },
-        );
+        let result;
 
-        refetchQueries(refetchQueryByTxKind(TxKind.BorrowUst));
+        if (
+          collateralToken &&
+          collateralAmount &&
+          erc20ContractAddress &&
+          erc20Symbol
+        ) {
+          // borrowing based on additional collateral being locked
+          result = await xAnchor.lockAndBorrow(
+            { contract: erc20ContractAddress },
+            collateralAmount,
+            borrowAmount,
+            address!,
+            TX_GAS_LIMIT,
+            (event) => {
+              //writer.provideAndBorrow(collateralSymbol, event);
+              writer.borrowUST(event, erc20Symbol);
+              txEvents.next({ event, txParams });
+            },
+          );
+
+          refetchQueries(refetchQueryByTxKind(TxKind.BorrowUst));
+          refetchQueries(refetchQueryByTxKind(TxKind.ProvideCollateral));
+        } else {
+          // just borrowing based on current collateral
+          result = await xAnchor.borrowStable(
+            borrowAmount,
+            address!,
+            TX_GAS_LIMIT,
+            (event) => {
+              writer.borrowUST(event);
+              txEvents.next({ event, txParams });
+            },
+          );
+          refetchQueries(refetchQueryByTxKind(TxKind.BorrowUst));
+        }
 
         return result;
       } finally {
         writer.timer.stop();
       }
     },
-    [
-      address,
-      connectType,
-      xAnchor,
-      chainId,
-      microfy,
-      formatInput,
-      refetchQueries,
-    ],
+    [address, connectType, xAnchor, chainId, refetchQueries],
   );
+
+  const {
+    ust: { demicrofy, formatOutput },
+  } = useFormatters();
 
   const persistedTxResult = useBackgroundTx<
     BorrowUstTxParams,
@@ -105,11 +156,13 @@ export function useBorrowUstTx():
     borrowTx,
     (resp) => resp.tokenTransfer,
     null,
-    (txParams) => ({
-      txKind: TxKind.BorrowUst,
-      amount: `${formatOutput(txParams.amount as UST)} UST`,
-      timestamp: Date.now(),
-    }),
+    (txParams) => {
+      return {
+        txKind: TxKind.BorrowUst,
+        amount: `${formatOutput(demicrofy(txParams.borrowAmount))} UST`,
+        timestamp: Date.now(),
+      };
+    },
   );
 
   return chainId && connection && address ? persistedTxResult : undefined;

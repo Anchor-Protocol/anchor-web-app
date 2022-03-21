@@ -105,12 +105,19 @@ export class EvmTxProgressWriter<
     });
   }
 
-  public borrowUST(event?: CrossChainEvent<ContractReceipt>) {
+  public borrowUST(
+    event?: CrossChainEvent<ContractReceipt>,
+    collateral?: string,
+  ) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
       [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Borrowing'],
       [CrossChainEventKind.RemoteChainReturnTxRequested, 'Borrowing'],
     ]);
+
+    // TODO: output the collateral information to the TxReceipt in the form of
+    // sAVAX Collateral  ...  34.5
+
     this.write((current) => {
       return {
         ...current,
@@ -213,28 +220,28 @@ export class EvmTxProgressWriter<
     });
   }
 
-  public provideAndBorrow(
-    symbol: string,
-    event?: CrossChainEvent<ContractReceipt>,
-  ) {
-    const map = new Map<CrossChainEventKind, string>([
-      ...DEFAULT_STATUS,
-      [
-        CrossChainEventKind.RemoteChainReturnTxSubmitted,
-        `Providing ${symbol} and Borrowing UST`,
-      ],
-      [
-        CrossChainEventKind.RemoteChainReturnTxRequested,
-        `Providing ${symbol} and Borrowing UST`,
-      ],
-    ]);
-    this.write((current) => {
-      return {
-        ...current,
-        message: `Providing your ${symbol} and Borrowing UST`,
-        description: this._description,
-        receipts: this.mergeEventKind(current.receipts, map, event),
-      };
-    });
-  }
+  // public provideAndBorrow(
+  //   symbol: string,
+  //   event?: CrossChainEvent<ContractReceipt>,
+  // ) {
+  //   const map = new Map<CrossChainEventKind, string>([
+  //     ...DEFAULT_STATUS,
+  //     [
+  //       CrossChainEventKind.RemoteChainReturnTxSubmitted,
+  //       `Providing ${symbol} and Borrowing UST`,
+  //     ],
+  //     [
+  //       CrossChainEventKind.RemoteChainReturnTxRequested,
+  //       `Providing ${symbol} and Borrowing UST`,
+  //     ],
+  //   ]);
+  //   this.write((current) => {
+  //     return {
+  //       ...current,
+  //       message: `Providing your ${symbol} and Borrowing UST`,
+  //       description: this._description,
+  //       receipts: this.mergeEventKind(current.receipts, map, event),
+  //     };
+  //   });
+  // }
 }

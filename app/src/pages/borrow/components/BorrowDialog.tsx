@@ -74,7 +74,6 @@ interface TxRenderFnProps {
 type TxRenderFn = (props: TxRenderFnProps) => JSX.Element;
 
 export type BorrowDialogProps = DialogProps<BorrowDialogParams> & {
-  //renderBroadcastTxResult?: JSX.Element;
   renderBroadcastTxResult?: TxRenderFn;
 };
 
@@ -113,7 +112,13 @@ function BorrowDialogBase(props: BorrowDialogProps) {
   );
 
   const proceed = useCallback(
-    async (borrowAmount: UST, txFee: u<UST>, confirm: ReactNode) => {
+    async (
+      borrowAmount: UST,
+      txFee: u<UST>,
+      confirm: ReactNode,
+      collateralToken?: CW20Addr,
+      collateralAmount?: CollateralAmount,
+    ) => {
       if (!connected || !onProceed) {
         return;
       }
@@ -130,7 +135,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
         }
       }
 
-      onProceed(borrowAmount, txFee);
+      onProceed(borrowAmount, txFee, collateralToken, collateralAmount);
     },
     [onProceed, connected, openConfirm],
   );
@@ -320,6 +325,8 @@ function BorrowDialogBase(props: BorrowDialogProps) {
                 states.borrowAmount,
                 states.txFee.toFixed() as u<UST>,
                 states.warningOverSafeLtv,
+                states.collateralToken,
+                states.collateralAmount,
               )
             }
           >

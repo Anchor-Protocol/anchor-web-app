@@ -67,6 +67,7 @@ export function useBorrowBorrowForm(
       // hard code for testing
       collateralToken:
         'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x' as CW20Addr,
+      //'0x6190e33FF30f3761Ce544ce539d69dDcD6aDF5eC' as ERC20Addr,
     }),
   );
 }
