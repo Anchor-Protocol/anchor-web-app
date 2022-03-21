@@ -1,4 +1,11 @@
-import { bAsset, CW20Addr, moneyMarket, u, UST } from '@anchor-protocol/types';
+import {
+  bAsset,
+  CollateralAmount,
+  CW20Addr,
+  moneyMarket,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import { sum, vectorMultiply } from '@libs/big-math';
 import { Big, BigSource } from 'big.js';
 import { BAssetLtvs } from '../../queries/borrow/market';
@@ -10,7 +17,9 @@ export function computeBorrowLimit(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   bAssetLtvs: BAssetLtvs,
-  ...addition: Array<[CW20Addr, u<bAsset<BigSource>>]>
+  ...addition: Array<
+    [CW20Addr, u<bAsset<BigSource>> | u<CollateralAmount<BigSource>>]
+  >
 ): u<UST<Big>> {
   const vector = oraclePrices.prices.map(({ asset }) => asset);
   const lockedAmounts = vectorizeOverseerCollaterals(

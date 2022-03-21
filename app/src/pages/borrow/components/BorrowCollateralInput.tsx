@@ -1,58 +1,12 @@
-import {
-  LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-} from '@anchor-protocol/notation';
-import { TokenIcon } from '@anchor-protocol/token-icons';
 import { CollateralAmount } from '@anchor-protocol/types';
-import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
-import {
-  SelectAndTextInputContainer,
-  SelectAndTextInputContainerLabel,
-} from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
-import { UIElementProps } from '@libs/ui';
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import styled from 'styled-components';
+import { CollateralInput, CollateralInputProps } from './CollateralInput';
 //import { LTVGraph } from './LTVGraph';
 
-interface CollateralInputProps extends UIElementProps {
-  symbol: string;
-  path?: string;
-  amount: CollateralAmount;
-  onChange: (amount: CollateralAmount) => void;
+interface BorrowCollateralInputProps extends CollateralInputProps {
+  maxAmount: CollateralAmount;
 }
-
-// TODO: this could probably be a shared component amonst the bAsset pages too
-const CollateralInputComponent = (props: CollateralInputProps) => {
-  const { className, symbol, path, amount, onChange } = props;
-
-  return (
-    <SelectAndTextInputContainer
-      className={className}
-      gridColumns={[140, '1fr']}
-    >
-      <SelectAndTextInputContainerLabel>
-        <TokenIcon token="beth" symbol={symbol} path={path} />
-        {` ${symbol}`}
-      </SelectAndTextInputContainerLabel>
-      <NumberMuiInput
-        placeholder="0.00"
-        value={amount}
-        maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
-        maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
-        onChange={({ target }: ChangeEvent<HTMLInputElement>) => {
-          onChange(target.value as CollateralAmount);
-        }}
-      />
-    </SelectAndTextInputContainer>
-  );
-};
-
-const CollateralInput = styled(CollateralInputComponent)`
-  .root {
-  }
-`;
-
-interface BorrowCollateralInputProps extends CollateralInputProps {}
 
 const BorrowCollateralInputComponent = (props: BorrowCollateralInputProps) => {
   const {
@@ -60,12 +14,18 @@ const BorrowCollateralInputComponent = (props: BorrowCollateralInputProps) => {
     // symbol,
     // path,
     amount,
-    onChange,
+    onTokenChange,
+    onAmountChange,
   } = props;
 
   return (
     <>
-      <CollateralInput symbol="bETH" amount={amount} onChange={onChange} />
+      <CollateralInput
+        symbol="bLUNA"
+        amount={amount}
+        onTokenChange={onTokenChange}
+        onAmountChange={onAmountChange}
+      />
       <figure className="graph">
         {/* <LTVGraph
           disabled={!connected || states.max.lte(0)}

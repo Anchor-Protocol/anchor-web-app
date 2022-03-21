@@ -3,8 +3,9 @@ import {
   BorrowMarketWithDisplay,
   useDeploymentTarget,
 } from '@anchor-protocol/app-provider';
+import { CollateralAmount } from '@anchor-protocol/types';
 import { useFixedFee, useUstTax } from '@libs/app-provider';
-import { UST } from '@libs/types';
+import { CW20Addr, UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
@@ -60,6 +61,12 @@ export function useBorrowBorrowForm(
       overseerWhitelist,
       fixedFee,
     },
-    () => ({ borrowAmount: '' as UST }),
+    () => ({
+      borrowAmount: '' as UST,
+      collateralAmount: '' as CollateralAmount,
+      // hard code for testing
+      collateralToken:
+        'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x' as CW20Addr,
+    }),
   );
 }

@@ -1,6 +1,8 @@
 import {
   ANCHOR_DANGER_RATIO,
   ANCHOR_SAFE_RATIO,
+  computeBorrowAmountToLtv,
+  computeLtvToBorrowAmount,
 } from '@anchor-protocol/app-fns';
 import {
   useBorrowBorrowForm,
@@ -108,17 +110,59 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     [onProceed, connected, openConfirm],
   );
 
+  // const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
+  //   try {
+  //     const draftAmount = ltvToAmount(draftLtv);
+  //     return amountToLtv(draftAmount);
+  //   } catch {
+  //     return draftLtv;
+  //   }
+  // };
+
+  const ltvStepFunction = useCallback(
+    (draftLtv: Rate<Big>) => {
+      const amount = computeLtvToBorrowAmount(
+        draftLtv,
+        states.borrowLimit,
+        states.borrowedAmount,
+      );
+
+      return computeBorrowAmountToLtv(
+        amount,
+        states.borrowLimit,
+        states.borrowedAmount,
+      );
+    },
+    [states.borrowLimit, states.borrowedAmount],
+  );
+
+  // const onLtvChange = useCallback(
+  //   (nextLtv: Rate<Big>) => {
+  //     const ltvToAmount = states.ltvToAmount;
+  //     try {
+  //       const nextAmount = ltvToAmount(nextLtv);
+  //       input({
+  //         borrowAmount: formatUSTInput(demicrofy(nextAmount)),
+  //       });
+  //     } catch {}
+  //   },
+  //   [input, states.ltvToAmount],
+  // );
+
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
-      const ltvToAmount = states.ltvToAmount;
       try {
-        const nextAmount = ltvToAmount(nextLtv);
+        const nextAmount = computeLtvToBorrowAmount(
+          nextLtv,
+          states.borrowLimit,
+          states.borrowedAmount,
+        );
         input({
           borrowAmount: formatUSTInput(demicrofy(nextAmount)),
         });
       } catch {}
     },
-    [input, states.ltvToAmount],
+    [input, states.borrowLimit, states.borrowedAmount],
   );
 
   const renderBroadcastTx = useMemo(() => {
@@ -211,7 +255,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
             end={ANCHOR_DANGER_RATIO}
             value={states.nextLtv}
             onChange={onLtvChange}
-            onStep={states.ltvStepFunction}
+            onStep={ltvStepFunction}
           />
         </figure>
 
@@ -236,8 +280,12 @@ function BorrowDialogBase(props: BorrowDialogProps) {
         {isNative === false && (
           <BorrowCollateralInput
             symbol="bETH"
+            maxAmount={'10000000' as CollateralAmount}
             amount={states.collateralAmount ?? ('0' as CollateralAmount)}
-            onChange={(collateralAmount) => {
+            onTokenChange={(tokenAddr) => {
+              // TODO
+            }}
+            onAmountChange={(collateralAmount) => {
               input({
                 collateralAmount,
               });
