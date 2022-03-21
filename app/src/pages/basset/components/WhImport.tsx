@@ -148,7 +148,7 @@ function Component({ className, bAssetInfo }: WhImportProps) {
           toIcon={
             <TokenIcon
               symbol={bAssetInfo.tokenDisplay.anchor.symbol}
-              path={bAssetInfo.tokenDisplay.anchor.icon}
+              path={bAssetInfo.tokenDisplay.anchor?.icon}
             />
           }
         />
@@ -211,7 +211,7 @@ function Component({ className, bAssetInfo }: WhImportProps) {
         <SelectAndTextInputContainerLabel>
           <TokenIcon
             symbol={bAssetInfo.tokenDisplay.anchor.symbol}
-            path={bAssetInfo.tokenDisplay.anchor.icon}
+            path={bAssetInfo.tokenDisplay.anchor?.icon}
           />{' '}
           {bAssetInfo.tokenDisplay.anchor.symbol}
         </SelectAndTextInputContainerLabel>

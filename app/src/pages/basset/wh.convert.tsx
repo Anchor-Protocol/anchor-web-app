@@ -25,7 +25,7 @@ function Component({ className }: UIElementProps) {
 
   const tabItems = useMemo<Item[]>(() => {
     const bAssetSymbol = bAssetInfo
-      ? bAssetInfo.tokenDisplay.anchor.symbol
+      ? bAssetInfo.tokenDisplay.anchor?.symbol ?? bAssetInfo.bAsset.symbol
       : 'ASSET';
     const whAssetSymbol = bAssetInfo
       ? bAssetInfo.tokenDisplay.wormhole.symbol

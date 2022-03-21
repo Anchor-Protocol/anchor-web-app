@@ -172,7 +172,9 @@ function Component({ className, bAssetInfo }: WhExportProps) {
                   setAmount(formatUInput(balance) as bAsset)
                 }
               >
-                {formatUToken(balance)} {bAssetInfo.tokenDisplay.anchor.symbol}
+                {formatUToken(balance)}{' '}
+                {bAssetInfo.tokenDisplay.anchor?.symbol ??
+                  bAssetInfo.bAsset.symbol}
               </span>
             </span>
           )
