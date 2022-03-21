@@ -58,7 +58,7 @@ const trimWormholeSymbolPrefix = ([contract, info]: [
   string,
   CW20TokenDisplayInfo,
 ]): [string, CW20TokenDisplayInfo] => {
-  if (info.protocol.includes('Wormhole')) {
+  if (info.protocol?.includes('Wormhole')) {
     // remove first two characters, example:
     // - wasAVAX (Wormhole Avalanche) -> sAVAX
     return [contract, { ...info, symbol: info.symbol.slice(2) }];
