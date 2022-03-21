@@ -13,7 +13,6 @@ import {
   useBorrowAPYQuery,
   useDeploymentTarget,
   useGovStateQuery,
-  useRewardsAnchorLpRewardsQuery,
 } from '@anchor-protocol/app-provider';
 import { formatRate } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
@@ -48,9 +47,6 @@ function OverviewBase({ className }: OverviewProps) {
 
   const { data: { govRewards, lpRewards } = {} } = useBorrowAPYQuery();
 
-  const { data: { anchorLpRewards: apyLPRewards } = {} } =
-    useRewardsAnchorLpRewardsQuery();
-
   const navigate = useNavigate();
 
   const { data: { ancTokenInfo } = {} } = useAncTokenInfoQuery();
@@ -80,16 +76,12 @@ function OverviewBase({ className }: OverviewProps) {
   const ancUstLpAprTooltip = useMemo(() => {
     let defaultTooltip = 'LP rewards APR';
 
-    if (apyLPRewards && apyLPRewards.length > 0) {
-      const apr = big(big(apyLPRewards[0].APY).div(365).plus(1))
-        .pow(365)
-        .minus(1) as Rate<Big>;
-
-      return `${formatRate(apr).toString()}% (if compounded daily)`;
+    if (lpRewards && lpRewards.length > 0) {
+      return `${formatRate(lpRewards[0].apy)}% (if compounded daily)`;
     }
 
     return defaultTooltip;
-  }, [apyLPRewards]);
+  }, [lpRewards]);
 
   const { totalStaked, totalStakedRate } = useMemo(() => {
     if (
