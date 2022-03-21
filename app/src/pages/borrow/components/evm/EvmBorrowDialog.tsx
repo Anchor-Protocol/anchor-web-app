@@ -29,7 +29,7 @@ const fetchERC20Token = async (
   address: ERC20Addr,
 ): Promise<ERC20Token> => {
   const decimals = await sdk.decimals(address);
-  //const symbol = await sdk.symbol(address);
+  const symbol = await sdk.symbol(address);
 
   // TODO: add the balance
   //const balance = await sdk.balance(address);
@@ -37,7 +37,7 @@ const fetchERC20Token = async (
   return {
     address,
     decimals,
-    symbol: 'bLUNA', // TODO,
+    symbol,
     balance: '0' as u<CollateralAmount>,
   };
 };

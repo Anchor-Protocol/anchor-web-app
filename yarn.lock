@@ -14,16 +14,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-alpha.120":
-  version: 0.1.2-alpha.120
-  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.120"
+"@anchor-protocol/crossanchor-sdk@npm:^0.1.2-alpha.121":
+  version: 0.1.2-alpha.121
+  resolution: "@anchor-protocol/crossanchor-sdk@npm:0.1.2-alpha.121"
   dependencies:
     "@certusone/wormhole-sdk": ^0.2.0
     "@terra-money/terra.js": ^3.0.2
     big.js: ^6.1.1
     ethers: ^5.5.4
     toml: ^3.0.0
-  checksum: fbe16cb63217ae71a4e23b7f1de1c76287b7a99b1ac20120a8e02f1c1deae9775c973f9c7f80a80cc1621096bbac38b78b3d13f06893f4bcbe4366f312d11aa4
+  checksum: 9ec3573e8e1e84044f0f0bfa063bf84976aa84fcae3f596ee32bed5014793a87c0d9e83be37ae7368baaf5d477388ca1779a4d7a05f5956b91bef19db6db6ae6
   languageName: node
   linkType: hard
 
@@ -31,7 +31,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@anchor-web-app/app@workspace:app"
   dependencies:
-    "@anchor-protocol/crossanchor-sdk": ^0.1.2-alpha.120
+    "@anchor-protocol/crossanchor-sdk": ^0.1.2-alpha.121
     "@certusone/wormhole-sdk": ^0.2.0
     "@ethersproject/contracts": ^5.5.0
     "@material-ui/core": ^4.11.3
