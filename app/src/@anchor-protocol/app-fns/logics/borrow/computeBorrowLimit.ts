@@ -17,9 +17,9 @@ export function computeBorrowLimit(
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   bAssetLtvs: BAssetLtvs,
-  ...addition: Array<
+  addition: Array<
     [CW20Addr, u<bAsset<BigSource>> | u<CollateralAmount<BigSource>>]
-  >
+  > = [],
 ): u<UST<Big>> {
   const vector = oraclePrices.prices.map(({ asset }) => asset);
   const lockedAmounts = vectorizeOverseerCollaterals(

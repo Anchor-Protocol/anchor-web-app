@@ -14,7 +14,13 @@ import {
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { CollateralAmount, Rate, u, UST } from '@anchor-protocol/types';
+import {
+  CollateralAmount,
+  CW20Addr,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import { TxResultRendering } from '@libs/app-fns';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -46,7 +52,12 @@ import { BorrowCollateralInput } from './BorrowCollateralInput';
 export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   txResult: StreamResult<TxResultRendering> | null;
   proceedable: boolean;
-  onProceed: (borrowAmount: UST, txFee: u<UST>) => void;
+  onProceed: (
+    borrowAmount: UST,
+    txFee: u<UST>,
+    collateral?: CW20Addr,
+    collateralAmount?: CollateralAmount,
+  ) => void;
 }
 
 export type BorrowDialogProps = DialogProps<BorrowDialogParams> & {
@@ -110,15 +121,6 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     [onProceed, connected, openConfirm],
   );
 
-  // const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
-  //   try {
-  //     const draftAmount = ltvToAmount(draftLtv);
-  //     return amountToLtv(draftAmount);
-  //   } catch {
-  //     return draftLtv;
-  //   }
-  // };
-
   const ltvStepFunction = useCallback(
     (draftLtv: Rate<Big>) => {
       const amount = computeLtvToBorrowAmount(
@@ -135,19 +137,6 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     },
     [states.borrowLimit, states.borrowedAmount],
   );
-
-  // const onLtvChange = useCallback(
-  //   (nextLtv: Rate<Big>) => {
-  //     const ltvToAmount = states.ltvToAmount;
-  //     try {
-  //       const nextAmount = ltvToAmount(nextLtv);
-  //       input({
-  //         borrowAmount: formatUSTInput(demicrofy(nextAmount)),
-  //       });
-  //     } catch {}
-  //   },
-  //   [input, states.ltvToAmount],
-  // );
 
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {

@@ -6,12 +6,18 @@ import {
   computeBorrowMax,
   computeBorrowSafeMax,
   computeLtv,
+  pickCollateral,
 } from '@anchor-protocol/app-fns';
 import {
   DeploymentTarget,
   OverseerWhitelistWithDisplay,
 } from '@anchor-protocol/app-provider';
-import { CollateralAmount, moneyMarket, Rate } from '@anchor-protocol/types';
+import {
+  bAsset,
+  CollateralAmount,
+  moneyMarket,
+  Rate,
+} from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { CW20Addr, u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';
@@ -24,7 +30,7 @@ import { computeEstimateLiquidationPrice } from '../../logics/borrow/computeEsti
 import { validateBorrowAmount } from '../../logics/borrow/validateBorrowAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtvs } from '../../queries/borrow/market';
-//import { microfy } from '@anchor-protocol/formatter';
+import { microfy } from '@anchor-protocol/formatter';
 
 export interface BorrowBorrowFormInput {
   borrowAmount: UST;
@@ -49,9 +55,6 @@ export interface BorrowBorrowFormDependency {
 }
 
 export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
-  //amountToLtv: (borrowAmount: u<UST>) => Rate<Big>;
-  //ltvToAmount: (ltv: Rate<Big>) => u<UST<Big>>;
-  //ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
   borrowLimit: u<UST<Big>>;
   borrowedAmount: u<UST<Big>>;
   currentLtv: Rate<Big> | undefined;
@@ -72,147 +75,6 @@ export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
 
 export interface BorrowBorrowFormAsyncStates {}
 
-// export const borrowBorrowForm = ({
-//   target,
-//   fixedFee,
-//   userUSTBalance,
-//   marketBorrowerInfo,
-//   overseerCollaterals,
-//   oraclePrices,
-//   borrowRate,
-//   overseerWhitelist,
-//   bAssetLtvs,
-//   blocksPerYear,
-//   taxRate,
-//   maxTaxUUSD,
-//   connected,
-// }: BorrowBorrowFormDependency) => {
-//   const borrowedAmount = computeBorrowedAmount(marketBorrowerInfo);
-
-//   const borrowLimit = computeBorrowLimit(
-//     overseerCollaterals,
-//     oraclePrices,
-//     bAssetLtvs,
-//   );
-
-//   const currentLtv = computeLtv(borrowLimit, borrowedAmount);
-
-//   const amountToLtv = computeBorrowAmountToLtv(borrowLimit, borrowedAmount);
-
-//   const ltvToAmount = computeLtvToBorrowAmount(borrowLimit, borrowedAmount);
-
-//   const apr = computeBorrowAPR(borrowRate, blocksPerYear);
-
-//   const safeMax = computeBorrowSafeMax(borrowLimit, borrowedAmount);
-
-//   const max = computeBorrowMax(borrowLimit, borrowedAmount);
-
-//   const invalidTxFee =
-//     connected && target.isNative
-//       ? validateTxFee(userUSTBalance, fixedFee)
-//       : undefined;
-
-//   const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
-//     try {
-//       const draftAmount = ltvToAmount(draftLtv);
-//       return amountToLtv(draftAmount);
-//     } catch {
-//       return draftLtv;
-//     }
-//   };
-
-//   return ({
-//     borrowAmount,
-//     collateralAmount,
-//     collateralToken,
-//   }: BorrowBorrowFormInput): FormReturn<
-//     BorrowBorrowFormStates,
-//     BorrowBorrowFormAsyncStates
-//   > => {
-//     if (collateralToken && collateralAmount.length) {
-//       const collateral = pickCollateral(collateralToken, overseerWhitelist);
-
-//       const uCollateralAmount = microfy(
-//         collateralAmount,
-//         collateral.tokenDisplay?.decimals ?? 6,
-//       );
-
-//       const borrowLimit2 = computeBorrowLimit(
-//         overseerCollaterals,
-//         oraclePrices,
-//         bAssetLtvs,
-//         [collateralToken, uCollateralAmount],
-//       );
-
-//       console.log('borrowLimit', borrowLimit.toString());
-//       console.log('borrowLimit2', borrowLimit2.toString());
-//     }
-
-//     const nextLtv = computeBorrowNextLtv(borrowAmount, currentLtv, amountToLtv);
-
-//     const estimatedLiquidationPrice = nextLtv
-//       ? computeEstimateLiquidationPrice(
-//           nextLtv,
-//           overseerWhitelist,
-//           overseerCollaterals,
-//           oraclePrices,
-//         )
-//       : null;
-
-//     const txFee = target.isNative
-//       ? computeBorrowTxFee(borrowAmount, { taxRate, maxTaxUUSD }, fixedFee)
-//       : (Big(0) as u<UST<Big>>);
-
-//     const receiveAmount = computeBorrowReceiveAmount(borrowAmount, txFee);
-
-//     const invalidBorrowAmount = validateBorrowAmount(borrowAmount, max);
-
-//     const invalidOverMaxLtv = nextLtv?.gt(ANCHOR_DANGER_RATIO)
-//       ? `Cannot borrow when LTV is above ${formatRate(ANCHOR_DANGER_RATIO)}%.`
-//       : undefined;
-
-//     const warningOverSafeLtv = nextLtv?.gt(ANCHOR_SAFE_RATIO)
-//       ? 'WARNING: Are you sure you want to borrow above the recommended borrow usage? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
-//       : undefined;
-
-//     const availablePost =
-//       connected &&
-//       borrowAmount.length > 0 &&
-//       big(borrowAmount).gt(0) &&
-//       big(receiveAmount ?? 0).gt(0) &&
-//       !invalidTxFee &&
-//       !invalidBorrowAmount &&
-//       !invalidOverMaxLtv;
-
-//     return [
-//       {
-//         amountToLtv,
-//         ltvToAmount,
-//         ltvStepFunction,
-//         borrowLimit,
-//         currentLtv,
-//         userMaxLtv: ANCHOR_DANGER_RATIO,
-//         apr,
-//         safeMax,
-//         max,
-//         invalidTxFee,
-//         nextLtv,
-//         txFee,
-//         estimatedLiquidationPrice,
-//         receiveAmount,
-//         invalidBorrowAmount,
-//         invalidOverMaxLtv,
-//         warningOverSafeLtv,
-//         borrowAmount,
-//         collateralAmount,
-//         collateralToken,
-//         availablePost,
-//       },
-//       undefined,
-//     ];
-//   };
-// };
-
 export const borrowBorrowForm = ({
   target,
   fixedFee,
@@ -228,62 +90,34 @@ export const borrowBorrowForm = ({
   maxTaxUUSD,
   connected,
 }: BorrowBorrowFormDependency) => {
-  const currentBorrowedAmount = computeBorrowedAmount(marketBorrowerInfo);
-
-  // const currentBorrowLimit = computeBorrowLimit(
-  //   overseerCollaterals,
-  //   oraclePrices,
-  //   bAssetLtvs,
-  // );
-
-  //const currentLtv = computeLtv(currentBorrowLimit, currentBorrowedAmount);
-
-  //const amountToLtv = computeBorrowAmountToLtv(borrowLimit, borrowedAmount);
-
-  //const ltvToAmount = computeLtvToBorrowAmount(borrowLimit, borrowedAmount);
+  const borrowedAmount = computeBorrowedAmount(marketBorrowerInfo);
 
   const apr = computeBorrowAPR(borrowRate, blocksPerYear);
-
-  // const safeMax = computeBorrowSafeMax(
-  //   currentBorrowLimit,
-  //   currentBorrowedAmount,
-  // );
-
-  //const max = computeBorrowMax(currentBorrowLimit, currentBorrowedAmount);
 
   const invalidTxFee =
     connected && target.isNative
       ? validateTxFee(userUSTBalance, fixedFee)
       : undefined;
 
-  // const ltvStepFunction = (draftLtv: Rate<Big>): Rate<Big> => {
-  //   try {
-  //     const draftAmount = ltvToAmount(draftLtv);
-  //     return amountToLtv(draftAmount);
-  //   } catch {
-  //     return draftLtv;
-  //   }
-  // };
+  const computeAdditionalCollateral = (
+    collateralToken: CW20Addr | undefined,
+    collateralAmount: CollateralAmount<string>,
+  ): Array<
+    [CW20Addr, u<bAsset<BigSource>> | u<CollateralAmount<BigSource>>]
+  > => {
+    if (collateralToken && collateralAmount.length) {
+      const collateral = pickCollateral(collateralToken, overseerWhitelist);
 
-  // const computeAdditionalCollateral = (
-  //   collateralToken: CW20Addr | undefined,
-  //   collateralAmount: CollateralAmount<string>,
-  // ):
-  //   | [CW20Addr, u<bAsset<BigSource>> | u<CollateralAmount<BigSource>>]
-  //   | undefined => {
-  //   if (collateralToken && collateralAmount.length) {
-  //     const collateral = pickCollateral(collateralToken, overseerWhitelist);
+      const uCollateralAmount = microfy(
+        collateralAmount,
+        collateral.tokenDisplay?.decimals ?? 6,
+      );
 
-  //     const uCollateralAmount = microfy(
-  //       collateralAmount,
-  //       collateral.tokenDisplay?.decimals ?? 6,
-  //     );
+      return [[collateralToken, uCollateralAmount]];
+    }
 
-  //     return [collateralToken, uCollateralAmount];
-  //   }
-
-  //   return undefined;
-  // };
+    return [];
+  };
 
   return ({
     borrowAmount,
@@ -293,47 +127,26 @@ export const borrowBorrowForm = ({
     BorrowBorrowFormStates,
     BorrowBorrowFormAsyncStates
   > => {
-    // let borrowLimit = computeBorrowLimit(
-    //   overseerCollaterals,
-    //   oraclePrices,
-    //   bAssetLtvs,
-    // );;
-
-    // if (collateralToken && collateralAmount.length) {
-    //   const collateral = pickCollateral(collateralToken, overseerWhitelist);
-
-    //   const uCollateralAmount = microfy(
-    //     collateralAmount,
-    //     collateral.tokenDisplay?.decimals ?? 6,
-    //   );
-
-    //   // borrowLimit = computeBorrowLimit(
-    //   //   overseerCollaterals,
-    //   //   oraclePrices,
-    //   //   bAssetLtvs,
-    //   //   [collateralToken, uCollateralAmount],
-    //   // );
-
-    //   // console.log('borrowLimit', borrowLimit.toString());
-    // }
-
-    // const collateral =
-    //   computeAdditionalCollateral(collateralToken, collateralAmount) ?? [];
+    const collateral = computeAdditionalCollateral(
+      collateralToken,
+      collateralAmount,
+    );
 
     const borrowLimit = computeBorrowLimit(
       overseerCollaterals,
       oraclePrices,
       bAssetLtvs,
+      collateral,
     );
 
-    const safeMax = computeBorrowSafeMax(borrowLimit, currentBorrowedAmount);
+    const safeMax = computeBorrowSafeMax(borrowLimit, borrowedAmount);
 
-    const max = computeBorrowMax(borrowLimit, currentBorrowedAmount);
+    const max = computeBorrowMax(borrowLimit, borrowedAmount);
 
-    const currentLtv = computeLtv(borrowLimit, currentBorrowedAmount);
+    const currentLtv = computeLtv(borrowLimit, borrowedAmount);
 
     const nextLtv =
-      computeBorrowNextLtv(borrowAmount, borrowLimit, currentBorrowedAmount) ??
+      computeBorrowNextLtv(borrowAmount, borrowLimit, borrowedAmount) ??
       currentLtv;
 
     const estimatedLiquidationPrice = nextLtv
@@ -373,7 +186,7 @@ export const borrowBorrowForm = ({
     return [
       {
         borrowLimit,
-        borrowedAmount: currentBorrowedAmount,
+        borrowedAmount,
         currentLtv,
         userMaxLtv: ANCHOR_DANGER_RATIO,
         apr,

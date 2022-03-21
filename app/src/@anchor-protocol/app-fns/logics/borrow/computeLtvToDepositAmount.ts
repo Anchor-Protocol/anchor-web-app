@@ -35,8 +35,4 @@ export const computeLtvToDepositAmount =
     const maxLtv = bAssetLtvs.get(collateralToken)?.max ?? 0;
 
     return increasedAmount.div(Big(prices[0]).mul(maxLtv)) as u<bAsset<Big>>;
-
-    // return increasedAmount
-    //   .div(Big(prices[0]).mul(maxLtv))
-    //   .mul(Math.pow(10, collateralTokenDecimals - 6)) as u<bAsset<Big>>;
   };

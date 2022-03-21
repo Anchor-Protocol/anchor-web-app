@@ -16,7 +16,7 @@ export const computeRedeemAmountToLtv =
       overseerCollaterals,
       oraclePrices,
       bAssetLtvs,
-      [collateralToken, big(redeemAmount).mul(-1) as u<bAsset<Big>>],
+      [[collateralToken, big(redeemAmount).mul(-1) as u<bAsset<Big>>]],
     );
 
     return (

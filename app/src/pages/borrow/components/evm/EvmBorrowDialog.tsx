@@ -1,5 +1,5 @@
 import React from 'react';
-import { u, UST } from '@anchor-protocol/types';
+import { CollateralAmount, CW20Addr, u, UST } from '@anchor-protocol/types';
 import type { DialogProps } from '@libs/use-dialog';
 import { useAccount } from 'contexts/account';
 import { useCallback } from 'react';
@@ -15,8 +15,15 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   const { isTxMinimizable } = borrowUstTx?.utils ?? {};
   const [postTx, txResult] = borrowUstTx?.stream ?? [null, null];
 
+  //const provideAndBorrowTx = useProvideAndBorrowTx();
+
   const proceed = useCallback(
-    (amount: UST, _txFee: u<UST>) => {
+    (
+      amount: UST,
+      _txFee: u<UST>,
+      collateral?: CW20Addr,
+      collateralAmount?: CollateralAmount,
+    ) => {
       if (connected && postTx) {
         postTx({ amount });
       }

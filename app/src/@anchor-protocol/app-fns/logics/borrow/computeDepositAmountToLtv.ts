@@ -17,7 +17,7 @@ export const computeDepositAmountToLtv =
       overseerCollaterals,
       oraclePrices,
       bAssetLtvs,
-      [collateralToken, depositAmount],
+      [[collateralToken, depositAmount]],
     );
 
     return (
