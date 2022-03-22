@@ -106,24 +106,24 @@ function ComponentBase({
               <img src={okex} alt="OKex" />
             </i>
           </EmbossButton>
-        </section>
 
-        <EmbossButton
-          component="a"
-          href="https://ftx.com/trade/UST/USD"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span>
-            FTX{' '}
-            <sub>
-              <Launch />
-            </sub>
-          </span>
-          <i>
-            <img src={ftx} alt="FTX" />
-          </i>
-        </EmbossButton>
+          <EmbossButton
+            component="a"
+            href="https://ftx.com/trade/UST/USD"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              FTX{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={ftx} alt="FTX" />
+            </i>
+          </EmbossButton>
+        </section>
 
         <section>
           <h2>With Fiat</h2>
