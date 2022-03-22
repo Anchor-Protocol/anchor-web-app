@@ -74,49 +74,55 @@ export function CollateralList({ className }: CollateralListProps) {
       return bridgeAssets.has(elem.collateral_token);
     });
 
-    return whitelist.map(({ collateral_token, name, symbol, tokenDisplay }) => {
-      const oracle = borrowMarket.oraclePrices.prices.find(
-        ({ asset }) => collateral_token === asset,
-      );
-      const collateral = borrowBorrower?.overseerCollaterals.collaterals.find(
-        ([collateralToken]) => collateral_token === collateralToken,
-      );
+    return whitelist
+      .map(({ collateral_token, name, symbol, tokenDisplay }) => {
+        const oracle = borrowMarket.oraclePrices.prices.find(
+          ({ asset }) => collateral_token === asset,
+        );
+        const collateral = borrowBorrower?.overseerCollaterals.collaterals.find(
+          ([collateralToken]) => collateral_token === collateralToken,
+        );
 
-      return {
-        icon: tokenDisplay ? (
-          <TokenIcon symbol={tokenDisplay?.symbol} path={tokenDisplay?.icon} />
-        ) : (
-          <TokenIcon token="bluna" />
-        ),
-        tokenDisplay,
-        collateralToken: collateral_token,
-        token: bridgeAssets.get(collateral_token)!,
-        name,
-        symbol: tokenDisplay?.symbol ?? symbol,
-        decimals: tokenDisplay?.decimals ?? 6,
-        price: microfyPrice(oracle?.price, tokenDisplay?.decimals ?? 6),
-        liquidationPrice:
-          borrowBorrower &&
-          borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
-          collateral
-            ? microfyPrice(
-                computeLiquidationPrice(
-                  collateral_token,
-                  borrowBorrower.marketBorrowerInfo,
-                  borrowBorrower.overseerBorrowLimit,
-                  borrowBorrower.overseerCollaterals,
-                  borrowMarket.overseerWhitelist,
-                  borrowMarket.oraclePrices,
-                ),
-                tokenDisplay?.decimals ?? 6,
-              )
-            : undefined,
-        lockedAmount: collateral?.[1] ?? ('0' as u<bAsset>),
-        lockedAmountInUST: big(collateral?.[1] ?? 0).mul(
-          oracle?.price ?? 1,
-        ) as u<UST<Big>>,
-      };
-    });
+        return {
+          icon: tokenDisplay ? (
+            <TokenIcon
+              symbol={tokenDisplay?.symbol}
+              path={tokenDisplay?.icon}
+            />
+          ) : (
+            <TokenIcon token="bluna" />
+          ),
+          tokenDisplay,
+          collateralToken: collateral_token,
+          token: bridgeAssets.get(collateral_token)!,
+          name,
+          symbol: tokenDisplay?.symbol ?? symbol,
+          decimals: tokenDisplay?.decimals ?? 6,
+          price: microfyPrice(oracle?.price, tokenDisplay?.decimals ?? 6),
+          liquidationPrice:
+            borrowBorrower &&
+            borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
+            collateral
+              ? microfyPrice(
+                  computeLiquidationPrice(
+                    collateral_token,
+                    borrowBorrower.marketBorrowerInfo,
+                    borrowBorrower.overseerBorrowLimit,
+                    borrowBorrower.overseerCollaterals,
+                    borrowMarket.overseerWhitelist,
+                    borrowMarket.oraclePrices,
+                  ),
+                  tokenDisplay?.decimals ?? 6,
+                )
+              : undefined,
+          lockedAmount: collateral?.[1] ?? ('0' as u<bAsset>),
+          lockedAmountInUST: big(collateral?.[1] ?? 0).mul(
+            oracle?.price ?? 1,
+          ) as u<UST<Big>>,
+        };
+      })
+      .sort((a, b) => (big(a.lockedAmount).gte(big(b.lockedAmount)) ? -1 : 1))
+      .filter((collateral) => Number(collateral.price) !== 0);
   }, [borrowBorrower, borrowMarket, bridgeAssets]);
 
   // ---------------------------------------------
