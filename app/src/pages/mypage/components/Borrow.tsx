@@ -41,8 +41,10 @@ export function Borrow() {
       overseerCollaterals.collaterals,
     );
     const prices = vectorizeOraclePrices(vector, oraclePrices.prices);
-
-    const ustAmounts = vectorMultiply(lockedAmounts, prices);
+    const filteredPrices = prices.filter((p) => p !== undefined);
+    const tmpPrices =
+      filteredPrices.length === 2 ? [...filteredPrices, '0'] : filteredPrices;
+    const ustAmounts = vectorMultiply(lockedAmounts, tmpPrices);
 
     const totalCollateralValue = sum(...ustAmounts) as u<UST<Big>>;
 
