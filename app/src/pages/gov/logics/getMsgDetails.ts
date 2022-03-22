@@ -1,5 +1,5 @@
 import { formatANC } from '@anchor-protocol/notation';
-import { anchorToken, moneyMarket } from '@anchor-protocol/types';
+import { anchorToken, liquidation, moneyMarket } from '@anchor-protocol/types';
 import { AnchorContractAddress } from '@anchor-protocol/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { AccountLink } from 'components/links/AccountLink';
@@ -76,6 +76,36 @@ export function getMsgDetails(
           value: createElement(AccountLink, {
             address: registerFeeder.register_feeder.feeder,
           }),
+        },
+      ];
+    } else if (
+      msg.contract === address.liquidation.liquidationQueueContract &&
+      'whitelist_collateral' in msg.msg
+    ) {
+      const registerWhitelistCollateral: liquidation.liquidationQueueContract.WhitelistCollateral =
+        msg.msg;
+
+      return [
+        {
+          name: 'Bid Threshold',
+          value: registerWhitelistCollateral.whitelist_collateral.bid_threshold,
+        },
+        {
+          name: 'Collateral Token',
+          value: createElement(AccountLink, {
+            address:
+              registerWhitelistCollateral.whitelist_collateral.collateral_token,
+          }),
+        },
+        {
+          name: 'Max Slot',
+          value: registerWhitelistCollateral.whitelist_collateral.max_slot,
+        },
+        {
+          name: 'Premium Rate Per Slot',
+          value:
+            registerWhitelistCollateral.whitelist_collateral
+              .premium_rate_per_slot,
         },
       ];
     }

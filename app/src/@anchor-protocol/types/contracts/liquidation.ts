@@ -110,4 +110,17 @@ export namespace liquidation {
       collaterals: Array<[CW20Addr, u<UST>]>;
     }
   }
+  export namespace liquidationQueueContract {
+    /**
+     * @see https://docs.anchorprotocol.com/smart-contracts/liquidations/liquidation-queue-contract#whitelistcollateral
+     */
+    export interface WhitelistCollateral {
+      whitelist_collateral: {
+        collateral_token: CW20Addr;
+        bid_threshold: u<UST>;
+        max_slot: number;
+        premium_rate_per_slot: Rate;
+      };
+    }
+  }
 }
