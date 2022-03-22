@@ -75,23 +75,6 @@ function ComponentBase({
 
           <EmbossButton
             component="a"
-            href="https://ftx.com/trade/UST/USD"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span>
-              FTX{' '}
-              <sub>
-                <Launch />
-              </sub>
-            </span>
-            <i>
-              <img src={ftx} alt="FTX" />
-            </i>
-          </EmbossButton>
-
-          <EmbossButton
-            component="a"
             href="https://trade.kucoin.com/USDT-UST"
             target="_blank"
             rel="noreferrer"
@@ -124,6 +107,23 @@ function ComponentBase({
             </i>
           </EmbossButton>
         </section>
+
+        <EmbossButton
+          component="a"
+          href="https://ftx.com/trade/UST/USD"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span>
+            FTX{' '}
+            <sub>
+              <Launch />
+            </sub>
+          </span>
+          <i>
+            <img src={ftx} alt="FTX" />
+          </i>
+        </EmbossButton>
 
         <section>
           <h2>With Fiat</h2>
