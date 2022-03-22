@@ -1,10 +1,10 @@
 import type { DefaultTheme } from 'styled-components';
 import {
   defaultLightTheme,
-  BASE_GRAY_300,
-  BASE_GRAY_600,
+  LIGHT_GRAY_300,
+  LIGHT_GRAY_600,
   BLACK,
-} from '../themeHelper';
+} from '../lightThemeDefault';
 
 const SECONDARY_200 = '#285e28';
 const SECONDARY_300 = 'rgba(75, 219, 75, 0.1)';
@@ -20,8 +20,8 @@ const GRAY_400 = '#101010';
 export const lightTheme: DefaultTheme = {
   ...defaultLightTheme,
 
-  textColor: BASE_GRAY_300,
-  dimTextColor: BASE_GRAY_600,
+  textColor: LIGHT_GRAY_300,
+  dimTextColor: LIGHT_GRAY_600,
   colors: {
     ...defaultLightTheme.colors,
     positive: SECONDARY_400,
