@@ -1,5 +1,10 @@
 import type { DefaultTheme } from 'styled-components';
-import { defaultLightTheme, BASE_GRAY_300, BLACK, WHITE } from '../themeHelper';
+import {
+  defaultLightTheme,
+  LIGHT_GRAY_300,
+  BLACK,
+  WHITE,
+} from '../lightThemeDefault';
 
 /* eslint-disable */
 
@@ -82,7 +87,7 @@ export const lightTheme: DefaultTheme = {
     ...defaultLightTheme.tooltip,
     normal: {
       backgroundColor: PRIMARY_200,
-      textColor: BASE_GRAY_300,
+      textColor: LIGHT_GRAY_300,
     },
   },
 };

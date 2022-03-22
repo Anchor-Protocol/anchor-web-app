@@ -59,6 +59,8 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
         return `ANC-UST-LP`;
       case address.cw20.bLunaLunaLP:
         return `bLUNA-LUNA-LP`;
+      case address.liquidation.liquidationQueueContract:
+        return `Liquidation / Liquidation Queue`;
       default:
         return '-';
     }
