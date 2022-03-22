@@ -3,6 +3,7 @@ import { UIElementProps } from '@libs/ui';
 import { createContext, useContext } from 'react';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 
 export enum Chain {
   Terra = 'Terra',
@@ -17,12 +18,12 @@ export const DEPLOYMENT_TARGETS = [
     isNative: true,
     isEVM: false,
   },
-  // {
-  //   chain: Chain.Ethereum,
-  //   icon: 'https://assets.terra.money/icon/wallet-provider/walletconnect.svg',
-  //   isNative: false,
-  //   isEVM: true,
-  // },
+  {
+    chain: Chain.Ethereum,
+    icon: '/assets/ethereum-eth-logo.png',
+    isNative: false,
+    isEVM: true,
+  },
   {
     chain: Chain.Avalanche,
     icon: '/assets/avalanche-avax-logo.svg',
@@ -36,6 +37,7 @@ export interface DeploymentTarget {
   icon: string;
   isNative: boolean;
   isEVM: boolean;
+  evmChainId?: EvmChainId;
 }
 
 interface UseDeploymentTargetReturn {

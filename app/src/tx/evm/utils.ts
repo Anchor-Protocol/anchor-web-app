@@ -2,10 +2,11 @@ import { ANCHOR_TX_KEY } from '@anchor-protocol/app-provider';
 import {
   CrossChainEvent,
   CrossChainEventKind,
+  EvmChainId,
 } from '@anchor-protocol/crossanchor-sdk';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { EVM_QUERY_KEY, TxRefetchMap } from '@libs/app-provider';
-import { ConnectType, EvmChainId } from '@libs/evm-wallet';
+import { ConnectType } from '@libs/evm-wallet';
 import { StreamReturn } from '@rx-stream/react';
 import { ANCHOR_TX_REFETCH_MAP } from 'env';
 import { ContractReceipt } from 'ethers';

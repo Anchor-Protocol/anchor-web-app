@@ -16,7 +16,6 @@ const ChainButtonBase = (props: ChainButtonProps) => {
     <button className={className} onClick={onClick}>
       <div className="button-nowrap">
         <div className="chain-name">{chain}</div>
-        {/* <img className="button-logo" src={icon} alt="chain-logo" /> */}
       </div>
     </button>
   );

@@ -5,8 +5,9 @@ import { AnchorBalances } from '@anchor-protocol/app-fns';
 import { useEvmNativeBalance } from '../../@libs/app-provider/queries/evm/nativeBalances';
 import { useERC20Balance } from '../../@libs/app-provider/queries/erc20/balanceOf';
 import { u, UST, aUST, Native, ANC, ERC20Addr } from '@anchor-protocol/types';
-import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet } from '@libs/evm-wallet';
 import { getAddress } from 'configurations/evm/addresses';
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 
 const EvmBalancesProvider = ({ children }: UIElementProps) => {
   const { chainId = EvmChainId.ETHEREUM_ROPSTEN } = useEvmWallet();

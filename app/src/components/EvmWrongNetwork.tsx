@@ -1,70 +1,16 @@
-import { ethers } from 'ethers';
-import React, { useCallback } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Modal } from '@material-ui/core';
-import {
-  chainConfigurations,
-  useEvmWallet,
-  EvmChainId,
-} from '@libs/evm-wallet';
+import { useSwitchNetwork } from '@libs/evm-wallet';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { UIElementProps } from '@libs/ui';
-import {
-  Chain,
-  DEPLOYMENT_TARGETS,
-  DeploymentTarget,
-  useDeploymentTarget,
-} from '@anchor-protocol/app-provider';
+import { DEPLOYMENT_TARGETS } from '@anchor-protocol/app-provider';
 import { FlatButton } from '../@libs/neumorphism-ui/components/FlatButton';
 import { ButtonList } from './Header/shared';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 
 function EvmWrongNetworkBase({ className }: UIElementProps) {
-  const { provider } = useEvmWallet();
-
-  const { updateTarget } = useDeploymentTarget();
-
-  const onClick = useCallback(
-    (target: DeploymentTarget) => {
-      if (target.isEVM && provider?.provider?.isMetaMask) {
-        let targetChainId = EvmChainId.ETHEREUM;
-
-        if (target.chain === Chain.Avalanche) {
-          targetChainId = EvmChainId.AVALANCHE;
-        }
-
-        if (targetChainId && provider?.provider?.request) {
-          provider.provider
-            .request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: ethers.utils.hexValue(targetChainId) }],
-            })
-            .then(() => {
-              updateTarget(target);
-            })
-            .catch(async (error: Error & { code: number }) => {
-              if (error.code === 4902) {
-                // 4902 = user attempting to switch to an unrecognized chainId in his wallet
-                if (
-                  chainConfigurations[targetChainId] &&
-                  provider?.provider?.request
-                ) {
-                  provider.provider.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [chainConfigurations[targetChainId]],
-                  });
-                }
-              }
-            });
-
-          return;
-        }
-      }
-
-      updateTarget(target);
-    },
-    [provider, updateTarget],
-  );
+  const switchNetwork = useSwitchNetwork();
 
   return (
     <Modal open disableBackdropClick disableEnforceFocus>
@@ -75,7 +21,7 @@ function EvmWrongNetworkBase({ className }: UIElementProps) {
             <FlatButton
               key={target.chain}
               className="button"
-              onClick={() => onClick(target)}
+              onClick={() => switchNetwork(target)}
             >
               <IconSpan>
                 {target.chain}

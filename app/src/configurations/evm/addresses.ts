@@ -1,4 +1,4 @@
-import { EvmChainId } from '@libs/evm-wallet';
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 import { EVMAddr, ERC20Addr } from '@libs/types';
 
 export type Addresses = {

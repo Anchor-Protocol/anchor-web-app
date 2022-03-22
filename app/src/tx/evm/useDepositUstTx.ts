@@ -1,5 +1,5 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
@@ -10,7 +10,7 @@ import {
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
@@ -60,7 +60,7 @@ export function useDepositUstTx():
 
       try {
         await xAnchor.approveLimit(
-          { token: 'ust' },
+          { token: 'UST' },
           depositAmount,
           address!,
           TX_GAS_LIMIT,

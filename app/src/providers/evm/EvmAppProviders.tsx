@@ -1,5 +1,9 @@
 import React from 'react';
-import { EvmChainId, EvmWalletProvider, useEvmWallet } from '@libs/evm-wallet';
+import {
+  EvmWalletProvider,
+  supportedChainIds,
+  useEvmWallet,
+} from '@libs/evm-wallet';
 import { UIElementProps } from '@libs/ui';
 import { AppProviders } from 'configurations/app';
 import { EvmAccountProvider } from './EvmAccountProvider';
@@ -13,34 +17,17 @@ import { QueryProvider } from 'providers/QueryProvider';
 import { EvmWrongNetwork } from 'components/EvmWrongNetwork';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { BackgroundTxRequestProvider } from 'tx/evm/background';
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 
-const isSupportedChain = (
-  chain: Chain,
-  evmChainId: number | undefined,
-): boolean => {
-  switch (chain) {
-    case Chain.Avalanche:
-      return (
-        evmChainId === EvmChainId.AVALANCHE ||
-        evmChainId === EvmChainId.AVALANCHE_FUJI_TESTNET
-      );
-  }
-  return false;
+const isSupportedChain = (evmChainId?: EvmChainId): boolean => {
+  return Boolean(evmChainId) && supportedChainIds.includes(evmChainId!);
 };
 
 const ChainGaurdian = (props: UIElementProps) => {
   const { children } = props;
-
-  const {
-    target: { chain },
-  } = useDeploymentTarget();
-
   const { chainId: evmChainId } = useEvmWallet();
 
-  if (
-    evmChainId !== undefined &&
-    isSupportedChain(chain, evmChainId) === false
-  ) {
+  if (evmChainId !== undefined && isSupportedChain(evmChainId) === false) {
     return (
       <>
         <GlobalStyle />
@@ -65,16 +52,16 @@ const ChainGaurdian = (props: UIElementProps) => {
 };
 
 export function EvmAppProviders({ children }: UIElementProps) {
-  const {
-    target: { chain },
-  } = useDeploymentTarget();
+  const { target } = useDeploymentTarget();
 
   return (
     <EvmWalletProvider>
       <ThemeProvider
         initialTheme="light"
         lightTheme={
-          chain === Chain.Ethereum ? ethereumLightTheme : avalancheLightTheme
+          target.chain === Chain.Ethereum
+            ? ethereumLightTheme
+            : avalancheLightTheme
         }
       >
         <ChainGaurdian>{children}</ChainGaurdian>
