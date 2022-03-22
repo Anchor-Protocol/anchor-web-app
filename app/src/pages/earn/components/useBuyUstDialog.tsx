@@ -10,6 +10,7 @@ import kucoin from './assets/kucoin.svg';
 import transak from './assets/transak.svg';
 import kado from './assets/kado.svg';
 import binance from './assets/binance.svg';
+import ftx from './assets/ftx.svg';
 import { dialogStyle } from './useInsuranceCoverageDialog';
 import okex from './assets/okex.svg';
 
@@ -103,6 +104,23 @@ function ComponentBase({
             </span>
             <i>
               <img src={okex} alt="OKex" />
+            </i>
+          </EmbossButton>
+
+          <EmbossButton
+            component="a"
+            href="https://ftx.com/trade/UST/USD"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              FTX{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={ftx} alt="FTX" />
             </i>
           </EmbossButton>
         </section>
