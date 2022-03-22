@@ -1,6 +1,7 @@
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UIElementProps } from '@libs/ui';
-import { Launch } from '@material-ui/icons';
+import { Tooltip } from '@material-ui/core';
+import { Launch, FileCopyOutlined } from '@material-ui/icons';
 import big from 'big.js';
 import { BuyButton } from 'components/BuyButton';
 import { useBalances } from 'contexts/balances';
@@ -9,13 +10,25 @@ import styled from 'styled-components';
 
 type Action = () => void;
 
+export type TokenListType = 'UST' | 'aUST' | 'ANC';
+
+const AddButton = (props: { onClick: () => void }) => {
+  const { onClick } = props;
+  return (
+    <Tooltip title="Add to Wallet" placement="top">
+      <FileCopyOutlined className="add-token" onClick={onClick} />
+    </Tooltip>
+  );
+};
+
 interface TokenListProps extends UIElementProps {
   onClose: Action;
   onBuyUST?: Action;
+  onAddToken?: (token: TokenListType) => void;
 }
 
 export function TokenListBase(props: TokenListProps) {
-  const { className, onClose, onBuyUST } = props;
+  const { className, onClose, onBuyUST, onAddToken } = props;
 
   const { uUST, uaUST, uNative, uANC } = useBalances();
 
@@ -23,34 +36,6 @@ export function TokenListBase(props: TokenListProps) {
 
   return (
     <ul className={className}>
-      {big(uUST).gt(0) && (
-        <li>
-          <span>
-            {formatters.ust.symbol}{' '}
-            {onBuyUST && (
-              <BuyButton
-                onClick={() => {
-                  onBuyUST();
-                  onClose();
-                }}
-              >
-                BUY <Launch />
-              </BuyButton>
-            )}
-          </span>
-          <span>
-            {formatters.ust.formatOutput(formatters.ust.demicrofy(uUST))}
-          </span>
-        </li>
-      )}
-      {big(uaUST).gt(0) && (
-        <li>
-          <span>{formatters.aUST.symbol}</span>
-          <span>
-            {formatters.aUST.formatOutput(formatters.aUST.demicrofy(uaUST))}
-          </span>
-        </li>
-      )}
       {big(uNative).gt(0) && (
         <li>
           <span>{formatters.native.symbol}</span>
@@ -61,9 +46,46 @@ export function TokenListBase(props: TokenListProps) {
           </span>
         </li>
       )}
+      {big(uUST).gt(0) && (
+        <li>
+          <span className="symbol">
+            {onAddToken && <AddButton onClick={() => onAddToken('UST')} />}
+            {formatters.ust.symbol}
+            {onBuyUST && (
+              <BuyButton
+                className="buy-button"
+                onClick={() => {
+                  onBuyUST();
+                  onClose();
+                }}
+              >
+                BUY
+                <Launch />
+              </BuyButton>
+            )}
+          </span>
+          <span>
+            {formatters.ust.formatOutput(formatters.ust.demicrofy(uUST))}
+          </span>
+        </li>
+      )}
+      {big(uaUST).gt(0) && (
+        <li>
+          <span className="symbol">
+            {onAddToken && <AddButton onClick={() => onAddToken('aUST')} />}
+            {formatters.aUST.symbol}
+          </span>
+          <span>
+            {formatters.aUST.formatOutput(formatters.aUST.demicrofy(uaUST))}
+          </span>
+        </li>
+      )}
       {big(uANC).gt(0) && (
         <li>
-          <span>{formatters.anc.symbol}</span>
+          <span className="symbol">
+            {onAddToken && <AddButton onClick={() => onAddToken('ANC')} />}
+            {formatters.anc.symbol}
+          </span>
           <span>
             {formatters.anc.formatOutput(formatters.anc.demicrofy(uANC))}
           </span>
@@ -72,26 +94,6 @@ export function TokenListBase(props: TokenListProps) {
     </ul>
   );
 }
-
-// {bAssetBalanceTotal?.infoAndBalances
-//   .filter(({ balance }) => big(balance.balance).gt(0))
-//   .map(({ bAsset, balance }) => (
-//     <li key={'basset-' + bAsset.symbol}>
-//       <span>
-//         {bAsset.symbol}{' '}
-//         {bAsset.symbol.toLowerCase() === 'beth' && (
-//           <BuyLink
-//             href="https://anchor.lido.fi/"
-//             target="_blank"
-//             rel="noreferrer"
-//           >
-//             GET <Launch />
-//           </BuyLink>
-//         )}
-//       </span>
-//       <span>{formatBAsset(demicrofy(balance.balance))}</span>
-//     </li>
-//   ))}
 
 export const TokenList = styled(TokenListBase)`
   margin-top: 48px;
@@ -113,6 +115,26 @@ export const TokenList = styled(TokenListBase)`
     justify-content: space-between;
     align-items: center;
     height: 35px;
+
+    .symbol {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .add-token {
+      width: 14px;
+      height: 14px;
+      margin-right: 5px;
+      cursor: pointer;
+      color: ${({ theme }) => theme.dimTextColor};
+      &:hover {
+        color: ${({ theme }) => theme.colors.secondaryDark};
+      }
+    }
+
+    .buy-button {
+      margin-left: 2px;
+    }
 
     &:not(:last-child) {
       border-bottom: 1px dashed

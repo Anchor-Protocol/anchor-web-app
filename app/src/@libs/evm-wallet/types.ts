@@ -16,3 +16,10 @@ export type Connection = {
 export type WalletStatus = 'initialization' | 'connected' | 'disconnected';
 
 export type ConnectType = typeof availableConnectTypes[number];
+
+export interface ERC20Token {
+  address: string;
+  decimals: number;
+  symbol: string;
+  image?: string;
+}

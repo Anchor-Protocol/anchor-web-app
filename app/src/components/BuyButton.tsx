@@ -12,15 +12,13 @@ const buyButtonStyle = css`
   white-space: nowrap;
 
   background-color: transparent;
-  border: 1px solid ${({ theme }) => theme.hoverBackgroundColor};
+  border: 1px solid transparent;
 
-  height: 1.77777778em;
+  height: auto;
   border-radius: 6px;
 
   font-size: 9px;
   color: ${({ theme }) => theme.colors.positive};
-
-  transform: translateY(-1.5px);
 
   svg {
     font-size: 1em;
@@ -35,13 +33,13 @@ const buyButtonStyle = css`
 export const BuyButton = styled.button`
   ${buyButtonStyle};
 
-  padding: 0 8px 1px 8px;
+  padding: 2px 8px 2px 8px;
 `;
 
 export const BuyLink = styled.a`
   ${buyButtonStyle};
 
-  padding: 0 8px 1px 8px;
+  padding: 2px 8px 2px 8px;
 
   text-decoration: none;
 `;
