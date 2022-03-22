@@ -74,12 +74,12 @@ export const WithdrawableAssets = styled(WithdrawableAssetsBase)`
   .withdrawable-header {
     margin-top: 15px;
     color: ${({ theme }) => theme.textColor};
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 500;
   }
 
   .withdrawable-assets {
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 20px;
 
     padding: 0;

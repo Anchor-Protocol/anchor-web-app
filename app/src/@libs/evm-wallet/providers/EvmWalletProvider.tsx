@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useCallback, useMemo } from 'react';
 import { ConnectorData, useConnectors } from '../connectors';
-import { Connection, ConnectType, WalletStatus } from '../types';
+import { Connection, ConnectType, ERC20Token, WalletStatus } from '../types';
 import { availableConnectTypes, availableConnections } from '../constants';
 import { useLocalStorage } from 'usehooks-ts';
 
@@ -8,6 +8,7 @@ export type EvmWallet = {
   actions: {
     activate: (connectType: ConnectType) => Promise<void>;
     deactivate: () => Promise<void>;
+    watchAsset: (token: ERC20Token) => void;
   };
   availableConnectTypes: ConnectType[];
   availableConnections: Connection[];
@@ -71,8 +72,22 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
       ? availableConnections.find(({ type }) => type === connectType) || null
       : null;
 
+    const watchAsset = (token: ERC20Token) => {
+      provider?.provider?.request &&
+        provider.provider
+          .request({
+            method: 'wallet_watchAsset',
+            params: {
+              // @ts-ignore ethers has wrong params type (Array<any>)
+              type: 'ERC20',
+              options: token,
+            },
+          })
+          .catch(console.error);
+    };
+
     return {
-      actions: { activate, deactivate },
+      actions: { activate, deactivate, watchAsset },
       connectType: connectType as ConnectType,
       address,
       availableConnectTypes: [...availableConnectTypes],
