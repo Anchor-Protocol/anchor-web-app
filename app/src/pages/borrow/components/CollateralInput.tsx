@@ -1,28 +1,32 @@
+import { microfy } from '@anchor-protocol/formatter';
 import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
   LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
 } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { CollateralAmount, CW20Addr } from '@anchor-protocol/types';
+import { CollateralAmount, CW20Addr, u } from '@anchor-protocol/types';
+import { demicrofy } from '@libs/formatter';
 import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
 import {
   SelectAndTextInputContainer,
   SelectAndTextInputContainerLabel,
 } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { UIElementProps } from '@libs/ui';
+import Big from 'big.js';
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 
 export interface CollateralInputProps extends UIElementProps {
   symbol: string;
   path?: string;
-  amount: CollateralAmount;
+  decimals: number;
+  amount?: u<CollateralAmount<Big>>;
   onTokenChange: (token: CW20Addr) => void;
-  onAmountChange: (amount: CollateralAmount) => void;
+  onAmountChange: (amount?: u<CollateralAmount<Big>>) => void;
 }
 
 const Component = (props: CollateralInputProps) => {
-  const { className, symbol, path, amount, onAmountChange } = props;
+  const { className, symbol, path, decimals, amount, onAmountChange } = props;
 
   // TODO: need to make this a dropdown to change the collateral token
 
@@ -37,18 +41,22 @@ const Component = (props: CollateralInputProps) => {
       </SelectAndTextInputContainerLabel>
       <NumberMuiInput
         placeholder="0.00"
-        value={amount}
+        value={amount ? demicrofy(amount, decimals) : ''}
         maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
         maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) => {
-          onAmountChange(target.value as CollateralAmount);
+          const amount =
+            target.value?.length === 0
+              ? undefined
+              : (Big(microfy(Big(target.value), decimals)) as u<
+                  CollateralAmount<Big>
+                >);
+
+          onAmountChange(amount);
         }}
       />
     </SelectAndTextInputContainer>
   );
 };
 
-export const CollateralInput = styled(Component)`
-  .root {
-  }
-`;
+export const CollateralInput = styled(Component)``;

@@ -35,7 +35,7 @@ import { microfy } from '@anchor-protocol/formatter';
 export interface BorrowBorrowFormInput {
   borrowAmount: UST;
   collateralToken?: CW20Addr;
-  collateralAmount: CollateralAmount<string>;
+  collateralAmount?: u<CollateralAmount<Big>>;
 }
 
 export interface BorrowBorrowFormDependency {
@@ -71,6 +71,8 @@ export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
   invalidOverMaxLtv: string | undefined;
   warningOverSafeLtv: string | undefined;
   availablePost: boolean;
+  maxCollateralAmount: u<CollateralAmount<Big>>;
+  collateralLtv: Rate<Big>;
 }
 
 export interface BorrowBorrowFormAsyncStates {}
@@ -101,11 +103,11 @@ export const borrowBorrowForm = ({
 
   const computeAdditionalCollateral = (
     collateralToken: CW20Addr | undefined,
-    collateralAmount: CollateralAmount<string>,
+    collateralAmount: CollateralAmount<Big> | undefined,
   ): Array<
     [CW20Addr, u<bAsset<BigSource>> | u<CollateralAmount<BigSource>>]
   > => {
-    if (collateralToken && collateralAmount.length) {
+    if (collateralToken && collateralAmount) {
       const collateral = pickCollateral(collateralToken, overseerWhitelist);
 
       const uCollateralAmount = microfy(
@@ -174,6 +176,12 @@ export const borrowBorrowForm = ({
       ? 'WARNING: Are you sure you want to borrow above the recommended borrow usage? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
       : undefined;
 
+    const maxCollateralAmount = Big(100000000) as u<CollateralAmount<Big>>;
+
+    const collateralLtv = (
+      collateralAmount ? collateralAmount.div(maxCollateralAmount) : Big(0)
+    ) as Rate<Big>;
+
     const availablePost =
       connected &&
       borrowAmount.length > 0 &&
@@ -204,6 +212,8 @@ export const borrowBorrowForm = ({
         collateralAmount,
         collateralToken,
         availablePost,
+        maxCollateralAmount,
+        collateralLtv,
       },
       undefined,
     ];

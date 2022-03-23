@@ -284,8 +284,10 @@ function BorrowDialogBase(props: BorrowDialogProps) {
         {isNative === false && (
           <BorrowCollateralInput
             symbol="bETH"
-            maxAmount={'10000000' as CollateralAmount}
-            amount={states.collateralAmount ?? ('0' as CollateralAmount)}
+            decimals={6}
+            maxCollateralAmount={states.maxCollateralAmount}
+            collateralLtv={states.collateralLtv}
+            amount={states.collateralAmount}
             onTokenChange={(tokenAddr) => {
               // TODO
             }}
