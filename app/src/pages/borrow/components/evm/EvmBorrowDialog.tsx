@@ -16,6 +16,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { microfy, useFormatters } from '@anchor-protocol/formatter';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
+import Big from 'big.js';
 
 interface ERC20Token {
   address: ERC20Addr;
@@ -74,9 +75,9 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   const proceed = useCallback(
     (
       amount: UST,
-      _txFee: u<UST>,
+      txFee: u<UST>,
       collateral?: CW20Addr,
-      collateralAmount?: CollateralAmount,
+      collateralAmount?: u<CollateralAmount<Big>>,
     ) => {
       if (connected && postBorrowUstTx) {
         const borrowAmount = ust.microfy(ust.formatInput(amount));
@@ -86,13 +87,17 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
         if (
           collateral &&
           collateralAmount &&
-          collateralAmount.length > 0 &&
+          collateralAmount.gt(0) &&
           erc20Token
         ) {
           postBorrowUstTx({
             borrowAmount,
             collateralToken: collateral,
-            collateralAmount: microfy(collateralAmount, erc20Token.decimals),
+            collateralAmount: collateralAmount
+              ? (Big(microfy(Big(collateralAmount), erc20Token.decimals)) as u<
+                  CollateralAmount<Big>
+                >)
+              : (Big(0) as u<CollateralAmount<Big>>),
             erc20ContractAddress: erc20Token.address,
             erc20Symbol: erc20Token.symbol,
           });

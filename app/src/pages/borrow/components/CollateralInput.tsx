@@ -1,3 +1,4 @@
+import { WhitelistCollateral } from '@anchor-protocol/app-fns';
 import { microfy } from '@anchor-protocol/formatter';
 import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -17,16 +18,21 @@ import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 
 export interface CollateralInputProps extends UIElementProps {
-  symbol: string;
-  path?: string;
-  decimals: number;
+  // symbol: string;
+  // path?: string;
+  // decimals: number;
+  collateral: WhitelistCollateral[];
   amount?: u<CollateralAmount<Big>>;
   onTokenChange: (token: CW20Addr) => void;
   onAmountChange: (amount?: u<CollateralAmount<Big>>) => void;
 }
 
 const Component = (props: CollateralInputProps) => {
-  const { className, symbol, path, decimals, amount, onAmountChange } = props;
+  const { className, amount, onAmountChange } = props;
+
+  const symbol = 'bLUNA';
+  const path = undefined;
+  const decimals = 6;
 
   // TODO: need to make this a dropdown to change the collateral token
 

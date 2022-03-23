@@ -18,6 +18,7 @@ import { TxEvent } from './useTx';
 import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 import { CollateralAmount } from '@anchor-protocol/types';
+import Big from 'big.js';
 
 type BorrowUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type BorrowUstTxRender = TxResultRendering<BorrowUstTxResult>;
@@ -25,7 +26,7 @@ type BorrowUstTxRender = TxResultRendering<BorrowUstTxResult>;
 export interface BorrowUstTxParams {
   borrowAmount: u<UST>;
   collateralToken?: CW20Addr;
-  collateralAmount?: u<CollateralAmount>;
+  collateralAmount?: u<CollateralAmount<Big>>;
   erc20ContractAddress?: ERC20Addr;
   erc20Symbol?: string;
 }
@@ -75,7 +76,7 @@ export function useBorrowUstTx():
 
           await xAnchor.approveLimit(
             { contract: erc20ContractAddress },
-            collateralAmount,
+            collateralAmount.toString(),
             address!,
             TX_GAS_LIMIT,
             (event) => {
@@ -110,7 +111,7 @@ export function useBorrowUstTx():
           // borrowing based on additional collateral being locked
           result = await xAnchor.lockAndBorrow(
             { contract: erc20ContractAddress },
-            collateralAmount,
+            collateralAmount.toString(),
             borrowAmount,
             address!,
             TX_GAS_LIMIT,

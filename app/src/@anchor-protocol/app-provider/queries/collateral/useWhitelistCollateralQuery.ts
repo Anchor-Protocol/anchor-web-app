@@ -28,7 +28,7 @@ export function useWhitelistCollateralQuery(): UseQueryResult<
     ],
     queryFn,
     {
-      refetchInterval: 1000 * 60 * 5,
+      refetchOnMount: false,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

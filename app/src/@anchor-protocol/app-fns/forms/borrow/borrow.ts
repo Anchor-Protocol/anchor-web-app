@@ -6,18 +6,12 @@ import {
   computeBorrowMax,
   computeBorrowSafeMax,
   computeLtv,
-  pickCollateral,
 } from '@anchor-protocol/app-fns';
 import {
   DeploymentTarget,
   OverseerWhitelistWithDisplay,
 } from '@anchor-protocol/app-provider';
-import {
-  bAsset,
-  CollateralAmount,
-  moneyMarket,
-  Rate,
-} from '@anchor-protocol/types';
+import { CollateralAmount, moneyMarket, Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { CW20Addr, u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';
@@ -30,7 +24,6 @@ import { computeEstimateLiquidationPrice } from '../../logics/borrow/computeEsti
 import { validateBorrowAmount } from '../../logics/borrow/validateBorrowAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtvs } from '../../queries/borrow/market';
-import { microfy } from '@anchor-protocol/formatter';
 
 export interface BorrowBorrowFormInput {
   borrowAmount: UST;
@@ -71,8 +64,6 @@ export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
   invalidOverMaxLtv: string | undefined;
   warningOverSafeLtv: string | undefined;
   availablePost: boolean;
-  maxCollateralAmount: u<CollateralAmount<Big>>;
-  collateralLtv: Rate<Big>;
 }
 
 export interface BorrowBorrowFormAsyncStates {}
@@ -101,26 +92,6 @@ export const borrowBorrowForm = ({
       ? validateTxFee(userUSTBalance, fixedFee)
       : undefined;
 
-  const computeAdditionalCollateral = (
-    collateralToken: CW20Addr | undefined,
-    collateralAmount: CollateralAmount<Big> | undefined,
-  ): Array<
-    [CW20Addr, u<bAsset<BigSource>> | u<CollateralAmount<BigSource>>]
-  > => {
-    if (collateralToken && collateralAmount) {
-      const collateral = pickCollateral(collateralToken, overseerWhitelist);
-
-      const uCollateralAmount = microfy(
-        collateralAmount,
-        collateral.tokenDisplay?.decimals ?? 6,
-      );
-
-      return [[collateralToken, uCollateralAmount]];
-    }
-
-    return [];
-  };
-
   return ({
     borrowAmount,
     collateralAmount,
@@ -129,10 +100,10 @@ export const borrowBorrowForm = ({
     BorrowBorrowFormStates,
     BorrowBorrowFormAsyncStates
   > => {
-    const collateral = computeAdditionalCollateral(
-      collateralToken,
-      collateralAmount,
-    );
+    const collateral: Array<[CW20Addr, u<CollateralAmount<Big>>]> =
+      collateralToken && collateralAmount
+        ? [[collateralToken, collateralAmount]]
+        : [];
 
     const borrowLimit = computeBorrowLimit(
       overseerCollaterals,
@@ -176,12 +147,6 @@ export const borrowBorrowForm = ({
       ? 'WARNING: Are you sure you want to borrow above the recommended borrow usage? Crypto markets can be very volatile and you may be subject to liquidation in events of downward price swings of the bAsset.'
       : undefined;
 
-    const maxCollateralAmount = Big(100000000) as u<CollateralAmount<Big>>;
-
-    const collateralLtv = (
-      collateralAmount ? collateralAmount.div(maxCollateralAmount) : Big(0)
-    ) as Rate<Big>;
-
     const availablePost =
       connected &&
       borrowAmount.length > 0 &&
@@ -212,8 +177,6 @@ export const borrowBorrowForm = ({
         collateralAmount,
         collateralToken,
         availablePost,
-        maxCollateralAmount,
-        collateralLtv,
       },
       undefined,
     ];

@@ -1,5 +1,9 @@
-import { Chain, DeploymentTarget } from '@anchor-protocol/app-provider';
-import { CW20Addr, ERC20Addr, moneyMarket } from '@anchor-protocol/types';
+import {
+  Chain,
+  DeploymentTarget,
+  OverseerWhitelistWithDisplay,
+} from '@anchor-protocol/app-provider';
+import { CW20Addr, ERC20Addr } from '@anchor-protocol/types';
 import {
   ChainId,
   CHAIN_ID_AVAX,
@@ -19,8 +23,10 @@ import { ethers } from 'ethers';
 
 export type BridgeAssets = Map<CW20Addr, CW20Addr | ERC20Addr>;
 
-export type WhiltelistCollateral =
-  moneyMarket.overseer.WhitelistResponse['elems'][0];
+// export type WhiltelistCollateral =
+//   moneyMarket.overseer.WhitelistResponse['elems'][0];
+
+export type WhiltelistCollateral = OverseerWhitelistWithDisplay['elems'][0];
 
 export function bridgeAssetsQuery(
   whitelist: WhiltelistCollateral[] | undefined,

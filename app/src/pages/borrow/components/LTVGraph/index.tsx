@@ -78,8 +78,6 @@ export function LTVGraph({
 }: LTVGraphProps) {
   const theme = useTheme();
 
-  //const isSmallScreen = useMediaQuery({ maxWidth: 700 });
-
   const step = useCallback(
     (draftLtv: number) => {
       return onStep ? onStep(big(draftLtv) as Rate<Big>).toNumber() : draftLtv;

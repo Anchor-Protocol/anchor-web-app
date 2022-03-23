@@ -60,7 +60,7 @@ export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
     borrowAmount: UST,
     txFee: u<UST>,
     collateral?: CW20Addr,
-    collateralAmount?: CollateralAmount,
+    collateralAmount?: u<CollateralAmount<Big>>,
   ) => void;
 }
 
@@ -117,7 +117,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
       txFee: u<UST>,
       confirm: ReactNode,
       collateralToken?: CW20Addr,
-      collateralAmount?: CollateralAmount,
+      collateralAmount?: u<CollateralAmount<Big>>,
     ) => {
       if (!connected || !onProceed) {
         return;
@@ -283,14 +283,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
 
         {isNative === false && (
           <BorrowCollateralInput
-            symbol="bETH"
-            decimals={6}
-            maxCollateralAmount={states.maxCollateralAmount}
-            collateralLtv={states.collateralLtv}
             amount={states.collateralAmount}
-            onTokenChange={(tokenAddr) => {
-              // TODO
-            }}
             onAmountChange={(collateralAmount) => {
               input({
                 collateralAmount,
