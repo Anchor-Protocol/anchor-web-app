@@ -26,6 +26,9 @@ export interface Formatter<T> {
 
   // the token symbol that can be used to display
   symbol: string;
+
+  // the number of decimals for the token
+  decimals: number;
 }
 
 export interface Formatters {

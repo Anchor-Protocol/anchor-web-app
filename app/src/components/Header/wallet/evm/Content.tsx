@@ -1,12 +1,14 @@
 import React from 'react';
-import { Connection } from '@libs/evm-wallet';
+import { Connection, useEvmWallet } from '@libs/evm-wallet';
 import { WalletContent } from '../WalletContent';
 import { UIElementProps } from '@libs/ui';
 import { HumanAddr } from '@libs/types';
 import styled from 'styled-components';
-import { TokenList } from '../TokenList';
+import { TokenList, TokenListType } from '../TokenList';
 import { Link } from 'react-router-dom';
 import { WithdrawableAssets } from './WithdrawableAssets';
+import { getAddress } from 'configurations/evm/addresses';
+import { useFormatters } from '@anchor-protocol/formatter';
 
 type Action = () => void;
 
@@ -21,6 +23,47 @@ const ContentBase = (props: ContentProps) => {
   const { className, walletAddress, connection, onClose, onDisconnectWallet } =
     props;
 
+  const {
+    chainId,
+    actions: { watchAsset },
+  } = useEvmWallet();
+
+  const formatters = useFormatters();
+
+  const onAddToken = (token: TokenListType) => {
+    if (chainId) {
+      switch (token) {
+        case 'UST':
+          watchAsset({
+            address: getAddress(chainId, token),
+            symbol: formatters.ust.symbol,
+            decimals: formatters.ust.decimals,
+            image:
+              'https://s2.coinmarketcap.com/static/img/coins/200x200/7129.png',
+          });
+          break;
+        case 'aUST':
+          watchAsset({
+            address: getAddress(chainId, token),
+            symbol: formatters.aUST.symbol,
+            decimals: formatters.aUST.decimals,
+            image:
+              'https://s2.coinmarketcap.com/static/img/coins/64x64/16886.png',
+          });
+          break;
+        case 'ANC':
+          watchAsset({
+            address: getAddress(chainId, token),
+            symbol: formatters.anc.symbol,
+            decimals: formatters.anc.decimals,
+            image:
+              'https://s2.coinmarketcap.com/static/img/coins/64x64/8857.png',
+          });
+          break;
+      }
+    }
+  };
+
   return (
     <WalletContent
       className={className}
@@ -30,7 +73,7 @@ const ContentBase = (props: ContentProps) => {
       readonly={false}
       onDisconnectWallet={onDisconnectWallet}
     >
-      <TokenList onClose={onClose} />
+      <TokenList onClose={onClose} onAddToken={onAddToken} />
       <WithdrawableAssets />
       <div className="restore-tx">
         <div className="restore-tx-inner">
