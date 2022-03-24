@@ -1,8 +1,11 @@
 ARG BUILD_ENV=local
 
 # local
-FROM --platform=linux/amd64 node:lts-alpine AS build-local
+FROM --platform=linux/amd64 node:lts AS build-local
 WORKDIR /src
+
+RUN apt update && \
+	apt install -y python chromium
 
 COPY yarn.lock ./
 COPY . .
