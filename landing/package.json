@@ -4,21 +4,24 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "start": "multiplerun start",
-    "start:chrome": "PORT=9434 react-app-rewired start",
     "app:start": "HTTPS=true SSL_CRT_FILE=$LOCALHOST_HTTPS_CERT SSL_KEY_FILE=$LOCALHOST_HTTPS_KEY PORT=9434 BROWSER=none yarn run react-app-rewired start",
     "app:start:puppeteer": "HTTPS=true PORT=9434 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts",
     "build": "CI=true react-app-rewired build",
-    "test": "react-app-rewired test --colors",
-    "coverage": "react-app-rewired test --colors --coverage"
+    "coverage": "react-app-rewired test --colors --coverage",
+    "start": "multiplerun start",
+    "start:chrome": "PORT=9434 react-app-rewired start",
+    "test": "react-app-rewired test --colors"
   },
-  "multiplerun": {
-    "start": [
-      "yarn run app:start",
-      {
-        "command": "yarn run app:start:puppeteer",
-        "wait": "20000"
-      }
+  "browserslist": {
+    "production": [
+      "chrome > 60",
+      "firefox > 60",
+      "safari > 12"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   },
   "eslintConfig": {
@@ -34,16 +37,13 @@
       "!**/__*__/**"
     ]
   },
-  "browserslist": {
-    "production": [
-      "chrome > 60",
-      "firefox > 60",
-      "safari > 12"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+  "multiplerun": {
+    "start": [
+      "yarn run app:start",
+      {
+        "command": "yarn run app:start:puppeteer",
+        "wait": "20000"
+      }
     ]
   },
   "dependencies": {
