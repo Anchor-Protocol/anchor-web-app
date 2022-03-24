@@ -38,6 +38,7 @@
     "@ssen/prettier-config": "^2.0.1",
     "@types/eslint": "^7.2.14",
     "@types/prettier": "^2.3.2",
+    "@typescript-eslint/parser": "^5.16.0",
     "apollo": "^2.33.9",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
