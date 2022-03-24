@@ -2,8 +2,8 @@
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
-  "repository": "github:Anchor-Protocol/anchor",
-  "author": "SSen <ian@ssen.name>",
+  "repository": "github:anchor-protocol/anchor-web-app",
+  "author": "Anchor Protocol <info@anchorprotocol.com>",
   "workspaces": [
     "app",
     "landing"
