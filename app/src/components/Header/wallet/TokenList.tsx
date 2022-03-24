@@ -1,11 +1,11 @@
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UIElementProps } from '@libs/ui';
 import { Tooltip } from '@material-ui/core';
-import { Launch, AddCircle } from '@material-ui/icons';
+import { Launch, AddCircle, CheckCircle } from '@material-ui/icons';
 import big from 'big.js';
 import { BuyButton } from 'components/BuyButton';
 import { useBalances } from 'contexts/balances';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 type Action = () => void;
@@ -14,9 +14,23 @@ export type TokenListType = 'UST' | 'aUST' | 'ANC';
 
 const AddButton = (props: { onClick: () => void }) => {
   const { onClick } = props;
+
+  const [clicked, setClicked] = useState(false);
+
   return (
     <Tooltip title="Add to Wallet" placement="top">
-      <AddCircle className="add-button" onClick={onClick} />
+      <>
+        {clicked === false && (
+          <AddCircle
+            className="add-button"
+            onClick={() => {
+              onClick();
+              setClicked(true);
+            }}
+          />
+        )}
+        {clicked && <CheckCircle className="add-button" onClick={onClick} />}
+      </>
     </Tooltip>
   );
 };
