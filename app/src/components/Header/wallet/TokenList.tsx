@@ -1,7 +1,7 @@
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UIElementProps } from '@libs/ui';
 import { Tooltip } from '@material-ui/core';
-import { Launch, FileCopyOutlined } from '@material-ui/icons';
+import { Launch, AddCircle } from '@material-ui/icons';
 import big from 'big.js';
 import { BuyButton } from 'components/BuyButton';
 import { useBalances } from 'contexts/balances';
@@ -16,7 +16,7 @@ const AddButton = (props: { onClick: () => void }) => {
   const { onClick } = props;
   return (
     <Tooltip title="Add to Wallet" placement="top">
-      <FileCopyOutlined className="add-token" onClick={onClick} />
+      <AddCircle className="add-button" onClick={onClick} />
     </Tooltip>
   );
 };
@@ -96,8 +96,8 @@ export function TokenListBase(props: TokenListProps) {
 }
 
 export const TokenList = styled(TokenListBase)`
-  margin-top: 48px;
-  margin-bottom: 20px;
+  margin-top: 30px;
+  margin-bottom: 10px;
 
   padding: 0;
   list-style: none;
@@ -121,19 +121,16 @@ export const TokenList = styled(TokenListBase)`
       align-items: center;
     }
 
-    .add-token {
-      width: 14px;
-      height: 14px;
+    .add-button {
+      width: 16px;
+      height: 16px;
       margin-right: 5px;
       cursor: pointer;
-      color: ${({ theme }) => theme.dimTextColor};
-      &:hover {
-        color: ${({ theme }) => theme.colors.secondaryDark};
-      }
+      color: ${({ theme }) => theme.colors.positive};
     }
 
     .buy-button {
-      margin-left: 2px;
+      margin-left: 5px;
     }
 
     &:not(:last-child) {
