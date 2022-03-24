@@ -1,11 +1,11 @@
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UIElementProps } from '@libs/ui';
 import { Tooltip } from '@material-ui/core';
-import { Launch, FileCopyOutlined } from '@material-ui/icons';
+import { Launch, AddCircle, CheckCircle } from '@material-ui/icons';
 import big from 'big.js';
 import { BuyButton } from 'components/BuyButton';
 import { useBalances } from 'contexts/balances';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 type Action = () => void;
@@ -14,9 +14,23 @@ export type TokenListType = 'UST' | 'aUST' | 'ANC';
 
 const AddButton = (props: { onClick: () => void }) => {
   const { onClick } = props;
+
+  const [clicked, setClicked] = useState(false);
+
   return (
     <Tooltip title="Add to Wallet" placement="top">
-      <FileCopyOutlined className="add-token" onClick={onClick} />
+      <>
+        {clicked === false && (
+          <AddCircle
+            className="add-button"
+            onClick={() => {
+              onClick();
+              setClicked(true);
+            }}
+          />
+        )}
+        {clicked && <CheckCircle className="add-button" onClick={onClick} />}
+      </>
     </Tooltip>
   );
 };
@@ -30,7 +44,7 @@ interface TokenListProps extends UIElementProps {
 export function TokenListBase(props: TokenListProps) {
   const { className, onClose, onBuyUST, onAddToken } = props;
 
-  const { uUST, uaUST, uNative, uANC } = useBalances();
+  const { uUST, uaUST, uANC, uNative } = useBalances();
 
   const formatters = useFormatters();
 
@@ -46,7 +60,7 @@ export function TokenListBase(props: TokenListProps) {
           </span>
         </li>
       )}
-      {big(uUST).gt(0) && (
+      {(big(uUST).gt(0) || onAddToken) && (
         <li>
           <span className="symbol">
             {onAddToken && <AddButton onClick={() => onAddToken('UST')} />}
@@ -69,7 +83,7 @@ export function TokenListBase(props: TokenListProps) {
           </span>
         </li>
       )}
-      {big(uaUST).gt(0) && (
+      {(big(uaUST).gt(0) || onAddToken) && (
         <li>
           <span className="symbol">
             {onAddToken && <AddButton onClick={() => onAddToken('aUST')} />}
@@ -80,7 +94,7 @@ export function TokenListBase(props: TokenListProps) {
           </span>
         </li>
       )}
-      {big(uANC).gt(0) && (
+      {(big(uANC).gt(0) || onAddToken) && (
         <li>
           <span className="symbol">
             {onAddToken && <AddButton onClick={() => onAddToken('ANC')} />}
@@ -96,8 +110,8 @@ export function TokenListBase(props: TokenListProps) {
 }
 
 export const TokenList = styled(TokenListBase)`
-  margin-top: 48px;
-  margin-bottom: 20px;
+  margin-top: 30px;
+  margin-bottom: 10px;
 
   padding: 0;
   list-style: none;
@@ -121,19 +135,16 @@ export const TokenList = styled(TokenListBase)`
       align-items: center;
     }
 
-    .add-token {
-      width: 14px;
-      height: 14px;
+    .add-button {
+      width: 16px;
+      height: 16px;
       margin-right: 5px;
       cursor: pointer;
-      color: ${({ theme }) => theme.dimTextColor};
-      &:hover {
-        color: ${({ theme }) => theme.colors.secondaryDark};
-      }
+      color: ${({ theme }) => theme.colors.positive};
     }
 
     .buy-button {
-      margin-left: 2px;
+      margin-left: 5px;
     }
 
     &:not(:last-child) {

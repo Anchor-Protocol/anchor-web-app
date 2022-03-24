@@ -29,22 +29,25 @@ const WithdrawableAssetsBase = (props: WithdrawableAssetsProps) => {
     decimals: 6,
   });
 
-  const withdrawableAssets = useMemo<WithdrawableAssetProps[]>(
-    () =>
-      [
-        {
-          tokenContract: contractAddress.cw20.aUST,
-          symbol: 'aUST',
-          balance: aUstBalance,
-        },
-        {
-          tokenContract: 'uusd',
-          symbol: 'UST',
-          balance: ustBalance,
-        },
-      ].filter((asset) => big(asset.balance).gt(0)),
-    [contractAddress.cw20.aUST, aUstBalance, ustBalance],
-  );
+  const withdrawableAssets = useMemo<WithdrawableAssetProps[]>(() => {
+    return [
+      {
+        tokenContract: contractAddress.cw20.aUST,
+        symbol: 'aUST',
+        balance: aUstBalance,
+      },
+      {
+        tokenContract: 'uusd',
+        symbol: 'UST',
+        balance: ustBalance,
+      },
+    ].filter(
+      (asset) =>
+        asset.balance.length > 0 &&
+        asset.balance.startsWith('<') === false &&
+        big(asset.balance).gt(0),
+    );
+  }, [contractAddress.cw20.aUST, aUstBalance, ustBalance]);
 
   if (
     status !== 'connected' ||
@@ -80,7 +83,7 @@ export const WithdrawableAssets = styled(WithdrawableAssetsBase)`
 
   .withdrawable-assets {
     margin-top: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 
     padding: 0;
     list-style: none;
