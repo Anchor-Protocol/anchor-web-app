@@ -86,6 +86,8 @@ export const WalletContent = styled(WalletContentBase)`
   }
 
   > .children {
+    display: flex;
+    flex-direction: column;
     padding: 0 28px 32px 28px;
   }
 
