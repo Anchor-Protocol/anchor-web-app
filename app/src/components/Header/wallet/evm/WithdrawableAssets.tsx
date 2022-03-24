@@ -80,7 +80,7 @@ export const WithdrawableAssets = styled(WithdrawableAssetsBase)`
 
   .withdrawable-assets {
     margin-top: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 
     padding: 0;
     list-style: none;

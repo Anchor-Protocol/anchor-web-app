@@ -4,8 +4,7 @@ import styled, { useTheme } from 'styled-components';
 import { useWithdrawAssetsTx } from 'tx/evm';
 import { StreamStatus } from '@rx-stream/react';
 import { CircleSpinner } from 'react-spinners-kit';
-import { Tooltip } from '@material-ui/core';
-import { Launch } from '@material-ui/icons';
+import { WithdrawButton } from './WithdrawButton';
 
 export interface WithdrawableAssetProps extends UIElementProps {
   tokenContract: string;
@@ -32,16 +31,15 @@ const WithdrawableAssetBase = (props: WithdrawableAssetProps) => {
   return (
     <div className={props.className}>
       <div className="symbol">
-        {loading ? (
+        {loading && (
           <span className="spinner">
-            <CircleSpinner size={14} color={theme.colors.secondaryDark} />
+            <CircleSpinner size={14} color={theme.colors.positive} />
           </span>
-        ) : (
-          <Tooltip title={`Withdraw ${symbol}`} placement="top">
-            <Launch className="withdraw-button" onClick={withdraw} />
-          </Tooltip>
         )}
         {symbol}
+        {loading === false && (
+          <WithdrawButton className="button" onClick={withdraw} />
+        )}
       </div>
       <span>{balance}</span>
     </div>
@@ -59,18 +57,13 @@ export const WithdrawableAsset = styled(WithdrawableAssetBase)`
     align-items: center;
   }
 
-  .spinner,
-  .withdraw-button {
+  .button {
+    margin-left: 5px;
+  }
+
+  .spinner {
     margin-right: 5px;
     width: 14px;
     height: 14px;
-  }
-
-  .withdraw-button {
-    cursor: pointer;
-    color: ${({ theme }) => theme.dimTextColor};
-    &:hover {
-      color: ${({ theme }) => theme.colors.secondaryDark};
-    }
   }
 `;

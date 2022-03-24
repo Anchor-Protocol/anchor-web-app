@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Connection, useEvmWallet } from '@libs/evm-wallet';
 import { WalletContent } from '../WalletContent';
 import { UIElementProps } from '@libs/ui';
@@ -27,6 +27,8 @@ const ContentBase = (props: ContentProps) => {
     chainId,
     actions: { watchAsset },
   } = useEvmWallet();
+
+  const [adding, setAdding] = useState(false);
 
   const formatters = useFormatters();
 
@@ -73,7 +75,13 @@ const ContentBase = (props: ContentProps) => {
       readonly={false}
       onDisconnectWallet={onDisconnectWallet}
     >
-      <TokenList onClose={onClose} onAddToken={onAddToken} />
+      <TokenList
+        onClose={onClose}
+        onAddToken={adding ? onAddToken : undefined}
+      />
+      <button className="add-wallet" onClick={() => setAdding((prev) => !prev)}>
+        {adding ? 'Done' : 'Add to Wallet'}
+      </button>
       <WithdrawableAssets />
       <div className="restore-tx">
         <div className="restore-tx-inner">
@@ -88,6 +96,19 @@ const ContentBase = (props: ContentProps) => {
 };
 
 export const Content = styled(ContentBase)`
+  .add-wallet {
+    margin: auto;
+    border: none;
+    background: none;
+    outline: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 500;
+    color: ${({ theme }) => theme.colors.positive};
+    margin-bottom: 10px;
+  }
+
   .restore-tx {
     width: 100%;
     display: flex;
@@ -96,7 +117,7 @@ export const Content = styled(ContentBase)`
     font-size: 12px;
     font-weight: 500;
     color: ${({ theme }) => theme.dimTextColor};
-    margin-bottom: 10px;
+    margin-top: 20px;
 
     .restore-tx-inner {
       width: auto;
