@@ -137,4 +137,4 @@ Terraform Labs PTE, LTD is a company incorporated in Singapore, with a registere
 
 ### 23. Contacting Us
 
-If you have any question about this Agreement, or if you wish to contact us for any reason whatsoever, please send us an email at <legal@anchorprotocol.com>.
+As stated in Section 14, Assumption of Risk, we do not have custody of or access to users' digital assets or funds. As a result, please be very careful when using the protocol, as there is no way for us to assist you with canceling or otherwise modifying any transaction or transaction details. If you are having an issue or have a technical question regarding the protocol, you can seek the assistance of community contributors by opening a support ticket and describing your issue on the discord channel linked here <https://discord.gg/7PYqcmnm>.
