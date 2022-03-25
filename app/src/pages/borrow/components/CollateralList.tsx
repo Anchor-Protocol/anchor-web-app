@@ -121,7 +121,9 @@ export function CollateralList({ className }: CollateralListProps) {
           ) as u<UST<Big>>,
         };
       })
-      .sort((a, b) => (big(a.lockedAmount).gte(big(b.lockedAmount)) ? -1 : 1))
+      .sort((a, b) =>
+        big(a.lockedAmountInUST).gte(big(b.lockedAmountInUST)) ? -1 : 1,
+      )
       .filter((collateral) => Number(collateral.price) !== 0);
   }, [borrowBorrower, borrowMarket, bridgeAssets]);
 
