@@ -45,7 +45,7 @@ export const defaultLightTheme = {
   ...createMuiTheme({
     ...muiThemeBase,
     palette: {
-      type: 'light',
+      type: 'dark',
     },
   }),
   // VARIABLES (SHOULD BE CHANGED)

@@ -21,7 +21,7 @@ export const TotalValueLockedDoughnutChart = (
       },
       {
         label: 'Total Collateral',
-        color: props.totalCollateralsColor,
+        color: '#000000',
         value: +props.totalCollaterals,
       },
     ];

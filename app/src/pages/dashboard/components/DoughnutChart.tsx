@@ -56,8 +56,8 @@ export class DoughnutChart extends Component<DoughnutChartProps> {
     this.chart = new Chart(this.canvasRef.current!, {
       type: 'doughnut',
       options: {
-        cutout: '80%',
-        radius: '90%',
+        cutout: '70%',
+        radius: '80%',
         plugins: {
           legend: {
             display: false,

@@ -19,8 +19,8 @@ export const darkTheme: DefaultTheme = {
 
   intensity: 0.45,
 
-  backgroundColor: '#1b1e31',
-  sectionBackgroundColor: '#1f2237',
+  backgroundColor: '#000000',
+  sectionBackgroundColor: '#212121',
   highlightBackgroundColor: '#363c5f',
   hoverBackgroundColor: 'rgba(37, 117, 164, 0.05)',
 
@@ -33,7 +33,7 @@ export const darkTheme: DefaultTheme = {
     warning: '#ff9a63',
     primary: '#15cc93',
     primaryDark: '#15cc93',
-    secondary: '#15cc93',
+    secondary: '#FBD85D',
     secondaryDark: '#15cc93',
   },
 
@@ -64,13 +64,13 @@ export const darkTheme: DefaultTheme = {
   //pointColor: '#15cc93',
 
   label: {
-    backgroundColor: '#363c5f',
+    backgroundColor: '#493B3B',
     textColor: '#ffffff',
     borderColor: 'rgba(255, 255, 255, 0.5)',
   },
 
   actionButton: {
-    backgroundColor: '#363c5f',
+    backgroundColor: '#493B3B',
     backgroundHoverColor: '#404872',
     textColor: '#ffffff',
     hoverTextColor: '#ffffff',
@@ -81,14 +81,14 @@ export const darkTheme: DefaultTheme = {
   },
 
   borderButton: {
-    borderColor: '#363c5f',
+    borderColor: '#493B3B',
     borderHoverColor: '#404872',
     textColor: '#ffffff',
     hoverTextColor: '#ffffff',
   },
 
   selector: {
-    backgroundColor: '#1b1e31',
+    backgroundColor: '#493B3B',
     textColor: '#ffffff',
   },
 

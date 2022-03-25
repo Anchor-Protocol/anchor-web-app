@@ -11,7 +11,7 @@ import React, {
 } from 'react';
 import type { DefaultTheme } from 'styled-components';
 
-type ThemeColor = 'light' | 'dark';
+type ThemeColor = 'dark';
 
 export interface ThemeProviderProps {
   children: ReactNode;
