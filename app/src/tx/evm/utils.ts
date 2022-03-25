@@ -42,37 +42,29 @@ export const txResultMessage = (
   switch (eventKind) {
     case CrossChainEventKind.CrossChainTxCompleted:
       return `Cross chain transaction completed.`;
-    case CrossChainEventKind.RemoteChainTxRequested:
+    case CrossChainEventKind.IncomingTxRequested:
       return `${capitalize(formatTxKind(txKind))} requested. ${capitalize(
         connnectType,
       )} notification should appear soon...`;
-    case CrossChainEventKind.RemoteChainTxExecuted:
+    case CrossChainEventKind.IncomingTxExecuted:
       return `${capitalize(
         chain(chainId),
       )} transaction successful, waiting for Wormhole bridge...`;
-    case CrossChainEventKind.RemoteChainVAAsRetrieved:
+    case CrossChainEventKind.IncomingVAAsRetrieved:
       return `Entering Wormhole bridge on ${capitalize(chain(chainId))}...`;
     case CrossChainEventKind.OutgoingSequenceRetrieved:
       return `Entering Terra, executing ${formatTxKind(txKind)} action...`;
-    case CrossChainEventKind.TerraVAAsRetrieved:
+    case CrossChainEventKind.OutgoingVAAsRetrieved:
       return `Terra action executed, exiting Wormhole bridge on Terra...`;
-    case CrossChainEventKind.RemoteChainTxSubmitted:
+    case CrossChainEventKind.IncomingTxSubmitted:
       return `Waiting for ${formatTxKind(txKind)} transaction on ${capitalize(
         chain(chainId),
       )}...`;
-    case CrossChainEventKind.RemoteChainApprovalRequested:
-      return `Allowance requested. ${capitalize(
-        connnectType,
-      )} notification should appear soon...`;
-    case CrossChainEventKind.RemoteChainApprovalSubmitted:
-      return `Waiting for approval transaction on ${capitalize(
-        chain(chainId),
-      )}...`;
-    case CrossChainEventKind.RemoteChainReturnTxRequested:
+    case CrossChainEventKind.OutgoingTxRequested:
       return `Deposit requested. ${capitalize(
         connnectType,
       )} notification should appear soon...`;
-    case CrossChainEventKind.RemoteChainReturnTxSubmitted:
+    case CrossChainEventKind.OutgoingTxSubmitted:
       return `Waiting for finalize transaction on ${capitalize(
         chain(chainId),
       )}...`;

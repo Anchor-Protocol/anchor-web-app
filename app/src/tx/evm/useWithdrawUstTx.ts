@@ -66,9 +66,6 @@ export function useWithdrawUstTx():
           withdrawAmount,
           address!,
           TX_GAS_LIMIT,
-          (event) => {
-            txEvents.next({ event, txParams });
-          },
         );
 
         writer.withdrawUST();

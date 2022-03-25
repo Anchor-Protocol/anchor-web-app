@@ -62,9 +62,6 @@ export function useBorrowUstTx():
           amount,
           address!,
           TX_GAS_LIMIT,
-          (event) => {
-            txEvents.next({ event, txParams });
-          },
         );
 
         writer.borrowUST();

@@ -62,9 +62,6 @@ export function useRepayUstTx():
           amount,
           address!,
           TX_GAS_LIMIT,
-          (event) => {
-            txEvents.next({ event, txParams });
-          },
         );
 
         writer.repayUST();

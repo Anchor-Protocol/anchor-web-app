@@ -64,9 +64,6 @@ export function useDepositUstTx():
           depositAmount,
           address!,
           TX_GAS_LIMIT,
-          (event) => {
-            txEvents.next({ event, txParams });
-          },
         );
 
         writer.depositUST();

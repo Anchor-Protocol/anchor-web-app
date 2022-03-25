@@ -65,9 +65,6 @@ export function useProvideCollateralTx():
           microfy(amount, erc20Decimals),
           address!,
           TX_GAS_LIMIT,
-          (event) => {
-            txEvents.next({ event, txParams });
-          },
         );
 
         writer.provideCollateral(symbol);

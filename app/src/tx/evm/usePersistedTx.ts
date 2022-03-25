@@ -3,10 +3,7 @@ import { ContractReceipt } from 'ethers';
 import { Subject, Subscription } from 'rxjs';
 import { TxResultRendering } from '@libs/app-fns';
 import { TxEvent, useTx } from './useTx';
-import {
-  CrossChainEventKind,
-  RemoteChainTxSubmittedPayload,
-} from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainEventKind } from '@anchor-protocol/crossanchor-sdk';
 import { TransactionDisplay, useTransactions } from './storage/useTransactions';
 import { useCallback, useMemo, useState } from 'react';
 import { useInterval } from 'usehooks-ts';
@@ -55,8 +52,8 @@ export const usePersistedTx = <TxParams, TxResult>(
     (txEvent: TxEvent<TxParams>) => {
       const { event, txParams } = txEvent;
       // first event with tx in it
-      if (event.kind === CrossChainEventKind.RemoteChainTxSubmitted) {
-        const payload = event.payload as RemoteChainTxSubmittedPayload;
+      if (event.kind === CrossChainEventKind.IncomingTxSubmitted) {
+        const payload = event.payload;
         saveTransaction({
           txHash: payload.txHash,
           lastEventKind: event.kind,
