@@ -112,21 +112,21 @@ export enum TxKind {
 export const formatTxKind = (txKind: TxKind) => {
   switch (txKind) {
     case TxKind.WithdrawUst:
-      return 'withdraw';
+      return 'Withdraw';
     case TxKind.RepayUst:
-      return 'repay';
+      return 'Repay';
     case TxKind.RedeemCollateral:
-      return 'redeem collateral';
+      return 'Redeem Collateral';
     case TxKind.ProvideCollateral:
-      return 'provide collateral';
+      return 'Provide Collateral';
     case TxKind.DepositUst:
-      return 'deposit';
+      return 'Deposit';
     case TxKind.ClaimRewards:
-      return 'claim rewards';
+      return 'Claim Rewards';
     case TxKind.BorrowUst:
-      return 'borrow';
+      return 'Borrow';
     case TxKind.WithdrawAssets:
-      return 'withdraw';
+      return 'Withdraw';
   }
 };
 

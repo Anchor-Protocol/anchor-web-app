@@ -1,10 +1,9 @@
-import { formatEllapsedSimple, truncateEvm } from '@libs/formatter';
-import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { truncateEvm } from '@libs/formatter';
+import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
 import { SnackbarContent } from '@libs/neumorphism-ui/components/Snackbar';
 import { Snackbar, useSnackbar } from '@libs/snackbar';
-import { LinearProgress } from '@material-ui/core';
-import { Check } from '@material-ui/icons';
-import { differenceInSeconds } from 'date-fns';
+import { Done as DoneIcon } from '@material-ui/icons';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Transaction, useTransactions } from 'tx/evm/storage/useTransactions';
@@ -61,39 +60,27 @@ const TxSnackbarBase = ({
   }
 
   return (
-    <Snackbar>
-      <div className={className}>
-        <LinearProgress className="tx-progress" />
-        <SnackbarContent message={<TxMessage tx={tx} />} />
-      </div>
+    <Snackbar className={className}>
+      <SnackbarContent
+        classes={{
+          root: 'snackbar-root',
+          message: 'snackbar-message',
+        }}
+        message={<TxMessage tx={tx} />}
+      />
     </Snackbar>
   );
 };
 
-const TxSnackbar = styled(TxSnackbarBase)`
-  display: flex;
-  flex-direction: column;
-
-  .MuiSnackbarContent-action {
-    padding-left: 0px;
+export const TxSnackbar = styled(TxSnackbarBase)`
+  .snackbar-root {
+    background: #f6f6f7;
+    box-shadow: -1px -1px 0px #ffffff, 1px 1px 1px #dbdbdb;
+    border-radius: 20px;
   }
 
-  .MuiSnackbarContent-message {
+  .snackbar-message {
     width: 100%;
-  }
-
-  .MuiSnackbarContent-root {
-    background-color: ${({ theme }) => theme.textColor};
-  }
-
-  .tx-progress {
-    transform: translateY(4px);
-    border-radius: 5px;
-    background-color: inherit;
-
-    .MuiLinearProgress-barColorPrimary {
-      background-color: green;
-    }
   }
 `;
 
@@ -106,28 +93,19 @@ const TxMessageBase = ({
 }) => {
   return (
     <div className={className}>
-      <div className="tx-content">
-        <div className="details">
-          <span className="action">{formatTxKind(tx.display.txKind)}</span>
-          <div className="amount">{tx.display.amount ?? 'Unknown'}</div>
-        </div>
-        <div className="more-details">
-          <span className="tx-hash">
-            <span className="hash">{truncateEvm(tx.txHash)}</span>
-          </span>
-          <div className="timestamp">
-            {formatEllapsedSimple(
-              differenceInSeconds(new Date(), tx.display.timestamp) * 1000,
-            )}
-          </div>
-        </div>
-        <div className="tx-message">
-          <span>Transaction completed!</span>
-          <IconSpan className="success-check">
-            <Check />
-          </IconSpan>
-        </div>
-      </div>
+      <figure className="icon">
+        <DoneIcon />
+      </figure>
+      <h2>Complete!</h2>
+      <HorizontalHeavyRuler />
+      <TxFeeList showRuler={false}>
+        <TxFeeListItem label={formatTxKind(tx.display.txKind)}>
+          {tx.display.amount}
+        </TxFeeListItem>
+        <TxFeeListItem label={'Tx Hash'}>
+          {truncateEvm(tx.txHash)}
+        </TxFeeListItem>
+      </TxFeeList>
     </div>
   );
 };
@@ -135,79 +113,32 @@ const TxMessageBase = ({
 const TxMessage = styled(TxMessageBase)`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  font-weight: 500;
-  font-size: 10px;
-  color: ${({ theme }) => theme.dimTextColor};
+  xcolor: ${({ theme }) => theme.dimTextColor};
+  width: 100%;
 
-  .tx-hash {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+  .icon {
+    color: ${({ theme }) => theme.colors.positive};
 
-    .hash {
-      margin-right: 5px;
-      text-decoration: underline;
-      font-size: 12px;
-      color: #fff;
+    margin: 0 auto;
+    width: 6em;
+    height: 6em;
+    border-radius: 50%;
+    border: 3px solid currentColor;
+    display: grid;
+    place-content: center;
+
+    svg {
+      font-size: 3em;
     }
   }
 
-  .success-check {
-    color: green;
-    margin-left: 5px;
-
-    > .MuiSvgIcon-root {
-      font-size: 14px;
-      margin-right: auto;
-    }
-  }
-
-  .amount {
-    font-size: 12px;
-  }
-
-  .tx-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  h2 {
+    color: ${({ theme }) => theme.textColor};
     width: 100%;
-  }
-
-  .tx-message {
-    align-self: flex-start;
-    font-size: 10px;
-    max-width: 300px;
     font-weight: 500;
-    text-transform: uppercase;
-  }
-
-  .details {
-    display: flex;
-    width: 100%;
-    margin-bottom: 5px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .more-details {
-    margin-bottom: 5px;
-    width: 100%;
-    display: flex;
-  }
-
-  .timestamp {
-    margin-left: auto;
-    font-size: 12px;
-    font-weight: 400;
-  }
-
-  .action {
-    text-transform: capitalize;
-    font-size: 12px;
-    width: auto;
-    margin-right: auto;
+    font-size: 1.3em;
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 1.2em;
   }
 `;
