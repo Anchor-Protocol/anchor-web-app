@@ -5,7 +5,7 @@ import { TxResultRendering } from '@libs/app-fns';
 import { TxEvent, useTx } from './useTx';
 import { CrossChainEventKind } from '@anchor-protocol/crossanchor-sdk';
 import { TransactionDisplay, useTransactions } from './storage/useTransactions';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { BACKGROUND_TRANSCATION_TAB_ID } from 'components/Header/transactions/BackgroundTransaction';
 import { useTransactionSnackbar } from 'components/Header/transactions/background/useTransactionSnackbar';
 import { useRefCallback } from 'hooks/useRefCallback';
@@ -14,7 +14,7 @@ type TxRender<TxResult> = TxResultRendering<TxResult>;
 
 export type PersistedTxUtils = {
   isTxMinimizable: boolean;
-  dismissTx: (txHash?: string) => void;
+  dismissTx: () => void;
 };
 
 export type PersistedTxResult<TxParams, TxResult> = {
@@ -84,52 +84,53 @@ export const usePersistedTx = <TxParams, TxResult>(
     ],
   );
 
-  const dismissTx = useRefCallback(
-    (hash?: string) => {
-      const h = hash || txHash;
-      if (h) {
-        removeTransaction(h);
-        onFinalize(h);
-      }
-    },
-    [removeTransaction, onFinalize, txHash],
-  );
+  const dismissTx = useRefCallback(() => {
+    if (txHash) {
+      removeTransaction(txHash);
+      onFinalize(txHash);
+    }
+  }, [removeTransaction, onFinalize, txHash]);
 
-  const onTxComplete = useRefCallback(() => {
+  const completeTx = useRefCallback(() => {
     if (txHash && minimized) {
       addTxSnackbar(txHash);
     }
   }, [txHash, addTxSnackbar, minimized]);
 
-  return {
-    stream: useTx(
-      async (
-        txParams: TxParams,
-        renderTxResults: Subject<TxRender<TxResult>>,
-        txEvents: Subject<TxEvent<TxParams>>,
-      ) => {
-        const txEventsSubscription = txEvents.subscribe(onTxEvent);
+  const sendTxCallback = useCallback(
+    async (
+      txParams: TxParams,
+      renderTxResults: Subject<TxRender<TxResult>>,
+      txEvents: Subject<TxEvent<TxParams>>,
+    ) => {
+      const txEventsSubscription = txEvents.subscribe(onTxEvent);
 
-        try {
-          const resp = await sendTx(txParams, renderTxResults, txEvents);
-          if (resp === null) {
-            return null;
-          }
-
-          const tx = parseTx(resp!);
-          dismissTx(tx.transactionHash);
-          return resp;
-        } catch (err) {
-          dismissTx(txHash);
-          throw err;
-        } finally {
-          txEventsSubscription.unsubscribe();
+      try {
+        const resp = await sendTx(txParams, renderTxResults, txEvents);
+        if (resp === null) {
+          return null;
         }
-      },
-      parseTx,
-      emptyTxResult,
-      onTxComplete,
-    ),
-    utils: { isTxMinimizable, dismissTx },
-  };
+
+        completeTx();
+        dismissTx();
+        return resp;
+      } catch (err) {
+        dismissTx();
+        throw err;
+      } finally {
+        txEventsSubscription.unsubscribe();
+      }
+    },
+    [sendTx, completeTx, dismissTx, onTxEvent],
+  );
+
+  const persistedTxStream = useTx(sendTxCallback, parseTx, emptyTxResult);
+
+  return useMemo(
+    () => ({
+      stream: persistedTxStream,
+      utils: { isTxMinimizable, dismissTx },
+    }),
+    [persistedTxStream, isTxMinimizable, dismissTx],
+  );
 };

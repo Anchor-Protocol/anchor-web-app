@@ -95,16 +95,23 @@ export function useRepayUstTx():
     ],
   );
 
-  const persistedTxResult = useBackgroundTx<RepayUstTxParams, RepayUstTxResult>(
-    repayTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => ({
+  const displayTx = useCallback(
+    (txParams: RepayUstTxParams) => ({
       txKind: TxKind.RepayUst,
       amount: `${formatOutput(txParams.amount as UST)} UST`,
       timestamp: Date.now(),
     }),
+    [formatOutput],
+  );
+
+  const persistedTxResult = useBackgroundTx<RepayUstTxParams, RepayUstTxResult>(
+    repayTx,
+    parseTx,
+    null,
+    displayTx,
   );
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const parseTx = (resp: NonNullable<RepayUstTxResult>) => resp.tx;

@@ -97,22 +97,21 @@ export function useProvideCollateralTx():
   const persistedTxResult = useBackgroundTx<
     ProvideCollateralTxParams,
     ProvideCollateralTxResult
-  >(
-    provideTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => {
-      const { amount, tokenDisplay } = txParams;
-
-      const symbol = tokenDisplay?.symbol ?? 'UST';
-
-      return {
-        txKind: TxKind.ProvideCollateral,
-        amount: `${formatOutput(amount)} ${symbol}`,
-        timestamp: Date.now(),
-      };
-    },
-  );
+  >(provideTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const displayTx = (txParams: ProvideCollateralTxParams) => {
+  const { amount, tokenDisplay } = txParams;
+
+  const symbol = tokenDisplay?.symbol ?? 'UST';
+
+  return {
+    txKind: TxKind.ProvideCollateral,
+    amount: `${formatOutput(amount)} ${symbol}`,
+    timestamp: Date.now(),
+  };
+};
+
+const parseTx = (resp: NonNullable<ProvideCollateralTxResult>) => resp.tx;

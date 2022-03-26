@@ -95,19 +95,19 @@ export function useBorrowUstTx():
     ],
   );
 
-  const persistedTxResult = useBackgroundTx<
-    BorrowUstTxParams,
-    BorrowUstTxResult
-  >(
-    borrowTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => ({
+  const displayTx = useCallback(
+    (txParams: BorrowUstTxParams) => ({
       txKind: TxKind.BorrowUst,
       amount: `${formatOutput(txParams.amount as UST)} UST`,
       timestamp: Date.now(),
     }),
+    [formatOutput],
   );
+
+  const persistedTxResult = useBackgroundTx<
+    BorrowUstTxParams,
+    BorrowUstTxResult
+  >(borrowTx, (resp) => resp.tx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }

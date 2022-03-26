@@ -84,22 +84,21 @@ export function useRedeemCollateralTx():
   const persistedTxResult = useBackgroundTx<
     RedeemCollateralTxParams,
     RedeemCollateralTxResult
-  >(
-    redeemTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => {
-      const { amount, tokenDisplay } = txParams;
-
-      const symbol = tokenDisplay?.symbol ?? 'UST';
-
-      return {
-        txKind: TxKind.RedeemCollateral,
-        amount: `${formatOutput(amount)} ${symbol}`,
-        timestamp: Date.now(),
-      };
-    },
-  );
+  >(redeemTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const displayTx = (txParams: RedeemCollateralTxParams) => {
+  const { amount, tokenDisplay } = txParams;
+
+  const symbol = tokenDisplay?.symbol ?? 'UST';
+
+  return {
+    txKind: TxKind.RedeemCollateral,
+    amount: `${formatOutput(amount)} ${symbol}`,
+    timestamp: Date.now(),
+  };
+};
+
+const parseTx = (resp: NonNullable<RedeemCollateralTxResult>) => resp.tx;

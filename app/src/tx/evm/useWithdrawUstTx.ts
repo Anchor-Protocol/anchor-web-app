@@ -99,19 +99,21 @@ export function useWithdrawUstTx():
     ],
   );
 
-  const persistedTxResult = useBackgroundTx<
-    WithdrawUstTxParams,
-    WithdrawUstTxResult
-  >(
-    withdrawTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => ({
+  const displayTx = useCallback(
+    (txParams: WithdrawUstTxParams) => ({
       txKind: TxKind.WithdrawUst,
       amount: `${formatOutput(txParams.withdrawAmount as aUST)} aUST`,
       timestamp: Date.now(),
     }),
+    [formatOutput],
   );
+
+  const persistedTxResult = useBackgroundTx<
+    WithdrawUstTxParams,
+    WithdrawUstTxResult
+  >(withdrawTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const parseTx = (resp: NonNullable<WithdrawUstTxResult>) => resp.tx;

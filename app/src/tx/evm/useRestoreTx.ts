@@ -63,9 +63,11 @@ export const useRestoreTx = () => {
     [xAnchor, chainId, connectType, removeTransaction],
   );
 
-  const restoreTxStream = useTx(restoreTx, (resp) => resp.tx, null);
+  const restoreTxStream = useTx(restoreTx, parseTx, null);
 
   return connection && provider && connectType && chainId
     ? restoreTxStream
     : [null, null];
 };
+
+const parseTx = (resp: NonNullable<TxResult>) => resp.tx;

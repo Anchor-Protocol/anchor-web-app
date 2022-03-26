@@ -109,7 +109,9 @@ export function useDepositUstTx():
   const persistedTxResult = useBackgroundTx<
     DepositUstTxParams,
     DepositUstTxResult
-  >(depositTx, (resp) => resp.tx, null, displayTx);
+  >(depositTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const parseTx = (resp: NonNullable<DepositUstTxResult>) => resp.tx;
