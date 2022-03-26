@@ -1,7 +1,7 @@
 import { StreamReturn, useStream } from '@rx-stream/react';
 import { ContractReceipt } from 'ethers';
 import { merge, from, map, tap, BehaviorSubject, Subject } from 'rxjs';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { truncateEvm } from '@libs/formatter';
 import { catchTxError } from './catchTxError';
@@ -26,8 +26,15 @@ export const useTx = <TxParams, TxResult>(
   ) => Promise<TxResult | null>,
   parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
   emptyTxResult: TxResult,
+  onTxComplete?: (txResult: TxResult) => void,
 ): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
   const { txErrorReporter } = useAnchorWebapp();
+
+  const txCompleteRef = useRef(onTxComplete);
+
+  useEffect(() => {
+    txCompleteRef.current = onTxComplete;
+  }, [onTxComplete, txCompleteRef]);
 
   // TODO: represent renderingEvents stream as txEvents.map(render) and remove the need for two subjects
   const txEvents = useMemo(() => new Subject<TxEvent<TxParams>>(), []);
@@ -53,6 +60,10 @@ export const useTx = <TxParams, TxResult>(
             map((txResult) => {
               renderingEvents.complete();
               txEvents.complete();
+
+              if (txResult !== null && txCompleteRef.current) {
+                txCompleteRef.current(txResult);
+              }
 
               return {
                 value: txResult,

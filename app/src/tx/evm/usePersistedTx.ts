@@ -69,14 +69,6 @@ export const usePersistedTx = <TxParams, TxResult>(
         return;
       }
 
-      if (
-        txHash &&
-        minimized &&
-        event.kind === CrossChainEventKind.CrossChainTxCompleted
-      ) {
-        addTxSnackbar(txHash);
-      }
-
       // update tx for all succeeding events, as txHash is cached
       if (txHash) {
         updateTransaction(txHash, { lastEventKind: event.kind });
@@ -89,8 +81,6 @@ export const usePersistedTx = <TxParams, TxResult>(
       setTxHash,
       displayTx,
       saveTransaction,
-      addTxSnackbar,
-      minimized,
     ],
   );
 
@@ -121,6 +111,12 @@ export const usePersistedTx = <TxParams, TxResult>(
 
   useInterval(refreshEventSubscription, 100);
 
+  const onTxComplete = useCallback(() => {
+    if (txHash && minimized) {
+      addTxSnackbar(txHash);
+    }
+  }, [txHash, addTxSnackbar, minimized]);
+
   return {
     stream: useTx(
       async (
@@ -145,6 +141,7 @@ export const usePersistedTx = <TxParams, TxResult>(
       },
       parseTx,
       emptyTxResult,
+      onTxComplete,
     ),
     utils: { isTxMinimizable, dismissTx },
   };
