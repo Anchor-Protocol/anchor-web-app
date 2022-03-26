@@ -1,14 +1,14 @@
 import { StreamReturn } from '@rx-stream/react';
 import { ContractReceipt } from 'ethers';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { TxResultRendering } from '@libs/app-fns';
 import { TxEvent, useTx } from './useTx';
 import { CrossChainEventKind } from '@anchor-protocol/crossanchor-sdk';
 import { TransactionDisplay, useTransactions } from './storage/useTransactions';
-import { useCallback, useMemo, useState } from 'react';
-import { useInterval } from 'usehooks-ts';
+import { useMemo, useState } from 'react';
 import { BACKGROUND_TRANSCATION_TAB_ID } from 'components/Header/transactions/BackgroundTransaction';
 import { useTransactionSnackbar } from 'components/Header/transactions/background/useTransactionSnackbar';
+import { useRefCallback } from 'hooks/useRefCallback';
 
 type TxRender<TxResult> = TxResultRendering<TxResult>;
 
@@ -52,7 +52,7 @@ export const usePersistedTx = <TxParams, TxResult>(
     [transactionExists, txHash],
   );
 
-  const onTxEvent = useCallback(
+  const onTxEvent = useRefCallback(
     (txEvent: TxEvent<TxParams>) => {
       const { event, txParams } = txEvent;
       // first event with tx in it
@@ -84,7 +84,7 @@ export const usePersistedTx = <TxParams, TxResult>(
     ],
   );
 
-  const dismissTx = useCallback(
+  const dismissTx = useRefCallback(
     (hash?: string) => {
       const h = hash || txHash;
       if (h) {
@@ -95,23 +95,7 @@ export const usePersistedTx = <TxParams, TxResult>(
     [removeTransaction, onFinalize, txHash],
   );
 
-  const [txEvents, setTxEvents] = useState<Subject<TxEvent<TxParams>>>();
-  const [subscription, setSubscription] = useState<Subscription>();
-
-  const refreshEventSubscription = useCallback(() => {
-    if (txEvents) {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-
-      const nextSubscription = txEvents.subscribe(onTxEvent);
-      setSubscription(nextSubscription);
-    }
-  }, [txEvents, subscription, setSubscription, onTxEvent]);
-
-  useInterval(refreshEventSubscription, 100);
-
-  const onTxComplete = useCallback(() => {
+  const onTxComplete = useRefCallback(() => {
     if (txHash && minimized) {
       addTxSnackbar(txHash);
     }
@@ -124,8 +108,9 @@ export const usePersistedTx = <TxParams, TxResult>(
         renderTxResults: Subject<TxRender<TxResult>>,
         txEvents: Subject<TxEvent<TxParams>>,
       ) => {
+        const txEventsSubscription = txEvents.subscribe(onTxEvent);
+
         try {
-          setTxEvents(txEvents);
           const resp = await sendTx(txParams, renderTxResults, txEvents);
           if (resp === null) {
             return null;
@@ -137,6 +122,8 @@ export const usePersistedTx = <TxParams, TxResult>(
         } catch (err) {
           dismissTx(txHash);
           throw err;
+        } finally {
+          txEventsSubscription.unsubscribe();
         }
       },
       parseTx,

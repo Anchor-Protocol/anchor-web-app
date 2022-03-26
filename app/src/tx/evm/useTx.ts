@@ -1,7 +1,7 @@
 import { StreamReturn, useStream } from '@rx-stream/react';
 import { ContractReceipt } from 'ethers';
 import { merge, from, map, tap, BehaviorSubject, Subject } from 'rxjs';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo } from 'react';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { truncateEvm } from '@libs/formatter';
 import { catchTxError } from './catchTxError';
@@ -30,12 +30,6 @@ export const useTx = <TxParams, TxResult>(
 ): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
   const { txErrorReporter } = useAnchorWebapp();
 
-  const txCompleteRef = useRef(onTxComplete);
-
-  useEffect(() => {
-    txCompleteRef.current = onTxComplete;
-  }, [onTxComplete, txCompleteRef]);
-
   // TODO: represent renderingEvents stream as txEvents.map(render) and remove the need for two subjects
   const txEvents = useMemo(() => new Subject<TxEvent<TxParams>>(), []);
   const renderingEvents = useMemo(
@@ -49,9 +43,6 @@ export const useTx = <TxParams, TxResult>(
     [emptyTxResult],
   );
 
-  // TODO: add synchronized closure hooks with subjects + sendTx fn args (onTxEvent example, but for each tx)
-  // then add removeTransaction after usePersisted and see if it works...
-
   const txCallback = useCallback(
     (txParams: TxParams) => {
       return merge(
@@ -61,8 +52,8 @@ export const useTx = <TxParams, TxResult>(
               renderingEvents.complete();
               txEvents.complete();
 
-              if (txResult !== null && txCompleteRef.current) {
-                txCompleteRef.current(txResult);
+              if (txResult !== null) {
+                onTxComplete?.(txResult);
               }
 
               return {
@@ -82,7 +73,7 @@ export const useTx = <TxParams, TxResult>(
         }),
       );
     },
-    [sendTx, parseTx, txErrorReporter, renderingEvents, txEvents],
+    [sendTx, parseTx, txErrorReporter, renderingEvents, txEvents, onTxComplete],
   );
 
   return useStream(txCallback);

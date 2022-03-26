@@ -100,7 +100,7 @@ export function useBorrowUstTx():
     BorrowUstTxResult
   >(
     borrowTx,
-    (resp) => resp.tokenTransfer,
+    (resp) => resp.tx,
     null,
     (txParams) => ({
       txKind: TxKind.BorrowUst,
