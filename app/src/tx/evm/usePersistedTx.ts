@@ -8,6 +8,7 @@ import { TransactionDisplay, useTransactions } from './storage/useTransactions';
 import { useCallback, useMemo, useState } from 'react';
 import { useInterval } from 'usehooks-ts';
 import { BACKGROUND_TRANSCATION_TAB_ID } from 'components/Header/transactions/BackgroundTransaction';
+import { useTransactionSnackbar } from 'components/Header/transactions/background/useTransactionSnackbar';
 
 type TxRender<TxResult> = TxResultRendering<TxResult>;
 
@@ -32,6 +33,7 @@ export const usePersistedTx = <TxParams, TxResult>(
   displayTx: (txParams: TxParams) => TransactionDisplay,
   onFinalize: (txHash: string) => void,
   onRegisterTxHash: (txHash: string) => void,
+  minimized: boolean,
   txHashInput?: string,
 ): PersistedTxResult<TxParams, TxResult> => {
   const [txHash, setTxHash] = useState<string | undefined>(txHashInput);
@@ -42,6 +44,8 @@ export const usePersistedTx = <TxParams, TxResult>(
     updateTransaction,
     transactionExists,
   } = useTransactions();
+
+  const { add: addTxSnackbar } = useTransactionSnackbar();
 
   const isTxMinimizable = useMemo(
     () => transactionExists(txHash),
@@ -65,6 +69,14 @@ export const usePersistedTx = <TxParams, TxResult>(
         return;
       }
 
+      if (
+        txHash &&
+        minimized &&
+        event.kind === CrossChainEventKind.CrossChainTxCompleted
+      ) {
+        addTxSnackbar(txHash);
+      }
+
       // update tx for all succeeding events, as txHash is cached
       if (txHash) {
         updateTransaction(txHash, { lastEventKind: event.kind });
@@ -77,6 +89,8 @@ export const usePersistedTx = <TxParams, TxResult>(
       setTxHash,
       displayTx,
       saveTransaction,
+      addTxSnackbar,
+      minimized,
     ],
   );
 

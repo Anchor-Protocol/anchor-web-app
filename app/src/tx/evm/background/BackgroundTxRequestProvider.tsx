@@ -89,8 +89,8 @@ export const BackgroundTxRequestProvider = ({ children }: UIElementProps) => {
   );
 
   const value = useMemo(
-    () => ({ register, getRequest }),
-    [register, getRequest],
+    () => ({ register, getRequest, updateRequest }),
+    [register, getRequest, updateRequest],
   );
 
   return (
@@ -123,6 +123,7 @@ const Request = (
     props.displayTx,
     () => {},
     (txHash) => props.updateRequest(props.id, { txHash }),
+    props.minimized,
     props.txHash,
   );
 

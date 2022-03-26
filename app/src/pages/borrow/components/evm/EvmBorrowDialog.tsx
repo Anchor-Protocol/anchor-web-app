@@ -12,7 +12,7 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   const { connected } = useAccount();
 
   const borrowUstTx = useBorrowUstTx();
-  const { isTxMinimizable } = borrowUstTx?.utils ?? {};
+  const { isTxMinimizable, minimize } = borrowUstTx?.utils ?? {};
   const [postTx, txResult] = borrowUstTx?.stream ?? [null, null];
 
   const proceed = useCallback(
@@ -35,6 +35,7 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
           onExit={props.closeDialog}
           txStreamResult={txResult}
           minimizable={isTxMinimizable}
+          onMinimize={minimize}
         />
       }
     />
