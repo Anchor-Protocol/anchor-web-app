@@ -47,11 +47,12 @@ import { useAccount } from 'contexts/account';
 import { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
+import big from 'big.js';
+import { BorrowCollateralInput } from './BorrowCollateralInput';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
-import big from 'big.js';
-import { BorrowCollateralInput } from './BorrowCollateralInput';
+import { PageDivider } from './PageDivider';
 
 export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   txResult: StreamResult<TxResultRendering> | null;
@@ -282,14 +283,17 @@ function BorrowDialogBase(props: BorrowDialogProps) {
         )}
 
         {isNative === false && (
-          <BorrowCollateralInput
-            amount={states.collateralAmount}
-            onAmountChange={(collateralAmount) => {
-              input({
-                collateralAmount,
-              });
-            }}
-          />
+          <>
+            <PageDivider />
+            <BorrowCollateralInput
+              amount={states.collateralAmount}
+              onAmountChange={(collateralAmount) => {
+                input({
+                  collateralAmount,
+                });
+              }}
+            />
+          </>
         )}
 
         {states.txFee && states.receiveAmount && states.receiveAmount.gt(0) && (

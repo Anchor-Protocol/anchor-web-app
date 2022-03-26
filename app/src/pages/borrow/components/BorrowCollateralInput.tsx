@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { CollateralInput, CollateralInputProps } from './CollateralInput';
 import { useTheme } from 'styled-components';
 import { formatDemimal } from '@libs/formatter';
+import { UIElementProps } from 'components/layouts/UIElementProps';
 
 interface Data {
   label: string;
@@ -19,7 +20,7 @@ interface Data {
 }
 
 const Label = styled.span`
-  top: -28px;
+  margin-top: 10px;
 
   > span {
     display: inline-block;
@@ -51,67 +52,104 @@ const formatter = formatDemimal({
   delimiter: true,
 });
 
+const trunc = (value: number): number => {
+  return Math.trunc(value * 1000) / 1000;
+};
+
 interface BorrowCollateralInputProps
-  extends Pick<CollateralInputProps, 'amount' | 'onAmountChange'> {}
+  extends UIElementProps,
+    Pick<CollateralInputProps, 'amount' | 'onAmountChange'> {}
 
 const Component = (props: BorrowCollateralInputProps) => {
-  const { amount, onAmountChange } = props;
+  const { className, amount, onAmountChange } = props;
 
   const theme = useTheme();
 
   const { data: whitelist = [] } = useWhitelistCollateralQuery();
 
+  const minCollateralAmount = Big(3410000) as u<CollateralAmount<Big>>;
+
+  // TODO: need to fetch this with a callback like onBalanceRequested
   const maxCollateralAmount = Big(10000000) as u<CollateralAmount<Big>>;
 
   const onLtvChange = useCallback(
     (nextLtv: number) => {
       onAmountChange(
-        Big(maxCollateralAmount).mul(nextLtv) as u<CollateralAmount<Big>>,
+        Big(maxCollateralAmount).mul(trunc(nextLtv)) as u<
+          CollateralAmount<Big>
+        >,
       );
     },
     [onAmountChange, maxCollateralAmount],
   );
 
+  const minRatio = minCollateralAmount.div(maxCollateralAmount).toNumber();
+
+  // const ratio = amount
+  //   ? minCollateralAmount.plus(amount).div(maxCollateralAmount).toNumber()
+  //   : 0;
+
+  // const ratio = minCollateralAmount
+  //   .plus(amount ?? 0)
+  //   .div(maxCollateralAmount)
+  //   .toNumber();
+
+  //HERE: probably should start with the current amount and allow to withdraw perhaps?
+
   const ratio = amount ? amount.div(maxCollateralAmount).toNumber() : 0;
 
   return (
-    <>
+    <div className={className}>
+      <h2>Collateral amount</h2>
       <CollateralInput
         collateral={whitelist}
         amount={amount}
         onTokenChange={(value) => {}}
         onAmountChange={onAmountChange}
       />
-      <figure className="graph">
-        <HorizontalGraphBar<Data>
-          min={0}
-          max={1}
-          data={[
-            {
-              label: `${ratio < 1 ? formatter(ratio * 100) : '100'}%`,
-              value: Math.max(Math.min(ratio, 1), 0),
-              color: theme.colors.positive,
-            },
-          ]}
-          colorFunction={() => theme.colors.positive}
-          valueFunction={valueFunction}
-          labelRenderer={labelRenderer}
-        >
-          {(coordinateSpace) => (
-            <HorizontalGraphSlider
-              coordinateSpace={coordinateSpace}
-              min={0}
-              max={1}
-              start={0}
-              end={1}
-              value={ratio}
-              onChange={onLtvChange}
-            />
-          )}
-        </HorizontalGraphBar>
-      </figure>
-    </>
+      <HorizontalGraphBar<Data>
+        className="slider"
+        min={0}
+        max={1}
+        data={[
+          {
+            label: `${ratio < 1 ? formatter(ratio * 100) : '100'}%`,
+            value: Math.max(Math.min(ratio, 1), 0),
+            color: theme.colors.positive,
+          },
+        ]}
+        colorFunction={() => theme.colors.positive}
+        valueFunction={valueFunction}
+        labelRenderer={labelRenderer}
+      >
+        {(coordinateSpace) => (
+          <HorizontalGraphSlider
+            coordinateSpace={coordinateSpace}
+            min={minRatio}
+            max={1}
+            start={minRatio}
+            end={1}
+            value={ratio}
+            onChange={onLtvChange}
+            stepFunction={trunc}
+          />
+        )}
+      </HorizontalGraphBar>
+    </div>
   );
 };
 
-export const BorrowCollateralInput = styled(Component)``;
+export const BorrowCollateralInput = styled(Component)`
+  margin-top: 30px;
+  margin-bottom: 50px;
+
+  h2 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .slider {
+    margin-top: 20px;
+  }
+`;
