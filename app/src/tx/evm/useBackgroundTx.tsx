@@ -13,7 +13,7 @@ type TxRender<TxResult> = TxResultRendering<TxResult>;
 
 type BackgroundTxUtils = PersistedTxUtils & {
   alreadyRunning: boolean;
-  dismissTx: (txHash?: string) => void;
+  minimize: () => void;
 };
 
 export type BackgroundTxResult<TxParams, TxResult> = PersistedTxResult<
@@ -44,7 +44,7 @@ export const useBackgroundTx = <TxParams, TxResult>(
   const requestInput = Boolean(txHash)
     ? { txHash: txHash! }
     : { id: backgroundTxId };
-  const { register, getRequest } = useBackgroundTxRequest();
+  const { register, getRequest, updateRequest } = useBackgroundTxRequest();
   const request = getRequest(requestInput);
 
   useTimeout(() => {
@@ -56,20 +56,29 @@ export const useBackgroundTx = <TxParams, TxResult>(
         displayTx,
         emptyTxResult,
         sendTx,
+        minimized: Boolean(tx),
       });
       setAlreadyRunning(false);
     }
   }, registerAfter);
 
-  if (!request) {
-    return undefined;
-  }
+  return useMemo(() => {
+    if (!request) {
+      return undefined;
+    }
 
-  return {
-    ...request.persistedTxResult,
-    utils: {
-      ...request.persistedTxResult?.utils,
-      alreadyRunning,
-    },
-  } as BackgroundTxResult<TxParams, TxResult>;
+    return {
+      ...request.persistedTxResult,
+      utils: {
+        ...request.persistedTxResult?.utils,
+        alreadyRunning,
+        minimize: () => updateRequest(backgroundTxId, { minimized: true }),
+      },
+    };
+  }, [
+    request,
+    alreadyRunning,
+    updateRequest,
+    backgroundTxId,
+  ]) as BackgroundTxResult<TxParams, TxResult>;
 };

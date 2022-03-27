@@ -5,7 +5,8 @@ import {
   TESTNET,
   MAINNET,
 } from '@anchor-protocol/app-provider/contexts/network';
-import { useEvmWallet, EvmChainId } from '@libs/evm-wallet';
+import { useEvmWallet } from '@libs/evm-wallet';
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 
 const EvmNetworkProvider = ({ children }: UIElementProps) => {
   const { chainId } = useEvmWallet();

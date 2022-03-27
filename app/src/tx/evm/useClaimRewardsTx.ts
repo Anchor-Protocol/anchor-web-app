@@ -64,12 +64,13 @@ export function useClaimRewardsTx():
   const persistedTxResult = useBackgroundTx<
     ClaimRewardsTxParams,
     ClaimRewardsTxResult
-  >(
-    claimRewards,
-    (resp) => resp.tx,
-    null,
-    () => ({ txKind: TxKind.ClaimRewards, timestamp: Date.now() }),
-  );
+  >(claimRewards, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const displayTx = () => ({
+  txKind: TxKind.ClaimRewards,
+  timestamp: Date.now(),
+});
+const parseTx = (resp: NonNullable<ClaimRewardsTxResult>) => resp.tx;

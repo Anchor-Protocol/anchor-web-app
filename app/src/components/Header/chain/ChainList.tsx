@@ -5,10 +5,11 @@ import { ButtonList } from '../shared';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { ChainListFooter } from './ChainListFooter';
 import {
-  useDeploymentTarget,
   DEPLOYMENT_TARGETS,
+  useDeploymentTarget,
 } from '@anchor-protocol/app-provider';
 import styled from 'styled-components';
+import { useSwitchNetwork } from '@libs/evm-wallet/hooks/useSwitchNetwork';
 
 interface ChainListProps extends UIElementProps {
   onClose: () => void;
@@ -19,8 +20,8 @@ function ChainListBase(props: ChainListProps) {
 
   const {
     target: { chain },
-    updateTarget,
   } = useDeploymentTarget();
+  const switchNetwork = useSwitchNetwork();
 
   return (
     <ButtonList
@@ -28,23 +29,21 @@ function ChainListBase(props: ChainListProps) {
       title="Switch Chain"
       footer={<ChainListFooter />}
     >
-      {DEPLOYMENT_TARGETS.filter((target) => target.chain !== chain).map(
-        (target) => (
-          <FlatButton
-            key={target.chain}
-            className="button"
-            onClick={() => {
-              updateTarget(target);
-              onClose();
-            }}
-          >
-            <IconSpan>
-              {target.chain}
-              <img src={target.icon} alt={target.chain} />
-            </IconSpan>
-          </FlatButton>
-        ),
-      )}
+      {DEPLOYMENT_TARGETS.filter((t) => t.chain !== chain).map((target) => (
+        <FlatButton
+          key={target.chain}
+          className="button"
+          onClick={() => {
+            switchNetwork(target);
+            onClose();
+          }}
+        >
+          <IconSpan>
+            {target.chain}
+            <img src={target.icon} alt={target.chain} />
+          </IconSpan>
+        </FlatButton>
+      ))}
     </ButtonList>
   );
 }

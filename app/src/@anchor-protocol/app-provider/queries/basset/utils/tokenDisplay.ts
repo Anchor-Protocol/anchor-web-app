@@ -16,17 +16,28 @@ export type BAssetInfoWithDisplay = BAssetInfo & {
 export const withBAssetInfoTokenDisplay = (
   bAssetInfo: BAssetInfo,
   tokenDisplayInfoByAddr: TokenDisplayInfoByAddr,
-): BAssetInfoWithDisplay => ({
-  ...bAssetInfo,
-  tokenDisplay: {
-    anchor:
-      tokenDisplayInfoByAddr[bAssetInfo.converterConfig.anchor_token_address!],
-    wormhole:
-      tokenDisplayInfoByAddr[
-        bAssetInfo.converterConfig.wormhole_token_address!
-      ],
-  },
-});
+): BAssetInfoWithDisplay => {
+  const defaultAnchor = {
+    name: bAssetInfo.bAsset.name,
+    symbol: bAssetInfo.bAsset.symbol,
+    token: bAssetInfo.bAsset.collateral_token,
+    decimals: 6,
+  };
+
+  return {
+    ...bAssetInfo,
+    tokenDisplay: {
+      anchor:
+        tokenDisplayInfoByAddr[
+          bAssetInfo.converterConfig.anchor_token_address!
+        ] ?? defaultAnchor,
+      wormhole:
+        tokenDisplayInfoByAddr[
+          bAssetInfo.converterConfig.wormhole_token_address!
+        ],
+    },
+  };
+};
 
 export type BAssetInfoAndBalanceWithOracleWithDisplay =
   BAssetInfoAndBalanceWithOracle & { tokenDisplay: CW20TokenDisplayInfo };

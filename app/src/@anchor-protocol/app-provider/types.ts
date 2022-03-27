@@ -22,6 +22,7 @@ export interface AnchorContractAddress extends AppContractAddress {
   };
   liquidation: {
     liquidationContract: HumanAddr;
+    liquidationQueueContract: HumanAddr;
   };
   anchorToken: {
     gov: HumanAddr;

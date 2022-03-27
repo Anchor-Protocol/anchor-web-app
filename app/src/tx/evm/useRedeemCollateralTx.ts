@@ -1,5 +1,5 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet } from '@libs/evm-wallet';
 import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
@@ -9,7 +9,7 @@ import {
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy } from '@anchor-protocol/formatter';
@@ -84,22 +84,21 @@ export function useRedeemCollateralTx():
   const persistedTxResult = useBackgroundTx<
     RedeemCollateralTxParams,
     RedeemCollateralTxResult
-  >(
-    redeemTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => {
-      const { amount, tokenDisplay } = txParams;
-
-      const symbol = tokenDisplay?.symbol ?? 'UST';
-
-      return {
-        txKind: TxKind.RedeemCollateral,
-        amount: `${formatOutput(amount)} ${symbol}`,
-        timestamp: Date.now(),
-      };
-    },
-  );
+  >(redeemTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const displayTx = (txParams: RedeemCollateralTxParams) => {
+  const { amount, tokenDisplay } = txParams;
+
+  const symbol = tokenDisplay?.symbol ?? 'UST';
+
+  return {
+    txKind: TxKind.RedeemCollateral,
+    amount: `${formatOutput(amount)} ${symbol}`,
+    timestamp: Date.now(),
+  };
+};
+
+const parseTx = (resp: NonNullable<RedeemCollateralTxResult>) => resp.tx;

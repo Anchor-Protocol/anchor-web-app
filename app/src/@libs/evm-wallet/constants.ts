@@ -1,5 +1,6 @@
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 import { ethers } from 'ethers';
-import { Connection, EvmChainId } from './types';
+import { Connection } from './types';
 
 export const availableConnections: Connection[] = [
   {

@@ -1,6 +1,5 @@
 import { UIElementProps } from '@libs/ui';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useInterval } from 'usehooks-ts';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePersistedTx } from '../usePersistedTx';
 import { BackgroundTxRequest, BackgroundTxRequestContext } from './context';
 
@@ -89,8 +88,8 @@ export const BackgroundTxRequestProvider = ({ children }: UIElementProps) => {
   );
 
   const value = useMemo(
-    () => ({ register, getRequest }),
-    [register, getRequest],
+    () => ({ register, getRequest, updateRequest }),
+    [register, getRequest, updateRequest],
   );
 
   return (
@@ -116,20 +115,28 @@ const Request = (
     unregister: (txHash: string) => void;
   },
 ) => {
+  const updateRequest = props.updateRequest;
+  const id = props.id;
+  const onFinalize = useCallback(() => {}, []);
+  const onRegisterTxHash = useCallback(
+    (txHash) => updateRequest(id, { txHash }),
+    [updateRequest, id],
+  );
+
   const persistedTxResult = usePersistedTx(
     props.sendTx,
     props.parseTx,
     props.emptyTxResult,
     props.displayTx,
-    () => {},
-    (txHash) => props.updateRequest(props.id, { txHash }),
+    onFinalize,
+    onRegisterTxHash,
+    props.minimized,
     props.txHash,
   );
 
-  useInterval(() => {
-    props.updateRequest(props.id, { persistedTxResult });
-    // fucking rx-stream that throws random stream statuses on every render
-  }, 100);
+  useEffect(() => {
+    updateRequest(id, { persistedTxResult });
+  }, [persistedTxResult, updateRequest, id]);
 
   return <></>;
 };

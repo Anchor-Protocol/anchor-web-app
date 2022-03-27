@@ -68,10 +68,14 @@ export const useTransactions = () => {
 
   const removeTransaction = useCallback(
     (transactionHash: string) => {
-      setTransactionStore((transactionStore) => {
-        const { [transactionHash]: omit, ...rest } = transactionStore;
-        return rest;
-      });
+      setTimeout(
+        () =>
+          setTransactionStore((transactionStore) => {
+            const { [transactionHash]: omit, ...rest } = transactionStore;
+            return rest;
+          }),
+        500,
+      );
     },
     [setTransactionStore],
   );
