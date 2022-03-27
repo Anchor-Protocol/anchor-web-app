@@ -1,7 +1,7 @@
 import { truncateEvm } from '@libs/formatter';
-import { HorizontalHeavyRuler } from '@libs/neumorphism-ui/components/HorizontalHeavyRuler';
 import { SnackbarContent } from '@libs/neumorphism-ui/components/Snackbar';
 import { Snackbar, useSnackbar } from '@libs/snackbar';
+import { LinearProgress } from '@material-ui/core';
 import { Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -61,22 +61,42 @@ const TxSnackbarBase = ({
 
   return (
     <Snackbar className={className}>
-      <SnackbarContent
-        classes={{
-          root: 'snackbar-root',
-          message: 'snackbar-message',
-        }}
-        message={<TxMessage tx={tx} />}
-      />
+      <div className="tx-snackbar-container">
+        <LinearProgress className="tx-progress" />
+        <SnackbarContent
+          classes={{
+            root: 'snackbar-root',
+            message: 'snackbar-message',
+          }}
+          message={<TxMessage tx={tx} />}
+        />
+      </div>
     </Snackbar>
   );
 };
 
 export const TxSnackbar = styled(TxSnackbarBase)`
+  .tx-snackbar-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tx-progress {
+    width: 100%;
+    margin: auto;
+    transform: translateY(4px);
+    border-radius: 20px;
+    background-color: inherit;
+
+    .MuiLinearProgress-barColorPrimary {
+      background-color: ${({ theme }) => theme.colors.positive};
+    }
+  }
+
   .snackbar-root {
     background: #f6f6f7;
     box-shadow: -1px -1px 0px #ffffff, 1px 1px 1px #dbdbdb;
-    border-radius: 20px;
+    border-radius: 5px;
   }
 
   .snackbar-message {
@@ -93,52 +113,62 @@ const TxMessageBase = ({
 }) => {
   return (
     <div className={className}>
-      <figure className="icon">
-        <DoneIcon />
-      </figure>
-      <h2>Complete!</h2>
-      <HorizontalHeavyRuler />
-      <TxFeeList showRuler={false}>
-        <TxFeeListItem label={formatTxKind(tx.display.txKind)}>
-          {tx.display.amount}
-        </TxFeeListItem>
-        <TxFeeListItem label={'Tx Hash'}>
-          {truncateEvm(tx.txHash)}
-        </TxFeeListItem>
-      </TxFeeList>
+      <div className="tx-notification">
+        <figure className="icon">
+          <DoneIcon />
+        </figure>
+        <h2>Complete!</h2>
+      </div>
+      <div className="tx-display">
+        <TxFeeList showRuler={false}>
+          <TxFeeListItem label={formatTxKind(tx.display.txKind)}>
+            {tx.display.amount}
+          </TxFeeListItem>
+          <TxFeeListItem label={'Tx Hash'}>
+            {truncateEvm(tx.txHash)}
+          </TxFeeListItem>
+        </TxFeeList>
+      </div>
     </div>
   );
 };
 
 const TxMessage = styled(TxMessageBase)`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   xcolor: ${({ theme }) => theme.dimTextColor};
   width: 100%;
+  align-items: center;
 
   .icon {
     color: ${({ theme }) => theme.colors.positive};
 
     margin: 0 auto;
-    width: 6em;
-    height: 6em;
+    width: 3em;
+    height: 3em;
     border-radius: 50%;
     border: 3px solid currentColor;
     display: grid;
     place-content: center;
 
     svg {
-      font-size: 3em;
+      font-size: 1.5em;
     }
+  }
+
+  .tx-notification {
+    margin-right: 20px;
+  }
+
+  .tx-display {
+    width: 220px;
   }
 
   h2 {
     color: ${({ theme }) => theme.textColor};
     width: 100%;
     font-weight: 500;
-    font-size: 1.3em;
+    font-size: 14px;
     text-align: center;
-    margin-top: 1em;
-    margin-bottom: 1.2em;
   }
 `;
