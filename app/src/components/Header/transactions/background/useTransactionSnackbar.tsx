@@ -1,6 +1,7 @@
 import { truncateEvm } from '@libs/formatter';
 import { SnackbarContent } from '@libs/neumorphism-ui/components/Snackbar';
 import { Snackbar, useSnackbar } from '@libs/snackbar';
+import { useInterval } from '@libs/use-interval';
 import { LinearProgress } from '@material-ui/core';
 import { Done as DoneIcon } from '@material-ui/icons';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -8,6 +9,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Transaction, useTransactions } from 'tx/evm/storage/useTransactions';
 import { formatTxKind } from 'tx/evm/utils';
+import { useCounter } from 'usehooks-ts';
 
 export const useTransactionSnackbar = () => {
   const { addSnackbar } = useSnackbar();
@@ -51,9 +53,17 @@ const TxSnackbarBase = ({
   useEffect(() => {
     setTimeout(() => {
       setHidden(true);
-    }, 5000);
+    }, 3000);
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const { setCount, count } = useCounter(100);
+
+  useInterval(() => {
+    if (count > 0) {
+      setCount((count) => count - 5);
+    }
+  }, 125);
 
   if (hidden) {
     return null;
@@ -62,7 +72,11 @@ const TxSnackbarBase = ({
   return (
     <Snackbar className={className}>
       <div className="tx-snackbar-container">
-        <LinearProgress className="tx-progress" />
+        <LinearProgress
+          className="tx-progress"
+          variant="determinate"
+          value={count}
+        />
         <SnackbarContent
           classes={{
             root: 'snackbar-root',
@@ -84,7 +98,7 @@ export const TxSnackbar = styled(TxSnackbarBase)`
   .tx-progress {
     width: 100%;
     margin: auto;
-    transform: translateY(4px);
+    transform: translateY(3px);
     border-radius: 20px;
     background-color: inherit;
 
