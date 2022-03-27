@@ -22,7 +22,7 @@ export function EvmWithdrawDialog(props: DialogProps<{}, void>) {
 
   const withdrawUstTx = useWithdrawUstTx();
   const [withdraw, withdrawTxResult] = withdrawUstTx?.stream ?? [null, null];
-  const { isTxMinimizable } = withdrawUstTx?.utils ?? {};
+  const { isTxMinimizable, minimize } = withdrawUstTx?.utils ?? {};
 
   const { withdrawAmount, availablePost } = state;
 
@@ -36,6 +36,7 @@ export function EvmWithdrawDialog(props: DialogProps<{}, void>) {
           onExit={props.closeDialog}
           txStreamResult={withdrawTxResult}
           minimizable={isTxMinimizable}
+          onMinimize={minimize}
         />
       }
     >

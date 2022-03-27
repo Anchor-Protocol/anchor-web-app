@@ -11,7 +11,7 @@ import { useEvmCrossAnchorSdk } from 'crossanchor';
 const queryFn = createQueryFn(erc2020BalanceQuery);
 
 export function useERC20BalanceQuery<T extends Token>(
-  tokenAddress: ERC20Addr | undefined,
+  tokenAddress: string | undefined,
   walletAddress: EVMAddr | undefined,
 ): UseQueryResult<T | undefined> {
   const { queryErrorReporter } = useApp();
@@ -46,7 +46,7 @@ export function useERC20BalanceQuery<T extends Token>(
 }
 
 export function useERC20Balance<T extends Token>(
-  tokenAddress: ERC20Addr | undefined,
+  tokenAddress: string | undefined,
   walletAddress?: EVMAddr | undefined,
 ): u<T> {
   const { data: balance } = useERC20BalanceQuery<T>(

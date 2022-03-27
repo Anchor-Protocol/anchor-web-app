@@ -9,6 +9,7 @@ import { TxEvent } from '../useTx';
 type TxRender<TxResult> = TxResultRendering<TxResult>;
 
 export type BackgroundTxRequest<TxParams = any, TxResult = any> = {
+  minimized: boolean;
   persistedTxResult?: PersistedTxResult<TxParams, TxResult>;
   txHash?: string;
   id: string;
@@ -27,10 +28,12 @@ type BackgroundTxRequestContextValue = {
     input: { id: string } | { txHash: string },
   ) => BackgroundTxRequest | undefined;
   register: (request: BackgroundTxRequest) => void;
+  updateRequest: (id: string, updates: Partial<BackgroundTxRequest>) => void;
 };
 
 export const BackgroundTxRequestContext =
   createContext<BackgroundTxRequestContextValue>({
     register: () => {},
     getRequest: () => undefined,
+    updateRequest: () => undefined,
   });

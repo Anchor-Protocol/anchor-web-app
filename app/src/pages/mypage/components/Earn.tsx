@@ -21,6 +21,7 @@ import { EmptySection } from 'pages/mypage/components/EmptySection';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useBalances } from 'contexts/balances';
+import Big from 'big.js';
 
 export interface EarnProps {
   className?: string;
@@ -37,7 +38,7 @@ function EarnBase({ className }: EarnProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { uaUST } = useBalances();
+  const { uUST, uaUST } = useBalances();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 
@@ -109,7 +110,9 @@ function EarnBase({ className }: EarnProps) {
             <td>{formatUSTWithPostfixUnits(demicrofy(totalDeposit))} UST</td>
             <td>
               <ActionButton
-                disabled={!connected || !moneyMarketEpochState}
+                disabled={
+                  !connected || !moneyMarketEpochState || Big(uUST).lte(0)
+                }
                 onClick={openDeposit}
               >
                 Deposit
