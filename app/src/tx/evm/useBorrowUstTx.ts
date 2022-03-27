@@ -107,7 +107,9 @@ export function useBorrowUstTx():
   const persistedTxResult = useBackgroundTx<
     BorrowUstTxParams,
     BorrowUstTxResult
-  >(borrowTx, (resp) => resp.tx, null, displayTx);
+  >(borrowTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const parseTx = (resp: NonNullable<BorrowUstTxResult>) => resp.tx;
