@@ -1,29 +1,29 @@
 {
-  "private": true,
   "version": "0.1.0",
-  "author": "SSen <ian@ssen.name>",
   "license": "Apache-2.0",
-  "repository": "github:Anchor-Protocol/anchor",
+  "private": true,
+  "repository": "github:anchor-protocol/anchor-web-app",
+  "author": "Anchor Protocol <info@anchorprotocol.com>",
   "workspaces": [
     "app",
     "landing"
   ],
   "scripts": {
-    "format": "prettier --write \"**/*.{js,ts,tsx}\"",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "app:start": "yarn workspace @anchor-web-app/app run start",
     "app:build": "yarn workspace @anchor-web-app/app run build",
-    "app:test": "yarn workspace @anchor-web-app/app run test",
+    "app:build-storybook": "yarn workspace @anchor-web-app/app run build-storybook",
     "app:coverage": "yarn workspace @anchor-web-app/app run coverage",
     "app:pack": "yarn workspace @anchor-web-app/app run pack",
     "app:publish": "yarn workspace @anchor-web-app/app run publish",
+    "app:start": "yarn workspace @anchor-web-app/app run start",
     "app:storybook": "yarn workspace @anchor-web-app/app run storybook",
-    "app:build-storybook": "yarn workspace @anchor-web-app/app run build-storybook",
-    "landing:start": "yarn workspace @anchor-web-app/landing run start",
-    "landing:build": "yarn workspace @anchor-web-app/landing run build",
-    "landing:test": "yarn workspace @anchor-web-app/landing run test",
-    "landing:coverage": "yarn workspace @anchor-web-app/landing run coverage",
+    "app:test": "yarn workspace @anchor-web-app/app run test",
+    "format": "prettier --write \"**/*.{js,ts,tsx}\"",
     "graphql:download-schema": "apollo client:download-schema --endpoint \"https://bombay-mantle.terra.dev\" \"schema.graphql\"",
+    "landing:build": "yarn workspace @anchor-web-app/landing run build",
+    "landing:coverage": "yarn workspace @anchor-web-app/landing run coverage",
+    "landing:start": "yarn workspace @anchor-web-app/landing run start",
+    "landing:test": "yarn workspace @anchor-web-app/landing run test",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "markdown:build": "markdown-source-import **/src/**/*.md",
     "postinstall": "husky install"
   },
@@ -33,27 +33,26 @@
       "eslint --max-warnings 0"
     ]
   },
-  "devDependencies": {
-    "@handbook/markdown-source-import": "^1.1.0",
-    "@ssen/prettier-config": "^2.0.1",
-    "@types/eslint": "^7.2.14",
-    "@types/prettier": "^2.3.2",
-    "apollo": "^2.33.9",
-    "eslint": "^7.30.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-config-react-app": "^6.0.0",
-    "husky": "^7.0.1",
-    "jest-bin": "^0.3.0",
-    "lint-staged": "^11.0.0",
-    "prettier": "^2.3.2"
-  },
-  "peerDependencies": {
-    "eslint-config-react-app": "6.0.0"
-  },
   "resolutions": {
     "@material-ui/core": "4.11.3",
     "babel-loader": "8.1.0",
     "webpack": "4.44.2",
     "@terra-money/terra.js": "3.0.2"
+  },
+  "devDependencies": {
+    "@handbook/markdown-source-import": "^1.1.0",
+    "@ssen/prettier-config": "^2.0.1",
+    "@types/eslint": "^7.2.14",
+    "@types/prettier": "^2.3.2",
+    "@typescript-eslint/parser": "^5.16.0",
+    "apollo": "^2.33.9",
+    "eslint": "^7.30.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-react-app": "^7.0.0",
+    "husky": "^7.0.1",
+    "jest-bin": "^0.3.0",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.3.2",
+    "typescript": "^4.6.2"
   }
 }
