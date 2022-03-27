@@ -196,12 +196,15 @@ export const EVM_ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
 };
 
 export const errorContains = (error: any, message: string) =>
-  String(error?.data?.message ?? error?.message).includes(message);
+  String(error?.data?.message ?? error?.message ?? error?.reason).includes(
+    message,
+  );
 
 export enum TxError {
   TxHashInvalid = 'invalid hash',
   TxAlreadyProcessed = 'execution reverted: transfer info already processed',
   TxInvalid = 'Transaction invalid. Action sequence missing.',
+  TxFailed = 'transaction failed',
 }
 
 export const formatError = (error: any, txError: TxError) => {
@@ -218,5 +221,7 @@ const formatTxError = (txError: TxError) => {
       return 'Transaction already processed.';
     case TxError.TxInvalid:
       return 'Not a valid xAnchor transaction (action sequence missing).';
+    case TxError.TxFailed:
+      return 'Transaction failed.';
   }
 };

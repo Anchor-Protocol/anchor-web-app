@@ -8,7 +8,7 @@ import { Subject } from 'rxjs';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 import { useTransactions } from './storage';
 import { TxEvent, useTx } from './useTx';
-import { errorContains, TxError } from './utils';
+import { errorContains, formatError, TxError } from './utils';
 
 type TxResult = CrossChainTxResponse<ContractReceipt> | null;
 type TxRender = TxResultRendering<TxResult>;
@@ -52,6 +52,10 @@ export const useRestoreTx = () => {
         if (errorContains(error, TxError.TxAlreadyProcessed)) {
           removeTransaction(txParams.txHash);
           return null;
+        }
+
+        if (errorContains(error, TxError.TxFailed)) {
+          throw new Error(formatError(error, TxError.TxFailed));
         }
 
         console.log(error);
