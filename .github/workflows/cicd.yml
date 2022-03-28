@@ -59,9 +59,7 @@ jobs:
         run: yarn run lint
 
       - name: Set app version
-        run: |
-          echo "${GITHUB_REF#refs/*/}:$(date +'%Y-%m-%dT%H:%M:%S')"
-          echo "VITE_APP_VERSION=${GITHUB_REF#refs/*/}:$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+        run: echo "VITE_APP_VERSION=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
       #
       #- name: Test
       #  run: |
@@ -78,6 +76,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           yarn run app:build
+          echo "!!! app version: $VITE_APP_VERSION"
           echo "::set-output name=hash::${{ runner.os }}-app-$(git rev-parse --short HEAD)"
           sed -i '/build/d' ./app/.gitignore
 
