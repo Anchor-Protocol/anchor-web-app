@@ -30,7 +30,6 @@ function FooterBase({ className, style }: FooterProps) {
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
   const { themeColor, switchable, updateTheme } = useTheme();
-
   const appVersion = process.env.APP_VERSION;
 
   return (
