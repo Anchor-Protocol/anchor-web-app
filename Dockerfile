@@ -1,8 +1,11 @@
 ARG BUILD_ENV=local
 
 # local
-FROM --platform=linux/amd64 node:lts-alpine AS build-local
+FROM node:lts AS build-local
 WORKDIR /src
+
+RUN apt update && \
+	apt install -y python chromium
 
 COPY yarn.lock ./
 COPY . .
@@ -18,7 +21,7 @@ COPY . .
 FROM build-${BUILD_ENV} AS build
 
 # release
-FROM --platform=${BUILDPLATFORM} nginx:stable-alpine AS release
+FROM nginx:stable-alpine AS release
 LABEL org.opencontainers.image.source=https://github.com/anchor-protocol/anchor-web-app
 
 COPY --from=build /src/app/build /usr/share/nginx/html

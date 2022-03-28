@@ -56,7 +56,7 @@ export const useResumeTx = (
 
   const persistedTxResult = useBackgroundTx<ResumeTxParams, ResumeTxResult>(
     backgroundTx,
-    (resp) => resp.tx,
+    parseTx,
     null,
     displayTx,
     tx,
@@ -64,3 +64,5 @@ export const useResumeTx = (
 
   return persistedTxResult;
 };
+
+const parseTx = (resp: NonNullable<ResumeTxResult>) => resp.tx;

@@ -3,6 +3,7 @@ import {
   DeploymentTarget,
   OverseerWhitelistWithDisplay,
 } from '@anchor-protocol/app-provider';
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 import { CW20Addr, ERC20Addr } from '@anchor-protocol/types';
 import {
   ChainId,
@@ -16,7 +17,6 @@ import {
   hexToUint8Array,
   uint8ArrayToNative,
 } from '@certusone/wormhole-sdk';
-import { EvmChainId } from '@libs/evm-wallet';
 import { LCDClient } from '@terra-money/terra.js';
 import { NetworkInfo } from '@terra-money/use-wallet';
 import { ethers } from 'ethers';

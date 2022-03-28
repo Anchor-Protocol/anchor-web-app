@@ -1,5 +1,5 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
@@ -9,7 +9,7 @@ import {
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
@@ -41,6 +41,10 @@ export function useBorrowUstTx():
     chainId = EvmChainId.ETHEREUM_ROPSTEN,
   } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
+
+  const {
+    ust: { formatOutput, demicrofy },
+  } = useFormatters();
 
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
@@ -79,22 +83,16 @@ export function useBorrowUstTx():
             collateralAmount.toString(),
             address!,
             TX_GAS_LIMIT,
-            (event) => {
-              txEvents.next({ event, txParams });
-            },
           );
         }
 
         writer.approveUST();
 
         await xAnchor.approveLimit(
-          { token: 'ust' },
+          { token: 'UST' },
           borrowAmount,
           address!,
           TX_GAS_LIMIT,
-          (event) => {
-            txEvents.next({ event, txParams });
-          },
         );
 
         writer.borrowUST();
@@ -146,25 +144,21 @@ export function useBorrowUstTx():
     [address, connectType, xAnchor, chainId, refetchQueries],
   );
 
-  const {
-    ust: { demicrofy, formatOutput },
-  } = useFormatters();
+  const displayTx = useCallback(
+    (txParams: BorrowUstTxParams) => ({
+      txKind: TxKind.BorrowUst,
+      amount: `${formatOutput(demicrofy(txParams.borrowAmount))} UST`,
+      timestamp: Date.now(),
+    }),
+    [formatOutput, demicrofy],
+  );
 
   const persistedTxResult = useBackgroundTx<
     BorrowUstTxParams,
     BorrowUstTxResult
-  >(
-    borrowTx,
-    (resp) => resp.tokenTransfer,
-    null,
-    (txParams) => {
-      return {
-        txKind: TxKind.BorrowUst,
-        amount: `${formatOutput(demicrofy(txParams.borrowAmount))} UST`,
-        timestamp: Date.now(),
-      };
-    },
-  );
+  >(borrowTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const parseTx = (resp: NonNullable<BorrowUstTxResult>) => resp.tx;

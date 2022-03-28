@@ -1,5 +1,5 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet } from '@libs/evm-wallet';
 import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
@@ -9,7 +9,7 @@ import {
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { EvmChainId, OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy } from '@anchor-protocol/formatter';
@@ -65,9 +65,6 @@ export function useProvideCollateralTx():
           microfy(amount, erc20Decimals),
           address!,
           TX_GAS_LIMIT,
-          (event) => {
-            txEvents.next({ event, txParams });
-          },
         );
 
         writer.provideCollateral(symbol);
@@ -100,22 +97,21 @@ export function useProvideCollateralTx():
   const persistedTxResult = useBackgroundTx<
     ProvideCollateralTxParams,
     ProvideCollateralTxResult
-  >(
-    provideTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => {
-      const { amount, tokenDisplay } = txParams;
-
-      const symbol = tokenDisplay?.symbol ?? 'UST';
-
-      return {
-        txKind: TxKind.ProvideCollateral,
-        amount: `${formatOutput(amount)} ${symbol}`,
-        timestamp: Date.now(),
-      };
-    },
-  );
+  >(provideTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const displayTx = (txParams: ProvideCollateralTxParams) => {
+  const { amount, tokenDisplay } = txParams;
+
+  const symbol = tokenDisplay?.symbol ?? 'UST';
+
+  return {
+    txKind: TxKind.ProvideCollateral,
+    amount: `${formatOutput(amount)} ${symbol}`,
+    timestamp: Date.now(),
+  };
+};
+
+const parseTx = (resp: NonNullable<ProvideCollateralTxResult>) => resp.tx;

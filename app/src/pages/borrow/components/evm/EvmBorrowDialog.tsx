@@ -61,7 +61,7 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   const { ust } = useFormatters();
 
   const borrowUstTx = useBorrowUstTx();
-  const { isTxMinimizable } = borrowUstTx?.utils ?? {};
+  const { isTxMinimizable, minimize } = borrowUstTx?.utils ?? {};
   const [postBorrowUstTx, borrowUstTxResult] = borrowUstTx?.stream ?? [
     null,
     null,
@@ -122,6 +122,7 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
           onExit={closeDialog}
           resultRendering={txResult.value}
           minimizable={isTxMinimizable}
+          onMinimize={minimize}
         />
       )}
     />

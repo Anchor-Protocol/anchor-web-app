@@ -7,8 +7,8 @@ import styled from 'styled-components';
 import { TokenList, TokenListType } from '../TokenList';
 import { Link } from 'react-router-dom';
 import { WithdrawableAssets } from './WithdrawableAssets';
-import { getAddress } from 'configurations/evm/addresses';
 import { useFormatters } from '@anchor-protocol/formatter';
+import { useEvmCrossAnchorSdk } from 'crossanchor';
 
 type Action = () => void;
 
@@ -31,13 +31,14 @@ const ContentBase = (props: ContentProps) => {
   const [adding, setAdding] = useState(false);
 
   const formatters = useFormatters();
+  const evmSdk = useEvmCrossAnchorSdk();
 
   const onAddToken = (token: TokenListType) => {
     if (chainId) {
       switch (token) {
         case 'UST':
           watchAsset({
-            address: getAddress(chainId, token),
+            address: evmSdk.config.token.UST,
             symbol: formatters.ust.symbol,
             decimals: formatters.ust.decimals,
             image:
@@ -46,7 +47,7 @@ const ContentBase = (props: ContentProps) => {
           break;
         case 'aUST':
           watchAsset({
-            address: getAddress(chainId, token),
+            address: evmSdk.config.token.aUST,
             symbol: formatters.aUST.symbol,
             decimals: formatters.aUST.decimals,
             image:
@@ -55,7 +56,7 @@ const ContentBase = (props: ContentProps) => {
           break;
         case 'ANC':
           watchAsset({
-            address: getAddress(chainId, token),
+            address: evmSdk.config.token.ANC,
             symbol: formatters.anc.symbol,
             decimals: formatters.anc.decimals,
             image:

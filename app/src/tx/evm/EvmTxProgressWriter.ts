@@ -1,25 +1,24 @@
 import {
   CrossChainEvent,
   CrossChainEventKind,
+  EvmChainId,
 } from '@anchor-protocol/crossanchor-sdk';
 import { TxReceiptLike, TxResultRendering } from '@libs/app-fns';
-import { EvmChainId, ConnectType } from '@libs/evm-wallet';
+import { ConnectType } from '@libs/evm-wallet';
 import { ContractReceipt } from 'ethers';
 import { Subject } from 'rxjs';
 import { TxProgressWriter } from './TxProgressWriter';
 import { capitalize } from './utils';
 
 const DEFAULT_STATUS = new Map<CrossChainEventKind, string>([
-  [CrossChainEventKind.RemoteChainApprovalRequested, 'Approving'],
-  [CrossChainEventKind.RemoteChainApprovalSubmitted, 'Approving'],
-  [CrossChainEventKind.RemoteChainTxRequested, 'Pending'],
-  [CrossChainEventKind.RemoteChainTxSubmitted, 'Pending'],
-  [CrossChainEventKind.RemoteChainTxExecuted, 'Pending'],
-  [CrossChainEventKind.RemoteChainVAAsRetrieved, 'Bridging'],
+  [CrossChainEventKind.IncomingTxRequested, 'Pending'],
+  [CrossChainEventKind.IncomingTxSubmitted, 'Pending'],
+  [CrossChainEventKind.IncomingTxExecuted, 'Pending'],
+  [CrossChainEventKind.IncomingVAAsRetrieved, 'Bridging'],
   [CrossChainEventKind.OutgoingSequenceRetrieved, 'Bridging'],
-  [CrossChainEventKind.TerraVAAsRetrieved, 'Bridging'],
-  [CrossChainEventKind.RemoteChainReturnTxRequested, 'Completing'],
-  [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Completing'],
+  [CrossChainEventKind.OutgoingVAAsRetrieved, 'Bridging'],
+  [CrossChainEventKind.OutgoingTxRequested, 'Completing'],
+  [CrossChainEventKind.OutgoingTxSubmitted, 'Completing'],
   [CrossChainEventKind.CrossChainTxCompleted, 'Complete'],
 ]);
 
@@ -47,6 +46,12 @@ export class EvmTxProgressWriter<
     this.write({
       message: `Approve your spend limit for ${symbol}`,
       description: this._description,
+      receipts: [
+        {
+          name: 'Status',
+          value: 'Approving',
+        },
+      ],
     });
   }
 
@@ -76,8 +81,8 @@ export class EvmTxProgressWriter<
   public depositUST(event?: CrossChainEvent<ContractReceipt>) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [CrossChainEventKind.RemoteChainTxSubmitted, 'Depositing'],
-      [CrossChainEventKind.RemoteChainTxExecuted, 'Depositing'],
+      [CrossChainEventKind.IncomingTxSubmitted, 'Depositing'],
+      [CrossChainEventKind.IncomingTxExecuted, 'Depositing'],
     ]);
     this.write((current) => {
       return {
@@ -92,8 +97,8 @@ export class EvmTxProgressWriter<
   public withdrawUST(event?: CrossChainEvent<ContractReceipt>) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Withdrawing'],
-      [CrossChainEventKind.RemoteChainReturnTxRequested, 'Withdrawing'],
+      [CrossChainEventKind.OutgoingTxSubmitted, 'Withdrawing'],
+      [CrossChainEventKind.OutgoingTxRequested, 'Withdrawing'],
     ]);
     this.write((current) => {
       return {
@@ -111,8 +116,8 @@ export class EvmTxProgressWriter<
   ) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Borrowing'],
-      [CrossChainEventKind.RemoteChainReturnTxRequested, 'Borrowing'],
+      [CrossChainEventKind.OutgoingTxSubmitted, 'Borrowing'],
+      [CrossChainEventKind.OutgoingTxRequested, 'Borrowing'],
     ]);
 
     // TODO: output the collateral information to the TxReceipt in the form of
@@ -131,8 +136,8 @@ export class EvmTxProgressWriter<
   public repayUST(event?: CrossChainEvent<ContractReceipt>) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [CrossChainEventKind.RemoteChainTxSubmitted, 'Repaying'],
-      [CrossChainEventKind.RemoteChainTxExecuted, 'Repaying'],
+      [CrossChainEventKind.IncomingTxSubmitted, 'Repaying'],
+      [CrossChainEventKind.IncomingTxExecuted, 'Repaying'],
     ]);
     this.write((current) => {
       return {
@@ -150,8 +155,8 @@ export class EvmTxProgressWriter<
   ) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [CrossChainEventKind.RemoteChainTxSubmitted, `Providing ${symbol}`],
-      [CrossChainEventKind.RemoteChainTxExecuted, `Providing ${symbol}`],
+      [CrossChainEventKind.IncomingTxSubmitted, `Providing ${symbol}`],
+      [CrossChainEventKind.IncomingTxExecuted, `Providing ${symbol}`],
     ]);
     this.write((current) => {
       return {
@@ -166,8 +171,8 @@ export class EvmTxProgressWriter<
   public claimRewards(event?: CrossChainEvent<ContractReceipt>) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [CrossChainEventKind.RemoteChainTxSubmitted, `Claiming`],
-      [CrossChainEventKind.RemoteChainTxExecuted, `Claiming`],
+      [CrossChainEventKind.IncomingTxSubmitted, `Claiming`],
+      [CrossChainEventKind.IncomingTxExecuted, `Claiming`],
     ]);
     this.write((current) => {
       return {
@@ -182,8 +187,8 @@ export class EvmTxProgressWriter<
   public restoreTx(event?: CrossChainEvent<ContractReceipt>) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [CrossChainEventKind.RemoteChainReturnTxSubmitted, 'Restoring'],
-      [CrossChainEventKind.RemoteChainReturnTxRequested, 'Restoring'],
+      [CrossChainEventKind.OutgoingTxSubmitted, 'Restoring'],
+      [CrossChainEventKind.OutgoingTxRequested, 'Restoring'],
     ]);
     this.write((current) => {
       return {
@@ -201,14 +206,8 @@ export class EvmTxProgressWriter<
   ) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [
-        CrossChainEventKind.RemoteChainReturnTxSubmitted,
-        `Withdrawing ${symbol}`,
-      ],
-      [
-        CrossChainEventKind.RemoteChainReturnTxRequested,
-        `Withdrawing ${symbol}`,
-      ],
+      [CrossChainEventKind.OutgoingTxSubmitted, `Withdrawing ${symbol}`],
+      [CrossChainEventKind.OutgoingTxRequested, `Withdrawing ${symbol}`],
     ]);
     this.write((current) => {
       return {
