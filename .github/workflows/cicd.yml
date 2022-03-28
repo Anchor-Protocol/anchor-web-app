@@ -76,7 +76,6 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           yarn run app:build
-          echo "!!! app version: $VITE_APP_VERSION"
           echo "::set-output name=hash::${{ runner.os }}-app-$(git rev-parse --short HEAD)"
           sed -i '/build/d' ./app/.gitignore
 
