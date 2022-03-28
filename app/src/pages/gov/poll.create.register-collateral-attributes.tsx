@@ -92,7 +92,9 @@ export function PollCreateRegisterCollateralAttributes() {
       const registerWhiteListCollateral: liquidation.liquidationQueueContract.WhitelistCollateral['whitelist_collateral'] =
         {
           collateral_token: tokenContractAddress as CW20Addr,
-          bid_threshold: bidThreshold as u<UST>,
+          bid_threshold: (
+            parseFloat(bidThreshold) * 1000000
+          ).toString() as u<UST>,
           max_slot: parseInt(maxSlot, 10) as number,
           premium_rate_per_slot: premiumRatePerSlot as Rate,
         };
@@ -313,8 +315,8 @@ export function PollCreateRegisterCollateralAttributes() {
 
       <NumberInput
         placeholder="0"
-        maxIntegerPoinsts={27}
-        maxDecimalPoints={0}
+        maxIntegerPoinsts={21}
+        maxDecimalPoints={6}
         value={bidThreshold}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setBidThreshold(target.value)
