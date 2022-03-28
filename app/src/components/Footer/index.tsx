@@ -30,12 +30,13 @@ function FooterBase({ className, style }: FooterProps) {
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
   const { themeColor, switchable, updateTheme } = useTheme();
+
   const appVersion = process.env.APP_VERSION;
 
   return (
     <footer className={className} style={style}>
       <Info>
-        {appVersion && <p>{appVersion}</p>}
+        {appVersion && <p>version: {appVersion}</p>}
         <a
           href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
           target="_blank"
