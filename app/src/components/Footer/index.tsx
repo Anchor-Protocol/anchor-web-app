@@ -36,6 +36,7 @@ function FooterBase({ className, style }: FooterProps) {
   return (
     <footer className={className} style={style}>
       <Info>
+        <p>test!</p>
         {appVersion && <p>version: {appVersion}</p>}
         <a
           href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
