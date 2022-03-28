@@ -59,7 +59,9 @@ jobs:
         run: yarn run lint
 
       - name: Set app version
-        run: echo "APP_VERSION=${GITHUB_REF#refs/*/}:$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+        run: |
+          echo "${GITHUB_REF#refs/*/}:$(date +'%Y-%m-%dT%H:%M:%S')"
+          echo "VITE_APP_VERSION=${GITHUB_REF#refs/*/}:$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
       #
       #- name: Test
       #  run: |

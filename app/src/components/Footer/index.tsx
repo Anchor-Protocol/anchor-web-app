@@ -31,12 +31,12 @@ function FooterBase({ className, style }: FooterProps) {
 
   const { themeColor, switchable, updateTheme } = useTheme();
 
-  const appVersion = process.env.APP_VERSION;
+  const appVersion = import.meta.env.VITE_APP_VERSION;
 
   return (
     <footer className={className} style={style}>
       <Info>
-        <p>test!</p>
+        <p>test 1!</p>
         {appVersion && <p>version: {appVersion}</p>}
         <a
           href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
