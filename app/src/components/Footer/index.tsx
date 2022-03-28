@@ -31,9 +31,12 @@ function FooterBase({ className, style }: FooterProps) {
 
   const { themeColor, switchable, updateTheme } = useTheme();
 
+  const appVersion = process.env.APP_VERSION;
+
   return (
     <footer className={className} style={style}>
-      <div>
+      <Info>
+        {appVersion && <p>{appVersion}</p>}
         <a
           href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
           target="_blank"
@@ -48,10 +51,8 @@ function FooterBase({ className, style }: FooterProps) {
           </IconSpan>
         </a>
 
-        <Link to="/terms" style={{ marginLeft: 28 }}>
-          Terms
-        </Link>
-      </div>
+        <Link to="/terms">Terms</Link>
+      </Info>
       <div>
         <IconButton
           component="a"
@@ -136,4 +137,10 @@ export const Footer = styled(FooterBase)`
   @media (max-width: ${screen.tablet.max}px) {
     flex-direction: column;
   }
+`;
+
+const Info = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 28px;
 `;

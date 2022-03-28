@@ -6,10 +6,10 @@ on:
     branches:
       - master
       - develop
-      - "release/*"
+      - 'release/*'
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
-      - "v[0-9]+.[0-9]+.[0-9]+-rc*" # Push events to matching v*, i.e. v1.0-rc1, v20.15.10-rc5
+      - 'v[0-9]+.[0-9]+.[0-9]+' # Push events to matching v*, i.e. v1.0, v20.15.10
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc*' # Push events to matching v*, i.e. v1.0-rc1, v20.15.10-rc5
 
 env:
   NODE_VERSION: 16
@@ -57,12 +57,12 @@ jobs:
 
       - name: Lint
         run: yarn run lint
-#
+      #
       #- name: Test
       #  run: |
       #    yarn run app:coverage
       #    yarn run landing:coverage
-#
+      #
       #- name: Upload coverage to Codecov
       #  uses: codecov/codecov-action@v1
       #  with:
@@ -74,6 +74,7 @@ jobs:
         run: |
           yarn run app:build
           echo "::set-output name=hash::${{ runner.os }}-app-$(git rev-parse --short HEAD)"
+          echo "APP_VERSION=${GITHUB_REF#refs/*/}:$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
           sed -i '/build/d' ./app/.gitignore
 
       - name: Store build artifacts
