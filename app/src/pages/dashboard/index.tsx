@@ -38,6 +38,7 @@ import { findPrevDay } from './components/internal/axisUtils';
 import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
 import { CollateralMarket } from './components/CollateralMarket';
+import { useRewards } from 'pages/mypage/logics/useRewards';
 
 export interface DashboardProps {
   className?: string;
@@ -107,28 +108,31 @@ function DashboardBase({ className }: DashboardProps) {
     };
   }, [marketCollaterals?.now, marketDepositAndBorrow?.now, marketUST]);
 
+  const { ancPrice: ancPriceUST } = useRewards();
+
   const ancPrice = useMemo(() => {
     if (!marketANC || marketANC.history.length === 0) {
       return undefined;
     }
 
     const last = marketANC.now;
+    const lastPrice = ancPriceUST?.ANCPrice ?? last.anc_price;
     const last1DayBefore =
       marketANC.history.find(findPrevDay(last.timestamp)) ??
       marketANC.history[marketANC.history.length - 2] ??
       marketANC.history[marketANC.history.length - 1];
 
     return {
-      ancPriceDiff: big(
-        big(last.anc_price).minus(last1DayBefore.anc_price),
-      ).div(last1DayBefore.anc_price) as Rate<Big>,
-      ancPrice: last.anc_price,
+      ancPriceDiff: big(big(lastPrice).minus(last1DayBefore.anc_price)).div(
+        last1DayBefore.anc_price,
+      ) as Rate<Big>,
+      ancPrice: lastPrice,
       circulatingSupply: last.anc_circulating_supply,
-      ancMarketCap: big(last.anc_price).mul(last.anc_circulating_supply) as u<
+      ancMarketCap: big(lastPrice).mul(last.anc_circulating_supply) as u<
         UST<Big>
       >,
     };
-  }, [marketANC]);
+  }, [marketANC, ancPriceUST]);
 
   const stableCoin = useMemo(() => {
     if (
