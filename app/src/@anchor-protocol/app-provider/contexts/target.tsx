@@ -57,6 +57,14 @@ const useDeploymentTarget = (): UseDeploymentTargetReturn => {
   return context;
 };
 
+const safeChain = (chain?: string) => {
+  if (Boolean(DEPLOYMENT_TARGETS.find((d) => d.chain === chain))) {
+    return chain;
+  }
+
+  return Chain.Terra;
+};
+
 const DeploymentTargetProvider = (props: UIElementProps) => {
   const { children } = props;
 
@@ -65,7 +73,7 @@ const DeploymentTargetProvider = (props: UIElementProps) => {
     DEPLOYMENT_TARGETS[0].chain,
   );
 
-  const chain = storedChain || Chain.Terra;
+  const chain = safeChain(storedChain);
 
   const [target, updateTarget] = useState(
     DEPLOYMENT_TARGETS.filter((target) => target.chain === chain)[0],
