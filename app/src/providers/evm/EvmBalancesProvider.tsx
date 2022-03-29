@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { BalancesContext } from 'contexts/balances';
 import { AnchorBalances } from '@anchor-protocol/app-fns';
@@ -17,14 +17,22 @@ const EvmBalancesProvider = ({ children }: UIElementProps) => {
 
   const ANC = useERC20Balance<ANC>(evmSdk.config.token.ANC);
 
+  const fetchBalance = useCallback(
+    (wallet: string, token: string): Promise<string> => {
+      return evmSdk.balance(token, wallet);
+    },
+    [evmSdk],
+  );
+
   const balances = useMemo<AnchorBalances>(() => {
     return {
       uNative: native.toString() as u<Native>,
       uUST: ust,
       uaUST: aUST,
       uANC: ANC,
+      fetchBalance,
     };
-  }, [native, ust, aUST, ANC]);
+  }, [native, ust, aUST, ANC, fetchBalance]);
 
   return (
     <BalancesContext.Provider value={balances}>

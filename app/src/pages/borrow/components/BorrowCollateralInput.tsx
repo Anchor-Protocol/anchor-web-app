@@ -1,17 +1,18 @@
 import { useWhitelistCollateralQuery } from '@anchor-protocol/app-provider';
-import { CollateralAmount, u } from '@anchor-protocol/types';
+import { CollateralAmount, CW20Addr, u } from '@anchor-protocol/types';
 import {
   HorizontalGraphBar,
   Rect,
 } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@libs/neumorphism-ui/components/HorizontalGraphSlider';
 import Big from 'big.js';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { CollateralInput, CollateralInputProps } from './CollateralInput';
 import { useTheme } from 'styled-components';
 import { formatDemimal } from '@libs/formatter';
 import { UIElementProps } from 'components/layouts/UIElementProps';
+import { WhitelistCollateral } from '@anchor-protocol/app-fns';
 
 interface Data {
   label: string;
@@ -67,36 +68,33 @@ const Component = (props: BorrowCollateralInputProps) => {
 
   const { data: whitelist = [] } = useWhitelistCollateralQuery();
 
-  const minCollateralAmount = Big(3410000) as u<CollateralAmount<Big>>;
+  const maxAmount = Big(10000000) as u<CollateralAmount<Big>>;
 
-  // TODO: need to fetch this with a callback like onBalanceRequested
-  const maxCollateralAmount = Big(10000000) as u<CollateralAmount<Big>>;
+  const [selected, setSelected] = useState<WhitelistCollateral | undefined>();
+
+  const onCollateralChange = useCallback(
+    (token: CW20Addr) => {
+      console.log('onCollateralChange');
+      setSelected(
+        whitelist.find((collateral) => collateral.collateral_token === token),
+      );
+    },
+    [whitelist, setSelected],
+  );
+
+  //HERE: load balances as well
+  console.log('selected', selected);
 
   const onLtvChange = useCallback(
     (nextLtv: number) => {
       onAmountChange(
-        Big(maxCollateralAmount).mul(trunc(nextLtv)) as u<
-          CollateralAmount<Big>
-        >,
+        Big(maxAmount).mul(trunc(nextLtv)) as u<CollateralAmount<Big>>,
       );
     },
-    [onAmountChange, maxCollateralAmount],
+    [onAmountChange, maxAmount],
   );
 
-  const minRatio = minCollateralAmount.div(maxCollateralAmount).toNumber();
-
-  // const ratio = amount
-  //   ? minCollateralAmount.plus(amount).div(maxCollateralAmount).toNumber()
-  //   : 0;
-
-  // const ratio = minCollateralAmount
-  //   .plus(amount ?? 0)
-  //   .div(maxCollateralAmount)
-  //   .toNumber();
-
-  //HERE: probably should start with the current amount and allow to withdraw perhaps?
-
-  const ratio = amount ? amount.div(maxCollateralAmount).toNumber() : 0;
+  const ratio = amount ? amount.div(maxAmount).toNumber() : 0;
 
   return (
     <div className={className}>
@@ -104,7 +102,7 @@ const Component = (props: BorrowCollateralInputProps) => {
       <CollateralInput
         collateral={whitelist}
         amount={amount}
-        onTokenChange={(value) => {}}
+        onTokenChange={onCollateralChange}
         onAmountChange={onAmountChange}
       />
       <HorizontalGraphBar<Data>
@@ -125,9 +123,9 @@ const Component = (props: BorrowCollateralInputProps) => {
         {(coordinateSpace) => (
           <HorizontalGraphSlider
             coordinateSpace={coordinateSpace}
-            min={minRatio}
+            min={0}
             max={1}
-            start={minRatio}
+            start={0}
             end={1}
             value={ratio}
             onChange={onLtvChange}
