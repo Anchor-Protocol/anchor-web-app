@@ -270,7 +270,9 @@ function DashboardBase({ className }: DashboardProps) {
                     )}
                   </h2>
                   <p className="amount">
-                    {ancPrice ? formatUST(ancPrice.ancPrice) : 0}
+                    <AnimateNumber format={formatUST}>
+                      {ancPrice ? ancPrice.ancPrice : (0 as u<UST<number>>)}
+                    </AnimateNumber>
                     <span>UST</span>
                   </p>
                 </div>
