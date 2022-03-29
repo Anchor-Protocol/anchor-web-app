@@ -7,18 +7,20 @@ import { IconButton } from '@material-ui/core';
 import {
   Brightness3,
   Brightness5,
-  FiberManualRecord,
   GitHub,
   Telegram,
   Twitter,
 } from '@material-ui/icons';
-import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { useTheme } from 'contexts/theme';
 import { screen } from 'env';
 import c from 'color';
 import React, { CSSProperties } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { useEvmBlockNumber } from '@anchor-protocol/app-provider/queries/evm/evmBlockNumber';
+import { BlockInfo } from './BlockInfo';
+import { Chain } from '@anchor-protocol/app-provider';
 
 export interface FooterProps {
   className?: string;
@@ -28,6 +30,11 @@ export interface FooterProps {
 function FooterBase({ className, style }: FooterProps) {
   const { network } = useNetwork();
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
+
+  const {
+    target: { isEVM, chain },
+  } = useDeploymentTarget();
+  const evmBlockNumber = useEvmBlockNumber();
 
   const { themeColor, switchable, updateTheme } = useTheme();
 
@@ -43,16 +50,20 @@ function FooterBase({ className, style }: FooterProps) {
           target="_blank"
           rel="noreferrer"
         >
-          <IconSpan>
-            <FiberManualRecord className="point" />{' '}
-            {network.name.toLowerCase().indexOf('mainnet') !== 0 && (
-              <b>[{network.name.toUpperCase()}] </b>
-            )}
-            Latest Block: {lastSyncedHeight}
-          </IconSpan>
+          <BlockInfo
+            chainName={Chain.Terra}
+            networkName={network.name}
+            blockNumber={lastSyncedHeight}
+          />
         </a>
 
-        <Link to="/terms">Terms</Link>
+        {isEVM && evmBlockNumber && (
+          <BlockInfo blockNumber={evmBlockNumber} chainName={chain} />
+        )}
+
+        <Link to="/terms" style={{ marginLeft: 28 }}>
+          Terms
+        </Link>
       </Info>
       <div>
         <IconButton
