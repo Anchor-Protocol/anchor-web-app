@@ -11,7 +11,7 @@ export function useEvmBlockNumber() {
     [ANCHOR_QUERY_KEY.EVM_BLOCK_NUMBER, provider?.network?.chainId],
     async () => {
       const blockNumber = await provider?.getBlockNumber();
-      console.log(provider);
+
       return blockNumber;
     },
     {
