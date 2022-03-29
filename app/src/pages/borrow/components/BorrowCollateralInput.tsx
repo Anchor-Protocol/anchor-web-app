@@ -12,6 +12,9 @@ import { useTheme } from 'styled-components';
 import { formatDemimal } from '@libs/formatter';
 import { UIElementProps } from 'components/layouts/UIElementProps';
 import { useWhitelistCollateralQuery } from 'queries';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { formatOutput, demicrofy } from '@anchor-protocol/formatter';
 
 interface Data {
   label: string;
@@ -79,14 +82,10 @@ const Component = (props: BorrowCollateralInputProps) => {
 
   const { data: whitelist = [] } = useWhitelistCollateralQuery();
 
-  //const maxAmount = Big(10000000) as u<CollateralAmount<Big>>;
-
   const onLtvChange = useCallback(
     (nextLtv: number) => {
       onAmountChange(
-        Big(maxCollateralAmount).mul(trunc(nextLtv)) as u<
-          CollateralAmount<Big>
-        >,
+        maxCollateralAmount.mul(trunc(nextLtv)) as u<CollateralAmount<Big>>,
       );
     },
     [onAmountChange, maxCollateralAmount],
@@ -97,7 +96,21 @@ const Component = (props: BorrowCollateralInputProps) => {
   return (
     <div className={className}>
       <h2>Collateral amount</h2>
+      {collateral && (
+        <span className="max-amount">
+          <IconSpan>
+            Max Amount:
+            {` ${formatOutput(
+              demicrofy(maxCollateralAmount, collateral.decimals),
+            )} ${collateral.symbol}`}
+            <InfoTooltip>
+              The maximum amount of collateral available to deposit
+            </InfoTooltip>
+          </IconSpan>
+        </span>
+      )}
       <CollateralInput
+        className="collateral-input"
         whitelist={whitelist}
         amount={amount}
         collateral={collateral}
@@ -139,14 +152,34 @@ const Component = (props: BorrowCollateralInputProps) => {
 export const BorrowCollateralInput = styled(Component)`
   margin-top: 30px;
   margin-bottom: 50px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 
   h2 {
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 10px;
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .max-amount {
+    grid-row: 1;
+    grid-column: 2;
+    font-size: 12px;
+    color: ${({ theme }) => theme.textColor};
+    user-select: none;
+    text-align: right;
+  }
+
+  .collateral-input {
+    grid-row: 2;
+    grid-column: 1 / span 2;
   }
 
   .slider {
     margin-top: 20px;
+    grid-row: 3;
+    grid-column: 1 / span 2;
   }
 `;
