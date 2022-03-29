@@ -1,0 +1,24 @@
+version: "2.4"
+
+services:
+
+  web-app:
+    #image: ghcr.io/anchor-protocol/web-app
+    build:
+      context: ../modules/web-app
+      dockerfile: docker/Dockerfile
+      args:
+        BUILD_ENV: ci
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:80 || exit 1"]
+      interval: 15s
+      timeout: 30s
+      retries: 30
+    networks:
+      - terra
+    ports:
+      - "8080:80"
+    depends_on:
+      localanchor_latch:
+        condition: service_started

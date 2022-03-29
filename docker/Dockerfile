@@ -1,7 +1,7 @@
 ARG BUILD_ENV=local
 
 # local
-FROM node:lts AS build-local
+FROM --platform=linux/amd64 node:lts AS build-local
 WORKDIR /src
 
 RUN apt update && \
@@ -21,7 +21,7 @@ COPY . .
 FROM build-${BUILD_ENV} AS build
 
 # release
-FROM nginx:stable-alpine AS release
+FROM --platform=${BUILDPLATFORM} nginx:stable-alpine AS release
 LABEL org.opencontainers.image.source=https://github.com/anchor-protocol/anchor-web-app
 
 COPY --from=build /src/app/build /usr/share/nginx/html
