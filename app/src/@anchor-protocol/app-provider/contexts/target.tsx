@@ -60,10 +60,12 @@ const useDeploymentTarget = (): UseDeploymentTargetReturn => {
 const DeploymentTargetProvider = (props: UIElementProps) => {
   const { children } = props;
 
-  const [chain, setChain] = useLocalStorage<string>(
+  const [storedChain, setChain] = useLocalStorage<string>(
     '__anchor_deployment_target__',
     DEPLOYMENT_TARGETS[0].chain,
   );
+
+  const chain = storedChain || Chain.Terra;
 
   const [target, updateTarget] = useState(
     DEPLOYMENT_TARGETS.filter((target) => target.chain === chain)[0],
