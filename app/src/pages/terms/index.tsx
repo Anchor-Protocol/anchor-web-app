@@ -13,14 +13,17 @@ export interface TermsOfServiceProps {
 function TermsOfServiceBase({ className }: TermsOfServiceProps) {
   return (
     <div className={className}>
-      <section className="header">
+      <section className="header markdown">
         <h1 className="title">Terms of Service</h1>
         <Markdown children={tos1} components={{ em: 'u' }} />
       </section>
 
-      <section>
+      <section className="markdown">
         <Markdown children={tos2} components={{ em: 'u' }} />
-        <Footer style={{ margin: '100px 0' }} />
+      </section>
+
+      <section>
+        <Footer />
       </section>
     </div>
   );
@@ -31,7 +34,9 @@ export const StyledTermsOfService = styled(TermsOfServiceBase)`
 
   section {
     padding: 5.71428571em 100px;
+  }
 
+  .markdown {
     p {
       line-height: 1.5;
 
