@@ -1,4 +1,3 @@
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
 import {
   computeBorrowedAmount,
   computeBorrowLimit,
@@ -25,6 +24,7 @@ import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtvs } from '../../queries/borrow/market';
 import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
 import { microfy } from '@anchor-protocol/formatter';
+import { WhitelistCollateral } from 'queries';
 
 export interface BorrowProvideCollateralFormInput {
   depositAmount: bAsset;
@@ -37,7 +37,7 @@ export interface BorrowProvideCollateralFormDependency {
   userUSTBalance: u<UST>;
   userBAssetBalance: u<bAsset>;
   oraclePrices: moneyMarket.oracle.PricesResponse;
-  overseerWhitelist: OverseerWhitelistWithDisplay;
+  whitelist: WhitelistCollateral[];
   bAssetLtvs: BAssetLtvs;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse;
@@ -50,7 +50,7 @@ export interface BorrowProvideCollateralFormStates
   ltvToAmount: (ltv: Rate<Big>) => u<bAsset<Big>>;
   ltvStepFunction: (draftLtv: Rate<Big>) => Rate<Big>;
   dangerLtv: Rate<Big>;
-  collateral: OverseerWhitelistWithDisplay['elems'][0];
+  collateral: WhitelistCollateral;
   txFee: u<UST>;
   currentLtv: Rate<Big> | undefined;
   nextLtv: Rate<Big> | undefined;
@@ -70,7 +70,7 @@ export const borrowProvideCollateralForm = ({
   userUSTBalance,
   userBAssetBalance,
   bAssetLtvs,
-  overseerWhitelist,
+  whitelist,
   overseerCollaterals,
   oraclePrices,
   marketBorrowerInfo,
@@ -113,7 +113,7 @@ export const borrowProvideCollateralForm = ({
 
   const dangerLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
 
-  const collateral = pickCollateral(collateralToken, overseerWhitelist);
+  const collateral = pickCollateral(collateralToken, whitelist);
 
   const invalidTxFee = connected
     ? validateTxFee(userUSTBalance, fixedFee)

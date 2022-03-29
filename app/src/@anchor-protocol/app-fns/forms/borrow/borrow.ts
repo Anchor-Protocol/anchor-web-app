@@ -7,15 +7,13 @@ import {
   computeBorrowSafeMax,
   computeLtv,
 } from '@anchor-protocol/app-fns';
-import {
-  DeploymentTarget,
-  OverseerWhitelistWithDisplay,
-} from '@anchor-protocol/app-provider';
+import { DeploymentTarget } from '@anchor-protocol/app-provider';
 import { CollateralAmount, moneyMarket, Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { CW20Addr, u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';
 import big, { Big, BigSource } from 'big.js';
+import { WhitelistCollateral } from 'queries';
 import { computeBorrowAPR } from '../../logics/borrow/computeBorrowAPR';
 import { computeBorrowNextLtv } from '../../logics/borrow/computeBorrowNextLtv';
 import { computeBorrowReceiveAmount } from '../../logics/borrow/computeBorrowReceiveAmount';
@@ -39,7 +37,7 @@ export interface BorrowBorrowFormDependency {
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse;
   oraclePrices: moneyMarket.oracle.PricesResponse;
   borrowRate: moneyMarket.interestModel.BorrowRateResponse;
-  overseerWhitelist: OverseerWhitelistWithDisplay;
+  whitelist: WhitelistCollateral[];
   bAssetLtvs: BAssetLtvs;
   blocksPerYear: number;
   taxRate: Rate;
@@ -76,7 +74,7 @@ export const borrowBorrowForm = ({
   overseerCollaterals,
   oraclePrices,
   borrowRate,
-  overseerWhitelist,
+  whitelist,
   bAssetLtvs,
   blocksPerYear,
   taxRate,
@@ -125,7 +123,7 @@ export const borrowBorrowForm = ({
     const estimatedLiquidationPrice = nextLtv
       ? computeEstimateLiquidationPrice(
           nextLtv,
-          overseerWhitelist,
+          whitelist,
           overseerCollaterals,
           oraclePrices,
         )

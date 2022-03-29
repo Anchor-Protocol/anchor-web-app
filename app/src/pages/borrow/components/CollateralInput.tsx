@@ -1,4 +1,3 @@
-import { WhitelistCollateral } from '@anchor-protocol/app-fns';
 import { microfy } from '@anchor-protocol/formatter';
 import {
   LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -16,6 +15,7 @@ import { UIElementProps } from '@libs/ui';
 import { MenuItem, NativeSelect, Select } from '@material-ui/core';
 import Big from 'big.js';
 import { LayoutSwitch } from 'components/layouts/LayoutSwitch';
+import { WhitelistCollateral } from 'queries';
 import React, { ChangeEvent } from 'react';
 import styled from 'styled-components';
 

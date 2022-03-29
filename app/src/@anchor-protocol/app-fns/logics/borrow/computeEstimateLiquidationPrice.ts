@@ -1,13 +1,13 @@
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
 import { formatOutput } from '@anchor-protocol/formatter';
 import type { Rate, UST } from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
 import { Big } from 'big.js';
+import { WhitelistCollateral } from 'queries';
 import { microfyPrice } from 'utils/microfyPrice';
 
 export function computeEstimateLiquidationPrice(
   nextLtv: Rate<Big>,
-  overseerWhitelist: OverseerWhitelistWithDisplay,
+  WhitelistCollateral: WhitelistCollateral[],
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
   oraclePrices: moneyMarket.oracle.PricesResponse,
   targetToken?: CW20Addr,
@@ -24,7 +24,7 @@ export function computeEstimateLiquidationPrice(
     return null;
   }
 
-  const whitelist = overseerWhitelist.elems.find(
+  const whitelist = WhitelistCollateral.find(
     ({ collateral_token }) => collateral_token === collateral[0],
   );
   const oracle = oraclePrices.prices.find(
@@ -38,13 +38,13 @@ export function computeEstimateLiquidationPrice(
   // formula: oracle price * (nextLtv / maxLtv)
 
   if (nextLtv) {
-    const decimals = whitelist?.tokenDisplay.decimals ?? 6;
+    const decimals = whitelist?.decimals ?? 6;
     const liqPrice = Big(oracle.price)
       .mul(Big(nextLtv))
       .toString() as UST<string>;
 
     return `Estimated ${
-      whitelist?.tokenDisplay?.symbol ?? '???'
+      whitelist?.symbol ?? '???'
     } liquidation price: ${formatOutput(microfyPrice(liqPrice, decimals))}`;
   }
 

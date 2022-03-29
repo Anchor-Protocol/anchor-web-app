@@ -1,4 +1,3 @@
-import { useWhitelistCollateralQuery } from '@anchor-protocol/app-provider';
 import { CollateralAmount, CW20Addr, u } from '@anchor-protocol/types';
 import {
   HorizontalGraphBar,
@@ -12,7 +11,8 @@ import { CollateralInput, CollateralInputProps } from './CollateralInput';
 import { useTheme } from 'styled-components';
 import { formatDemimal } from '@libs/formatter';
 import { UIElementProps } from 'components/layouts/UIElementProps';
-import { WhitelistCollateral } from '@anchor-protocol/app-fns';
+//import { useTokenBalance } from 'queries/useTokenBalance';
+import { useWhitelistCollateralQuery, WhitelistCollateral } from 'queries';
 
 interface Data {
   label: string;
@@ -68,9 +68,14 @@ const Component = (props: BorrowCollateralInputProps) => {
 
   const { data: whitelist = [] } = useWhitelistCollateralQuery();
 
-  const maxAmount = Big(10000000) as u<CollateralAmount<Big>>;
-
   const [selected, setSelected] = useState<WhitelistCollateral | undefined>();
+
+  // const balance = useTokenBalance<u<CollateralAmount<Big>>>(
+  //   selected?.collateral_token,
+  // );
+  // console.log('balance', balance);
+
+  const maxAmount = Big(10000000) as u<CollateralAmount<Big>>;
 
   const onCollateralChange = useCallback(
     (token: CW20Addr) => {

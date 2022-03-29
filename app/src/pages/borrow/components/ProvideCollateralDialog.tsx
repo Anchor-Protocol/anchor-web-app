@@ -56,9 +56,8 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
     txResult,
     proceedable,
     onProceed,
-    collateralToken,
+    collateral,
     uTokenBalance,
-    tokenDisplay,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
     renderBroadcastTxResult,
@@ -66,11 +65,9 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
 
   const { connected, availablePost } = useAccount();
 
-  const collateralTokenDecimals = tokenDisplay?.decimals ?? 6;
-
   const [input, states] = useBorrowProvideCollateralForm(
-    collateralToken,
-    collateralTokenDecimals,
+    collateral.collateral_token,
+    collateral.decimals,
     uTokenBalance,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
@@ -101,13 +98,13 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
         const nextAmount = ltvToAmount(nextLtv);
         updateDepositAmount(
           formatInput<bAsset>(
-            demicrofy(nextAmount, collateralTokenDecimals),
-            collateralTokenDecimals,
+            demicrofy(nextAmount, collateral.decimals),
+            collateral.decimals,
           ),
         );
       } catch {}
     },
-    [updateDepositAmount, ltvToAmount, collateralTokenDecimals],
+    [updateDepositAmount, ltvToAmount, collateral.decimals],
   );
 
   const renderBroadcastTx = useMemo(() => {
@@ -163,8 +160,7 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                {states.collateral.tokenDisplay?.symbol ??
-                  states.collateral.symbol}
+                {states.collateral.symbol}
               </InputAdornment>
             ),
           }}
@@ -182,23 +178,19 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
               onClick={() =>
                 updateDepositAmount(
                   formatInput<bAsset>(
-                    demicrofy(
-                      states.userBAssetBalance,
-                      collateralTokenDecimals,
-                    ),
-                    collateralTokenDecimals,
+                    demicrofy(states.userBAssetBalance, collateral.decimals),
+                    collateral.decimals,
                   ),
                 )
               }
             >
               {formatOutput(
-                demicrofy(states.userBAssetBalance, collateralTokenDecimals),
+                demicrofy(states.userBAssetBalance, collateral.decimals),
                 {
-                  decimals: collateralTokenDecimals,
+                  decimals: collateral.decimals,
                 },
               )}{' '}
-              {states.collateral.tokenDisplay?.symbol ??
-                states.collateral.symbol}
+              {states.collateral.symbol}
             </span>
           </span>
         </div>

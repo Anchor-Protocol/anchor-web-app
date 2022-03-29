@@ -9,6 +9,7 @@ import { CW20Addr, u } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
+import { useWhitelistCollateralQuery } from 'queries';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
@@ -25,13 +26,10 @@ export function useBorrowProvideCollateralForm(
 
   const { uUST } = useBalances();
 
-  const {
-    data: {
-      oraclePrices,
-      bAssetLtvs,
-      overseerWhitelist,
-    } = fallbackBorrowMarket,
-  } = useBorrowMarketQuery();
+  const { data: whitelist = [] } = useWhitelistCollateralQuery();
+
+  const { data: { oraclePrices, bAssetLtvs } = fallbackBorrowMarket } =
+    useBorrowMarketQuery();
 
   const {
     data: { marketBorrowerInfo, overseerCollaterals } = fallbackBorrowBorrower,
@@ -48,7 +46,7 @@ export function useBorrowProvideCollateralForm(
       oraclePrices,
       overseerCollaterals,
       marketBorrowerInfo,
-      overseerWhitelist,
+      whitelist,
       fixedFee,
       bAssetLtvs,
     },

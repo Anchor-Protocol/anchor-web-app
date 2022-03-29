@@ -9,8 +9,8 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
-import { useWhitelistCollateralByTokenAddrQuery } from '@anchor-protocol/app-provider';
 import { CW20TokenDisplayInfo } from '@libs/app-fns';
+import { useWhitelistCollateralByTokenAddrQuery } from 'queries';
 
 export interface BorrowProvideCollateralTxParams {
   depositAmount: bAsset;

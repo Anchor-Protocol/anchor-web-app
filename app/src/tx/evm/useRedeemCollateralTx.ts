@@ -1,6 +1,6 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
+import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
@@ -17,15 +17,14 @@ import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
+import { WhitelistCollateral } from 'queries';
 
 type RedeemCollateralTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type RedeemCollateralTxRender = TxResultRendering<RedeemCollateralTxResult>;
 
 export interface RedeemCollateralTxParams {
-  collateralContractEvm: string;
-  collateralContractTerra: string;
+  collateral: WhitelistCollateral;
   amount: bAsset & NoMicro;
-  tokenDisplay?: CW20TokenDisplayInfo;
 }
 
 export function useRedeemCollateralTx():
@@ -46,10 +45,10 @@ export function useRedeemCollateralTx():
       renderTxResults: Subject<RedeemCollateralTxRender>,
       txEvents: Subject<TxEvent<RedeemCollateralTxParams>>,
     ) => {
-      const { collateralContractTerra, amount, tokenDisplay } = txParams;
-
-      const symbol = tokenDisplay?.symbol ?? 'Collateral';
-      const decimals = tokenDisplay?.decimals ?? 6;
+      const {
+        collateral: { collateral_token, symbol, decimals },
+        amount,
+      } = txParams;
 
       const writer = new EvmTxProgressWriter(
         renderTxResults,
@@ -61,7 +60,7 @@ export function useRedeemCollateralTx():
 
       try {
         const result = await xAnchor.unlockCollateral(
-          { contract: collateralContractTerra },
+          { contract: collateral_token },
           microfy(amount, decimals),
           address!,
           TX_GAS_LIMIT,
@@ -90,9 +89,10 @@ export function useRedeemCollateralTx():
 }
 
 const displayTx = (txParams: RedeemCollateralTxParams) => {
-  const { amount, tokenDisplay } = txParams;
-
-  const symbol = tokenDisplay?.symbol ?? 'UST';
+  const {
+    amount,
+    collateral: { symbol },
+  } = txParams;
 
   return {
     txKind: TxKind.RedeemCollateral,

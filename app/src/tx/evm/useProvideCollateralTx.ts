@@ -1,6 +1,6 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
+import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
@@ -17,15 +17,15 @@ import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
+import { WhitelistCollateral } from 'queries';
 
 type ProvideCollateralTxResult = OneWayTxResponse<ContractReceipt> | null;
 type ProvideCollateralTxRender = TxResultRendering<ProvideCollateralTxResult>;
 
 export interface ProvideCollateralTxParams {
-  collateralContract: string;
+  collateral: WhitelistCollateral;
   amount: bAsset & NoMicro;
   erc20Decimals: number;
-  tokenDisplay?: CW20TokenDisplayInfo;
 }
 
 export function useProvideCollateralTx():
@@ -46,10 +46,11 @@ export function useProvideCollateralTx():
       renderTxResults: Subject<ProvideCollateralTxRender>,
       txEvents: Subject<TxEvent<ProvideCollateralTxParams>>,
     ) => {
-      const { collateralContract, amount, tokenDisplay, erc20Decimals } =
-        txParams;
-
-      const symbol = tokenDisplay?.symbol ?? 'Collateral';
+      const {
+        collateral: { bridgedAddress, symbol },
+        amount,
+        erc20Decimals,
+      } = txParams;
 
       const writer = new EvmTxProgressWriter(
         renderTxResults,
@@ -61,7 +62,7 @@ export function useProvideCollateralTx():
 
       try {
         await xAnchor.approveLimit(
-          { contract: collateralContract },
+          { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
           address!,
           TX_GAS_LIMIT,
@@ -71,7 +72,7 @@ export function useProvideCollateralTx():
         writer.timer.reset();
 
         const response = await xAnchor.lockCollateral(
-          { contract: collateralContract },
+          { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
           address!,
           TX_GAS_LIMIT,
@@ -103,9 +104,10 @@ export function useProvideCollateralTx():
 }
 
 const displayTx = (txParams: ProvideCollateralTxParams) => {
-  const { amount, tokenDisplay } = txParams;
-
-  const symbol = tokenDisplay?.symbol ?? 'UST';
+  const {
+    amount,
+    collateral: { symbol },
+  } = txParams;
 
   return {
     txKind: TxKind.ProvideCollateral,
