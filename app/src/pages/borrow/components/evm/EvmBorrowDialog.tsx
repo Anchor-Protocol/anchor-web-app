@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   CollateralAmount,
   CW20Addr,
@@ -17,6 +17,7 @@ import { microfy, useFormatters } from '@anchor-protocol/formatter';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
 import Big from 'big.js';
+import { WhitelistCollateral } from 'queries';
 
 interface ERC20Token {
   address: ERC20Addr;
@@ -72,6 +73,25 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
     '0x6190e33FF30f3761Ce544ce539d69dDcD6aDF5eC' as ERC20Addr,
   );
 
+  const [collateral, setCollateral] = useState<
+    WhitelistCollateral | undefined
+  >();
+
+  const maxCollateralAmount = useMemo(() => {
+    if (collateral === undefined) {
+      return Big(0) as u<CollateralAmount<Big>>;
+    }
+    if (collateral.symbol === 'bLuna') {
+      return Big(1000000) as u<CollateralAmount<Big>>;
+    }
+    if (collateral.symbol === 'bETH') {
+      return Big(2000000) as u<CollateralAmount<Big>>;
+    }
+    return Big(3000000) as u<CollateralAmount<Big>>;
+  }, [collateral]);
+
+  console.log('maxCollateralAmount', maxCollateralAmount.toString());
+
   const proceed = useCallback(
     (
       amount: UST,
@@ -114,6 +134,9 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   return (
     <BorrowDialog
       {...props}
+      collateral={collateral}
+      onCollateralChange={setCollateral}
+      maxCollateralAmount={maxCollateralAmount}
       txResult={borrowUstTxResult}
       proceedable={postBorrowUstTx !== undefined}
       onProceed={proceed}

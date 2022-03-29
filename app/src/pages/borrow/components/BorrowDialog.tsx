@@ -48,15 +48,22 @@ import { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import big from 'big.js';
-import { BorrowCollateralInput } from './BorrowCollateralInput';
+import {
+  BorrowCollateralInput,
+  BorrowCollateralInputProps,
+} from './BorrowCollateralInput';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
 import { PageDivider } from './PageDivider';
 
-export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
+export interface BorrowDialogParams
+  extends UIElementProps,
+    BorrowFormParams,
+    Pick<BorrowCollateralInputProps, 'collateral' | 'onCollateralChange'> {
   txResult: StreamResult<TxResultRendering> | null;
   proceedable: boolean;
+  maxCollateralAmount: u<CollateralAmount<Big>>;
   onProceed: (
     borrowAmount: UST,
     txFee: u<UST>,
@@ -88,6 +95,9 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     proceedable,
     onProceed,
     renderBroadcastTxResult,
+    collateral,
+    onCollateralChange,
+    maxCollateralAmount,
   } = props;
 
   const {
@@ -286,6 +296,9 @@ function BorrowDialogBase(props: BorrowDialogProps) {
           <>
             <PageDivider />
             <BorrowCollateralInput
+              collateral={collateral}
+              onCollateralChange={onCollateralChange}
+              maxCollateralAmount={maxCollateralAmount}
               amount={states.collateralAmount}
               onAmountChange={(collateralAmount) => {
                 input({

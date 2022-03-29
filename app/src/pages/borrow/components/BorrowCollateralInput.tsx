@@ -1,18 +1,17 @@
-import { CollateralAmount, CW20Addr, u } from '@anchor-protocol/types';
+import { CollateralAmount, u } from '@anchor-protocol/types';
 import {
   HorizontalGraphBar,
   Rect,
 } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@libs/neumorphism-ui/components/HorizontalGraphSlider';
 import Big from 'big.js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { CollateralInput, CollateralInputProps } from './CollateralInput';
 import { useTheme } from 'styled-components';
 import { formatDemimal } from '@libs/formatter';
 import { UIElementProps } from 'components/layouts/UIElementProps';
-//import { useTokenBalance } from 'queries/useTokenBalance';
-import { useWhitelistCollateralQuery, WhitelistCollateral } from 'queries';
+import { useWhitelistCollateralQuery } from 'queries';
 
 interface Data {
   label: string;
@@ -57,57 +56,52 @@ const trunc = (value: number): number => {
   return Math.trunc(value * 1000) / 1000;
 };
 
-interface BorrowCollateralInputProps
+export interface BorrowCollateralInputProps
   extends UIElementProps,
-    Pick<CollateralInputProps, 'amount' | 'onAmountChange'> {}
+    Pick<
+      CollateralInputProps,
+      'amount' | 'collateral' | 'onCollateralChange' | 'onAmountChange'
+    > {
+  maxCollateralAmount: u<CollateralAmount<Big>>;
+}
 
 const Component = (props: BorrowCollateralInputProps) => {
-  const { className, amount, onAmountChange } = props;
+  const {
+    className,
+    amount,
+    collateral,
+    maxCollateralAmount,
+    onCollateralChange,
+    onAmountChange,
+  } = props;
 
   const theme = useTheme();
 
   const { data: whitelist = [] } = useWhitelistCollateralQuery();
 
-  const [selected, setSelected] = useState<WhitelistCollateral | undefined>();
-
-  // const balance = useTokenBalance<u<CollateralAmount<Big>>>(
-  //   selected?.collateral_token,
-  // );
-  // console.log('balance', balance);
-
-  const maxAmount = Big(10000000) as u<CollateralAmount<Big>>;
-
-  const onCollateralChange = useCallback(
-    (token: CW20Addr) => {
-      console.log('onCollateralChange');
-      setSelected(
-        whitelist.find((collateral) => collateral.collateral_token === token),
-      );
-    },
-    [whitelist, setSelected],
-  );
-
-  //HERE: load balances as well
-  console.log('selected', selected);
+  //const maxAmount = Big(10000000) as u<CollateralAmount<Big>>;
 
   const onLtvChange = useCallback(
     (nextLtv: number) => {
       onAmountChange(
-        Big(maxAmount).mul(trunc(nextLtv)) as u<CollateralAmount<Big>>,
+        Big(maxCollateralAmount).mul(trunc(nextLtv)) as u<
+          CollateralAmount<Big>
+        >,
       );
     },
-    [onAmountChange, maxAmount],
+    [onAmountChange, maxCollateralAmount],
   );
 
-  const ratio = amount ? amount.div(maxAmount).toNumber() : 0;
+  const ratio = amount ? amount.div(maxCollateralAmount).toNumber() : 0;
 
   return (
     <div className={className}>
       <h2>Collateral amount</h2>
       <CollateralInput
-        collateral={whitelist}
+        whitelist={whitelist}
         amount={amount}
-        onTokenChange={onCollateralChange}
+        collateral={collateral}
+        onCollateralChange={onCollateralChange}
         onAmountChange={onAmountChange}
       />
       <HorizontalGraphBar<Data>

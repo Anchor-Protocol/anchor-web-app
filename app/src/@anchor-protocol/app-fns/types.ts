@@ -51,7 +51,6 @@ export interface AnchorBalances {
   uUST: u<UST>;
   uaUST: u<aUST>;
   uANC: u<ANC>;
-  fetchBalance: (wallet: string, token: string) => Promise<string>;
 }
 
 export const DefaultAnchorBalances: Partial<AnchorBalances> = {
