@@ -96,11 +96,9 @@ function DashboardBase({ className }: DashboardProps) {
     const yearAgoDate = currentDate.setFullYear(currentDate.getFullYear() - 1);
     const yearAgoTimestamp = yearAgoDate.valueOf();
 
-    const indexOfFirstRelevantHistoryPoint = history.findIndex(
-      (point) => point.timestamp >= yearAgoTimestamp,
-    );
-
-    return history.slice(indexOfFirstRelevantHistoryPoint);
+    return history
+      .filter(({ timestamp }) => timestamp >= yearAgoTimestamp)
+      .sort((a, b) => a.timestamp - b.timestamp);
   }, [marketANC?.history]);
 
   const { data: marketDepositAndBorrow } = useMarketDepositAndBorrowQuery();
