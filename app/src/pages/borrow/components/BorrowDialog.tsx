@@ -1,26 +1,20 @@
 import {
   ANCHOR_DANGER_RATIO,
   ANCHOR_SAFE_RATIO,
+  BorrowBorrowFormAsyncStates,
+  BorrowBorrowFormInput,
+  BorrowBorrowFormStates,
   computeBorrowAmountToLtv,
   computeLtvToBorrowAmount,
 } from '@anchor-protocol/app-fns';
-import {
-  useBorrowBorrowForm,
-  useDeploymentTarget,
-} from '@anchor-protocol/app-provider';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import {
   formatUST,
   formatUSTInput,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import {
-  CollateralAmount,
-  CW20Addr,
-  Rate,
-  u,
-  UST,
-} from '@anchor-protocol/types';
+import { CollateralAmount, Rate, u, UST } from '@anchor-protocol/types';
 import { TxResultRendering } from '@libs/app-fns';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -56,18 +50,19 @@ import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
 import { PageDivider } from './PageDivider';
+import { FormInput, FormStates } from '@libs/use-form';
+import { WhitelistCollateral } from 'queries';
 
 export interface BorrowDialogParams
   extends UIElementProps,
     BorrowFormParams,
-    Pick<BorrowCollateralInputProps, 'collateral' | 'onCollateralChange'> {
+    Pick<BorrowCollateralInputProps, 'onCollateralChange'> {
   txResult: StreamResult<TxResultRendering> | null;
   proceedable: boolean;
-  maxCollateralAmount: u<CollateralAmount<Big>>;
   onProceed: (
     borrowAmount: UST,
     txFee: u<UST>,
-    collateral?: CW20Addr,
+    collateral?: WhitelistCollateral,
     collateralAmount?: u<CollateralAmount<Big>>,
   ) => void;
 }
@@ -82,22 +77,22 @@ interface TxRenderFnProps {
 type TxRenderFn = (props: TxRenderFnProps) => JSX.Element;
 
 export type BorrowDialogProps = DialogProps<BorrowDialogParams> & {
-  renderBroadcastTxResult?: TxRenderFn;
+  input: FormInput<BorrowBorrowFormInput>;
+  states: FormStates<BorrowBorrowFormStates, BorrowBorrowFormAsyncStates>;
+  renderTxResult?: TxRenderFn;
 };
 
 function BorrowDialogBase(props: BorrowDialogProps) {
   const {
     className,
     closeDialog,
-    fallbackBorrowMarket,
-    fallbackBorrowBorrower,
+    input,
+    states,
     txResult,
     proceedable,
     onProceed,
-    renderBroadcastTxResult,
-    collateral,
+    renderTxResult,
     onCollateralChange,
-    maxCollateralAmount,
   } = props;
 
   const {
@@ -107,11 +102,6 @@ function BorrowDialogBase(props: BorrowDialogProps) {
   const { availablePost, connected } = useAccount();
 
   const [openConfirm, confirmElement] = useConfirm();
-
-  const [input, states] = useBorrowBorrowForm(
-    fallbackBorrowMarket,
-    fallbackBorrowBorrower,
-  );
 
   const updateBorrowAmount = useCallback(
     (nextBorrowAmount: string) => {
@@ -127,7 +117,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
       borrowAmount: UST,
       txFee: u<UST>,
       confirm: ReactNode,
-      collateralToken?: CW20Addr,
+      collateral?: WhitelistCollateral,
       collateralAmount?: u<CollateralAmount<Big>>,
     ) => {
       if (!connected || !onProceed) {
@@ -146,7 +136,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
         }
       }
 
-      onProceed(borrowAmount, txFee, collateralToken, collateralAmount);
+      onProceed(borrowAmount, txFee, collateral, collateralAmount);
     },
     [onProceed, connected, openConfirm],
   );
@@ -191,8 +181,8 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
         <Dialog className={className}>
-          {renderBroadcastTxResult ? (
-            renderBroadcastTxResult({ txResult, closeDialog })
+          {renderTxResult ? (
+            renderTxResult({ txResult, closeDialog })
           ) : (
             <TxResultRenderer
               resultRendering={txResult.value}
@@ -296,9 +286,9 @@ function BorrowDialogBase(props: BorrowDialogProps) {
           <>
             <PageDivider />
             <BorrowCollateralInput
-              collateral={collateral}
+              collateral={states.collateral}
               onCollateralChange={onCollateralChange}
-              maxCollateralAmount={maxCollateralAmount}
+              maxCollateralAmount={states.maxCollateralAmount}
               amount={states.collateralAmount}
               onAmountChange={(collateralAmount) => {
                 input({
@@ -337,7 +327,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
                 states.borrowAmount,
                 states.txFee.toFixed() as u<UST>,
                 states.warningOverSafeLtv,
-                states.collateralToken,
+                states.collateral,
                 states.collateralAmount,
               )
             }

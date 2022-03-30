@@ -25,8 +25,9 @@ import { BAssetLtvs } from '../../queries/borrow/market';
 
 export interface BorrowBorrowFormInput {
   borrowAmount: UST;
-  collateralToken?: CW20Addr;
-  collateralAmount?: u<CollateralAmount<Big>>;
+  collateral?: WhitelistCollateral;
+  collateralAmount: u<CollateralAmount<Big>>;
+  maxCollateralAmount: u<CollateralAmount<Big>>;
 }
 
 export interface BorrowBorrowFormDependency {
@@ -61,6 +62,7 @@ export interface BorrowBorrowFormStates extends BorrowBorrowFormInput {
   invalidBorrowAmount: string | undefined;
   invalidOverMaxLtv: string | undefined;
   warningOverSafeLtv: string | undefined;
+  invalidCollateralAmount: string | undefined;
   availablePost: boolean;
 }
 
@@ -92,23 +94,29 @@ export const borrowBorrowForm = ({
 
   return ({
     borrowAmount,
+    collateral,
     collateralAmount,
-    collateralToken,
+    maxCollateralAmount,
   }: BorrowBorrowFormInput): FormReturn<
     BorrowBorrowFormStates,
     BorrowBorrowFormAsyncStates
   > => {
-    const collateral: Array<[CW20Addr, u<CollateralAmount<Big>>]> =
-      collateralToken && collateralAmount
-        ? [[collateralToken, collateralAmount]]
+    console.log('collateral', collateral);
+    console.log('collateralAmount', collateralAmount?.toString());
+
+    const collateralAmounts: Array<[CW20Addr, u<CollateralAmount<Big>>]> =
+      collateral && collateralAmount
+        ? [[collateral.collateral_token, collateralAmount]]
         : [];
 
     const borrowLimit = computeBorrowLimit(
       overseerCollaterals,
       oraclePrices,
       bAssetLtvs,
-      collateral,
+      collateralAmounts,
     );
+
+    console.log('borrowLimit', borrowLimit?.toString());
 
     const safeMax = computeBorrowSafeMax(borrowLimit, borrowedAmount);
 
@@ -137,6 +145,8 @@ export const borrowBorrowForm = ({
 
     const invalidBorrowAmount = validateBorrowAmount(borrowAmount, max);
 
+    const invalidCollateralAmount = 'kjasdlkjas dlkja sdlkj aslkdj';
+
     const invalidOverMaxLtv = nextLtv?.gt(ANCHOR_DANGER_RATIO)
       ? `Cannot borrow when LTV is above ${formatRate(ANCHOR_DANGER_RATIO)}%.`
       : undefined;
@@ -152,7 +162,8 @@ export const borrowBorrowForm = ({
       big(receiveAmount ?? 0).gt(0) &&
       !invalidTxFee &&
       !invalidBorrowAmount &&
-      !invalidOverMaxLtv;
+      !invalidOverMaxLtv &&
+      !invalidCollateralAmount;
 
     return [
       {
@@ -172,8 +183,10 @@ export const borrowBorrowForm = ({
         invalidOverMaxLtv,
         warningOverSafeLtv,
         borrowAmount,
+        collateral,
         collateralAmount,
-        collateralToken,
+        maxCollateralAmount,
+        invalidCollateralAmount,
         availablePost,
       },
       undefined,

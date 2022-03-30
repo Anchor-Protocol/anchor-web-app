@@ -3,9 +3,11 @@ import {
   BorrowMarketWithDisplay,
   useDeploymentTarget,
 } from '@anchor-protocol/app-provider';
+import { CollateralAmount } from '@anchor-protocol/types';
 import { useFixedFee, useUstTax } from '@libs/app-provider';
-import { CW20Addr, UST } from '@libs/types';
+import { u, UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
+import Big from 'big.js';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
 import { useWhitelistCollateralQuery } from 'queries';
@@ -60,11 +62,8 @@ export function useBorrowBorrowForm(
     },
     () => ({
       borrowAmount: '' as UST,
-      //collateralAmount: u<CollateralAmount<Big>> | undefined = undefined,
-      // hard code for testing
-      collateralToken:
-        'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x' as CW20Addr,
-      //'0x6190e33FF30f3761Ce544ce539d69dDcD6aDF5eC' as ERC20Addr,
+      collateralAmount: Big(0) as u<CollateralAmount<Big>>,
+      maxCollateralAmount: Big(0) as u<CollateralAmount<Big>>,
     }),
   );
 }

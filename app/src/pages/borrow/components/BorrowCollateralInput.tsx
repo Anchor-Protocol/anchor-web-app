@@ -91,7 +91,10 @@ const Component = (props: BorrowCollateralInputProps) => {
     [onAmountChange, maxCollateralAmount],
   );
 
-  const ratio = amount ? amount.div(maxCollateralAmount).toNumber() : 0;
+  const ratio =
+    amount && maxCollateralAmount.gt(0)
+      ? amount.div(maxCollateralAmount).toNumber()
+      : 0;
 
   return (
     <div className={className}>
@@ -102,7 +105,7 @@ const Component = (props: BorrowCollateralInputProps) => {
             Max Amount:
             {` ${formatOutput(
               demicrofy(maxCollateralAmount, collateral.decimals),
-            )} ${collateral.symbol}`}
+            )} ${collateral.symbol} `}
             <InfoTooltip>
               The maximum amount of collateral available to deposit
             </InfoTooltip>
@@ -117,6 +120,9 @@ const Component = (props: BorrowCollateralInputProps) => {
         onCollateralChange={onCollateralChange}
         onAmountChange={onAmountChange}
       />
+      <span className="warning">
+        asdkjlaskjdlaksjd laksjdasjkhd asjkhd ajhsgd
+      </span>
       <HorizontalGraphBar<Data>
         className="slider"
         min={0}
@@ -177,9 +183,19 @@ export const BorrowCollateralInput = styled(Component)`
     grid-column: 1 / span 2;
   }
 
+  .warning {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: ${({ theme }) => theme.colors.negative};
+    margin-top: 5px;
+    grid-row: 3;
+    grid-column: 1 / span 2;
+  }
+
   .slider {
     margin-top: 20px;
-    grid-row: 3;
+    grid-row: 4;
     grid-column: 1 / span 2;
   }
 `;

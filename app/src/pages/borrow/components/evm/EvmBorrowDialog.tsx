@@ -1,11 +1,5 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import {
-  CollateralAmount,
-  CW20Addr,
-  ERC20Addr,
-  u,
-  UST,
-} from '@anchor-protocol/types';
+import React, { useEffect, useState } from 'react';
+import { CollateralAmount, ERC20Addr, u, UST } from '@anchor-protocol/types';
 import type { DialogProps } from '@libs/use-dialog';
 import { useAccount } from 'contexts/account';
 import { useCallback } from 'react';
@@ -18,6 +12,7 @@ import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { EvmCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
 import Big from 'big.js';
 import { WhitelistCollateral } from 'queries';
+import { useBorrowBorrowForm } from '@anchor-protocol/app-provider';
 
 interface ERC20Token {
   address: ERC20Addr;
@@ -56,10 +51,19 @@ const useERC20Token = (address: ERC20Addr): ERC20Token | undefined => {
   return erc20;
 };
 
-export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
+export const EvmBorrowDialog = (
+  props: DialogProps<Omit<BorrowFormParams, 'input' | 'states'>>,
+) => {
+  const { fallbackBorrowMarket, fallbackBorrowBorrower } = props;
+
   const { connected } = useAccount();
 
   const { ust } = useFormatters();
+
+  const [input, states] = useBorrowBorrowForm(
+    fallbackBorrowMarket,
+    fallbackBorrowBorrower,
+  );
 
   const borrowUstTx = useBorrowUstTx();
   const { isTxMinimizable, minimize } = borrowUstTx?.utils ?? {};
@@ -73,30 +77,27 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
     '0x6190e33FF30f3761Ce544ce539d69dDcD6aDF5eC' as ERC20Addr,
   );
 
-  const [collateral, setCollateral] = useState<
-    WhitelistCollateral | undefined
-  >();
-
-  const maxCollateralAmount = useMemo(() => {
-    if (collateral === undefined) {
-      return Big(0) as u<CollateralAmount<Big>>;
+  useEffect(() => {
+    if (states.collateral === undefined) {
+      input({ maxCollateralAmount: Big(0) as u<CollateralAmount<Big>> });
+      return;
     }
-    if (collateral.symbol === 'bLuna') {
-      return Big(1000000) as u<CollateralAmount<Big>>;
+    if (states.collateral.symbol === 'bLuna') {
+      input({ maxCollateralAmount: Big(1000000) as u<CollateralAmount<Big>> });
+      return;
     }
-    if (collateral.symbol === 'bETH') {
-      return Big(2000000) as u<CollateralAmount<Big>>;
+    if (states.collateral.symbol === 'bETH') {
+      input({ maxCollateralAmount: Big(2000000) as u<CollateralAmount<Big>> });
+      return;
     }
-    return Big(3000000) as u<CollateralAmount<Big>>;
-  }, [collateral]);
-
-  console.log('maxCollateralAmount', maxCollateralAmount.toString());
+    input({ maxCollateralAmount: Big(3000000) as u<CollateralAmount<Big>> });
+  }, [input, states.collateral]);
 
   const proceed = useCallback(
     (
       amount: UST,
       txFee: u<UST>,
-      collateral?: CW20Addr,
+      collateral?: WhitelistCollateral,
       collateralAmount?: u<CollateralAmount<Big>>,
     ) => {
       if (connected && postBorrowUstTx) {
@@ -112,7 +113,7 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
         ) {
           postBorrowUstTx({
             borrowAmount,
-            collateralToken: collateral,
+            collateralToken: collateral.collateral_token,
             collateralAmount: collateralAmount
               ? (Big(microfy(Big(collateralAmount), erc20Token.decimals)) as u<
                   CollateralAmount<Big>
@@ -134,13 +135,15 @@ export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
   return (
     <BorrowDialog
       {...props}
-      collateral={collateral}
-      onCollateralChange={setCollateral}
-      maxCollateralAmount={maxCollateralAmount}
+      input={input}
+      states={states}
+      onCollateralChange={(collateral) => {
+        input({ collateral });
+      }}
       txResult={borrowUstTxResult}
       proceedable={postBorrowUstTx !== undefined}
       onProceed={proceed}
-      renderBroadcastTxResult={({ txResult, closeDialog }) => (
+      renderTxResult={({ txResult, closeDialog }) => (
         <TxResultRenderer
           onExit={closeDialog}
           resultRendering={txResult.value}
