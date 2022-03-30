@@ -4,6 +4,8 @@ import { Header } from 'components/Header';
 import { Index } from 'pages/index';
 import React from 'react';
 
+export const x = 'a';
+
 export function App() {
   return (
     <div>
