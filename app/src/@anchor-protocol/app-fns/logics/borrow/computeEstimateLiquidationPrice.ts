@@ -1,35 +1,45 @@
 import { formatOutput } from '@anchor-protocol/formatter';
-import type { Rate, UST } from '@anchor-protocol/types';
+import type {
+  bAsset,
+  CollateralAmount,
+  Rate,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import { CW20Addr, moneyMarket } from '@anchor-protocol/types';
 import { Big } from 'big.js';
 import { WhitelistCollateral } from 'queries';
 import { microfyPrice } from 'utils/microfyPrice';
+import { group } from 'd3-array';
 
 export function computeEstimateLiquidationPrice(
   nextLtv: Rate<Big>,
-  WhitelistCollateral: WhitelistCollateral[],
-  overseerCollaterals: moneyMarket.overseer.CollateralsResponse,
+  whitelistCollateral: WhitelistCollateral[],
+  borrowerCollateral: [CW20Addr, u<CollateralAmount<Big>> | u<bAsset>][],
   oraclePrices: moneyMarket.oracle.PricesResponse,
   targetToken?: CW20Addr,
 ): string | null {
-  if (overseerCollaterals.collaterals.length === 0) {
+  const collaterals = group(borrowerCollateral, (key) => key[0]);
+
+  if (collaterals.size === 0) {
     return null;
-  } else if (overseerCollaterals.collaterals.length > 1) {
+  }
+
+  if (collaterals.size > 1) {
     return 'Estimated liquidation price not available for composite loans';
   }
 
-  const collateral = overseerCollaterals.collaterals[0];
-
-  if (targetToken && collateral[0] !== targetToken) {
+  if (targetToken && collaterals.has(targetToken) === false) {
+    // if we have supplied a filter ensure that it is the only one
     return null;
   }
 
-  const whitelist = WhitelistCollateral.find(
-    ({ collateral_token }) => collateral_token === collateral[0],
+  const collateral = Array.from(collaterals.keys())[0];
+
+  const whitelist = whitelistCollateral.find(
+    ({ collateral_token }) => collateral_token === collateral,
   );
-  const oracle = oraclePrices.prices.find(
-    ({ asset }) => asset === collateral[0],
-  );
+  const oracle = oraclePrices.prices.find(({ asset }) => asset === collateral);
 
   if (!whitelist || !oracle) {
     return null;

@@ -7,6 +7,7 @@ import {
   computeBorrowSafeMax,
   computeLtv,
 } from '@anchor-protocol/app-fns';
+import { validateCollateralAmount } from '@anchor-protocol/app-fns/logics/borrow/validateCollateralAmount';
 import { DeploymentTarget } from '@anchor-protocol/app-provider';
 import { CollateralAmount, moneyMarket, Rate } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
@@ -101,9 +102,6 @@ export const borrowBorrowForm = ({
     BorrowBorrowFormStates,
     BorrowBorrowFormAsyncStates
   > => {
-    console.log('collateral', collateral);
-    console.log('collateralAmount', collateralAmount?.toString());
-
     const collateralAmounts: Array<[CW20Addr, u<CollateralAmount<Big>>]> =
       collateral && collateralAmount
         ? [[collateral.collateral_token, collateralAmount]]
@@ -115,8 +113,6 @@ export const borrowBorrowForm = ({
       bAssetLtvs,
       collateralAmounts,
     );
-
-    console.log('borrowLimit', borrowLimit?.toString());
 
     const safeMax = computeBorrowSafeMax(borrowLimit, borrowedAmount);
 
@@ -132,7 +128,7 @@ export const borrowBorrowForm = ({
       ? computeEstimateLiquidationPrice(
           nextLtv,
           whitelist,
-          overseerCollaterals,
+          [...overseerCollaterals.collaterals, ...collateralAmounts],
           oraclePrices,
         )
       : null;
@@ -145,7 +141,10 @@ export const borrowBorrowForm = ({
 
     const invalidBorrowAmount = validateBorrowAmount(borrowAmount, max);
 
-    const invalidCollateralAmount = 'kjasdlkjas dlkja sdlkj aslkdj';
+    const invalidCollateralAmount = validateCollateralAmount(
+      collateralAmount,
+      maxCollateralAmount,
+    );
 
     const invalidOverMaxLtv = nextLtv?.gt(ANCHOR_DANGER_RATIO)
       ? `Cannot borrow when LTV is above ${formatRate(ANCHOR_DANGER_RATIO)}%.`

@@ -12,8 +12,6 @@ import { useTheme } from 'styled-components';
 import { formatDemimal } from '@libs/formatter';
 import { UIElementProps } from 'components/layouts/UIElementProps';
 import { useWhitelistCollateralQuery } from 'queries';
-import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { formatOutput, demicrofy } from '@anchor-protocol/formatter';
 
 interface Data {
@@ -42,6 +40,8 @@ const Label = styled.span`
 
 const valueFunction = ({ value }: Data) => value;
 
+const colorFunction = ({ color }: Data) => color;
+
 const labelRenderer = ({ label, color }: Data, rect: Rect, i: number) => {
   return (
     <Label key={'label' + i} style={{ left: rect.x + rect.width, color }}>
@@ -66,6 +66,7 @@ export interface BorrowCollateralInputProps
       'amount' | 'collateral' | 'onCollateralChange' | 'onAmountChange'
     > {
   maxCollateralAmount: u<CollateralAmount<Big>>;
+  warningMessage?: string;
 }
 
 const Component = (props: BorrowCollateralInputProps) => {
@@ -74,6 +75,7 @@ const Component = (props: BorrowCollateralInputProps) => {
     amount,
     collateral,
     maxCollateralAmount,
+    warningMessage,
     onCollateralChange,
     onAmountChange,
   } = props;
@@ -99,19 +101,6 @@ const Component = (props: BorrowCollateralInputProps) => {
   return (
     <div className={className}>
       <h2>Collateral amount</h2>
-      {collateral && (
-        <span className="max-amount">
-          <IconSpan>
-            Max Amount:
-            {` ${formatOutput(
-              demicrofy(maxCollateralAmount, collateral.decimals),
-            )} ${collateral.symbol} `}
-            <InfoTooltip>
-              The maximum amount of collateral available to deposit
-            </InfoTooltip>
-          </IconSpan>
-        </span>
-      )}
       <CollateralInput
         className="collateral-input"
         whitelist={whitelist}
@@ -120,37 +109,57 @@ const Component = (props: BorrowCollateralInputProps) => {
         onCollateralChange={onCollateralChange}
         onAmountChange={onAmountChange}
       />
-      <span className="warning">
-        asdkjlaskjdlaksjd laksjdasjkhd asjkhd ajhsgd
-      </span>
-      <HorizontalGraphBar<Data>
-        className="slider"
-        min={0}
-        max={1}
-        data={[
-          {
-            label: `${ratio < 1 ? formatter(ratio * 100) : '100'}%`,
-            value: Math.max(Math.min(ratio, 1), 0),
-            color: theme.colors.positive,
-          },
-        ]}
-        colorFunction={() => theme.colors.positive}
-        valueFunction={valueFunction}
-        labelRenderer={labelRenderer}
-      >
-        {(coordinateSpace) => (
-          <HorizontalGraphSlider
-            coordinateSpace={coordinateSpace}
-            min={0}
-            max={1}
-            start={0}
-            end={1}
-            value={ratio}
-            onChange={onLtvChange}
-            stepFunction={trunc}
-          />
-        )}
-      </HorizontalGraphBar>
+      <span className="warning">{warningMessage}</span>
+      {collateral && (
+        <span className="wallet" aria-invalid={Boolean(warningMessage)}>
+          <span>Wallet: </span>
+          <span
+            style={{
+              textDecoration: 'underline',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              onAmountChange(maxCollateralAmount);
+            }}
+          >
+            {` ${formatOutput(
+              demicrofy(maxCollateralAmount, collateral.decimals),
+            )} ${collateral.symbol} `}
+          </span>
+        </span>
+      )}
+      {collateral && (
+        <HorizontalGraphBar<Data>
+          className="slider"
+          min={0}
+          max={1}
+          data={[
+            {
+              label: `${ratio < 1 ? formatter(ratio * 100) : '100'}%`,
+              value: Math.max(Math.min(ratio, 1), 0),
+              color: Boolean(warningMessage)
+                ? theme.colors.negative
+                : theme.colors.positive,
+            },
+          ]}
+          colorFunction={colorFunction}
+          valueFunction={valueFunction}
+          labelRenderer={labelRenderer}
+        >
+          {(coordinateSpace) => (
+            <HorizontalGraphSlider
+              coordinateSpace={coordinateSpace}
+              min={0}
+              max={1}
+              start={0}
+              end={1}
+              value={ratio}
+              onChange={onLtvChange}
+              stepFunction={trunc}
+            />
+          )}
+        </HorizontalGraphBar>
+      )}
     </div>
   );
 };
@@ -183,6 +192,24 @@ export const BorrowCollateralInput = styled(Component)`
     grid-column: 1 / span 2;
   }
 
+  .wallet {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-top: 5px;
+    grid-row: 3;
+    grid-column: 2;
+
+    span:first-child {
+      margin-left: auto;
+      margin-right: 5px;
+    }
+
+    &[aria-invalid='true'] {
+      color: ${({ theme }) => theme.colors.negative};
+    }
+  }
+
   .warning {
     display: flex;
     justify-content: space-between;
@@ -190,7 +217,7 @@ export const BorrowCollateralInput = styled(Component)`
     color: ${({ theme }) => theme.colors.negative};
     margin-top: 5px;
     grid-row: 3;
-    grid-column: 1 / span 2;
+    grid-column: 1;
   }
 
   .slider {

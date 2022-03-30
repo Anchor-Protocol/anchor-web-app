@@ -56,11 +56,6 @@ const Component = (props: CollateralInputProps) => {
       className={className}
       gridColumns={[140, '1fr']}
     >
-      {/* <SelectAndTextInputContainerLabel>
-        <TokenIcon token="beth" symbol={symbol} path={path} />
-        {` ${symbol}`}
-      </SelectAndTextInputContainerLabel> */}
-
       <LayoutSwitch
         desktop={
           <Select

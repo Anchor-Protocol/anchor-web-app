@@ -138,7 +138,7 @@ export const borrowRepayForm = ({
       ? computeEstimateLiquidationPrice(
           nextLtv,
           whitelist,
-          overseerCollaterals,
+          overseerCollaterals.collaterals,
           oraclePrices,
         )
       : null;

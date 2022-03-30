@@ -289,6 +289,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
               collateral={states.collateral}
               onCollateralChange={onCollateralChange}
               maxCollateralAmount={states.maxCollateralAmount}
+              warningMessage={states.invalidCollateralAmount}
               amount={states.collateralAmount}
               onAmountChange={(collateralAmount) => {
                 input({
