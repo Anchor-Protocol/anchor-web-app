@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { CollateralAmount, ERC20Addr, u, UST } from '@anchor-protocol/types';
 import type { DialogProps } from '@libs/use-dialog';
 import { useAccount } from 'contexts/account';
@@ -9,54 +9,20 @@ import { useBorrowUstTx } from 'tx/evm';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { microfy, useFormatters } from '@anchor-protocol/formatter';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { EvmCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
 import Big from 'big.js';
 import { WhitelistCollateral } from 'queries';
 import { useBorrowBorrowForm } from '@anchor-protocol/app-provider';
-
-interface ERC20Token {
-  address: ERC20Addr;
-  symbol: string;
-  decimals: number;
-  balance: u<CollateralAmount>;
-}
-
-const fetchERC20Token = async (
-  sdk: EvmCrossAnchorSdk,
-  address: ERC20Addr,
-): Promise<ERC20Token> => {
-  const decimals = await sdk.decimals(address);
-  const symbol = await sdk.symbol(address);
-
-  // TODO: add the balance
-  //const balance = await sdk.balance(address);
-
-  return {
-    address,
-    decimals,
-    symbol,
-    balance: '0' as u<CollateralAmount>,
-  };
-};
-
-const useERC20Token = (address: ERC20Addr): ERC20Token | undefined => {
-  const sdk = useEvmCrossAnchorSdk();
-
-  const [erc20, setERC20] = useState<ERC20Token | undefined>(undefined);
-
-  useEffect(() => {
-    fetchERC20Token(sdk, address).then((erc20) => setERC20(erc20));
-  }, [sdk, address]);
-
-  return erc20;
-};
+import { useERC20TokenQuery } from '@libs/app-provider';
+import '@extensions/crossanchor';
 
 export const EvmBorrowDialog = (
   props: DialogProps<Omit<BorrowFormParams, 'input' | 'states'>>,
 ) => {
   const { fallbackBorrowMarket, fallbackBorrowBorrower } = props;
 
-  const { connected } = useAccount();
+  const sdk = useEvmCrossAnchorSdk();
+
+  const { connected, nativeWalletAddress } = useAccount();
 
   const { ust } = useFormatters();
 
@@ -72,26 +38,26 @@ export const EvmBorrowDialog = (
     null,
   ];
 
-  // TODO: need to look this up
-  const erc20Token = useERC20Token(
-    '0x6190e33FF30f3761Ce544ce539d69dDcD6aDF5eC' as ERC20Addr,
+  const { data: erc20Token } = useERC20TokenQuery(
+    states.collateral?.bridgedAddress as ERC20Addr | undefined,
   );
 
   useEffect(() => {
-    if (states.collateral === undefined) {
-      input({ maxCollateralAmount: Big(0) as u<CollateralAmount<Big>> });
-      return;
+    input({
+      collateralAmount: Big(0) as u<CollateralAmount<Big>>,
+      maxCollateralAmount: Big(0) as u<CollateralAmount<Big>>,
+    });
+    if (states.collateral && nativeWalletAddress) {
+      sdk
+        .fetchWalletBalance(nativeWalletAddress, states.collateral)
+        .then((maxCollateralAmount) => {
+          input({
+            collateralAmount: Big(0) as u<CollateralAmount<Big>>,
+            maxCollateralAmount,
+          });
+        });
     }
-    if (states.collateral.symbol === 'bLuna') {
-      input({ maxCollateralAmount: Big(1000000) as u<CollateralAmount<Big>> });
-      return;
-    }
-    if (states.collateral.symbol === 'bETH') {
-      input({ maxCollateralAmount: Big(2000000) as u<CollateralAmount<Big>> });
-      return;
-    }
-    input({ maxCollateralAmount: Big(3000000) as u<CollateralAmount<Big>> });
-  }, [input, states.collateral]);
+  }, [sdk, input, nativeWalletAddress, states.collateral]);
 
   const proceed = useCallback(
     (
@@ -102,9 +68,6 @@ export const EvmBorrowDialog = (
     ) => {
       if (connected && postBorrowUstTx) {
         const borrowAmount = ust.microfy(ust.formatInput(amount));
-
-        // TODO: need to validate that the ERC20 token has loaded before the proceed button can be executed
-
         if (
           collateral &&
           collateralAmount &&
@@ -113,16 +76,13 @@ export const EvmBorrowDialog = (
         ) {
           postBorrowUstTx({
             borrowAmount,
-            collateralToken: collateral.collateral_token,
+            collateral,
             collateralAmount: collateralAmount
               ? (Big(microfy(Big(collateralAmount), erc20Token.decimals)) as u<
                   CollateralAmount<Big>
                 >)
               : (Big(0) as u<CollateralAmount<Big>>),
-            erc20ContractAddress: erc20Token.address,
-            erc20Symbol: erc20Token.symbol,
           });
-
           return;
         }
 

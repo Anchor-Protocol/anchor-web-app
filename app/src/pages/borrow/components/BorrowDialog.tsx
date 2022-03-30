@@ -300,18 +300,21 @@ function BorrowDialogBase(props: BorrowDialogProps) {
           </>
         )}
 
-        {states.txFee && states.receiveAmount && states.receiveAmount.gt(0) && (
-          <TxFeeList className="receipt">
-            {big(states.txFee).gt(0) && (
-              <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-                {formatUST(demicrofy(states.txFee))} UST
+        {states.txFee &&
+          states.txFee.gt(0) &&
+          states.receiveAmount &&
+          states.receiveAmount.gt(0) && (
+            <TxFeeList className="receipt">
+              {big(states.txFee).gt(0) && (
+                <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+                  {formatUST(demicrofy(states.txFee))} UST
+                </TxFeeListItem>
+              )}
+              <TxFeeListItem label="Receive Amount">
+                {formatUST(demicrofy(states.receiveAmount))} UST
               </TxFeeListItem>
-            )}
-            <TxFeeListItem label="Receive Amount">
-              {formatUST(demicrofy(states.receiveAmount))} UST
-            </TxFeeListItem>
-          </TxFeeList>
-        )}
+            </TxFeeList>
+          )}
 
         <ViewAddressWarning>
           <ActionButton

@@ -103,7 +103,7 @@ const Component = (props: BorrowCollateralInputProps) => {
       <h2>Collateral amount</h2>
       <CollateralInput
         className="collateral-input"
-        whitelist={whitelist}
+        whitelist={whitelist.filter((c) => c.bridgedAddress)}
         amount={amount}
         collateral={collateral}
         onCollateralChange={onCollateralChange}

@@ -13,22 +13,21 @@ import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
-import { CW20Addr, ERC20Addr, u, UST } from '@libs/types';
+import { ERC20Addr, u, UST } from '@libs/types';
 import { TxEvent } from './useTx';
 import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 import { CollateralAmount } from '@anchor-protocol/types';
 import Big from 'big.js';
+import { WhitelistCollateral } from 'queries';
 
 type BorrowUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
 type BorrowUstTxRender = TxResultRendering<BorrowUstTxResult>;
 
 export interface BorrowUstTxParams {
   borrowAmount: u<UST>;
-  collateralToken?: CW20Addr;
+  collateral?: WhitelistCollateral;
   collateralAmount?: u<CollateralAmount<Big>>;
-  erc20ContractAddress?: ERC20Addr;
-  erc20Symbol?: string;
 }
 
 export function useBorrowUstTx():
@@ -54,13 +53,7 @@ export function useBorrowUstTx():
       renderTxResults: Subject<BorrowUstTxRender>,
       txEvents: Subject<TxEvent<BorrowUstTxParams>>,
     ) => {
-      const {
-        borrowAmount,
-        collateralToken,
-        collateralAmount,
-        erc20ContractAddress,
-        erc20Symbol,
-      } = txParams;
+      const { borrowAmount, collateral, collateralAmount } = txParams;
 
       const writer = new EvmTxProgressWriter(
         renderTxResults,
@@ -70,16 +63,11 @@ export function useBorrowUstTx():
       writer.timer.start();
 
       try {
-        if (
-          collateralToken &&
-          collateralAmount &&
-          erc20ContractAddress &&
-          erc20Symbol
-        ) {
-          writer.approveCollateral(erc20Symbol);
+        if (collateral && collateralAmount) {
+          writer.approveCollateral(collateral.symbol);
 
           await xAnchor.approveLimit(
-            { contract: erc20ContractAddress },
+            { contract: collateral.bridgedAddress as ERC20Addr },
             collateralAmount.toString(),
             address!,
             TX_GAS_LIMIT,
@@ -100,22 +88,16 @@ export function useBorrowUstTx():
 
         let result;
 
-        if (
-          collateralToken &&
-          collateralAmount &&
-          erc20ContractAddress &&
-          erc20Symbol
-        ) {
+        if (collateral && collateralAmount) {
           // borrowing based on additional collateral being locked
           result = await xAnchor.lockAndBorrow(
-            { contract: erc20ContractAddress },
+            { contract: collateral.bridgedAddress as ERC20Addr },
             collateralAmount.toString(),
             borrowAmount,
             address!,
             TX_GAS_LIMIT,
             (event) => {
-              //writer.provideAndBorrow(collateralSymbol, event);
-              writer.borrowUST(event, erc20Symbol);
+              writer.borrowUST(event, collateral.symbol);
               txEvents.next({ event, txParams });
             },
           );
