@@ -46,6 +46,8 @@ export interface DashboardProps {
 
 const EMPTY_ARRAY: any[] = [];
 
+export const test = [];
+
 function DashboardBase({ className }: DashboardProps) {
   const theme = useTheme();
 
@@ -244,6 +246,7 @@ function DashboardBase({ className }: DashboardProps) {
 
               <section>
                 <h2>YIELD RESERVE</h2>
+
                 <p className="amount">
                   <AnimateNumber
                     format={formatUTokenIntegerWithoutPostfixUnits}
