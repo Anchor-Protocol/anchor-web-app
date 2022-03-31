@@ -3,11 +3,9 @@ import {
   BorrowMarketWithDisplay,
   useDeploymentTarget,
 } from '@anchor-protocol/app-provider';
-import { CollateralAmount } from '@anchor-protocol/types';
 import { useFixedFee, useUstTax } from '@libs/app-provider';
-import { u, UST } from '@libs/types';
+import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
-import Big from 'big.js';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
 import { useWhitelistCollateralQuery } from 'queries';
@@ -62,8 +60,6 @@ export function useBorrowBorrowForm(
     },
     () => ({
       borrowAmount: '' as UST,
-      collateralAmount: Big(0) as u<CollateralAmount<Big>>,
-      maxCollateralAmount: Big(0) as u<CollateralAmount<Big>>,
     }),
   );
 }

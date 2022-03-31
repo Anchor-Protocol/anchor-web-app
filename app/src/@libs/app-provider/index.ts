@@ -15,7 +15,6 @@ export * from './queries/cw20/balance';
 export * from './queries/cw20/poolInfo';
 export * from './queries/cw20/tokenDisplayInfos';
 export * from './queries/cw20/tokenInfo';
-export * from './queries/erc20/useERC20TokenQuery';
 export * from './queries/gasPrice';
 export * from './queries/send/balance';
 export * from './queries/terra/balances';

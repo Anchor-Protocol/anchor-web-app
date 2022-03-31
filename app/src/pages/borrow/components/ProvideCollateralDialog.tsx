@@ -66,8 +66,7 @@ function ProvideCollateralDialogBase(props: ProvideCollateralDialogProps) {
   const { connected, availablePost } = useAccount();
 
   const [input, states] = useBorrowProvideCollateralForm(
-    collateral.collateral_token,
-    collateral.decimals,
+    collateral,
     uTokenBalance,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,

@@ -75,8 +75,7 @@ function RedeemCollateralDialogBase(props: RedeemCollateralDialogProps) {
   } = useFormatters();
 
   const [input, states] = useBorrowRedeemCollateralForm(
-    collateral.collateral_token,
-    collateral.decimals,
+    collateral,
     uTokenBalance,
     fallbackBorrowMarket,
     fallbackBorrowBorrower,

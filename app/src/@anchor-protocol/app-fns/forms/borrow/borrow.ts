@@ -27,8 +27,8 @@ import { BAssetLtvs } from '../../queries/borrow/market';
 export interface BorrowBorrowFormInput {
   borrowAmount: UST;
   collateral?: WhitelistCollateral;
-  collateralAmount: u<CollateralAmount<Big>>;
-  maxCollateralAmount: u<CollateralAmount<Big>>;
+  collateralAmount?: u<CollateralAmount<Big>>;
+  maxCollateralAmount?: u<CollateralAmount<Big>>;
 }
 
 export interface BorrowBorrowFormDependency {

@@ -5,17 +5,16 @@ import {
 import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
 import { bAsset } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
-import { CW20Addr, u } from '@libs/types';
+import { u } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
-import { useWhitelistCollateralQuery } from 'queries';
+import { useWhitelistCollateralQuery, WhitelistCollateral } from 'queries';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
 
 export function useBorrowProvideCollateralForm(
-  collateralToken: CW20Addr,
-  collateralTokenDecimals: number,
+  collateral: WhitelistCollateral,
   balance: u<bAsset>,
   fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
@@ -38,10 +37,9 @@ export function useBorrowProvideCollateralForm(
   return useForm(
     borrowProvideCollateralForm,
     {
-      collateralToken,
+      collateral,
       userBAssetBalance: balance,
       userUSTBalance: uUST,
-      collateralTokenDecimals,
       connected,
       oraclePrices,
       overseerCollaterals,

@@ -65,7 +65,7 @@ export interface BorrowCollateralInputProps
       CollateralInputProps,
       'amount' | 'collateral' | 'onCollateralChange' | 'onAmountChange'
     > {
-  maxCollateralAmount: u<CollateralAmount<Big>>;
+  maxCollateralAmount?: u<CollateralAmount<Big>>;
   warningMessage?: string;
 }
 
@@ -86,15 +86,17 @@ const Component = (props: BorrowCollateralInputProps) => {
 
   const onLtvChange = useCallback(
     (nextLtv: number) => {
-      onAmountChange(
-        maxCollateralAmount.mul(trunc(nextLtv)) as u<CollateralAmount<Big>>,
-      );
+      if (maxCollateralAmount) {
+        onAmountChange(
+          maxCollateralAmount.mul(trunc(nextLtv)) as u<CollateralAmount<Big>>,
+        );
+      }
     },
     [onAmountChange, maxCollateralAmount],
   );
 
   const ratio =
-    amount && maxCollateralAmount.gt(0)
+    amount && maxCollateralAmount && maxCollateralAmount.gt(0)
       ? amount.div(maxCollateralAmount).toNumber()
       : 0;
 
@@ -110,7 +112,7 @@ const Component = (props: BorrowCollateralInputProps) => {
         onAmountChange={onAmountChange}
       />
       <span className="warning">{warningMessage}</span>
-      {collateral && (
+      {collateral && maxCollateralAmount && (
         <span className="wallet" aria-invalid={Boolean(warningMessage)}>
           <span>Wallet: </span>
           <span

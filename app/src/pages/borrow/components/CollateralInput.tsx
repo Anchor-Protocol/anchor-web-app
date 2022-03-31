@@ -39,7 +39,7 @@ const Component = (props: CollateralInputProps) => {
     onAmountChange,
   } = props;
 
-  const handleCollateralChanged = useCallback(
+  const onCollateralChanged = useCallback(
     (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
       const found = whitelist.find(
         (c) => c.collateral_token === event.target.value,
@@ -60,7 +60,7 @@ const Component = (props: CollateralInputProps) => {
         desktop={
           <Select
             value={collateral?.collateral_token ?? ''}
-            onChange={handleCollateralChanged}
+            onChange={onCollateralChanged}
           >
             {whitelist.map((collateral) => {
               return (
@@ -83,7 +83,7 @@ const Component = (props: CollateralInputProps) => {
         mobile={
           <NativeSelect
             value={collateral?.collateral_token ?? ''}
-            onChange={handleCollateralChanged}
+            onChange={onCollateralChanged}
           >
             {whitelist.map((collateral) => {
               return (
@@ -112,6 +112,8 @@ const Component = (props: CollateralInputProps) => {
                 : (Big(
                     microfy(Big(target.value), collateral.decimals ?? 6),
                   ) as u<CollateralAmount<Big>>);
+
+            console.log('onChange', amount?.toString());
             onAmountChange(amount);
           }}
         />

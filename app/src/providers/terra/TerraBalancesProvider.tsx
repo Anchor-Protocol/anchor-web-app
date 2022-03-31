@@ -1,10 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { BalancesContext } from 'contexts/balances';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { ANC, aUST, Native, u } from '@anchor-protocol/types';
+import { ANC, aUST, CollateralAmount, Native, u } from '@anchor-protocol/types';
 import { useCW20Balance, useTerraNativeBalances } from '@libs/app-provider';
 import { useAccount } from 'contexts/account';
+import Big from 'big.js';
+import { WhitelistCollateral } from 'queries';
 
 const TerraBalancesProvider = ({ children }: UIElementProps) => {
   const { contractAddress } = useAnchorWebapp();
@@ -23,14 +25,26 @@ const TerraBalancesProvider = ({ children }: UIElementProps) => {
     terraWalletAddress,
   );
 
+  const fetchWalletBalance = useCallback(
+    (collateral?: WhitelistCollateral) => {
+      // TODO: this isnt used anywhere yet
+      if (collateral === undefined || terraWalletAddress === undefined) {
+        return Promise.resolve(Big(0) as u<CollateralAmount<Big>>);
+      }
+      return Promise.resolve(Big(0) as u<CollateralAmount<Big>>);
+    },
+    [terraWalletAddress],
+  );
+
   const balances = useMemo(() => {
     return {
       uUST,
       uaUST,
       uNative: uLuna.toString() as u<Native>,
       uANC,
+      fetchWalletBalance,
     };
-  }, [uUST, uLuna, uaUST, uANC]);
+  }, [uUST, uLuna, uaUST, uANC, fetchWalletBalance]);
 
   return (
     <BalancesContext.Provider value={balances}>

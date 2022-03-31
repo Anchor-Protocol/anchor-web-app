@@ -2,14 +2,7 @@ import {
   computeBorrowedAmount,
   computeBorrowLimit,
 } from '@anchor-protocol/app-fns';
-import {
-  bAsset,
-  CW20Addr,
-  moneyMarket,
-  Rate,
-  u,
-  UST,
-} from '@anchor-protocol/types';
+import { bAsset, moneyMarket, Rate, u, UST } from '@anchor-protocol/types';
 import { FormReturn } from '@libs/use-form';
 import big, { Big } from 'big.js';
 import { computeLtv } from '../../logics/borrow/computeLtv';
@@ -18,7 +11,6 @@ import { computeDepositAmountToLtv } from '../../logics/borrow/computeDepositAmo
 import { computeLtvToDepositAmount } from '../../logics/borrow/computeLtvToDepositAmount';
 import { computeProvideCollateralBorrowLimit } from '../../logics/borrow/computeProvideCollateralBorrowLimit';
 import { computeProvideCollateralNextLtv } from '../../logics/borrow/computeProvideCollateralNextLtv';
-import { pickCollateral } from '../../logics/borrow/pickCollateral';
 import { validateDepositAmount } from '../../logics/borrow/validateDepositAmount';
 import { validateTxFee } from '../../logics/common/validateTxFee';
 import { BAssetLtvs } from '../../queries/borrow/market';
@@ -31,13 +23,11 @@ export interface BorrowProvideCollateralFormInput {
 }
 
 export interface BorrowProvideCollateralFormDependency {
-  collateralToken: CW20Addr;
-  collateralTokenDecimals: number;
+  collateral: WhitelistCollateral;
   fixedFee: u<UST>;
   userUSTBalance: u<UST>;
   userBAssetBalance: u<bAsset>;
   oraclePrices: moneyMarket.oracle.PricesResponse;
-  whitelist: WhitelistCollateral[];
   bAssetLtvs: BAssetLtvs;
   marketBorrowerInfo: moneyMarket.market.BorrowerInfoResponse;
   overseerCollaterals: moneyMarket.overseer.CollateralsResponse;
@@ -64,20 +54,18 @@ export interface BorrowProvideCollateralFormStates
 export interface BorrowProvideCollateralFormAsyncStates {}
 
 export const borrowProvideCollateralForm = ({
-  collateralToken,
-  collateralTokenDecimals,
+  collateral,
   fixedFee,
   userUSTBalance,
   userBAssetBalance,
   bAssetLtvs,
-  whitelist,
   overseerCollaterals,
   oraclePrices,
   marketBorrowerInfo,
   connected,
 }: BorrowProvideCollateralFormDependency) => {
   const amountToLtv = computeDepositAmountToLtv(
-    collateralToken,
+    collateral.collateral_token,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -85,7 +73,7 @@ export const borrowProvideCollateralForm = ({
   );
 
   const ltvToAmount = computeLtvToDepositAmount(
-    collateralToken,
+    collateral.collateral_token,
     marketBorrowerInfo,
     overseerCollaterals,
     oraclePrices,
@@ -93,7 +81,7 @@ export const borrowProvideCollateralForm = ({
   );
 
   const amountToBorrowLimit = computeDepositAmountToBorrowLimit(
-    collateralToken,
+    collateral.collateral_token,
     overseerCollaterals,
     oraclePrices,
     bAssetLtvs,
@@ -112,8 +100,6 @@ export const borrowProvideCollateralForm = ({
   const bAssetLtvsAvg = computebAssetLtvsAvg(bAssetLtvs);
 
   const dangerLtv = big(bAssetLtvsAvg.max).minus(0.1) as Rate<Big>;
-
-  const collateral = pickCollateral(collateralToken, whitelist);
 
   const invalidTxFee = connected
     ? validateTxFee(userUSTBalance, fixedFee)
@@ -135,7 +121,7 @@ export const borrowProvideCollateralForm = ({
   > => {
     const amount =
       depositAmount.length > 0
-        ? microfy(depositAmount, collateralTokenDecimals)
+        ? microfy(depositAmount, collateral.decimals)
         : ('0' as u<bAsset>);
 
     const nextLtv = computeProvideCollateralNextLtv(

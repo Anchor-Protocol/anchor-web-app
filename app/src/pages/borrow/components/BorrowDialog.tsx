@@ -1,13 +1,13 @@
 import {
   ANCHOR_DANGER_RATIO,
   ANCHOR_SAFE_RATIO,
-  BorrowBorrowFormAsyncStates,
-  BorrowBorrowFormInput,
-  BorrowBorrowFormStates,
   computeBorrowAmountToLtv,
   computeLtvToBorrowAmount,
 } from '@anchor-protocol/app-fns';
-import { useDeploymentTarget } from '@anchor-protocol/app-provider';
+import {
+  useBorrowBorrowForm,
+  useDeploymentTarget,
+} from '@anchor-protocol/app-provider';
 import {
   formatUST,
   formatUSTInput,
@@ -42,21 +42,15 @@ import { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import big from 'big.js';
-import {
-  BorrowCollateralInput,
-  BorrowCollateralInputProps,
-} from './BorrowCollateralInput';
+import { BorrowCollateralInput } from './BorrowCollateralInput';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
 import { PageDivider } from './PageDivider';
-import { FormInput, FormStates } from '@libs/use-form';
 import { WhitelistCollateral } from 'queries';
+import { useBalances } from 'contexts/balances';
 
-export interface BorrowDialogParams
-  extends UIElementProps,
-    BorrowFormParams,
-    Pick<BorrowCollateralInputProps, 'onCollateralChange'> {
+export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   txResult: StreamResult<TxResultRendering> | null;
   proceedable: boolean;
   onProceed: (
@@ -77,8 +71,6 @@ interface TxRenderFnProps {
 type TxRenderFn = (props: TxRenderFnProps) => JSX.Element;
 
 export type BorrowDialogProps = DialogProps<BorrowDialogParams> & {
-  input: FormInput<BorrowBorrowFormInput>;
-  states: FormStates<BorrowBorrowFormStates, BorrowBorrowFormAsyncStates>;
   renderTxResult?: TxRenderFn;
 };
 
@@ -86,13 +78,12 @@ function BorrowDialogBase(props: BorrowDialogProps) {
   const {
     className,
     closeDialog,
-    input,
-    states,
     txResult,
     proceedable,
     onProceed,
     renderTxResult,
-    onCollateralChange,
+    fallbackBorrowMarket,
+    fallbackBorrowBorrower,
   } = props;
 
   const {
@@ -100,6 +91,13 @@ function BorrowDialogBase(props: BorrowDialogProps) {
   } = useDeploymentTarget();
 
   const { availablePost, connected } = useAccount();
+
+  const { fetchWalletBalance } = useBalances();
+
+  const [input, states] = useBorrowBorrowForm(
+    fallbackBorrowMarket,
+    fallbackBorrowBorrower,
+  );
 
   const [openConfirm, confirmElement] = useConfirm();
 
@@ -110,6 +108,21 @@ function BorrowDialogBase(props: BorrowDialogProps) {
       });
     },
     [input],
+  );
+
+  const onCollateralChanged = useCallback(
+    (collateral: WhitelistCollateral) => {
+      input({
+        collateral,
+        collateralAmount: undefined,
+        maxCollateralAmount: Big(0) as u<CollateralAmount<Big>>,
+      });
+
+      fetchWalletBalance(collateral).then((maxCollateralAmount) => {
+        input({ maxCollateralAmount });
+      });
+    },
+    [input, fetchWalletBalance],
   );
 
   const proceed = useCallback(
@@ -287,7 +300,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
             <PageDivider />
             <BorrowCollateralInput
               collateral={states.collateral}
-              onCollateralChange={onCollateralChange}
+              onCollateralChange={onCollateralChanged}
               maxCollateralAmount={states.maxCollateralAmount}
               warningMessage={states.invalidCollateralAmount}
               amount={states.collateralAmount}
