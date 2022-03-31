@@ -4,7 +4,7 @@ import {
   useEarnAPYHistoryQuery,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/app-provider';
-import { useProjectedApy } from '@anchor-protocol/app-provider/queries/earn/useProjectedAPY';
+import { useProjectedEarnApy } from '@anchor-protocol/app-provider/queries/earn/useProjectedEarnApy';
 import { Rate } from '@anchor-protocol/types';
 import {
   APYChart,
@@ -34,7 +34,7 @@ export function InterestSection({ className }: InterestSectionProps) {
     return computeCurrentAPY(overseerEpochState, constants.blocksPerYear);
   }, [constants.blocksPerYear, overseerEpochState]);
 
-  const { data: projectedApy } = useProjectedApy();
+  const { data: projectedApy } = useProjectedEarnApy();
 
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
     const history = apyHistory
