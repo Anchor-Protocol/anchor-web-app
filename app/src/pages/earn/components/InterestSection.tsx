@@ -4,6 +4,7 @@ import {
   useEarnAPYHistoryQuery,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/app-provider';
+import { useProjectedApy } from '@anchor-protocol/app-provider/queries/earn/useProjectedAPY';
 import { Rate } from '@anchor-protocol/types';
 import {
   APYChart,
@@ -32,6 +33,8 @@ export function InterestSection({ className }: InterestSectionProps) {
   const apy = useMemo(() => {
     return computeCurrentAPY(overseerEpochState, constants.blocksPerYear);
   }, [constants.blocksPerYear, overseerEpochState]);
+
+  const { data: projectedApy } = useProjectedApy();
 
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
     const history = apyHistory
@@ -74,6 +77,16 @@ export function InterestSection({ className }: InterestSectionProps) {
         </TooltipLabel>
         <div className="value">
           <AnimateNumber format={formatRate}>{apy}</AnimateNumber>%
+        </div>
+        <div
+          style={{ opacity: projectedApy !== undefined ? 1 : 0 }}
+          className="projectedValue"
+        >
+          Projected{' '}
+          {projectedApy && (
+            <AnimateNumber format={formatRate}>{projectedApy}</AnimateNumber>
+          )}
+          %
         </div>
         {apyChartItems && (
           <APYChart
