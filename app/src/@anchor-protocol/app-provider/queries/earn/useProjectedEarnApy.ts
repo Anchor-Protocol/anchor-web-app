@@ -13,7 +13,6 @@ interface ProjectedEarnApyWasmQuery {
     moneyMarket.overseer.DynRateState,
     moneyMarket.overseer.DynRateStateResponse
   >;
-  // overseerDynRateConfig: any;
   overseerConfig: WasmQuery<
     moneyMarket.overseer.Config,
     moneyMarket.overseer.ConfigResponse
