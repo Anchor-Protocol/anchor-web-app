@@ -15,6 +15,7 @@ export interface SelectAndTextInputContainerProps
   error?: boolean;
   gridColumns: GridTemplate[];
   gridRows?: number[];
+  gutters?: 'large' | 'small' | 'none';
 }
 
 function parseGridTemplate(template: GridTemplate[]): string {
@@ -124,8 +125,10 @@ export const SelectAndTextInputContainer = styled(
     }
 
     > * {
-      padding-right: 20px;
-      padding-left: 20px;
+      padding-left: ${({ gutters = 'large' }) =>
+        gutters === 'large' ? '20' : gutters === 'small' ? '5' : '0'}px;
+      padding-right: ${({ gutters = 'large' }) =>
+        gutters === 'large' ? '20' : gutters === 'small' ? '5' : '0'}px;
     }
 
     > ${({ gridColumns }) => notFirstRow(gridColumns.length)} {

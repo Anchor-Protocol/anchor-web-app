@@ -19,6 +19,26 @@ import { WhitelistCollateral } from 'queries';
 import React, { ChangeEvent, useCallback } from 'react';
 import styled from 'styled-components';
 
+interface OptionProps extends UIElementProps {
+  collateral: WhitelistCollateral;
+}
+
+const MenuItemContentComponent = (props: OptionProps) => {
+  const { className, collateral } = props;
+  return (
+    <SelectAndTextInputContainerLabel className={className}>
+      <TokenIcon symbol={collateral.symbol} path={collateral.icon} />
+      {collateral.symbol}
+    </SelectAndTextInputContainerLabel>
+  );
+};
+
+const MenuItemContent = styled(MenuItemContentComponent)`
+  img {
+    font-size: 12px;
+  }
+`;
+
 export interface CollateralInputProps extends UIElementProps {
   placeholder?: string;
   whitelist: WhitelistCollateral[];
@@ -54,11 +74,16 @@ const Component = (props: CollateralInputProps) => {
   return (
     <SelectAndTextInputContainer
       className={className}
-      gridColumns={[140, '1fr']}
+      gutters="small"
+      gridColumns={[160, '1fr']}
     >
       <LayoutSwitch
         desktop={
           <Select
+            classes={{
+              select: 'select',
+            }}
+            variant="standard"
             value={collateral?.collateral_token ?? ''}
             onChange={onCollateralChanged}
           >
@@ -67,14 +92,9 @@ const Component = (props: CollateralInputProps) => {
                 <MenuItem
                   key={collateral.symbol}
                   value={collateral.collateral_token}
+                  disableRipple={true}
                 >
-                  <SelectAndTextInputContainerLabel>
-                    <TokenIcon
-                      symbol={collateral.symbol}
-                      path={collateral.icon}
-                    />
-                    {collateral.symbol}
-                  </SelectAndTextInputContainerLabel>
+                  <MenuItemContent collateral={collateral} />
                 </MenuItem>
               );
             })}
@@ -101,6 +121,7 @@ const Component = (props: CollateralInputProps) => {
 
       {collateral && (
         <NumberMuiInput
+          className="input"
           placeholder={placeholder}
           value={amount ? demicrofy(amount, collateral.decimals ?? 6) : ''}
           maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
@@ -113,7 +134,6 @@ const Component = (props: CollateralInputProps) => {
                     microfy(Big(target.value), collateral.decimals ?? 6),
                   ) as u<CollateralAmount<Big>>);
 
-            console.log('onChange', amount?.toString());
             onAmountChange(amount);
           }}
         />
@@ -122,4 +142,17 @@ const Component = (props: CollateralInputProps) => {
   );
 };
 
-export const CollateralInput = styled(Component)``;
+export const CollateralInput = styled(Component)`
+  .select {
+    padding-left: 12px;
+
+    &:focus {
+      background-color: transparent;
+    }
+  }
+
+  .input {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+`;

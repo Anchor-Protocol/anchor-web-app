@@ -66,14 +66,17 @@ export function useBorrowUstTx():
       try {
         // if we have collateral then this is provided
         // along with the borrow in one operation
-        if (collateral && collateralAmount) {
+        if (collateral && collateralAmount && collateralAmount.gt(0)) {
           const erc20Token = await sdk.fetchERC20Token(collateral);
 
           writer.approveCollateral(erc20Token.symbol); // token symbol or collateral symbol?
 
           // need to normalize the amount according to the ERC20 definition
           const nativeCollateralAmount = Big(
-            microfy(Big(collateralAmount), erc20Token.decimals),
+            microfy(
+              Big(collateralAmount),
+              erc20Token.decimals - collateral.decimals,
+            ),
           );
 
           await sdk.approveLimit(
