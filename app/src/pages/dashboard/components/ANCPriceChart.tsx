@@ -178,9 +178,7 @@ export class ANCPriceChart extends Component<ANCPriceChartProps> {
             ticks: {
               autoSkip: false,
               maxRotation: this.props.isMobile ? undefined : 0,
-              font: {
-                size: 11,
-              },
+              font: { size: 11 },
               color: this.props.theme.dimTextColor,
             },
           },

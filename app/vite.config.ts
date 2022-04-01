@@ -21,6 +21,10 @@ export default defineConfig({
   //  'process.env': {},
   //},
   server: {
+    // enable for ngrok to work properly
+    // hmr: {
+    //   clientPort: 3000,
+    // },
     https: {
       cert: process.env.LOCALHOST_HTTPS_CERT,
       key: process.env.LOCALHOST_HTTPS_KEY,

@@ -1,6 +1,9 @@
 import { ExecuteMsg } from '@anchor-protocol/app-fns';
-import { anchorToken, CW20Addr, Rate } from '@anchor-protocol/types';
-import { useAnchorWebapp } from '@anchor-protocol/app-provider';
+import { anchorToken, Rate } from '@anchor-protocol/types';
+import {
+  useAnchorWebapp,
+  useWhitelistCollateralQuery,
+} from '@anchor-protocol/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -9,12 +12,13 @@ import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { InputAdornment } from '@material-ui/core';
 import big from 'big.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
-
-interface Item {
-  label: string;
-  value: CW20Addr;
-}
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 export function PollCreateModifyCollateralAttribute() {
   // ---------------------------------------------
@@ -25,11 +29,14 @@ export function PollCreateModifyCollateralAttribute() {
   // ---------------------------------------------
   // states
   // ---------------------------------------------
-  const bAssetItems = useMemo<Item[]>(() => {
-    return [{ label: 'bLUNA', value: address.cw20.bLuna }];
-  }, [address.cw20.bLuna]);
+  const { data: whitelistCollateral = [] } = useWhitelistCollateralQuery();
+  const [collateralSymbol, setCollateralSymbol] = useState<string>();
 
-  const [bAsset, setBAsset] = useState<Item>(() => bAssetItems[0]);
+  useEffect(() => {
+    if (!collateralSymbol && whitelistCollateral.length > 0) {
+      setCollateralSymbol(whitelistCollateral[0].symbol);
+    }
+  }, [collateralSymbol, whitelistCollateral]);
 
   const [ltv, setLtv] = useState<string>('');
 
@@ -41,26 +48,33 @@ export function PollCreateModifyCollateralAttribute() {
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
-  const createMsgs = useCallback(
-    (bAsset: Item, ltv: string): ExecuteMsg[] => {
-      const msg: anchorToken.gov.PollMsg = {
-        update_whitelist: {
-          collateral_token: bAsset.value,
-          max_ltv: formatExecuteMsgNumber(big(ltv).div(100)) as Rate,
-        },
-      };
+  const createMsgs = useCallback((): ExecuteMsg[] | undefined => {
+    const collateral = whitelistCollateral.find(
+      ({ symbol }) => symbol === collateralSymbol,
+    );
+    if (!collateral) return;
 
-      return [
-        {
-          order: 1,
-          contract: address.moneyMarket.overseer,
-          msg: Buffer.from(JSON.stringify(msg)).toString('base64'),
-          //msg: btoa(JSON.stringify(msg)),
-        },
-      ];
-    },
-    [address.moneyMarket.overseer],
-  );
+    const msg: anchorToken.gov.PollMsg = {
+      update_whitelist: {
+        collateral_token: collateral.collateral_token,
+        max_ltv: formatExecuteMsgNumber(big(ltv).div(100)) as Rate,
+      },
+    };
+
+    return [
+      {
+        order: 1,
+        contract: address.moneyMarket.overseer,
+        msg: Buffer.from(JSON.stringify(msg)).toString('base64'),
+        //msg: btoa(JSON.stringify(msg)),
+      },
+    ];
+  }, [
+    address.moneyMarket.overseer,
+    collateralSymbol,
+    ltv,
+    whitelistCollateral,
+  ]);
 
   // ---------------------------------------------
   // presentation
@@ -68,29 +82,26 @@ export function PollCreateModifyCollateralAttribute() {
   return (
     <PollCreateBase
       pollTitle="Modify Collateral Attribute"
-      submitDisabled={ltv.length === 0 || !!invalidLtv}
-      onCreateMsgs={() => createMsgs(bAsset, ltv)}
+      submitDisabled={ltv.length === 0 || !!invalidLtv || !collateralSymbol}
+      onCreateMsgs={createMsgs}
     >
       <div className="description">
-        <p>Collateral bAsset</p>
+        <p>Collateral</p>
         <p />
       </div>
 
       <NativeSelect
         className="bAsset"
         style={{ width: '100%' }}
-        data-selected-value={bAsset.value}
-        value={bAsset.value}
+        data-selected-value={collateralSymbol}
+        value={collateralSymbol}
         onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
-          setBAsset(
-            bAssetItems?.find(({ value }) => target.value === value) ??
-              bAssetItems[0],
-          )
+          setCollateralSymbol(target.value)
         }
       >
-        {bAssetItems.map(({ label, value }) => (
-          <option key={value} value={value}>
-            {label}
+        {whitelistCollateral.map(({ symbol }) => (
+          <option key={symbol} value={symbol}>
+            {symbol}
           </option>
         ))}
       </NativeSelect>
