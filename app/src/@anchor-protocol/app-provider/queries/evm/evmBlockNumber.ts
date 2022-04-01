@@ -18,7 +18,6 @@ export function useEvmBlockNumber() {
       refetchInterval: 1000 * 60,
       keepPreviousData: false,
       onError: queryErrorReporter,
-      placeholderData: 0,
     },
   );
 
