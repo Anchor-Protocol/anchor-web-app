@@ -203,7 +203,7 @@ __metadata:
     puppeteer: ^13.5.1
     raw-loader: ^4.0.2
     react: ^17.0.2
-    react-app-rewire-alias: ^1.0.3
+    react-app-rewire-alias: 1.1.5
     react-app-rewired: ^2.1.8
     react-dom: ^17.0.2
     react-query: ^3.18.1
@@ -22323,12 +22323,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-app-rewire-alias@npm:^1.0.3":
-  version: 1.1.7
-  resolution: "react-app-rewire-alias@npm:1.1.7"
+"react-app-rewire-alias@npm:1.1.5":
+  version: 1.1.5
+  resolution: "react-app-rewire-alias@npm:1.1.5"
   peerDependencies:
     react-app-rewired: 1 || ^2
-  checksum: 5e3a55c6b12b2b78867b6d71dc2b46ff2e4dff734136dcb9575b8ecb574e946c262bce215d3f1c2093869b2a600fbe64cf0099ae167c0540fa5720d938d08b0d
+  checksum: d352a781af5d89c9c0dbae21bfa0ec2ec4b67848722c035d2d7f47fdb7226b894c274143d14d4ed19242ceaca22721d2ea6eab77999a32a099966931b069f975
   languageName: node
   linkType: hard
 

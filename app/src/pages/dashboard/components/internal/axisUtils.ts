@@ -19,7 +19,7 @@ function checkTickPrint(i: number, length: number, timestamp: number): boolean {
   }
   // print 1 or 15
   // if the tick is not near first or last
-  else if (date === 1 || date === 15) {
+  else if (date === 1) {
     return i > 3 && i < length - 4;
   }
 
@@ -31,7 +31,7 @@ export function xTimestampAxis(datetimes: JSDateTime[]): string[] {
     return i === datetimes.length - 1
       ? 'Now'
       : checkTickPrint(i, datetimes.length, timestamp)
-      ? format(timestamp, 'MMM d')
+      ? format(timestamp, 'MMM')
       : '';
   });
 }

@@ -4,9 +4,9 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "app:dev": "vite",
+    "app:dev": "VITE_APP_VERSION=$(git rev-parse --short HEAD) && vite",
     "app:dev:browser": "HTTPS=true PORT=3000 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts",
-    "build": "tsc --noEmit && vite build",
+    "build": "VITE_APP_VERSION=$(git rev-parse --short HEAD) && tsc --noEmit && vite build",
     "build-storybook": "build-storybook -s public",
     "coverage": "react-scripts test --colors --coverage",
     "start": "multiplerun dev",
