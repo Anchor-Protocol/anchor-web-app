@@ -72,11 +72,9 @@ export function useBorrowUstTx():
           writer.approveCollateral(erc20Token.symbol); // token symbol or collateral symbol?
 
           // need to normalize the amount according to the ERC20 definition
-          const nativeCollateralAmount = Big(
-            microfy(
-              Big(collateralAmount),
-              erc20Token.decimals - collateral.decimals,
-            ),
+          const nativeCollateralAmount = microfy(
+            Big(collateralAmount),
+            erc20Token.decimals - collateral.decimals,
           );
 
           await sdk.approveLimit(
