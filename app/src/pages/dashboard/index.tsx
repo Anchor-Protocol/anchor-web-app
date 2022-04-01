@@ -88,6 +88,19 @@ function DashboardBase({ className }: DashboardProps) {
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
   const { data: marketUST } = useMarketUstQuery();
   const { data: marketANC } = useMarketAncQuery();
+  const ancPriceRelevantHistory = useMemo(() => {
+    const history = marketANC?.history;
+    if (!history) return;
+
+    const currentDate = new Date();
+    const yearAgoDate = currentDate.setFullYear(currentDate.getFullYear() - 1);
+    const yearAgoTimestamp = yearAgoDate.valueOf();
+
+    return history
+      .filter(({ timestamp }) => timestamp >= yearAgoTimestamp)
+      .sort((a, b) => a.timestamp - b.timestamp);
+  }, [marketANC?.history]);
+
   const { data: marketDepositAndBorrow } = useMarketDepositAndBorrowQuery();
   const { data: marketCollaterals } = useMarketCollateralsQuery();
   const { data: marketBuybackTotal } = useMarketBuybackQuery('total');
@@ -300,7 +313,7 @@ function DashboardBase({ className }: DashboardProps) {
               <figure>
                 <div>
                   <ANCPriceChart
-                    data={marketANC?.history ?? EMPTY_ARRAY}
+                    data={ancPriceRelevantHistory ?? EMPTY_ARRAY}
                     theme={theme}
                     isMobile={isMobile}
                   />
