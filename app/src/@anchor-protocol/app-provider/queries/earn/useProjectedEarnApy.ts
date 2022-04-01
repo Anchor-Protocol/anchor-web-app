@@ -70,21 +70,21 @@ const projectedEarnApyQuery = async (
   let increaseExpectation = dynRateYearIncreaseExpectation;
   if (!isCurrentYieldReserveHigher) {
     yieldReserveChange = yieldReserveChange.add(increaseExpectation);
-  } else if (currentRate.lt(yieldReserveChange)) {
+  } else if (currentRate.gt(yieldReserveChange)) {
     yieldReserveChange = yieldReserveChange.minus(increaseExpectation);
   } else {
     isCurrentYieldReserveHigher = !isCurrentYieldReserveHigher;
     increaseExpectation = increaseExpectation.minus(yieldReserveChange);
   }
 
-  if (yieldReserveChange.lt(dynRateMaxChange)) {
+  if (yieldReserveChange.gt(dynRateMaxChange)) {
     yieldReserveChange = dynRateMaxChange;
   }
 
   let projectedEarnApy = big(0);
   if (isCurrentYieldReserveHigher) {
     projectedEarnApy = currentRate.plus(yieldReserveChange);
-  } else if (currentRate.lt(yieldReserveChange)) {
+  } else if (currentRate.gt(yieldReserveChange)) {
     projectedEarnApy = currentRate.minus(yieldReserveChange);
   }
 
