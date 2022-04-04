@@ -7,7 +7,7 @@ import { Web3Provider } from '@ethersproject/providers';
 
 export type EvmWallet = {
   actions: {
-    activate: (connectType: ConnectType) => Promise<void>;
+    activate: (connectType: ConnectType, chainId?: number) => Promise<void>;
     deactivate: () => Promise<void>;
     watchAsset: (token: ERC20Token) => void;
   };
@@ -35,7 +35,7 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
   const address = data ? data.address : undefined;
   const chainId = data ? data.chainId : undefined;
   const error = data ? data.error : undefined;
-  const provider = data ? data.provider : undefined;
+  const provider = data ? (data.provider as Web3Provider) : undefined;
   const isActivating = data ? data.isActivating : false;
   const isActive = data ? data.isActive : false;
   const status: WalletStatus = isActivating
@@ -45,9 +45,9 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
     : 'disconnected';
 
   const activate = useCallback(
-    (connectType: ConnectType) => {
+    (connectType: ConnectType, chainId?: number) => {
       return connectors[connectType].connector
-        .activate()
+        .activate(chainId)
         .then(() => setConnectType(connectType));
     },
     [connectors, setConnectType],
@@ -74,7 +74,9 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
       : null;
 
     const watchAsset = async (token: ERC20Token) => {
-      const { provider: externalProvider } = provider as Web3Provider;
+      if (!provider) return;
+
+      const externalProvider = provider.provider;
       if (!externalProvider || !externalProvider?.request) return;
 
       return externalProvider

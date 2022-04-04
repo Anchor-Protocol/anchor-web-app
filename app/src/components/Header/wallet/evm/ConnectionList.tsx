@@ -12,7 +12,7 @@ interface ConnectionListProps {
 const ConnectionList = (props: ConnectionListProps) => {
   const { onClose } = props;
 
-  const { actions, availableConnections } = useEvmWallet();
+  const { actions, availableConnections, chainId } = useEvmWallet();
 
   return (
     <ConnectionTypeList footer={<TermsMessage />}>
@@ -21,7 +21,7 @@ const ConnectionList = (props: ConnectionListProps) => {
           key={type}
           className="connect"
           onClick={() => {
-            actions.activate(type);
+            actions.activate(type, chainId);
             onClose();
           }}
         >
