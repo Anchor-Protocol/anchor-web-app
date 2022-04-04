@@ -43,17 +43,17 @@ export const chainConfigurations: { [K in EvmChainId]?: ChainConfiguration } = {
   },
 };
 
-export const supportedChainIds = [
+export const supportedChainIds: EvmChainId[] = [
   // EvmChainId.ETHEREUM,
   // EvmChainId.ETHEREUM_ROPSTEN,
   EvmChainId.AVALANCHE,
   EvmChainId.AVALANCHE_FUJI_TESTNET,
-] as const;
+];
 
-export const supportedChainsRps: Record<
-  typeof supportedChainIds[number],
-  string
-> = {
+export const supportedChainsRps: Record<EvmChainId, string> = {
+  [EvmChainId.ETHEREUM]: 'https://main-rpc.linkpool.io',
+  // TODO: add infura key to env variables
+  [EvmChainId.ETHEREUM_ROPSTEN]: `https://ropsten.infura.io/v3/${process.env.INFURA_KEY}`,
   [EvmChainId.AVALANCHE]: 'https://api.avax.network/ext/bc/C/rpc',
   [EvmChainId.AVALANCHE_FUJI_TESTNET]:
     'https://api.avax-test.network/ext/bc/C/rpc',

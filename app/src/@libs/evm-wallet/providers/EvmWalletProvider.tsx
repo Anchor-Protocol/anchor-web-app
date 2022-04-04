@@ -16,7 +16,8 @@ export type EvmWallet = {
   connection: Connection | null;
   status: WalletStatus;
   connectType: ConnectType;
-} & Omit<ConnectorData, 'isActive' | 'isActivating'>;
+  provider: Web3Provider | undefined;
+} & Omit<ConnectorData, 'isActive' | 'isActivating' | 'provider'>;
 
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
 
