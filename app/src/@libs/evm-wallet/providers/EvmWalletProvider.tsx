@@ -3,6 +3,7 @@ import { ConnectorData, useConnectors } from '../connectors';
 import { Connection, ConnectType, ERC20Token, WalletStatus } from '../types';
 import { availableConnectTypes, availableConnections } from '../constants';
 import { useLocalStorage } from 'usehooks-ts';
+import { Web3Provider } from '@ethersproject/providers';
 
 export type EvmWallet = {
   actions: {
@@ -72,18 +73,20 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
       ? availableConnections.find(({ type }) => type === connectType) || null
       : null;
 
-    const watchAsset = (token: ERC20Token) => {
-      provider?.provider?.request &&
-        provider.provider
-          .request({
-            method: 'wallet_watchAsset',
-            params: {
-              // @ts-ignore ethers has wrong params type (Array<any>)
-              type: 'ERC20',
-              options: token,
-            },
-          })
-          .catch(console.error);
+    const watchAsset = async (token: ERC20Token) => {
+      const { provider: externalProvider } = provider as Web3Provider;
+      if (!externalProvider || !externalProvider?.request) return;
+
+      return externalProvider
+        .request({
+          method: 'wallet_watchAsset',
+          params: {
+            // @ts-ignore ethers has wrong params type (Array<any>)
+            type: 'ERC20',
+            options: token,
+          },
+        })
+        .catch(console.error);
     };
 
     return {
