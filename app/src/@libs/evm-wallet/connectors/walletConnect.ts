@@ -1,11 +1,12 @@
 import { initializeConnector } from '@web3-react/core';
 import { WalletConnect } from '@web3-react/walletconnect';
+import { supportedChainsRps } from '../constants';
 import { ConnectorData } from './types';
 
 const [connector, hooks] = initializeConnector<WalletConnect>(
   (actions) =>
     new WalletConnect(actions, {
-      infuraId: process.env.INFURA_KEY, // TODO
+      rpc: supportedChainsRps,
     }),
 );
 

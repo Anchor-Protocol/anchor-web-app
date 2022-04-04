@@ -43,9 +43,18 @@ export const chainConfigurations: { [K in EvmChainId]?: ChainConfiguration } = {
   },
 };
 
-export const supportedChainIds: number[] = [
+export const supportedChainId = [
   // EvmChainId.ETHEREUM,
   // EvmChainId.ETHEREUM_ROPSTEN,
   EvmChainId.AVALANCHE,
   EvmChainId.AVALANCHE_FUJI_TESTNET,
-];
+] as const;
+
+export const supportedChainsRps: Record<
+  typeof supportedChainId[number],
+  string
+> = {
+  [EvmChainId.AVALANCHE]: 'https://api.avax.network/ext/bc/C/rpc',
+  [EvmChainId.AVALANCHE_FUJI_TESTNET]:
+    'https://api.avax-test.network/ext/bc/C/rpc',
+};
