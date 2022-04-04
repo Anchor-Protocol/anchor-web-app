@@ -19,21 +19,20 @@ export const evmChainId = (chain: Chain) => {
 export const useSwitchNetwork = () => {
   const { updateTarget } = useDeploymentTarget();
 
-  const {
-    actions: { activate },
-    connectType,
-  } = useEvmWallet();
+  const { actions, connectType } = useEvmWallet();
+
+  const activateEvmWallet = actions?.activate;
 
   return useCallback(
     async (target: DeploymentTarget) => {
       const targetChainId = target.evmChainId ?? evmChainId(target.chain);
 
-      if (target.isEVM) {
-        await activate(connectType, targetChainId);
+      if (target.isEVM && activateEvmWallet && connectType) {
+        await activateEvmWallet(connectType, targetChainId);
       }
 
       updateTarget({ ...target, evmChainId: targetChainId });
     },
-    [activate, connectType, updateTarget],
+    [activateEvmWallet, connectType, updateTarget],
   );
 };
