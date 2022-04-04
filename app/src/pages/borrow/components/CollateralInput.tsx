@@ -1,12 +1,8 @@
 import { microfy } from '@anchor-protocol/formatter';
-import {
-  LUNA_INPUT_MAXIMUM_INTEGER_POINTS,
-  LUNA_INPUT_MAXIMUM_DECIMAL_POINTS,
-} from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { CollateralAmount, u } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
-import { NumberMuiInput } from '@libs/neumorphism-ui/components/NumberMuiInput';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import {
   SelectAndTextInputContainer,
   SelectAndTextInputContainerLabel,
@@ -34,6 +30,7 @@ const MenuItemContentComponent = (props: OptionProps) => {
 };
 
 const MenuItemContent = styled(MenuItemContentComponent)`
+  justify-content: flex-end;
   img {
     font-size: 12px;
   }
@@ -74,16 +71,36 @@ const Component = (props: CollateralInputProps) => {
   return (
     <SelectAndTextInputContainer
       className={className}
-      gutters="small"
-      gridColumns={[160, '1fr']}
+      gridColumns={['1fr', 160]}
+      gutters="none"
+      disableColumnDivider={true}
     >
+      <NumberInput
+        label="COLLATERAL AMOUNT"
+        placeholder={placeholder}
+        disableBorder={true}
+        disabled={collateral === undefined}
+        value={amount ? demicrofy(amount, collateral?.decimals ?? 6) : ''}
+        onChange={({ target }: ChangeEvent<HTMLInputElement>) => {
+          if (collateral) {
+            const amount =
+              target.value?.length === 0
+                ? undefined
+                : (Big(
+                    microfy(Big(target.value), collateral.decimals ?? 6),
+                  ) as u<CollateralAmount<Big>>);
+
+            onAmountChange(amount);
+          }
+        }}
+      />
       <LayoutSwitch
         desktop={
           <Select
             classes={{
               select: 'select',
+              icon: 'icon',
             }}
-            variant="standard"
             value={collateral?.collateral_token ?? ''}
             onChange={onCollateralChanged}
           >
@@ -118,41 +135,39 @@ const Component = (props: CollateralInputProps) => {
           </NativeSelect>
         }
       />
-
-      {collateral && (
-        <NumberMuiInput
-          className="input"
-          placeholder={placeholder}
-          value={amount ? demicrofy(amount, collateral.decimals ?? 6) : ''}
-          maxIntegerPoinsts={LUNA_INPUT_MAXIMUM_INTEGER_POINTS}
-          maxDecimalPoints={LUNA_INPUT_MAXIMUM_DECIMAL_POINTS}
-          onChange={({ target }: ChangeEvent<HTMLInputElement>) => {
-            const amount =
-              target.value?.length === 0
-                ? undefined
-                : (Big(
-                    microfy(Big(target.value), collateral.decimals ?? 6),
-                  ) as u<CollateralAmount<Big>>);
-
-            onAmountChange(amount);
-          }}
-        />
-      )}
+      {/* <Select
+        classes={{
+          select: 'select',
+          icon: 'icon',
+        }}
+        value={collateral?.collateral_token ?? ''}
+        onChange={onCollateralChanged}
+      >
+        {whitelist.map((collateral) => {
+          return (
+            <MenuItem
+              key={collateral.symbol}
+              value={collateral.collateral_token}
+              disableRipple={true}
+            >
+              <MenuItemContent collateral={collateral} />
+            </MenuItem>
+          );
+        })}
+      </Select> */}
     </SelectAndTextInputContainer>
   );
 };
 
 export const CollateralInput = styled(Component)`
   .select {
-    padding-left: 12px;
-
+    margin-right: 16px;
     &:focus {
       background-color: transparent;
     }
   }
 
-  .input {
-    padding-left: 15px;
-    padding-right: 15px;
+  .icon {
+    margin-right: 12px;
   }
 `;

@@ -1,8 +1,5 @@
 import { CollateralAmount, u } from '@anchor-protocol/types';
-import {
-  HorizontalGraphBar,
-  Rect,
-} from '@libs/neumorphism-ui/components/HorizontalGraphBar';
+import { HorizontalGraphBar } from '@libs/neumorphism-ui/components/HorizontalGraphBar';
 import { HorizontalGraphSlider } from '@libs/neumorphism-ui/components/HorizontalGraphSlider';
 import Big from 'big.js';
 import React, { useCallback } from 'react';
@@ -15,48 +12,21 @@ import { useWhitelistCollateralQuery } from 'queries';
 import { formatOutput, demicrofy } from '@anchor-protocol/formatter';
 
 interface Data {
-  label: string;
   value: number;
   color: string;
 }
-
-const Label = styled.span`
-  margin-top: 10px;
-
-  > span {
-    display: inline-block;
-
-    font-size: 12px;
-    font-weight: 500;
-
-    transform: translateX(-50%);
-
-    user-select: none;
-
-    word-break: keep-all;
-    white-space: nowrap;
-  }
-`;
 
 const valueFunction = ({ value }: Data) => value;
 
 const colorFunction = ({ color }: Data) => color;
 
-const labelRenderer = ({ label, color }: Data, rect: Rect, i: number) => {
-  return (
-    <Label key={'label' + i} style={{ left: rect.x + rect.width, color }}>
-      <span>{label}</span>
-    </Label>
-  );
-};
-
 const formatter = formatDemimal({
-  decimalPoints: 2,
+  decimalPoints: 0,
   delimiter: true,
 });
 
 const trunc = (value: number): number => {
-  return Math.trunc(value * 1000) / 1000;
+  return Math.trunc(value * 100) / 100;
 };
 
 export interface BorrowCollateralInputProps
@@ -102,7 +72,6 @@ const Component = (props: BorrowCollateralInputProps) => {
 
   return (
     <div className={className}>
-      <h2>Collateral amount</h2>
       <CollateralInput
         className="collateral-input"
         whitelist={whitelist.filter((c) => c.bridgedAddress)}
@@ -137,7 +106,6 @@ const Component = (props: BorrowCollateralInputProps) => {
           max={1}
           data={[
             {
-              label: `${ratio < 1 ? formatter(ratio * 100) : '100'}%`,
               value: Math.max(Math.min(ratio, 1), 0),
               color: Boolean(warningMessage)
                 ? theme.colors.negative
@@ -146,7 +114,6 @@ const Component = (props: BorrowCollateralInputProps) => {
           ]}
           colorFunction={colorFunction}
           valueFunction={valueFunction}
-          labelRenderer={labelRenderer}
         >
           {(coordinateSpace) => (
             <HorizontalGraphSlider
@@ -158,6 +125,9 @@ const Component = (props: BorrowCollateralInputProps) => {
               value={ratio}
               onChange={onLtvChange}
               stepFunction={trunc}
+              labelFormatter={(value) =>
+                `${value < 1 ? formatter(value * 100) : '100'}%`
+              }
             />
           )}
         </HorizontalGraphBar>
@@ -171,14 +141,6 @@ export const BorrowCollateralInput = styled(Component)`
   margin-bottom: 50px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-
-  h2 {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    grid-row: 1;
-    grid-column: 1;
-  }
 
   .max-amount {
     grid-row: 1;

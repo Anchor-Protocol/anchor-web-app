@@ -3,15 +3,20 @@ import { TextField, TextFieldProps } from '@material-ui/core';
 import { ComponentType } from 'react';
 import styled from 'styled-components';
 
+export type TextInputProps = TextFieldProps & {
+  disableBorder?: boolean;
+};
+
 /**
  * Styled component of the `<TextField/>` of the Material-UI
  *
  * @see https://material-ui.com/api/text-field/
  */
-export const TextInput: ComponentType<TextFieldProps> = styled(TextField)`
+export const TextInput: ComponentType<TextInputProps> = styled(TextField)`
   border-radius: 5px;
 
-  ${({ theme, readOnly }) =>
+  ${({ theme, readOnly, disableBorder }) =>
+    !disableBorder &&
     softPressed({
       color: readOnly
         ? theme.sectionBackgroundColor

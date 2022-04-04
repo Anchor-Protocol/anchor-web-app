@@ -10,5 +10,5 @@ export const PageDivider = styled.hr`
 
   height: 5px;
 
-  margin: 10px -60px 0 -60px; // dialog content has a 60px padding so this is the easiest way
+  margin: 10px 0;
 `;

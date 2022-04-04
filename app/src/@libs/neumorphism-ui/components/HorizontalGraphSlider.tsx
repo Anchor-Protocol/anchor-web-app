@@ -2,6 +2,8 @@ import { NeumorphismTheme } from '../themes/Theme';
 import React, { Component, CSSProperties, ReactElement } from 'react';
 import styled, { withTheme } from 'styled-components';
 import { Rect } from './HorizontalGraphBar';
+import { HorizontalGraphSliderThumbLabel } from './HorizontalGraphSliderThumbLabel';
+import classNames from 'classnames';
 
 export interface HorizontalGraphSliderProps {
   coordinateSpace: Rect;
@@ -17,10 +19,11 @@ export interface HorizontalGraphSliderProps {
   className?: string;
   children?: ReactElement;
   style?: CSSProperties;
+  labelFormatter?: (value: number) => string;
 }
 
 interface HorizontalGraphSliderState {
-  position: number;
+  dragging: boolean;
 }
 
 class HorizontalGraphSliderBase extends Component<
@@ -30,28 +33,39 @@ class HorizontalGraphSliderBase extends Component<
   private thumb!: HTMLDivElement;
   private slider!: HTMLDivElement;
 
+  state = {
+    dragging: false,
+  };
+
   render() {
-    const thumb = this.props.children ? (
-      this.props.children
-    ) : (
-      <HorizontalGraphSliderThumb />
-    );
+    const { className, style, labelFormatter, value } = this.props;
+
+    const left = this.thumbLeft();
 
     return (
       <div
-        className={this.props.className}
-        style={this.props.style}
+        className={className}
+        style={style}
         onClick={this.onClick}
         ref={this.takeSlider}
       >
         <div
           ref={this.takeThumb}
           style={{
-            left: this.thumbLeft(),
+            left,
           }}
         >
-          {thumb}
+          <HorizontalGraphSliderThumb />
         </div>
+        {labelFormatter && (
+          <HorizontalGraphSliderThumbLabel
+            className={classNames('thumb-label', {
+              'thumb-label-visible': this.state.dragging,
+            })}
+            left={left}
+            label={labelFormatter(value)}
+          />
+        )}
       </div>
     );
   }
@@ -67,6 +81,8 @@ class HorizontalGraphSliderBase extends Component<
   }
 
   onDown = (event: PointerEvent) => {
+    this.setState({ dragging: true });
+
     this.thumb.removeEventListener('pointerdown', this.onDown);
     window.addEventListener('pointerup', this.onUp);
     window.addEventListener('pointermove', this.onMove);
@@ -84,6 +100,8 @@ class HorizontalGraphSliderBase extends Component<
   };
 
   onUp = (event: PointerEvent) => {
+    this.setState({ dragging: false });
+
     window.removeEventListener('pointerup', this.onUp);
     window.removeEventListener('pointermove', this.onMove);
     this.thumb.addEventListener('pointerdown', this.onDown);
@@ -187,5 +205,14 @@ export const HorizontalGraphSlider = styled(HorizontalGraphSliderBase)`
     place-content: center;
 
     cursor: pointer;
+  }
+
+  .thumb-label {
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0;
+  }
+
+  .thumb-label-visible {
+    opacity: 1;
   }
 `;

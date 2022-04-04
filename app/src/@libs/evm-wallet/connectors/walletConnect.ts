@@ -5,6 +5,11 @@ import { ConnectorData } from './types';
 const [connector, hooks] = initializeConnector<WalletConnect>(
   (actions) =>
     new WalletConnect(actions, {
+      // rpc: {
+      //   1: 'https://rpc.ankr.com/eth',
+      //   43113: 'https://api.avax-test.network/ext/bc/C/rpc',
+      //   43114: 'https://api.avax.network/ext/bc/C/rpc',
+      // },
       infuraId: process.env.INFURA_KEY, // TODO
     }),
 );
