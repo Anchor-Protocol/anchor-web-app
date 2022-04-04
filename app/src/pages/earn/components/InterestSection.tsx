@@ -78,16 +78,25 @@ export function InterestSection({ className }: InterestSectionProps) {
         <div className="value">
           <AnimateNumber format={formatRate}>{apy}</AnimateNumber>%
         </div>
-        <div
+        <p
           style={{ opacity: projectedApy !== undefined ? 1 : 0 }}
           className="projectedValue"
         >
-          Projected{' '}
-          {projectedApy && (
-            <AnimateNumber format={formatRate}>{projectedApy}</AnimateNumber>
-          )}
-          %
-        </div>
+          <IconSpan>
+            Projected{' '}
+            <b>
+              {projectedApy && (
+                <AnimateNumber format={formatRate}>
+                  {projectedApy}
+                </AnimateNumber>
+              )}
+              %
+            </b>{' '}
+            <InfoTooltip>
+              Next month's projected annual deposit rate
+            </InfoTooltip>
+          </IconSpan>
+        </p>
         {apyChartItems && (
           <APYChart
             margin={{ top: 20, bottom: 20, left: 100, right: 100 }}

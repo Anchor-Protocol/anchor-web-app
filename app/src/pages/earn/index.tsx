@@ -97,10 +97,13 @@ const StyledComponent = styled(Component)`
       }
 
       .projectedValue {
-        font-size: 16px;
-        font-weight: 500;
-        color: ${({ theme }) => theme.colors.primary};
+        font-size: 12px;
+        color: ${({ theme }) => theme.textColor};
         margin-bottom: 50px;
+
+        b {
+          font-weight: 500;
+        }
       }
 
       figure {
@@ -115,7 +118,7 @@ const StyledComponent = styled(Component)`
       font-size: 32px;
       font-weight: 500;
       letter-spacing: -0.3px;
-      color: ${({ theme }) => theme.textColor};
+      color: ${({ theme }) => theme.v};
 
       .denom {
         font-size: 18px;
