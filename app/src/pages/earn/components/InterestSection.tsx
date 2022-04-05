@@ -16,8 +16,9 @@ import { Section } from '@libs/neumorphism-ui/components/Section';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { AnimateNumber } from '@libs/ui';
 import big from 'big.js';
-import { useProjectedEarnApyQuery } from 'queries';
+import { useEarnApyProjectionQuery } from 'queries';
 import React, { useMemo } from 'react';
+import { EarnApyProjection } from './EarnApyProjection';
 
 export interface InterestSectionProps {
   className?: string;
@@ -34,7 +35,7 @@ export function InterestSection({ className }: InterestSectionProps) {
     return computeCurrentAPY(overseerEpochState, constants.blocksPerYear);
   }, [constants.blocksPerYear, overseerEpochState]);
 
-  const { data: projectedApy } = useProjectedEarnApyQuery();
+  const { data: earnApyProjection } = useEarnApyProjectionQuery();
 
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
     const history = apyHistory
@@ -79,23 +80,15 @@ export function InterestSection({ className }: InterestSectionProps) {
           <AnimateNumber format={formatRate}>{apy}</AnimateNumber>%
         </div>
         <p
-          style={{ opacity: projectedApy !== undefined ? 1 : 0 }}
+          style={{ opacity: earnApyProjection !== undefined ? 1 : 0 }}
           className="projectedValue"
         >
-          <IconSpan>
-            Projected{' '}
-            <b>
-              {projectedApy && (
-                <AnimateNumber format={formatRate}>
-                  {projectedApy}
-                </AnimateNumber>
-              )}
-              %
-            </b>{' '}
-            <InfoTooltip>
-              Next month's projected annual deposit rate
-            </InfoTooltip>
-          </IconSpan>
+          {earnApyProjection && (
+            <EarnApyProjection
+              height={earnApyProjection.height}
+              rate={earnApyProjection.rate}
+            />
+          )}
         </p>
         {apyChartItems && (
           <APYChart

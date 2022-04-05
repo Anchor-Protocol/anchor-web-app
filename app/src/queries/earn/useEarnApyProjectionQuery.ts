@@ -85,7 +85,7 @@ const computeNewRate = (
   return clamp(big(0));
 };
 
-const projectedEarnApyQuery = async (
+const earnApyProjectionQuery = async (
   blocksPerYear: number,
   overseerContract: HumanAddr,
   queryClient: QueryClient,
@@ -119,30 +119,40 @@ const projectedEarnApyQuery = async (
 
   const newRate = computeNewRate(overseerConfig, change, blocksPerYear);
 
-  return newRate.mul(blocksPerYear);
+  return {
+    rate: newRate.mul(blocksPerYear),
+    height:
+      overseerDynRateState.last_executed_height + overseerConfig.dyn_rate_epoch,
+  };
 };
 
-const projectedEarnApyQueryFn = createQueryFn(projectedEarnApyQuery);
+const earnApyProjectionQueryFn = createQueryFn(earnApyProjectionQuery);
 
-export const useProjectedEarnApyQuery = (): UseQueryResult<Rate<big>> => {
-  const {
-    contractAddress,
-    queryClient,
-    constants: { blocksPerYear },
-  } = useAnchorWebapp();
+interface EarnApyProjection {
+  height: number;
+  rate: Rate<big>;
+}
 
-  return useAnchorQuery(
-    [
-      ANCHOR_QUERY_KEY.PROJECTED_EARN_APY,
-      blocksPerYear,
-      contractAddress.moneyMarket.overseer,
+export const useEarnApyProjectionQuery =
+  (): UseQueryResult<EarnApyProjection> => {
+    const {
+      contractAddress,
       queryClient,
-    ],
-    projectedEarnApyQueryFn,
-    {
-      refetchOnMount: false,
-      refetchInterval: 1000 * 60 * 5,
-      keepPreviousData: true,
-    },
-  );
-};
+      constants: { blocksPerYear },
+    } = useAnchorWebapp();
+
+    return useAnchorQuery(
+      [
+        ANCHOR_QUERY_KEY.PROJECTED_EARN_APY,
+        blocksPerYear,
+        contractAddress.moneyMarket.overseer,
+        queryClient,
+      ],
+      earnApyProjectionQueryFn,
+      {
+        refetchOnMount: false,
+        refetchInterval: 1000 * 60 * 5,
+        keepPreviousData: true,
+      },
+    );
+  };
