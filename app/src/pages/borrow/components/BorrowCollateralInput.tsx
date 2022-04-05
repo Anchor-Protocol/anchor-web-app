@@ -99,39 +99,38 @@ const Component = (props: BorrowCollateralInputProps) => {
           </span>
         </span>
       )}
-      {collateral && (
-        <HorizontalGraphBar<Data>
-          className="slider"
-          min={0}
-          max={1}
-          data={[
-            {
-              value: Math.max(Math.min(ratio, 1), 0),
-              color: Boolean(warningMessage)
-                ? theme.colors.negative
-                : theme.colors.positive,
-            },
-          ]}
-          colorFunction={colorFunction}
-          valueFunction={valueFunction}
-        >
-          {(coordinateSpace) => (
-            <HorizontalGraphSlider
-              coordinateSpace={coordinateSpace}
-              min={0}
-              max={1}
-              start={0}
-              end={1}
-              value={ratio}
-              onChange={onLtvChange}
-              stepFunction={trunc}
-              labelFormatter={(value) =>
-                `${value < 1 ? formatter(value * 100) : '100'}%`
-              }
-            />
-          )}
-        </HorizontalGraphBar>
-      )}
+      <HorizontalGraphBar<Data>
+        className="slider"
+        min={0}
+        max={1}
+        data={[
+          {
+            value: Math.max(Math.min(ratio, 1), 0),
+            color: Boolean(warningMessage)
+              ? theme.colors.negative
+              : theme.colors.positive,
+          },
+        ]}
+        colorFunction={colorFunction}
+        valueFunction={valueFunction}
+      >
+        {(coordinateSpace) => (
+          <HorizontalGraphSlider
+            coordinateSpace={coordinateSpace}
+            disabled={collateral === undefined}
+            min={0}
+            max={1}
+            start={0}
+            end={1}
+            value={ratio}
+            onChange={onLtvChange}
+            stepFunction={trunc}
+            labelFormatter={(value) =>
+              `${value < 1 ? formatter(value * 100) : '100'}%`
+            }
+          />
+        )}
+      </HorizontalGraphBar>
     </div>
   );
 };

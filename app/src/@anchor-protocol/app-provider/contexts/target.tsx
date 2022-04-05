@@ -20,13 +20,13 @@ export const DEPLOYMENT_TARGETS = [
   },
   {
     chain: Chain.Ethereum,
-    icon: '/assets/ethereum-eth-logo.png',
+    icon: '/assets/ethereum-logo.svg',
     isNative: false,
     isEVM: true,
   },
   {
     chain: Chain.Avalanche,
-    icon: '/assets/avalanche-avax-logo.svg',
+    icon: '/assets/avalanche-logo.svg',
     isNative: false,
     isEVM: true,
   },

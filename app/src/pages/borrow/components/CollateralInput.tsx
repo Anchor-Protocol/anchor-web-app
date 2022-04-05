@@ -135,26 +135,6 @@ const Component = (props: CollateralInputProps) => {
           </NativeSelect>
         }
       />
-      {/* <Select
-        classes={{
-          select: 'select',
-          icon: 'icon',
-        }}
-        value={collateral?.collateral_token ?? ''}
-        onChange={onCollateralChanged}
-      >
-        {whitelist.map((collateral) => {
-          return (
-            <MenuItem
-              key={collateral.symbol}
-              value={collateral.collateral_token}
-              disableRipple={true}
-            >
-              <MenuItemContent collateral={collateral} />
-            </MenuItem>
-          );
-        })}
-      </Select> */}
     </SelectAndTextInputContainer>
   );
 };
