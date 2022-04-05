@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 import { WithdrawableAssets } from './WithdrawableAssets';
 import { useFormatters } from '@anchor-protocol/formatter';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 
 type Action = () => void;
 
@@ -69,12 +68,7 @@ const ContentBase = (props: ContentProps) => {
     }
   };
 
-  const {
-    target: { isEVM },
-  } = useDeploymentTarget();
-
-  const shouldShowAddButton =
-    !(isEVM && connectType === 'WALLETCONNECT') && onAddToken;
+  const shouldShowAddButton = connectType === 'METAMASK' && onAddToken;
 
   return (
     <WalletContent
