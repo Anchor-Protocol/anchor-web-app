@@ -50,7 +50,7 @@ export const supportedChainIds: EvmChainId[] = [
   EvmChainId.AVALANCHE_FUJI_TESTNET,
 ];
 
-export const supportedChainsRps: Record<EvmChainId, string> = {
+export const supportedChainRpcs: Record<EvmChainId, string> = {
   [EvmChainId.ETHEREUM]: 'https://main-rpc.linkpool.io',
   // TODO: add infura key to env variables
   [EvmChainId.ETHEREUM_ROPSTEN]: `https://ropsten.infura.io/v3/${process.env.INFURA_KEY}`,
