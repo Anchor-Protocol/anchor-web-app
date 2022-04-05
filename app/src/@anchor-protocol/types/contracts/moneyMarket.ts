@@ -433,6 +433,7 @@ export namespace moneyMarket {
       epoch_period: number;
       price_timeframe: number;
       threshold_deposit_rate: Rate;
+      dyn_rate_epoch: number;
       dyn_rate_maxchange: Rate;
       dyn_rate_min: Rate;
       dyn_rate_max: Rate;
