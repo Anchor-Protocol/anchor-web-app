@@ -46,10 +46,9 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
     : 'disconnected';
 
   const activate = useCallback(
-    (connectType: ConnectType, chainId?: number) => {
-      return connectors[connectType].connector
-        .activate(chainId)
-        .then(() => setConnectType(connectType));
+    async (connectType: ConnectType, chainId?: number) => {
+      await connectors[connectType].connector.activate(chainId);
+      setConnectType(connectType);
     },
     [connectors, setConnectType],
   );

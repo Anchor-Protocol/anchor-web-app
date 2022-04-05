@@ -3,7 +3,6 @@ import { UIElementProps } from '@libs/ui';
 import { createContext, useContext } from 'react';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
-import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 
 export enum Chain {
   Terra = 'Terra',
@@ -37,7 +36,7 @@ export interface DeploymentTarget {
   icon: string;
   isNative: boolean;
   isEVM: boolean;
-  evmChainId?: EvmChainId;
+  //evmChainId?: EvmChainId;
 }
 
 interface UseDeploymentTargetReturn {

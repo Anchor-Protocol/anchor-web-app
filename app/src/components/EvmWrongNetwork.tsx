@@ -1,16 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Modal } from '@material-ui/core';
-import { useSwitchNetwork } from '@libs/evm-wallet';
+import { useSwitchEvmNetwork, getDefaultEvmChainId } from '@libs/evm-wallet';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { UIElementProps } from '@libs/ui';
-import { DEPLOYMENT_TARGETS } from '@anchor-protocol/app-provider';
+import {
+  DEPLOYMENT_TARGETS,
+  useDeploymentTarget,
+} from '@anchor-protocol/app-provider';
 import { FlatButton } from '../@libs/neumorphism-ui/components/FlatButton';
 import { ButtonList } from './Header/shared';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 
 function EvmWrongNetworkBase({ className }: UIElementProps) {
-  const switchNetwork = useSwitchNetwork();
+  const { updateTarget } = useDeploymentTarget();
+
+  const switchEvmNetwork = useSwitchEvmNetwork();
 
   return (
     <Modal open disableBackdropClick disableEnforceFocus>
@@ -21,7 +26,12 @@ function EvmWrongNetworkBase({ className }: UIElementProps) {
             <FlatButton
               key={target.chain}
               className="button"
-              onClick={() => switchNetwork(target)}
+              onClick={() => {
+                updateTarget(target);
+                if (target.isEVM) {
+                  switchEvmNetwork(getDefaultEvmChainId(target.chain));
+                }
+              }}
             >
               <IconSpan>
                 {target.chain}
