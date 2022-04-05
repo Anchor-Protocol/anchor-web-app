@@ -4,7 +4,6 @@ import {
   useEarnAPYHistoryQuery,
   useEarnEpochStatesQuery,
 } from '@anchor-protocol/app-provider';
-import { useProjectedEarnApy } from '@anchor-protocol/app-provider/queries/earn/useProjectedEarnApy';
 import { Rate } from '@anchor-protocol/types';
 import {
   APYChart,
@@ -17,6 +16,7 @@ import { Section } from '@libs/neumorphism-ui/components/Section';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { AnimateNumber } from '@libs/ui';
 import big from 'big.js';
+import { useProjectedEarnApyQuery } from 'queries';
 import React, { useMemo } from 'react';
 
 export interface InterestSectionProps {
@@ -34,7 +34,7 @@ export function InterestSection({ className }: InterestSectionProps) {
     return computeCurrentAPY(overseerEpochState, constants.blocksPerYear);
   }, [constants.blocksPerYear, overseerEpochState]);
 
-  const { data: projectedApy } = useProjectedEarnApy();
+  const { data: projectedApy } = useProjectedEarnApyQuery();
 
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
     const history = apyHistory
