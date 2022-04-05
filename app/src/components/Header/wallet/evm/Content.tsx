@@ -26,6 +26,7 @@ const ContentBase = (props: ContentProps) => {
   const {
     chainId,
     actions: { watchAsset },
+    connectType,
   } = useEvmWallet();
 
   const [adding, setAdding] = useState(false);
@@ -67,6 +68,8 @@ const ContentBase = (props: ContentProps) => {
     }
   };
 
+  const shouldShowAddButton = connectType === 'METAMASK' && onAddToken;
+
   return (
     <WalletContent
       className={className}
@@ -80,9 +83,14 @@ const ContentBase = (props: ContentProps) => {
         onClose={onClose}
         onAddToken={adding ? onAddToken : undefined}
       />
-      <button className="add-wallet" onClick={() => setAdding((prev) => !prev)}>
-        {adding ? 'Done' : 'Add to Wallet'}
-      </button>
+      {shouldShowAddButton && (
+        <button
+          className="add-wallet"
+          onClick={() => setAdding((prev) => !prev)}
+        >
+          {adding ? 'Done' : 'Add to Wallet'}
+        </button>
+      )}
       <WithdrawableAssets />
       <div className="restore-tx">
         <div className="restore-tx-inner">

@@ -3,7 +3,7 @@ import { MetaMask } from '@web3-react/metamask';
 import { ConnectorData } from './types';
 
 const [connector, hooks] = initializeConnector<MetaMask>(
-  (actions) => new MetaMask(actions),
+  (actions) => new MetaMask(actions, true),
 );
 
 function useConnectorData(): ConnectorData {

@@ -1,12 +1,148 @@
+// import React, { createContext, ReactNode, useCallback, useMemo } from 'react';
+// import { ConnectorData, useConnectors } from '../connectors';
+// import { Connection, ConnectType, ERC20Token, WalletStatus } from '../types';
+// import { availableConnectTypes, availableConnections } from '../constants';
+// import { useLocalStorage } from 'usehooks-ts';
+// import { Web3Provider } from '@ethersproject/providers';
+// import { useDeploymentTarget } from '@anchor-protocol/app-provider';
+
+// export type EvmWallet = {
+//   actions: {
+//     activate: (connectType: ConnectType, chainId?: number) => Promise<void>;
+//     deactivate: () => Promise<void>;
+//     watchAsset: (token: ERC20Token) => void;
+//   };
+//   availableConnectTypes: ConnectType[];
+//   availableConnections: Connection[];
+//   connection: Connection | null;
+//   status: WalletStatus;
+//   connectType: ConnectType;
+//   provider: Web3Provider | undefined;
+// } & Omit<ConnectorData, 'isActive' | 'isActivating' | 'provider'>;
+
+// export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
+
+// interface EvmWalletProviderProps {
+//   children: ReactNode;
+// }
+
+// export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
+//   const { updateTarget } = useDeploymentTarget();
+
+//   const [connectType, setConnectType] = useLocalStorage<ConnectType | null>(
+//     '__anchor_evm_wallet_connect_type__',
+//     null,
+//   );
+
+//   const connectors = useConnectors();
+//   const { data } = connectType ? connectors[connectType] : { data: undefined };
+//   const address = data ? data.address : undefined;
+//   const chainId = data ? data.chainId : undefined;
+//   const error = data ? data.error : undefined;
+//   const provider = data ? (data.provider as Web3Provider) : undefined;
+//   const isActivating = data ? data.isActivating : false;
+//   const isActive = data ? data.isActive : false;
+//   const status: WalletStatus = isActivating
+//     ? 'initialization'
+//     : isActive
+//     ? 'connected'
+//     : 'disconnected';
+
+//   //console.log(data);
+
+//   const activate = useCallback(
+//     async (connectType: ConnectType, chainId?: number) => {
+//       await connectors[connectType].connector.activate(chainId);
+//       setConnectType(connectType);
+//     },
+//     [connectors, setConnectType],
+//   );
+
+//   const deactivate = useCallback(() => {
+//     setConnectType(null);
+
+//     if (connectType) {
+//       return (
+//         connectors[connectType].connector.deactivate?.() || Promise.resolve()
+//       );
+//     }
+
+//     return Promise.resolve();
+//   }, [connectType, connectors, setConnectType]);
+
+//   // useEffect(() => {
+//   //   if (isActive && provider?.provider?.isMetaMask && chainId) {
+//   //     activate('METAMASK', chainId);
+//   //     updateTarget(DEPLOYMENT_TARGETS.filter(target => tar))
+//   //   }
+//   // }, [chainId, isActive, provider?.provider?.isMetaMask]);
+
+//   const evmWallet = useMemo(() => {
+//     const isConnected =
+//       connectType && availableConnectTypes.includes(connectType);
+
+//     const connection = isConnected
+//       ? availableConnections.find(({ type }) => type === connectType) || null
+//       : null;
+
+//     const watchAsset = async (token: ERC20Token) => {
+//       if (!provider) return;
+
+//       const externalProvider = provider.provider;
+//       if (!externalProvider || !externalProvider?.request) return;
+
+//       return externalProvider
+//         .request({
+//           method: 'wallet_watchAsset',
+//           params: {
+//             // @ts-ignore ethers has wrong params type (Array<any>)
+//             type: 'ERC20',
+//             options: token,
+//           },
+//         })
+//         .catch(console.error);
+//     };
+
+//     return {
+//       actions: { activate, deactivate, watchAsset },
+//       connectType: connectType as ConnectType,
+//       address,
+//       availableConnectTypes: [...availableConnectTypes],
+//       availableConnections,
+//       chainId,
+//       connection,
+//       error,
+//       provider,
+//       status,
+//     };
+//   }, [
+//     activate,
+//     address,
+//     chainId,
+//     connectType,
+//     deactivate,
+//     error,
+//     provider,
+//     status,
+//   ]);
+
+//   return (
+//     <EvmWalletContext.Provider value={evmWallet}>
+//       {children}
+//     </EvmWalletContext.Provider>
+//   );
+// }
+
 import React, { createContext, ReactNode, useCallback, useMemo } from 'react';
 import { ConnectorData, useConnectors } from '../connectors';
 import { Connection, ConnectType, ERC20Token, WalletStatus } from '../types';
 import { availableConnectTypes, availableConnections } from '../constants';
 import { useLocalStorage } from 'usehooks-ts';
+import { Web3Provider } from '@ethersproject/providers';
 
 export type EvmWallet = {
   actions: {
-    activate: (connectType: ConnectType) => Promise<void>;
+    activate: (connectType: ConnectType, chainId?: number) => Promise<void>;
     deactivate: () => Promise<void>;
     watchAsset: (token: ERC20Token) => void;
   };
@@ -15,7 +151,8 @@ export type EvmWallet = {
   connection: Connection | null;
   status: WalletStatus;
   connectType: ConnectType;
-} & Omit<ConnectorData, 'isActive' | 'isActivating'>;
+  provider: Web3Provider | undefined;
+} & Omit<ConnectorData, 'isActive' | 'isActivating' | 'provider'>;
 
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
 
@@ -34,7 +171,7 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
   const address = data ? data.address : undefined;
   const chainId = data ? data.chainId : undefined;
   const error = data ? data.error : undefined;
-  const provider = data ? data.provider : undefined;
+  const provider = data ? (data.provider as Web3Provider) : undefined;
   const isActivating = data ? data.isActivating : false;
   const isActive = data ? data.isActive : false;
   const status: WalletStatus = isActivating
@@ -43,11 +180,12 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
     ? 'connected'
     : 'disconnected';
 
+  //console.log(data);
+
   const activate = useCallback(
-    (connectType: ConnectType) => {
-      return connectors[connectType].connector
-        .activate()
-        .then(() => setConnectType(connectType));
+    async (connectType: ConnectType, chainId?: number) => {
+      await connectors[connectType].connector.activate(chainId);
+      setConnectType(connectType);
     },
     [connectors, setConnectType],
   );
@@ -64,6 +202,13 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
     return Promise.resolve();
   }, [connectType, connectors, setConnectType]);
 
+  // useEffect(() => {
+  //   if (isActive && provider?.provider?.isMetaMask && chainId) {
+  //     activate('METAMASK', chainId);
+  //     updateTarget(DEPLOYMENT_TARGETS.filter(target => tar))
+  //   }
+  // }, [chainId, isActive, provider?.provider?.isMetaMask]);
+
   const evmWallet = useMemo(() => {
     const isConnected =
       connectType && availableConnectTypes.includes(connectType);
@@ -72,18 +217,22 @@ export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
       ? availableConnections.find(({ type }) => type === connectType) || null
       : null;
 
-    const watchAsset = (token: ERC20Token) => {
-      provider?.provider?.request &&
-        provider.provider
-          .request({
-            method: 'wallet_watchAsset',
-            params: {
-              // @ts-ignore ethers has wrong params type (Array<any>)
-              type: 'ERC20',
-              options: token,
-            },
-          })
-          .catch(console.error);
+    const watchAsset = async (token: ERC20Token) => {
+      if (!provider) return;
+
+      const externalProvider = provider.provider;
+      if (!externalProvider || !externalProvider?.request) return;
+
+      return externalProvider
+        .request({
+          method: 'wallet_watchAsset',
+          params: {
+            // @ts-ignore ethers has wrong params type (Array<any>)
+            type: 'ERC20',
+            options: token,
+          },
+        })
+        .catch(console.error);
     };
 
     return {

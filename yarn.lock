@@ -85,9 +85,9 @@ __metadata:
     "@types/uuid": ^8.3.4
     "@vitejs/plugin-react-refresh": ^1.3.6
     "@walletconnect/ethereum-provider": ^1.7.1
-    "@web3-react/core": ^8.0.1-beta.0
-    "@web3-react/metamask": ^8.0.1-beta.0
-    "@web3-react/walletconnect": ^8.0.2-beta.0
+    "@web3-react/core": ^8.0.22-beta.0
+    "@web3-react/metamask": ^8.0.18-beta.0
+    "@web3-react/walletconnect": ^8.0.25-beta.0
     big.js: ^6.1.1
     classnames: ^2.3.1
     color: ^3.1.3
@@ -2287,7 +2287,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/address@npm:5.6.0, @ethersproject/address@npm:^5.4.0, @ethersproject/address@npm:^5.6.0":
+"@ethersproject/address@npm:5.6.0, @ethersproject/address@npm:^5, @ethersproject/address@npm:^5.6.0":
   version: 5.6.0
   resolution: "@ethersproject/address@npm:5.6.0"
   dependencies:
@@ -2468,7 +2468,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/providers@npm:5.6.1, @ethersproject/providers@npm:^5.5.1":
+"@ethersproject/providers@npm:5.6.1":
   version: 5.6.1
   resolution: "@ethersproject/providers@npm:5.6.1"
   dependencies:
@@ -2492,6 +2492,33 @@ __metadata:
     bech32: 1.1.4
     ws: 7.4.6
   checksum: c6d6ab73064ee4a7793d4cb599e2b0ff7d61b510c2ffece249a95c60043e07ef40c7c55f097569141a7f50fd82f7bb3956d44e1715997ec91da25216a5ce51b6
+  languageName: node
+  linkType: hard
+
+"@ethersproject/providers@npm:^5":
+  version: 5.6.2
+  resolution: "@ethersproject/providers@npm:5.6.2"
+  dependencies:
+    "@ethersproject/abstract-provider": ^5.6.0
+    "@ethersproject/abstract-signer": ^5.6.0
+    "@ethersproject/address": ^5.6.0
+    "@ethersproject/basex": ^5.6.0
+    "@ethersproject/bignumber": ^5.6.0
+    "@ethersproject/bytes": ^5.6.0
+    "@ethersproject/constants": ^5.6.0
+    "@ethersproject/hash": ^5.6.0
+    "@ethersproject/logger": ^5.6.0
+    "@ethersproject/networks": ^5.6.0
+    "@ethersproject/properties": ^5.6.0
+    "@ethersproject/random": ^5.6.0
+    "@ethersproject/rlp": ^5.6.0
+    "@ethersproject/sha2": ^5.6.0
+    "@ethersproject/strings": ^5.6.0
+    "@ethersproject/transactions": ^5.6.0
+    "@ethersproject/web": ^5.6.0
+    bech32: 1.1.4
+    ws: 7.4.6
+  checksum: 30409755c227eab65a94ec3d7834560af5d0c7a2359855e597c0ecdfd312e851324ab8d47d0afcf60efa7a008b75c23be1a1a9d219872f99aa165283139f543a
   languageName: node
   linkType: hard
 
@@ -7460,58 +7487,62 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3-react/core@npm:^8.0.1-beta.0":
-  version: 8.0.1-beta.0
-  resolution: "@web3-react/core@npm:8.0.1-beta.0"
+"@web3-react/core@npm:^8.0.22-beta.0":
+  version: 8.0.22-beta.0
+  resolution: "@web3-react/core@npm:8.0.22-beta.0"
   dependencies:
-    "@ethersproject/providers": ^5.5.1
-    "@web3-react/store": ^8.0.0-beta.0
-    "@web3-react/types": ^8.0.0-beta.0
-    zustand: ^4.0.0-beta.0
+    "@ethersproject/providers": ^5
+    "@web3-react/store": ^8.0.16-beta.0
+    "@web3-react/types": ^8.0.11-beta.0
+    zustand: ^4.0.0-beta.2
   peerDependencies:
     react: ">=16.8"
-  checksum: a0a9bd6b7d48824c946673a0a6c7483ab202fb0697564f3f931da8030b65d743585e6fdaa5dbd822b1d0af43d85089730c21146ff74d8190364f9daedff69bae
+  dependenciesMeta:
+    "@ethersproject/providers":
+      optional: true
+  checksum: 19beb805e9245b01aaf927770c656a3dfdf9ef22fc94d798208197bef016d6842b14cd2674f9c240b361681c93dac14c59af30a799b6f7663c2c846ab72a886f
   languageName: node
   linkType: hard
 
-"@web3-react/metamask@npm:^8.0.1-beta.0":
-  version: 8.0.1-beta.0
-  resolution: "@web3-react/metamask@npm:8.0.1-beta.0"
+"@web3-react/metamask@npm:^8.0.18-beta.0":
+  version: 8.0.18-beta.0
+  resolution: "@web3-react/metamask@npm:8.0.18-beta.0"
   dependencies:
     "@metamask/detect-provider": ^1.2.0
-    "@web3-react/types": ^8.0.0-beta.0
-  checksum: 2bb60091bb4ef61403a5c99ea8bbbc3ca7f51b0bfaf7f9f48d39039f5d1c94a45d3b673a31499a2d2345f45d76740e1663fff059eae71ac854ae11eed3337f71
+    "@web3-react/types": ^8.0.11-beta.0
+  checksum: dd656d90b2ade7198c0c319e2ced8dcd9c68d82978a74b99038bfc97be28e18a4d368c81122394001d6739b408b94f63f4d699ae8ef06e8139aaa3b95f9a6212
   languageName: node
   linkType: hard
 
-"@web3-react/store@npm:^8.0.0-beta.0":
-  version: 8.0.0-beta.0
-  resolution: "@web3-react/store@npm:8.0.0-beta.0"
+"@web3-react/store@npm:^8.0.16-beta.0":
+  version: 8.0.16-beta.0
+  resolution: "@web3-react/store@npm:8.0.16-beta.0"
   dependencies:
-    "@ethersproject/address": ^5.4.0
-    "@web3-react/types": ^8.0.0-beta.0
-    zustand: ^4.0.0-beta.0
-  checksum: 647a91b166cfd1d46ca269135eacab3fa629c55c9e19d66de99f4f2cad82b887ea9846ec430baa84016dd1a00ff00391f857893f8614386d62cbb4164d9bb8d5
+    "@ethersproject/address": ^5
+    "@web3-react/types": ^8.0.11-beta.0
+    zustand: ^4.0.0-beta.2
+  checksum: c0a3e7b856181ef251f2952d396a652249fd4aa9cd027e4c8833fd50dd9e3eb7c8e94cc276979d46dfb2b245752b62a6700dff286d3d8b9470e1034b50f512cc
   languageName: node
   linkType: hard
 
-"@web3-react/types@npm:^8.0.0-beta.0":
-  version: 8.0.0-beta.0
-  resolution: "@web3-react/types@npm:8.0.0-beta.0"
+"@web3-react/types@npm:^8.0.11-beta.0":
+  version: 8.0.11-beta.0
+  resolution: "@web3-react/types@npm:8.0.11-beta.0"
   dependencies:
-    zustand: ^4.0.0-beta.0
-  checksum: 4f6340747564200146748fa10019546326ff353470735f7f4ac1ef8e119d358982ae670cf52bc03eefc33424813cc3fdedc54c6d1eee806971a7d63e38b6a9fc
+    zustand: ^4.0.0-beta.2
+  checksum: ebeb7d0de9bc5dfad321b374a5e088ff40bd37f6bd4b0ef8abcdbe1ddd66ad18de52dceb5ad8514eea1abd9e365a1fee493275f5c81c73388426ef2f71bc5271
   languageName: node
   linkType: hard
 
-"@web3-react/walletconnect@npm:^8.0.2-beta.0":
-  version: 8.0.2-beta.0
-  resolution: "@web3-react/walletconnect@npm:8.0.2-beta.0"
+"@web3-react/walletconnect@npm:^8.0.25-beta.0":
+  version: 8.0.25-beta.0
+  resolution: "@web3-react/walletconnect@npm:8.0.25-beta.0"
   dependencies:
-    "@web3-react/types": ^8.0.0-beta.0
+    "@web3-react/types": ^8.0.11-beta.0
+    eventemitter3: ^4.0.7
   peerDependencies:
-    "@walletconnect/ethereum-provider": ^1.7.1
-  checksum: 5629f6382a2b799a52eeeb0ba90b773e5ab6874cd965c234b657dca4c698e9e3a82b7ea923095f70e7d3e6c2125873d984955c228c7b24b4e2c17ffe502f20df
+    "@walletconnect/ethereum-provider": ^1.7.5
+  checksum: 07c2f579ef8b5aa4880f16081909bd63f658d7dd37a9fecc2bf932116b61754eda5aacc3610bebd924faf38a1c40ee6c8cf218644a8aa7d717c0eed176d3e0b5
   languageName: node
   linkType: hard
 
@@ -28234,7 +28265,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.0.0-beta.0":
+"zustand@npm:^4.0.0-beta.2":
   version: 4.0.0-beta.2
   resolution: "zustand@npm:4.0.0-beta.2"
   dependencies:

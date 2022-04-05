@@ -27,6 +27,9 @@ const ChainGaurdian = (props: UIElementProps) => {
   const { children } = props;
   const { chainId: evmChainId } = useEvmWallet();
 
+  console.log('ChainGaurdian:evmChainId', evmChainId);
+  console.log('ChainGaurdian:isSupportedChain', isSupportedChain(evmChainId));
+
   if (evmChainId !== undefined && isSupportedChain(evmChainId) === false) {
     return (
       <>
