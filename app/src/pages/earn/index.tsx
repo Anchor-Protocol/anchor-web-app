@@ -118,7 +118,7 @@ const StyledComponent = styled(Component)`
       font-size: 32px;
       font-weight: 500;
       letter-spacing: -0.3px;
-      color: ${({ theme }) => theme.v};
+      color: ${({ theme }) => theme.textColor};
 
       .denom {
         font-size: 18px;
