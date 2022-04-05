@@ -4,15 +4,15 @@ import { UIElementProps } from 'components/layouts/UIElementProps';
 
 interface HorizontalGraphSliderThumbLabelProps extends UIElementProps {
   label: string;
-  left: number;
+  position: number;
 }
 
 const HorizontalGraphSliderThumbLabelBase = (
   props: HorizontalGraphSliderThumbLabelProps,
 ) => {
-  const { className, label, left } = props;
+  const { className, label, position } = props;
   return (
-    <span className={className} style={{ left }}>
+    <span className={className} style={{ left: position }}>
       {label}
     </span>
   );

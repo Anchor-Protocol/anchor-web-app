@@ -2,7 +2,8 @@ import styled from 'styled-components';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 
 export const Marker = styled.span`
-  top: -50px;
+  top: -30px;
+  z-index: 1;
 
   > span {
     display: inline-block;
@@ -17,10 +18,6 @@ export const Marker = styled.span`
     white-space: nowrap;
 
     user-select: none;
-
-    sup {
-      xmargin-right: 4px;
-    }
 
     .text {
       margin: 0 10px 0 0;

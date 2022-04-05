@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Rect } from './HorizontalGraphBar';
 import { HorizontalGraphSliderThumbLabel } from './HorizontalGraphSliderThumbLabel';
 import { HorizontalGraphSliderThumb } from './HorizontalGraphSliderThumb';
+import classNames from 'classnames';
 
 export interface HorizontalGraphSliderProps {
   disabled?: boolean;
@@ -22,37 +23,64 @@ export interface HorizontalGraphSliderProps {
   labelFormatter?: (value: number) => string;
 }
 
-class HorizontalGraphSliderBase extends Component<HorizontalGraphSliderProps> {
+interface HorizontalGraphSliderState {
+  isDragging: boolean;
+  isHovering: boolean;
+}
+
+class HorizontalGraphSliderBase extends Component<
+  HorizontalGraphSliderProps,
+  HorizontalGraphSliderState
+> {
   private thumb!: HTMLDivElement;
   private slider!: HTMLDivElement;
+
+  state = {
+    isDragging: false,
+    isHovering: false,
+  };
+
+  onMouseOver = () => {
+    this.setState({
+      isHovering: true,
+    });
+  };
+
+  onMouseLeave = () => {
+    this.setState({
+      isHovering: false,
+    });
+  };
 
   render() {
     const { className, style, disabled, labelFormatter, value } = this.props;
 
-    const left = this.thumbLeft();
+    const position = this.thumbLeft();
 
     return (
       <div
+        ref={this.takeSlider}
         className={className}
         style={{
           ...style,
           pointerEvents: disabled ? 'none' : undefined,
         }}
         onClick={this.onClick}
-        ref={this.takeSlider}
+        onMouseOver={this.onMouseOver}
+        onMouseLeave={this.onMouseLeave}
       >
-        <div
+        <HorizontalGraphSliderThumb
           ref={this.takeThumb}
-          style={{
-            left,
-          }}
-        >
-          <HorizontalGraphSliderThumb />
-        </div>
+          className="thumb"
+          position={position}
+        />
         {labelFormatter && (
           <HorizontalGraphSliderThumbLabel
-            className="thumb-label"
-            left={left}
+            className={classNames('thumb-label', {
+              'thumb-label-visible':
+                this.state.isHovering || this.state.isDragging,
+            })}
+            position={position}
             label={labelFormatter(value)}
           />
         )}
@@ -71,6 +99,8 @@ class HorizontalGraphSliderBase extends Component<HorizontalGraphSliderProps> {
   }
 
   onDown = (event: PointerEvent) => {
+    this.setState({ isDragging: true });
+
     this.thumb.removeEventListener('pointerdown', this.onDown);
     window.addEventListener('pointerup', this.onUp);
     window.addEventListener('pointermove', this.onMove);
@@ -88,6 +118,8 @@ class HorizontalGraphSliderBase extends Component<HorizontalGraphSliderProps> {
   };
 
   onUp = (event: PointerEvent) => {
+    this.setState({ isDragging: false });
+
     window.removeEventListener('pointerup', this.onUp);
     window.removeEventListener('pointermove', this.onMove);
     this.thumb.addEventListener('pointerdown', this.onDown);
@@ -182,14 +214,12 @@ export const HorizontalGraphSlider = styled(HorizontalGraphSliderBase)`
     cursor: pointer;
   }
 
-  &:hover {
-    .thumb-label {
-      opacity: 1;
-    }
-  }
-
   .thumb-label {
     transition: opacity 0.2s ease-in-out;
     opacity: 0;
+  }
+
+  .thumb-label-visible {
+    opacity: 1;
   }
 `;

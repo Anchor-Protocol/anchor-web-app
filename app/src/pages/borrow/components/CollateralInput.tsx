@@ -48,7 +48,7 @@ export interface CollateralInputProps extends UIElementProps {
 const Component = (props: CollateralInputProps) => {
   const {
     className,
-    placeholder = '0.00',
+    placeholder,
     whitelist,
     collateral,
     amount,

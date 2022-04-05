@@ -15,6 +15,7 @@ export function NumberInput({
   onChange,
   inputMode = type === 'decimal' ? 'decimal' : 'numeric',
   pattern = '[0-9.]*',
+  disableBorder,
   ...props
 }: NumberInputProps) {
   const handlers = useRestrictedNumberInput({
@@ -26,6 +27,7 @@ export function NumberInput({
   return (
     <TextInput
       {...props}
+      disableBorder={disableBorder}
       type="text"
       inputProps={{
         inputMode,
