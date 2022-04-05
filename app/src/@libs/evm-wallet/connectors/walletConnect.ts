@@ -5,9 +5,13 @@ import { ConnectorData } from './types';
 
 const [connector, hooks] = initializeConnector<WalletConnect>(
   (actions) =>
-    new WalletConnect(actions, {
-      rpc: supportedChainRpcs,
-    }),
+    new WalletConnect(
+      actions,
+      {
+        rpc: supportedChainRpcs,
+      },
+      true,
+    ),
 );
 
 function useConnectorData(): ConnectorData {
