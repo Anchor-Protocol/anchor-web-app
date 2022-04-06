@@ -23,7 +23,6 @@ export function useRewardsAncUstLpRewardsQuery(): UseQueryResult<
     [
       ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
       terraWalletAddress,
-      contractAddress.anchorToken.staking,
       contractAddress.cw20.AncUstLP,
       contractAddress.astroport.generator,
       queryClient,

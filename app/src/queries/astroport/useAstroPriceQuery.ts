@@ -49,7 +49,7 @@ const astroPriceQuery = async (
 
 const queryFn = createQueryFn(astroPriceQuery);
 
-export function useAstroPriceQuery(): UseQueryResult<number | undefined> {
+export function useAstroPriceQuery(): UseQueryResult<UST> {
   const { queryClient, contractAddress, queryErrorReporter } =
     useAnchorWebapp();
 

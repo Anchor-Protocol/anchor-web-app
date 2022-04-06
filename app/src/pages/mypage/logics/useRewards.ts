@@ -6,10 +6,20 @@ import {
   useRewardsAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/app-provider';
-import { ANC, u, UST } from '@anchor-protocol/types';
+import { ANC, Collateral, u, UST } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { useAstroPriceQuery } from 'queries';
 import { useMemo } from 'react';
+import { sum } from '@libs/big-math';
+
+export interface Reward {
+  symbol: string;
+  amount: u<Collateral<Big>>;
+  amountInUst: u<UST<Big>>;
+}
+
+const getRewardAmountInUst = (amount: Reward['amount'], price: UST<string>) =>
+  big(amount).mul(price) as u<UST<Big>>;
 
 export function useRewards() {
   // ---------------------------------------------
@@ -17,7 +27,6 @@ export function useRewards() {
   // ---------------------------------------------
   const { data: { ancPrice } = {} } = useAncPriceQuery();
   const { data: astroPrice } = useAstroPriceQuery();
-  console.log(astroPrice);
 
   const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
 
@@ -39,6 +48,7 @@ export function useRewards() {
   const ancUstLp = useMemo(() => {
     if (
       !ancPrice ||
+      !astroPrice ||
       !lpStakingState ||
       !userLPPendingToken ||
       !userLPBalance ||
@@ -77,8 +87,30 @@ export function useRewards() {
     const stakable = userLPBalance.balance;
     const stakableValue = big(stakable).mul(LPValue) as u<UST<Big>>;
 
-    const reward = userLPPendingToken.pending_on_proxy;
-    const rewardValue = big(reward).mul(ancPrice.ANCPrice) as u<UST<Big>>;
+    const ancReward = big(userLPPendingToken.pending_on_proxy) as u<
+      Collateral<Big>
+    >;
+    const astroReward = big(userLPPendingToken.pending) as u<Collateral<Big>>;
+
+    const rewards: Reward[] = [
+      {
+        symbol: 'ASTRO',
+        amount: astroReward,
+        amountInUst: getRewardAmountInUst(astroReward, astroPrice),
+      },
+    ];
+    // ANC rewards are no longer being issued
+    if (!ancReward.eq(0)) {
+      rewards.push({
+        symbol: 'ANC',
+        amount: ancReward,
+        amountInUst: getRewardAmountInUst(ancReward, ancPrice.ANCPrice),
+      });
+    }
+
+    const rewardsAmountInUst = sum(
+      ...rewards.map((reward) => reward.amountInUst),
+    ) as u<UST<Big>>;
 
     return {
       withdrawableAssets,
@@ -88,11 +120,12 @@ export function useRewards() {
       stakedValue,
       stakable,
       stakableValue,
-      reward,
-      rewardValue,
+      rewards,
+      rewardsAmountInUst,
     };
   }, [
     ancPrice,
+    astroPrice,
     lpStakingState,
     userLPBalance,
     userLPDeposit,
@@ -129,7 +162,9 @@ export function useRewards() {
       return undefined;
     }
 
-    const reward = ustBorrow.reward.plus(ancUstLp.reward) as u<ANC<Big>>;
+    const reward = ustBorrow.reward.plus(ancUstLp.rewardsAmountInUst) as u<
+      ANC<Big>
+    >;
     const rewardValue = reward.mul(ancPrice.ANCPrice) as u<UST<Big>>;
 
     return { reward, rewardValue };

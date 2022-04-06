@@ -113,8 +113,11 @@ function TotalValueBase({ className }: TotalValueProps) {
             ancUstLp.poolAssets.ust,
           ) as u<UST<Big>>)
         : ('0' as u<UST>);
+
     const farming = ancUstLp
-      ? (big(ancUstLp.stakedValue).plus(ancUstLp.rewardValue) as u<UST<Big>>)
+      ? (big(ancUstLp.stakedValue).plus(ancUstLp.rewardsAmountInUst) as u<
+          UST<Big>
+        >)
       : ('0' as u<UST>);
     const govern =
       userGovStakingInfo && ancPrice
