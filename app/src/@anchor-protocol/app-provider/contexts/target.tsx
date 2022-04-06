@@ -36,12 +36,11 @@ export interface DeploymentTarget {
   icon: string;
   isNative: boolean;
   isEVM: boolean;
-  //evmChainId?: EvmChainId;
 }
 
 interface UseDeploymentTargetReturn {
   target: DeploymentTarget;
-  updateTarget: (target: DeploymentTarget) => void;
+  updateTarget: (chainOrTarget: Chain | DeploymentTarget) => void;
 }
 
 export const DeploymentTargetContext = createContext<
@@ -81,9 +80,16 @@ const DeploymentTargetProvider = (props: UIElementProps) => {
   const value = useMemo(() => {
     return {
       target,
-      updateTarget: (t: DeploymentTarget) => {
-        updateTarget(t);
-        setChain(t.chain);
+      updateTarget: (chainOrTarget: Chain | DeploymentTarget) => {
+        let found =
+          typeof chainOrTarget === 'string'
+            ? DEPLOYMENT_TARGETS.find((t) => t.chain === chainOrTarget)
+            : chainOrTarget;
+
+        if (found) {
+          updateTarget(found);
+          setChain(found.chain);
+        }
       },
     };
   }, [target, updateTarget, setChain]);

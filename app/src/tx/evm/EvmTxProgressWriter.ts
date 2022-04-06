@@ -1,7 +1,6 @@
 import {
   CrossChainEvent,
   CrossChainEventKind,
-  EvmChainId,
 } from '@anchor-protocol/crossanchor-sdk';
 import { TxReceiptLike, TxResultRendering } from '@libs/app-fns';
 import { ConnectType } from '@libs/evm-wallet';
@@ -25,18 +24,10 @@ const DEFAULT_STATUS = new Map<CrossChainEventKind, string>([
 export class EvmTxProgressWriter<
   T extends TxResultRendering,
 > extends TxProgressWriter<T> {
-  private readonly _chainId: EvmChainId;
-  private readonly _connnectType: ConnectType;
   private readonly _description: string;
 
-  constructor(
-    subject: Subject<T>,
-    chainId: EvmChainId,
-    connnectType: ConnectType,
-  ) {
+  constructor(subject: Subject<T>, connnectType: ConnectType) {
     super(subject);
-    this._chainId = chainId;
-    this._connnectType = connnectType;
     this._description = `Transaction sent, please check your ${capitalize(
       connnectType,
     )} wallet for further instructions.`;
@@ -218,29 +209,4 @@ export class EvmTxProgressWriter<
       };
     });
   }
-
-  // public provideAndBorrow(
-  //   symbol: string,
-  //   event?: CrossChainEvent<ContractReceipt>,
-  // ) {
-  //   const map = new Map<CrossChainEventKind, string>([
-  //     ...DEFAULT_STATUS,
-  //     [
-  //       CrossChainEventKind.RemoteChainReturnTxSubmitted,
-  //       `Providing ${symbol} and Borrowing UST`,
-  //     ],
-  //     [
-  //       CrossChainEventKind.RemoteChainReturnTxRequested,
-  //       `Providing ${symbol} and Borrowing UST`,
-  //     ],
-  //   ]);
-  //   this.write((current) => {
-  //     return {
-  //       ...current,
-  //       message: `Providing your ${symbol} and Borrowing UST`,
-  //       description: this._description,
-  //       receipts: this.mergeEventKind(current.receipts, map, event),
-  //     };
-  //   });
-  // }
 }

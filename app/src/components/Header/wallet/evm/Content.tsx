@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Connection, useEvmWallet } from '@libs/evm-wallet';
+import { Connection, ConnectType, useEvmWallet } from '@libs/evm-wallet';
 import { WalletContent } from '../WalletContent';
 import { UIElementProps } from '@libs/ui';
 import { HumanAddr } from '@libs/types';
@@ -68,7 +68,8 @@ const ContentBase = (props: ContentProps) => {
     }
   };
 
-  const shouldShowAddButton = connectType === 'METAMASK' && onAddToken;
+  const shouldShowAddButton =
+    connectType === ConnectType.MetaMask && onAddToken;
 
   return (
     <WalletContent

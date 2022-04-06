@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   EvmWalletProvider,
-  supportedChainIds,
+  SupportedChainIds,
   useEvmWallet,
 } from '@libs/evm-wallet';
 import { UIElementProps } from '@libs/ui';
@@ -20,15 +20,12 @@ import { BackgroundTxRequestProvider } from 'tx/evm/background';
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 
 const isSupportedChain = (evmChainId?: EvmChainId): boolean => {
-  return Boolean(evmChainId) && supportedChainIds.includes(evmChainId!);
+  return Boolean(evmChainId) && SupportedChainIds.includes(evmChainId!);
 };
 
 const ChainGaurdian = (props: UIElementProps) => {
   const { children } = props;
   const { chainId: evmChainId } = useEvmWallet();
-
-  console.log('ChainGaurdian:evmChainId', evmChainId);
-  console.log('ChainGaurdian:isSupportedChain', isSupportedChain(evmChainId));
 
   if (evmChainId !== undefined && isSupportedChain(evmChainId) === false) {
     return (

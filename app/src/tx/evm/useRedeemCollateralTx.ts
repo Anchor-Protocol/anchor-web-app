@@ -9,7 +9,7 @@ import {
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy } from '@anchor-protocol/formatter';
@@ -30,12 +30,7 @@ export interface RedeemCollateralTxParams {
 export function useRedeemCollateralTx():
   | BackgroundTxResult<RedeemCollateralTxParams, RedeemCollateralTxResult>
   | undefined {
-  const {
-    address,
-    connection,
-    connectType,
-    chainId = EvmChainId.ETHEREUM_ROPSTEN,
-  } = useEvmWallet();
+  const { address, connectType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
@@ -50,11 +45,7 @@ export function useRedeemCollateralTx():
         amount,
       } = txParams;
 
-      const writer = new EvmTxProgressWriter(
-        renderTxResults,
-        chainId,
-        connectType,
-      );
+      const writer = new EvmTxProgressWriter(renderTxResults, connectType);
       writer.withdrawCollateral(symbol);
       writer.timer.start();
 
@@ -77,7 +68,7 @@ export function useRedeemCollateralTx():
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectType, chainId, refetchQueries],
+    [xAnchor, address, connectType, refetchQueries],
   );
 
   const persistedTxResult = useBackgroundTx<
@@ -85,7 +76,7 @@ export function useRedeemCollateralTx():
     RedeemCollateralTxResult
   >(redeemTx, parseTx, null, displayTx);
 
-  return chainId && connection && address ? persistedTxResult : undefined;
+  return address ? persistedTxResult : undefined;
 }
 
 const displayTx = (txParams: RedeemCollateralTxParams) => {

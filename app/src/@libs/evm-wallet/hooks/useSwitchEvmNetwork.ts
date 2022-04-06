@@ -14,16 +14,15 @@ export const getDefaultEvmChainId = (chain: Chain) => {
 
 export const useSwitchEvmNetwork = () => {
   const {
-    actions: { activate: activateEvmWallet },
-    connectType,
+    actions: { activate },
   } = useEvmWallet();
 
   return useCallback(
     async (chainId: EvmChainId) => {
-      if (activateEvmWallet && connectType) {
-        await activateEvmWallet(connectType, chainId);
+      if (activate) {
+        await activate(chainId);
       }
     },
-    [activateEvmWallet, connectType],
+    [activate],
   );
 };

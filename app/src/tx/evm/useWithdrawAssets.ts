@@ -26,8 +26,7 @@ export interface WithdrawAssetsTxParams {
 }
 
 export const useWithdrawAssetsTx = () => {
-  const { connection, provider, address, connectType, chainId } =
-    useEvmWallet();
+  const { provider, address, connectType, chainId } = useEvmWallet();
 
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
@@ -65,7 +64,7 @@ export const useWithdrawAssetsTx = () => {
     WithdrawAssetsTxResult
   >(withdrawTx, parseTx, null, displayTx);
 
-  return connection && provider && connectType && chainId && address
+  return provider && connectType && chainId && address
     ? withdrawAssetsTx
     : undefined;
 };

@@ -1,4 +1,8 @@
-import { availableConnectTypes } from './constants';
+export enum ConnectType {
+  None = 'None',
+  MetaMask = 'MetaMask',
+  WalletConnect = 'WalletConnect',
+}
 
 export type Connection = {
   icon: string;
@@ -6,9 +10,11 @@ export type Connection = {
   type: ConnectType;
 };
 
-export type WalletStatus = 'initialization' | 'connected' | 'disconnected';
-
-export type ConnectType = typeof availableConnectTypes[number];
+export enum WalletStatus {
+  Initializing = 'initialization',
+  Connected = 'connected',
+  Disconnected = 'disconnected',
+}
 
 export interface ERC20Token {
   address: string;

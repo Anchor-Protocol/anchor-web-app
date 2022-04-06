@@ -9,7 +9,7 @@ import {
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
@@ -34,12 +34,7 @@ export interface BorrowUstTxParams {
 export function useBorrowUstTx():
   | BackgroundTxResult<BorrowUstTxParams, BorrowUstTxResult>
   | undefined {
-  const {
-    address,
-    connection,
-    connectType,
-    chainId = EvmChainId.ETHEREUM_ROPSTEN,
-  } = useEvmWallet();
+  const { address, connectType } = useEvmWallet();
   const sdk = useEvmCrossAnchorSdk();
 
   const {
@@ -56,11 +51,7 @@ export function useBorrowUstTx():
     ) => {
       const { borrowAmount, collateral, collateralAmount } = txParams;
 
-      const writer = new EvmTxProgressWriter(
-        renderTxResults,
-        chainId,
-        connectType,
-      );
+      const writer = new EvmTxProgressWriter(renderTxResults, connectType);
       writer.timer.start();
 
       try {
@@ -123,7 +114,7 @@ export function useBorrowUstTx():
         writer.timer.stop();
       }
     },
-    [address, connectType, sdk, chainId, refetchQueries],
+    [address, connectType, sdk, refetchQueries],
   );
 
   const displayTx = useCallback(
@@ -140,7 +131,7 @@ export function useBorrowUstTx():
     BorrowUstTxResult
   >(borrowTx, parseTx, null, displayTx);
 
-  return chainId && connection && address ? persistedTxResult : undefined;
+  return address ? persistedTxResult : undefined;
 }
 
 const parseTx = (resp: NonNullable<BorrowUstTxResult>) => resp.tx;

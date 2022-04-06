@@ -4,6 +4,7 @@ import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { ConnectionTypeList } from 'components/Header/desktop/ConnectionTypeList';
 import { TermsMessage } from 'components/Header/desktop/TermsMessage';
+import { useWeb3React } from '@libs/evm-wallet';
 
 interface ConnectionListProps {
   onClose: () => void;
@@ -12,7 +13,8 @@ interface ConnectionListProps {
 const ConnectionList = (props: ConnectionListProps) => {
   const { onClose } = props;
 
-  const { actions, availableConnections, chainId } = useEvmWallet();
+  const { connect } = useWeb3React();
+  const { availableConnections } = useEvmWallet();
 
   return (
     <ConnectionTypeList footer={<TermsMessage />}>
@@ -21,7 +23,8 @@ const ConnectionList = (props: ConnectionListProps) => {
           key={type}
           className="connect"
           onClick={() => {
-            actions.activate(type, chainId);
+            console.log('connect to', type);
+            connect(type);
             onClose();
           }}
         >

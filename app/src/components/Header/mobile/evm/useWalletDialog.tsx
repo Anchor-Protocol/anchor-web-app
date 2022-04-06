@@ -6,7 +6,7 @@ import React, { ReactNode, useCallback } from 'react';
 import styled from 'styled-components';
 import { useAccount } from 'contexts/account';
 import { Content } from '../../wallet/evm/Content';
-import { useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet, useWeb3React } from '@libs/evm-wallet';
 import { ConnectionList } from 'components/Header/wallet/evm/ConnectionList';
 
 // TODO: see if this can be merged with useWalletDialog on the Terra side
@@ -26,13 +26,14 @@ export function useWalletDialog(): [
 
 function ComponentBase(props: DialogProps<FormParams, FormReturn>) {
   const { className, closeDialog } = props;
-  const { actions, connection } = useEvmWallet();
+  const { disconnect } = useWeb3React();
+  const { connection } = useEvmWallet();
   const { connected, terraWalletAddress } = useAccount();
 
   const disconnectWallet = useCallback(() => {
-    actions.deactivate();
+    disconnect();
     closeDialog();
-  }, [closeDialog, actions]);
+  }, [closeDialog, disconnect]);
 
   return (
     <Modal open onClose={() => closeDialog()}>
