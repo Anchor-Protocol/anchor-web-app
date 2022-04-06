@@ -41,6 +41,7 @@ export interface AnchorContractAddress extends AppContractAddress {
   };
   astroport: {
     generator: HumanAddr;
+    astroUstPair: HumanAddr;
   };
   cw20: {
     bLuna: CW20Addr;

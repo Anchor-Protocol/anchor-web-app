@@ -8,6 +8,7 @@ import {
 } from '@anchor-protocol/app-provider';
 import { ANC, u, UST } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
+import { useAstroPriceQuery } from 'queries';
 import { useMemo } from 'react';
 
 export function useRewards() {
@@ -15,6 +16,8 @@ export function useRewards() {
   // queries
   // ---------------------------------------------
   const { data: { ancPrice } = {} } = useAncPriceQuery();
+  const { data: astroPrice } = useAstroPriceQuery();
+  console.log(astroPrice);
 
   const { data: { lpStakingState } = {} } = useAncLpStakingStateQuery();
 
