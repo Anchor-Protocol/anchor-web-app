@@ -25,9 +25,13 @@ const isSupportedChain = (evmChainId?: EvmChainId): boolean => {
 
 const ChainGaurdian = (props: UIElementProps) => {
   const { children } = props;
+
   const { chainId: evmChainId } = useEvmWallet();
 
-  if (evmChainId !== undefined && isSupportedChain(evmChainId) === false) {
+  const showWrongNetwork =
+    evmChainId !== undefined && isSupportedChain(evmChainId) === false;
+
+  if (showWrongNetwork) {
     return (
       <>
         <GlobalStyle />

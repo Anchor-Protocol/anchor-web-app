@@ -5,6 +5,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { UIElementProps } from '@libs/ui';
 import { MetaMask } from '@web3-react/metamask';
 import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
+import { useNetworkDetection } from '../hooks/useNetworkDetection';
 
 export type EvmWallet = {
   actions: {
@@ -43,6 +44,8 @@ function WalletProvider({ children }: UIElementProps) {
     provider,
     connectionType,
   } = useWeb3React();
+
+  useNetworkDetection();
 
   const evmWallet = useMemo<EvmWallet>(() => {
     const status: WalletStatus = isActivating

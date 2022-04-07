@@ -1,12 +1,12 @@
 import React, {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
-  useEffect,
   useMemo,
 } from 'react';
 import { getSelectedConnector, Web3ReactHooks } from '@web3-react/core';
-import type { Connector } from '@web3-react/types';
+import type { Connector, Web3ReactStore } from '@web3-react/types';
 import { Empty } from '@web3-react/empty';
 import type { BaseProvider, Web3Provider } from '@ethersproject/providers';
 import { getConnectionType } from '../utils';
@@ -14,18 +14,33 @@ import { ConnectType } from '../types';
 import { useLocalStorage } from 'usehooks-ts';
 import { MetaMask } from '@web3-react/metamask';
 import { WalletConnect } from '@web3-react/walletconnect';
-import { hooks as metaMaskHooks, metaMask } from '../connectors/metaMask';
+import { metaMask, metaMaskHooks, metaMaskStore } from '../connectors/metaMask';
 import {
-  hooks as walletConnectHooks,
   walletConnect,
+  walletConnectHooks,
+  walletConnectStore,
 } from '../connectors/walletConnect';
-import { hooks as emptyHooks, empty } from '../connectors/empty';
+import { empty, emptyHooks, emptyStore } from '../connectors/empty';
 
-const connectors: [Empty | MetaMask | WalletConnect, Web3ReactHooks][] = [
-  [empty, emptyHooks],
-  [metaMask, metaMaskHooks],
-  [walletConnect, walletConnectHooks],
+const connectors: [
+  Empty | MetaMask | WalletConnect,
+  Web3ReactHooks,
+  Web3ReactStore,
+][] = [
+  [empty, emptyHooks, emptyStore],
+  [metaMask, metaMaskHooks, metaMaskStore],
+  [walletConnect, walletConnectHooks, walletConnectStore],
 ];
+
+export const getWeb3Connector = (connectionType: ConnectType) => {
+  const found = connectors.find(
+    (c) => getConnectionType(c[0]) === (connectionType ?? ConnectType.None),
+  );
+  if (found === undefined) {
+    throw Error(`Could not find the connector for ${connectionType}.`);
+  }
+  return found;
+};
 
 type Web3ContextType = {
   chainId: ReturnType<Web3ReactHooks['useChainId']>;
@@ -37,7 +52,7 @@ type Web3ContextType = {
   provider: ReturnType<Web3ReactHooks['useProvider']>;
   connector: Connector;
   connectionType: ConnectType;
-  connect: (connectionType: ConnectType) => void;
+  connect: (connectionType: ConnectType) => Connector;
   disconnect: () => void;
 };
 
@@ -67,18 +82,7 @@ export function Web3ReactProvider<T extends BaseProvider = Web3Provider>(
     useSelectedProvider,
   } = getSelectedConnector(...connectors);
 
-  const connector = useMemo<Connector>(() => {
-    const found = connectors.find(
-      (c) => getConnectionType(c[0]) === (connectionType ?? ConnectType.None),
-    );
-    return found![0];
-  }, [connectionType]);
-
-  useEffect(() => {
-    if (connector && connector.connectEagerly) {
-      void connector.connectEagerly();
-    }
-  }, [connector]);
+  const [connector] = getWeb3Connector(connectionType);
 
   const chainId = useSelectedChainId(connector);
   const accounts = useSelectedAccounts(connector);
@@ -88,12 +92,19 @@ export function Web3ReactProvider<T extends BaseProvider = Web3Provider>(
   const isActive = useSelectedIsActive(connector);
   const provider = useSelectedProvider<T>(connector, 'any');
 
-  const value = useMemo(() => {
-    const connect = (connectionType: ConnectType) =>
+  const connect = useCallback(
+    (connectionType: ConnectType) => {
       setConnectionType(connectionType);
+      return getWeb3Connector(connectionType)[0];
+    },
+    [setConnectionType],
+  );
 
-    const disconnect = () => setConnectionType(ConnectType.None);
+  const disconnect = useCallback(() => {
+    setConnectionType(ConnectType.None);
+  }, [setConnectionType]);
 
+  const value = useMemo(() => {
     return {
       chainId,
       accounts,
@@ -117,7 +128,8 @@ export function Web3ReactProvider<T extends BaseProvider = Web3Provider>(
     provider,
     connector,
     connectionType,
-    setConnectionType,
+    connect,
+    disconnect,
   ]);
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
