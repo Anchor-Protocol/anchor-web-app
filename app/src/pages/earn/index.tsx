@@ -4,23 +4,33 @@ import { links, screen } from 'env';
 import { fixHMR } from 'fix-hmr';
 import React from 'react';
 import styled from 'styled-components';
+import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { BuyUstButton } from './components/BuyUstButton';
 import { ExpectedInterestSection } from './components/ExpectedInterestSection';
 import { InsuranceCoverageButton } from './components/InsuranceCoverageButton';
 import { InterestSection } from './components/InterestSection';
 import { TotalDepositSection } from './components/TotalDepositSection';
+import { EarnOnNonUstStablecoinsButton } from './components/evm/EarnOnNonUstStablecoinsButton/EarnOnNonUstStablecoinsButton';
 
 export interface EarnProps {
   className?: string;
 }
 
 function Component({ className }: EarnProps) {
+  const { target } = useDeploymentTarget();
+  const displayEarnOnNonUstStablecoinsButton = target.chain === Chain.Ethereum;
+
   return (
     <PaddedLayout className={className}>
       <FlexTitleContainer>
         <PageTitle title="EARN" docs={links.docs.earn} />
         <Buttons>
-          <InsuranceCoverageButton />
+          {displayEarnOnNonUstStablecoinsButton && (
+            <EarnOnNonUstStablecoinsButton />
+          )}
+          <InsuranceCoverageButton
+            useManualWidthOnMobile={displayEarnOnNonUstStablecoinsButton}
+          />
           <BuyUstButton />
         </Buttons>
       </FlexTitleContainer>
