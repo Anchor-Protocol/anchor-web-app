@@ -5,10 +5,7 @@ import {
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
-import {
-  formatANCWithPostfixUnits,
-  formatUST,
-} from '@anchor-protocol/notation';
+import { formatUST } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatUToken } from '@libs/formatter';
@@ -33,7 +30,7 @@ export const TerraClaimAll = () => {
 
   const bank = useAnchorBank();
 
-  const { data: { borrowerInfo, userANCBalance } = {} } =
+  const { data: { borrowerInfo } = {} } =
     useRewardsClaimableUstBorrowRewardsQuery();
 
   const { data: { userLPPendingToken } = {} } =
@@ -51,7 +48,7 @@ export const TerraClaimAll = () => {
     return big(userLPPendingToken.pending_on_proxy) as u<ANC<Big>>;
   }, [userLPPendingToken]);
 
-  const claiming = useMemo(() => {
+  const ancRewards = useMemo(() => {
     if (
       !claimingBorrowerInfoPendingRewards ||
       !claimingLpStakingInfoPendingRewards
@@ -63,11 +60,6 @@ export const TerraClaimAll = () => {
       claimingBorrowerInfoPendingRewards,
     ) as u<ANC<Big>>;
   }, [claimingBorrowerInfoPendingRewards, claimingLpStakingInfoPendingRewards]);
-
-  const ancAfterTx = useMemo(() => {
-    if (!claiming || !userANCBalance) return undefined;
-    return claiming.plus(userANCBalance.balance) as u<ANC<Big>>;
-  }, [claiming, userANCBalance]);
 
   const invalidTxFee = useMemo(
     () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
@@ -87,6 +79,12 @@ export const TerraClaimAll = () => {
     },
     [claim, connected],
   );
+
+  const astroRewards = userLPPendingToken?.pending;
+
+  const hasAstroRewards = astroRewards && !big(astroRewards).eq(0);
+  const hasAncRewards = ancRewards && !ancRewards.eq(0);
+  const hasRewards = hasAstroRewards || hasAncRewards;
 
   return (
     <ClaimAll txResult={claimResult}>
@@ -118,18 +116,16 @@ export const TerraClaimAll = () => {
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <TxFeeList className="receipt">
-          <TxFeeListItem label="Claiming">
-            {claiming ? formatANCWithPostfixUnits(demicrofy(claiming)) : 0} ANC
-            {' + '}
-            {userLPPendingToken
-              ? formatUToken(userLPPendingToken.pending)
-              : 0}{' '}
-            ASTRO
-          </TxFeeListItem>
-          <TxFeeListItem label="ANC After Tx">
-            {ancAfterTx ? formatANCWithPostfixUnits(demicrofy(ancAfterTx)) : 0}{' '}
-            ANC
-          </TxFeeListItem>
+          {hasAstroRewards && (
+            <TxFeeListItem label="ASTRO">
+              {formatUToken(astroRewards)} ASTRO
+            </TxFeeListItem>
+          )}
+          {hasAncRewards && (
+            <TxFeeListItem label="ANC">
+              {formatUToken(ancRewards as u<ANC<Big>>)} ANC
+            </TxFeeListItem>
+          )}
           <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
@@ -144,7 +140,7 @@ export const TerraClaimAll = () => {
               !claim ||
               !claimingLpStakingInfoPendingRewards ||
               !claimingBorrowerInfoPendingRewards ||
-              !claiming ||
+              !hasRewards ||
               (claimingBorrowerInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE) &&
                 claimingLpStakingInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE))
             }
