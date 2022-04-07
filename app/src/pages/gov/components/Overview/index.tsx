@@ -8,7 +8,6 @@ import {
   useAncBalanceQuery,
   useAnchorWebapp,
   useAncLpStakingStateQuery,
-  useAncPriceQuery,
   useAncTokenInfoQuery,
   useBorrowAPYQuery,
   useDeploymentTarget,
@@ -31,6 +30,7 @@ import { ancGovernancePathname, ancUstLpPathname } from 'pages/trade/env';
 import React, { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAssetPriceInUstQuery } from 'queries';
 
 export interface OverviewProps {
   className?: string;
@@ -43,7 +43,7 @@ function OverviewBase({ className }: OverviewProps) {
 
   const { contractAddress } = useAnchorWebapp();
 
-  const { data: { ancPrice } = {} } = useAncPriceQuery();
+  const { data: ancPrice } = useAssetPriceInUstQuery('anc');
 
   const { data: { govRewards, lpRewards } = {} } = useBorrowAPYQuery();
 
@@ -142,7 +142,7 @@ function OverviewBase({ className }: OverviewProps) {
         </h2>
         <div>
           <AnimateNumber format={formatUSTWithPostfixUnits}>
-            {ancPrice?.ANCPrice ?? ('0' as UST)}
+            {ancPrice || ('0' as UST)}
           </AnimateNumber>{' '}
           <Sub>UST</Sub>
         </div>
