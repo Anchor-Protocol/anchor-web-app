@@ -22,8 +22,8 @@ export const EarnApyProjection = ({ height, rate }: EarnApyProjectionProps) => {
         <AnimateNumber format={formatRate}>{rate}</AnimateNumber>%
       </b>{' '}
       <InfoTooltip>
-        {timestamp ? format(timestamp, 'MMM d') : ''} projected annual deposit
-        rate
+        Projected annualized deposit rate{' '}
+        {timestamp ? `from ${format(timestamp, 'MMM d')}` : ''}
       </InfoTooltip>
     </IconSpan>
   );
