@@ -56,7 +56,7 @@ export function useAncSellTx() {
         ) as UST,
         maxSpread: maxSpread.toString() as Rate,
         ancTokenAddr: contractAddress.cw20.ANC,
-        ancUstPairAddr: contractAddress.terraswap.ancUstPair,
+        ancUstPairAddr: contractAddress.astroport.ancUstPair,
         // post
         network: connectedWallet.network,
         post: connectedWallet.post,
@@ -81,7 +81,7 @@ export function useAncSellTx() {
       connectedWallet,
       ancPrice,
       contractAddress.cw20.ANC,
-      contractAddress.terraswap.ancUstPair,
+      contractAddress.astroport.ancUstPair,
       terraWalletAddress,
       fixedFee,
       bank.tax,

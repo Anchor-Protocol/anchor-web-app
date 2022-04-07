@@ -186,11 +186,11 @@ export const ANCHOR_CONTRACT_ADDRESS = (
     terraswap: {
       factory: addressMap.terraswapFactory as HumanAddr,
       blunaLunaPair: addressMap.bLunaLunaPair as HumanAddr,
-      ancUstPair: addressMap.ancUstPair as HumanAddr,
     },
     astroport: {
       generator: addressMap.astroportGenerator as HumanAddr,
       astroUstPair: addressMap.astroUstPair as HumanAddr,
+      ancUstPair: addressMap.ancUstPair as HumanAddr,
     },
     cw20: {
       bLuna: addressMap.bLunaToken as CW20Addr,

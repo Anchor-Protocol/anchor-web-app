@@ -62,10 +62,10 @@ export const TEST_ADDRESSES = {
   terraswap: {
     factory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf' as HumanAddr,
     blunaLunaPair: 'terra13e4jmcjnwrauvl2fnjdwex0exuzd8zrh5xk29v' as HumanAddr,
-    ancUstPair: 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz' as HumanAddr,
   },
   astroport: {
     generator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5' as HumanAddr,
+    ancUstPair: 'terra1wfvczps2865j0awnurk9m04u7wdmd6qv3fdnvz' as HumanAddr,
   },
   cw20: {
     bLuna: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x' as CW20Addr,
