@@ -12,7 +12,9 @@ export const useEstimatedTimestamp = (
   } = useAnchorWebapp();
 
   const { data: lastSyncedBlock } = useLastSyncedBlock();
-  if (!lastSyncedBlock) return;
+  if (lastSyncedBlock === undefined) {
+    return;
+  }
 
   const daysInYear = getDaysInYear(new Date());
   const millisecondsInYear = daysInYear * millisecondsInHour * hoursInDay;
