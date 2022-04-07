@@ -5,45 +5,11 @@ import styled from 'styled-components';
 import { ChainButton } from './ChainButton';
 import { DropdownBox, DropdownContainer } from '../desktop/DropdownContainer';
 import { ChainList } from './ChainList';
-// import { useEvmWallet, useSwitchEvmNetwork } from '@libs/evm-wallet';
-// import {
-//   Chain,
-//   DEPLOYMENT_TARGETS,
-//   useDeploymentTarget,
-// } from '@anchor-protocol/app-provider';
-// import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
-
-// const evmDeploymentTarget = (chain: Chain) => {
-//   return DEPLOYMENT_TARGETS.filter((t) => t.chain === chain)[0];
-// };
-
-// const evmChain = (chainId: EvmChainId) => {
-//   switch (chainId) {
-//     case EvmChainId.AVALANCHE:
-//     case EvmChainId.AVALANCHE_FUJI_TESTNET:
-//       return Chain.Avalanche;
-//     default:
-//       return Chain.Ethereum;
-//   }
-// };
 
 const ChainSelectorBase = (props: UIElementProps) => {
   const { className } = props;
 
-  // TODO: structure reactive chain switching logic properly (metamask chain switch)
   const [open, setOpen] = useState(false);
-  //const switchEvmNetwork = useSwitchEvmNetwork();
-  //const { target } = useDeploymentTarget();
-  //const { provider, chainId } = useEvmWallet();
-
-  // useEffect(() => {
-  //   if (target.isEVM && provider?.provider?.isMetaMask && chainId) {
-  //     const evmTarget = evmDeploymentTarget(evmChain(chainId));
-
-  //     switchEvmNetwork({ ...evmTarget, evmChainId: chainId });
-  //   }
-  //   //eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [chainId]);
 
   return (
     <ClickAwayListener onClickAway={() => setOpen(false)}>

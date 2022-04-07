@@ -50,6 +50,7 @@ type Web3ContextType = {
   account: ReturnType<Web3ReactHooks['useAccount']>;
   isActive: ReturnType<Web3ReactHooks['useIsActive']>;
   provider: ReturnType<Web3ReactHooks['useProvider']>;
+  store: Web3ReactStore;
   connector: Connector;
   connectionType: ConnectType;
   connect: (connectionType: ConnectType) => Connector;
@@ -82,7 +83,7 @@ export function Web3ReactProvider<T extends BaseProvider = Web3Provider>(
     useSelectedProvider,
   } = getSelectedConnector(...connectors);
 
-  const [connector] = getWeb3Connector(connectionType);
+  const [connector, , store] = getWeb3Connector(connectionType);
 
   const chainId = useSelectedChainId(connector);
   const accounts = useSelectedAccounts(connector);
@@ -115,6 +116,7 @@ export function Web3ReactProvider<T extends BaseProvider = Web3Provider>(
       provider,
       connector,
       connectionType: connectionType ?? ConnectType.None,
+      store,
       connect,
       disconnect,
     };
@@ -128,6 +130,7 @@ export function Web3ReactProvider<T extends BaseProvider = Web3Provider>(
     provider,
     connector,
     connectionType,
+    store,
     connect,
     disconnect,
   ]);

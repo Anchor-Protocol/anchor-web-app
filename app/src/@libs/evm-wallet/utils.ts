@@ -15,6 +15,15 @@ export const getConnectionType = (connector: Connector): ConnectType => {
   return ConnectType.None;
 };
 
+export const getDefaultEvmChainId = (chain: Chain) => {
+  switch (chain) {
+    case Chain.Avalanche:
+      return EvmChainId.AVALANCHE;
+    default:
+      return EvmChainId.ETHEREUM;
+  }
+};
+
 export const getEvmDeploymentTargetChain = (evmChainId: EvmChainId): Chain => {
   switch (evmChainId) {
     case EvmChainId.ETHEREUM:

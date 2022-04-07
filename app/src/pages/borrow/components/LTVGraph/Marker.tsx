@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 
 export const Marker = styled.span`
-  top: -30px;
+  top: -50px;
   z-index: 1;
 
   > span {

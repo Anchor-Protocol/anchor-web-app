@@ -5,18 +5,22 @@ import { Web3Provider } from '@ethersproject/providers';
 import { UIElementProps } from '@libs/ui';
 import { MetaMask } from '@web3-react/metamask';
 import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
-import { useNetworkDetection } from '../hooks/useNetworkDetection';
 
 export type EvmWallet = {
+  // TODO: obsolete these from actions
   actions: {
-    activate: (chainId?: number) => Promise<void>;
+    activate: (chainId?: number) => Promise<Error | undefined>;
     watchAsset: (token: ERC20Token) => void;
   };
+  activate: (chainId?: number) => Promise<Error | undefined>;
+  watchAsset: (token: ERC20Token) => void;
   availableConnectTypes: ConnectType[];
   availableConnections: Connection[];
   connection: Connection | null;
   status: WalletStatus;
+  // TODO: obsolete this one
   connectType: ConnectType;
+  connectionType: ConnectType;
   chainId?: number;
   address?: string;
   error?: Error;
@@ -36,6 +40,7 @@ export function EvmWalletProvider({ children }: UIElementProps) {
 function WalletProvider({ children }: UIElementProps) {
   const {
     connector,
+    store,
     chainId,
     isActive,
     isActivating,
@@ -45,8 +50,6 @@ function WalletProvider({ children }: UIElementProps) {
     connectionType,
   } = useWeb3React();
 
-  useNetworkDetection();
-
   const evmWallet = useMemo<EvmWallet>(() => {
     const status: WalletStatus = isActivating
       ? WalletStatus.Initializing
@@ -54,8 +57,15 @@ function WalletProvider({ children }: UIElementProps) {
       ? WalletStatus.Connected
       : WalletStatus.Disconnected;
 
-    const activate = async (chainId?: number) => {
+    const activate = async (chainId?: number): Promise<Error | undefined> => {
       await connector.activate(chainId);
+
+      // the activate method doesnt fail as it reports any
+      // errors to its local zustand store so we need
+      // to access that to determine if it failed
+      const { error } = store.getState();
+
+      return error;
     };
 
     const watchAsset = async (token: ERC20Token) => {
@@ -78,7 +88,10 @@ function WalletProvider({ children }: UIElementProps) {
 
     return {
       actions: { activate, watchAsset },
+      activate,
+      watchAsset,
       connectType: connectionType,
+      connectionType,
       availableConnectTypes: [ConnectType.MetaMask, ConnectType.WalletConnect],
       availableConnections: AvailableConnections,
       connection,
@@ -91,6 +104,7 @@ function WalletProvider({ children }: UIElementProps) {
   }, [
     connectionType,
     connector,
+    store,
     account,
     isActivating,
     isActive,
