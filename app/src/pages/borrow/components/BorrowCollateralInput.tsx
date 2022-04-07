@@ -125,9 +125,7 @@ const Component = (props: BorrowCollateralInputProps) => {
             value={ratio}
             onChange={onLtvChange}
             stepFunction={trunc}
-            labelFormatter={(value) =>
-              `${value < 1 ? formatter(value * 100) : '100'}%`
-            }
+            label={`${ratio < 1 ? formatter(ratio * 100) : '100'}%`}
           />
         )}
       </HorizontalGraphBar>

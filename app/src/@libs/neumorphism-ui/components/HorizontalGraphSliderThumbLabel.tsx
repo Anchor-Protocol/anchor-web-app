@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import { UIElementProps } from 'components/layouts/UIElementProps';
 
 interface HorizontalGraphSliderThumbLabelProps extends UIElementProps {
-  label: string;
+  label: ReactNode;
   position: number;
 }
 

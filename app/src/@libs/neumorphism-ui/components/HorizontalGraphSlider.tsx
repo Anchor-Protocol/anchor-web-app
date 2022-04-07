@@ -1,4 +1,9 @@
-import React, { Component, CSSProperties, ReactElement } from 'react';
+import React, {
+  Component,
+  CSSProperties,
+  ReactElement,
+  ReactNode,
+} from 'react';
 import styled from 'styled-components';
 import { Rect } from './HorizontalGraphBar';
 import { HorizontalGraphSliderThumbLabel } from './HorizontalGraphSliderThumbLabel';
@@ -20,7 +25,7 @@ export interface HorizontalGraphSliderProps {
   className?: string;
   children?: ReactElement;
   style?: CSSProperties;
-  labelFormatter?: (value: number) => string;
+  label?: ReactNode;
 }
 
 interface HorizontalGraphSliderState {
@@ -53,7 +58,7 @@ class HorizontalGraphSliderBase extends Component<
   };
 
   render() {
-    const { className, style, disabled, labelFormatter, value } = this.props;
+    const { className, style, disabled, label } = this.props;
 
     const position = this.thumbLeft();
 
@@ -74,14 +79,14 @@ class HorizontalGraphSliderBase extends Component<
           className="thumb"
           position={position}
         />
-        {labelFormatter && (
+        {label && (
           <HorizontalGraphSliderThumbLabel
             className={classNames('thumb-label', {
               'thumb-label-visible':
                 this.state.isHovering || this.state.isDragging,
             })}
             position={position}
-            label={labelFormatter(value)}
+            label={label}
           />
         )}
       </div>
