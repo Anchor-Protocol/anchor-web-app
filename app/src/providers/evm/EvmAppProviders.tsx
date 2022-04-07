@@ -33,7 +33,7 @@ const ChainGaurdian = (props: UIElementProps) => {
     target: { chain },
   } = useDeploymentTarget();
 
-  const { chainId, connectType } = useEvmWallet();
+  const { chainId, connectionType } = useEvmWallet();
 
   const showUnsupportedNetwork =
     chainId !== undefined && isSupportedChain(chainId) === false;
@@ -51,7 +51,7 @@ const ChainGaurdian = (props: UIElementProps) => {
 
   const showWrongNetwork =
     chainId !== undefined &&
-    connectType !== ConnectType.None &&
+    connectionType !== ConnectType.None &&
     chainId !== destinationChainId;
 
   if (showWrongNetwork) {
@@ -60,7 +60,7 @@ const ChainGaurdian = (props: UIElementProps) => {
         <GlobalStyle />
         <EvmWrongNetwork
           chain={chain}
-          connectionType={connectType}
+          connectionType={connectionType}
           chainId={destinationChainId}
         />
       </>
