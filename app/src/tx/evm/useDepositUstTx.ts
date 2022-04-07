@@ -28,7 +28,7 @@ export interface DepositUstTxParams {
 export function useDepositUstTx():
   | BackgroundTxResult<DepositUstTxParams, DepositUstTxResult>
   | undefined {
-  const { address, connectType } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
@@ -45,7 +45,7 @@ export function useDepositUstTx():
         formatInput(txParams.depositAmount),
       ).toString();
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectType);
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.approveUST();
       writer.timer.start();
 
@@ -77,7 +77,7 @@ export function useDepositUstTx():
         writer.timer.stop();
       }
     },
-    [address, connectType, xAnchor, microfy, formatInput, refetchQueries],
+    [address, connectionType, xAnchor, microfy, formatInput, refetchQueries],
   );
 
   const displayTx = useCallback(

@@ -34,7 +34,7 @@ export interface BorrowUstTxParams {
 export function useBorrowUstTx():
   | BackgroundTxResult<BorrowUstTxParams, BorrowUstTxResult>
   | undefined {
-  const { address, connectType } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
   const sdk = useEvmCrossAnchorSdk();
 
   const {
@@ -51,7 +51,7 @@ export function useBorrowUstTx():
     ) => {
       const { borrowAmount, collateral, collateralAmount } = txParams;
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectType);
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.timer.start();
 
       try {
@@ -114,7 +114,7 @@ export function useBorrowUstTx():
         writer.timer.stop();
       }
     },
-    [address, connectType, sdk, refetchQueries],
+    [address, connectionType, sdk, refetchQueries],
   );
 
   const displayTx = useCallback(

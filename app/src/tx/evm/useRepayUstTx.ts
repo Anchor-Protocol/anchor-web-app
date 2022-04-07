@@ -28,7 +28,7 @@ export interface RepayUstTxParams {
 export function useRepayUstTx():
   | BackgroundTxResult<RepayUstTxParams, RepayUstTxResult>
   | undefined {
-  const { address, connectType } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
@@ -43,7 +43,7 @@ export function useRepayUstTx():
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectType);
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.approveUST();
       writer.timer.start();
 
@@ -75,7 +75,7 @@ export function useRepayUstTx():
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectType, formatInput, microfy, refetchQueries],
+    [xAnchor, address, connectionType, formatInput, microfy, refetchQueries],
   );
 
   const displayTx = useCallback(

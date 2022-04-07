@@ -28,7 +28,7 @@ export interface WithdrawUstTxParams {
 export function useWithdrawUstTx():
   | BackgroundTxResult<WithdrawUstTxParams, WithdrawUstTxResult>
   | undefined {
-  const { address, connectType } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
 
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
@@ -47,7 +47,7 @@ export function useWithdrawUstTx():
         formatInput(txParams.withdrawAmount),
       ).toString();
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectType);
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.approveUST();
       writer.timer.start();
 
@@ -79,7 +79,7 @@ export function useWithdrawUstTx():
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectType, formatInput, microfy, refetchQueries],
+    [xAnchor, address, connectionType, formatInput, microfy, refetchQueries],
   );
 
   const displayTx = useCallback(

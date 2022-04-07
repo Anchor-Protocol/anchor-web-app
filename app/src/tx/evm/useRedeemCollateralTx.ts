@@ -30,7 +30,7 @@ export interface RedeemCollateralTxParams {
 export function useRedeemCollateralTx():
   | BackgroundTxResult<RedeemCollateralTxParams, RedeemCollateralTxResult>
   | undefined {
-  const { address, connectType } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
@@ -45,7 +45,7 @@ export function useRedeemCollateralTx():
         amount,
       } = txParams;
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectType);
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.withdrawCollateral(symbol);
       writer.timer.start();
 
@@ -68,7 +68,7 @@ export function useRedeemCollateralTx():
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectType, refetchQueries],
+    [xAnchor, address, connectionType, refetchQueries],
   );
 
   const persistedTxResult = useBackgroundTx<

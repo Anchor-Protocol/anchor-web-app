@@ -23,11 +23,7 @@ const ContentBase = (props: ContentProps) => {
   const { className, walletAddress, connection, onClose, onDisconnectWallet } =
     props;
 
-  const {
-    chainId,
-    actions: { watchAsset },
-    connectType,
-  } = useEvmWallet();
+  const { chainId, watchAsset, connectionType } = useEvmWallet();
 
   const [adding, setAdding] = useState(false);
 
@@ -69,7 +65,7 @@ const ContentBase = (props: ContentProps) => {
   };
 
   const shouldShowAddButton =
-    connectType === ConnectType.MetaMask && onAddToken;
+    connectionType === ConnectType.MetaMask && onAddToken;
 
   return (
     <WalletContent

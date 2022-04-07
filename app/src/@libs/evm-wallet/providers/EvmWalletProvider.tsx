@@ -7,19 +7,12 @@ import { MetaMask } from '@web3-react/metamask';
 import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
 
 export type EvmWallet = {
-  // TODO: obsolete these from actions
-  actions: {
-    activate: (chainId?: number) => Promise<Error | undefined>;
-    watchAsset: (token: ERC20Token) => void;
-  };
   activate: (chainId?: number) => Promise<Error | undefined>;
   watchAsset: (token: ERC20Token) => void;
   availableConnectTypes: ConnectType[];
   availableConnections: Connection[];
   connection: Connection | null;
   status: WalletStatus;
-  // TODO: obsolete this one
-  connectType: ConnectType;
   connectionType: ConnectType;
   chainId?: number;
   address?: string;
@@ -87,10 +80,8 @@ function WalletProvider({ children }: UIElementProps) {
         : AvailableConnections.filter((c) => c.type === connectionType)[0];
 
     return {
-      actions: { activate, watchAsset },
       activate,
       watchAsset,
-      connectType: connectionType,
       connectionType,
       availableConnectTypes: [ConnectType.MetaMask, ConnectType.WalletConnect],
       availableConnections: AvailableConnections,

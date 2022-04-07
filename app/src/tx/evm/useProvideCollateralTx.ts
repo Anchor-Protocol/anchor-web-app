@@ -31,7 +31,7 @@ export interface ProvideCollateralTxParams {
 export function useProvideCollateralTx():
   | BackgroundTxResult<ProvideCollateralTxParams, ProvideCollateralTxResult>
   | undefined {
-  const { address, connectType } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
@@ -47,7 +47,7 @@ export function useProvideCollateralTx():
         erc20Decimals,
       } = txParams;
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectType);
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.approveCollateral(symbol);
       writer.timer.start();
 
@@ -83,7 +83,7 @@ export function useProvideCollateralTx():
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectType, refetchQueries],
+    [xAnchor, address, connectionType, refetchQueries],
   );
 
   const persistedTxResult = useBackgroundTx<

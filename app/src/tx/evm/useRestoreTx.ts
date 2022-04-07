@@ -18,7 +18,7 @@ export interface RestoreTxParams {
 }
 
 export const useRestoreTx = () => {
-  const { provider, connectType } = useEvmWallet();
+  const { provider, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const { removeTransaction } = useTransactions();
 
@@ -28,7 +28,7 @@ export const useRestoreTx = () => {
       renderTxResults: Subject<TxRender>,
       txEvents: Subject<TxEvent<RestoreTxParams>>,
     ) => {
-      const writer = new EvmTxProgressWriter(renderTxResults, connectType);
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.restoreTx();
       writer.timer.start();
 
@@ -60,12 +60,12 @@ export const useRestoreTx = () => {
         writer.timer.stop();
       }
     },
-    [xAnchor, connectType, removeTransaction],
+    [xAnchor, connectionType, removeTransaction],
   );
 
   const restoreTxStream = useTx(restoreTx, parseTx, null);
 
-  return provider && connectType ? restoreTxStream : [null, null];
+  return provider && connectionType ? restoreTxStream : [null, null];
 };
 
 const parseTx = (resp: NonNullable<TxResult>) => resp.tx;
