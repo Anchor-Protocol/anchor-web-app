@@ -2,13 +2,9 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useRewardsAncUstLpClaimTx,
   useRewardsAncUstLpRewardsQuery,
-  useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
-import {
-  formatANCWithPostfixUnits,
-  formatUST,
-} from '@anchor-protocol/notation';
+import { formatUST } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, formatUToken } from '@libs/formatter';
@@ -22,7 +18,6 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -48,9 +43,6 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   // ---------------------------------------------
   const bank = useAnchorBank();
 
-  const { data: { userANCBalance } = {} } =
-    useRewardsClaimableUstBorrowRewardsQuery();
-
   const { data: { userLPPendingToken } = {} } =
     useRewardsAncUstLpRewardsQuery();
 
@@ -59,15 +51,10 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const claiming = useMemo(() => {
+  const ancRewards = useMemo(() => {
     if (!userLPPendingToken) return undefined;
     return big(userLPPendingToken.pending_on_proxy) as u<ANC<Big>>;
   }, [userLPPendingToken]);
-
-  const ancAfterTx = useMemo(() => {
-    if (!claiming || !userANCBalance) return undefined;
-    return claiming.plus(userANCBalance.balance) as u<ANC<Big>>;
-  }, [claiming, userANCBalance]);
 
   const invalidTxFee = useMemo(
     () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
@@ -109,6 +96,12 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
     );
   }
 
+  const astroRewards = userLPPendingToken?.pending;
+
+  const hasAstroRewards = astroRewards && !big(astroRewards).eq(0);
+  const hasAncRewards = ancRewards && !ancRewards.eq(0);
+  const hasRewards = hasAstroRewards || hasAncRewards;
+
   return (
     <CenteredLayout className={className} maxWidth={800}>
       <Section>
@@ -117,18 +110,16 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <TxFeeList className="receipt">
-          <TxFeeListItem label="Claiming">
-            {claiming ? formatANCWithPostfixUnits(demicrofy(claiming)) : 0} ANC
-            {' + '}
-            {userLPPendingToken
-              ? formatUToken(userLPPendingToken.pending)
-              : 0}{' '}
-            ASTRO
-          </TxFeeListItem>
-          <TxFeeListItem label="ANC After Tx">
-            {ancAfterTx ? formatANCWithPostfixUnits(demicrofy(ancAfterTx)) : 0}{' '}
-            ANC
-          </TxFeeListItem>
+          {hasAstroRewards && (
+            <TxFeeListItem label="ASTRO">
+              {formatUToken(astroRewards)} ASTRO
+            </TxFeeListItem>
+          )}
+          {hasAncRewards && (
+            <TxFeeListItem label="ANC">
+              {formatUToken(ancRewards as u<ANC<Big>>)} ANC
+            </TxFeeListItem>
+          )}
           <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
@@ -137,13 +128,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
         <ViewAddressWarning>
           <ActionButton
             className="proceed"
-            disabled={
-              !availablePost ||
-              !connected ||
-              !claim ||
-              !claiming ||
-              claiming.lte(MINIMUM_CLAIM_BALANCE)
-            }
+            disabled={!availablePost || !connected || !claim || !hasRewards}
             onClick={() => proceed()}
           >
             Claim
