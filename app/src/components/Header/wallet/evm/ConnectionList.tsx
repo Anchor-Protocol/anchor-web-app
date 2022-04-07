@@ -24,8 +24,9 @@ const ConnectionList = (props: ConnectionListProps) => {
           key={type}
           className="connect"
           onClick={() => {
-            connect(type);
             onClose();
+            const connector = connect(type);
+            connector.activate();
           }}
         >
           <IconSpan>

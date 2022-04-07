@@ -33,8 +33,10 @@ function EvmUnsupportedNetworkBase({ className }: UIElementProps) {
         return;
       }
 
+      const { mainnet } = getDefaultEvmChainId(target.chain);
+
       // activate the connection first before updating the target
-      const error = await activate(getDefaultEvmChainId(target.chain));
+      const error = await activate(mainnet);
 
       if (error) {
         disconnect();

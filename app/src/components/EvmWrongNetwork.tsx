@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Modal } from '@material-ui/core';
-import { ConnectType, useEvmWallet, useWeb3React } from '@libs/evm-wallet';
+import { useEvmWallet, useWeb3React } from '@libs/evm-wallet';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { UIElementProps } from '@libs/ui';
 import { Chain } from '@anchor-protocol/app-provider';
@@ -10,7 +10,6 @@ import { ChainLogo } from './ChainLogo';
 
 interface EvmWrongNetworkProps extends UIElementProps {
   chain: Chain;
-  connectionType: ConnectType;
   chainId: number;
 }
 

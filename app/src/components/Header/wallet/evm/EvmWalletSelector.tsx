@@ -15,6 +15,7 @@ const EvmWalletSelectorBase = ({ className }: UIElementProps) => {
   const { nativeWalletAddress } = useAccount();
 
   const { disconnect } = useWeb3React();
+
   const { connection, status } = useEvmWallet();
 
   const [open, setOpen] = useState(false);

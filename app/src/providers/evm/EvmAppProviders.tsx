@@ -47,22 +47,19 @@ const ChainGaurdian = (props: UIElementProps) => {
     );
   }
 
-  const destinationChainId = getDefaultEvmChainId(chain);
+  const { mainnet, testnet } = getDefaultEvmChainId(chain);
 
   const showWrongNetwork =
     chainId !== undefined &&
     connectionType !== ConnectType.None &&
-    chainId !== destinationChainId;
+    chainId !== mainnet &&
+    chainId !== testnet;
 
   if (showWrongNetwork) {
     return (
       <>
         <GlobalStyle />
-        <EvmWrongNetwork
-          chain={chain}
-          connectionType={connectionType}
-          chainId={destinationChainId}
-        />
+        <EvmWrongNetwork chain={chain} chainId={mainnet} />
       </>
     );
   }

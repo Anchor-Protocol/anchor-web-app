@@ -15,12 +15,23 @@ export const getConnectionType = (connector: Connector): ConnectType => {
   return ConnectType.None;
 };
 
-export const getDefaultEvmChainId = (chain: Chain) => {
+interface DefaultEvmChainId {
+  mainnet: number;
+  testnet: number;
+}
+
+export const getDefaultEvmChainId = (chain: Chain): DefaultEvmChainId => {
   switch (chain) {
     case Chain.Avalanche:
-      return EvmChainId.AVALANCHE;
+      return {
+        mainnet: EvmChainId.AVALANCHE,
+        testnet: EvmChainId.AVALANCHE_FUJI_TESTNET,
+      };
     default:
-      return EvmChainId.ETHEREUM;
+      return {
+        mainnet: EvmChainId.ETHEREUM,
+        testnet: EvmChainId.ETHEREUM_ROPSTEN,
+      };
   }
 };
 
