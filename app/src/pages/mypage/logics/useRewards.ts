@@ -6,7 +6,7 @@ import {
   useRewardsAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/app-provider';
-import { ANC, Collateral, u, UST } from '@anchor-protocol/types';
+import { ANC, u, UST, Token } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 import { useAstroPriceQuery } from 'queries';
 import { useMemo } from 'react';
@@ -14,7 +14,7 @@ import { sum } from '@libs/big-math';
 
 export interface Reward {
   symbol: string;
-  amount: u<Collateral<Big>>;
+  amount: u<Token>;
   amountInUst: u<UST<Big>>;
 }
 
@@ -87,10 +87,8 @@ export function useRewards() {
     const stakable = userLPBalance.balance;
     const stakableValue = big(stakable).mul(LPValue) as u<UST<Big>>;
 
-    const ancReward = big(userLPPendingToken.pending_on_proxy) as u<
-      Collateral<Big>
-    >;
-    const astroReward = big(userLPPendingToken.pending) as u<Collateral<Big>>;
+    const ancReward = userLPPendingToken.pending_on_proxy as u<Token>;
+    const astroReward = userLPPendingToken.pending as u<Token>;
 
     const rewards: Reward[] = [
       {
@@ -100,7 +98,7 @@ export function useRewards() {
       },
     ];
     // ANC rewards are no longer being issued
-    if (!ancReward.eq(0)) {
+    if (!big(ancReward).eq(0)) {
       rewards.push({
         symbol: 'ANC',
         amount: ancReward,

@@ -6,6 +6,7 @@ import { u, UST } from '@anchor-protocol/types';
 import { Big } from 'big.js';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
+import { SumOfTokens } from 'components/SumOfTokens';
 
 interface AncUstLpRewardsProps {
   rewards: Reward[];
@@ -18,6 +19,7 @@ export const AncUstLpRewards = ({
 }: AncUstLpRewardsProps) => {
   return (
     <>
+      <SumOfTokens tokens={rewards} />
       <p>
         {rewards
           .map(
