@@ -10,6 +10,7 @@ import { formatDemimal } from '@libs/formatter';
 import { UIElementProps } from 'components/layouts/UIElementProps';
 import { useWhitelistCollateralQuery } from 'queries';
 import { formatOutput, demicrofy } from '@anchor-protocol/formatter';
+import { floor } from '@libs/big-math';
 
 interface Data {
   value: number;
@@ -58,7 +59,9 @@ const Component = (props: BorrowCollateralInputProps) => {
     (nextLtv: number) => {
       if (maxCollateralAmount) {
         onAmountChange(
-          maxCollateralAmount.mul(trunc(nextLtv)) as u<CollateralAmount<Big>>,
+          floor(maxCollateralAmount.mul(trunc(nextLtv))) as u<
+            CollateralAmount<Big>
+          >,
         );
       }
     },

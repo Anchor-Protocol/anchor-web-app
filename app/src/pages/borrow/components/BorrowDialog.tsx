@@ -399,7 +399,7 @@ export const BorrowDialog = styled(BorrowDialogBase)`
   }
 
   .graph {
-    margin-top: 80px;
+    margin-top: 70px;
     margin-bottom: 40px;
   }
 
