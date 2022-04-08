@@ -36,10 +36,7 @@ export const getWeb3Connector = (connectionType: ConnectType) => {
   const found = connectors.find(
     (c) => getConnectionType(c[0]) === (connectionType ?? ConnectType.None),
   );
-  if (found === undefined) {
-    throw Error(`Could not find the connector for ${connectionType}.`);
-  }
-  return found;
+  return found ?? connectors[0];
 };
 
 type Web3ContextType = {
