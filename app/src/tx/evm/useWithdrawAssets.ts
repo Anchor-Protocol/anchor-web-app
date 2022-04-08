@@ -63,18 +63,17 @@ export const useWithdrawAssetsTx = () => {
   const withdrawAssetsTx = useBackgroundTx<
     WithdrawAssetsTxParams,
     WithdrawAssetsTxResult
-  >(
-    withdrawTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => ({
-      txKind: TxKind.WithdrawAssets,
-      amount: `${txParams.amount} ${txParams.symbol}`,
-      timestamp: Date.now(),
-    }),
-  );
+  >(withdrawTx, parseTx, null, displayTx);
 
   return connection && provider && connectType && chainId && address
     ? withdrawAssetsTx
     : undefined;
 };
+
+const displayTx = (txParams: WithdrawAssetsTxParams) => ({
+  txKind: TxKind.WithdrawAssets,
+  amount: `${txParams.amount} ${txParams.symbol}`,
+  timestamp: Date.now(),
+});
+
+const parseTx = (resp: NonNullable<WithdrawAssetsTxResult>) => resp.tx;

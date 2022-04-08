@@ -84,7 +84,7 @@ const COLUMBUS_CONTRACT_ADDRESS = {
   mmCustodyBEth: 'terra10cxuzggyvvv44magvrh3thpdnk9cmlgk93gmx2',
   mmLiquidation: 'terra1w9ky73v4g7v98zzdqpqgf3kjmusnx4d4mvnac6',
   mmDistributionModel: 'terra14mufqpr5mevdfn92p4jchpkxp7xr46uyknqjwq',
-  mmLiquidationQueue: '',
+  mmLiquidationQueue: 'terra1e25zllgag7j9xsun3me4stnye2pcg66234je3u',
   aTerra: 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu',
   bLunaLunaPair: 'terra1j66jatn3k50hjtg2xemnjm8s7y8dws9xqa5y8w',
   bLunaLunaLPToken: 'terra1htw7hm40ch0hacm8qpgd24sus4h0tq3hsseatl',
@@ -119,7 +119,7 @@ const BOMBAY_CONTRACT_ADDRESS = {
   mmCustody: 'terra1ltnkx0mv7lf2rca9f8w740ashu93ujughy4s7p',
   mmCustodyBEth: 'terra1j6fey5tl70k9fvrv7mea7ahfr8u2yv7l23w5e6',
   mmLiquidation: 'terra16vc4v9hhntswzkuunqhncs9yy30mqql3gxlqfe',
-  mmLiquidationQueue: '',
+  mmLiquidationQueue: 'terra18j0wd0f62afcugw2rx5y8e6j5qjxd7d6qsc87r',
   mmDistributionModel: 'terra1u64cezah94sq3ye8y0ung28x3pxc37tv8fth7h',
   aTerra: 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl',
   bLunaLunaPair: 'terra1esle9h9cjeavul53dqqws047fpwdhj6tynj5u4',
@@ -169,6 +169,7 @@ export const ANCHOR_CONTRACT_ADDRESS = (
     },
     liquidation: {
       liquidationContract: addressMap.mmLiquidation as HumanAddr,
+      liquidationQueueContract: addressMap.mmLiquidationQueue as HumanAddr,
     },
     anchorToken: {
       gov: addressMap.gov as HumanAddr,

@@ -1,5 +1,13 @@
 import { ExecuteMsg } from '@anchor-protocol/app-fns';
-import { CW20Addr, HumanAddr, moneyMarket, Rate } from '@anchor-protocol/types';
+import {
+  CW20Addr,
+  HumanAddr,
+  moneyMarket,
+  Rate,
+  liquidation,
+  u,
+  UST,
+} from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { InputAdornment } from '@material-ui/core';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -27,6 +35,9 @@ export function PollCreateRegisterCollateralAttributes() {
   const [maxLtv, setMaxLtv] = useState<string>('');
   const [custodyContractAddress, setCustodyContractAddress] =
     useState<string>('');
+  const [bidThreshold, setBidThreshold] = useState<string>('');
+  const [maxSlot, setMaxSlot] = useState<string>('');
+  const [premiumRatePerSlot, setPremiumRatePerSlot] = useState<string>('');
 
   const invalidTokenContractAddress = useMemo(() => {
     return tokenContractAddress.length > 0 &&
@@ -59,6 +70,9 @@ export function PollCreateRegisterCollateralAttributes() {
       priceFeeder: string,
       maxLtv: string,
       custodyContractAddress: string,
+      bidThreshold: string,
+      maxSlot: string,
+      premiumRatePerSlot: string,
     ): ExecuteMsg[] => {
       const registerWhitelist: moneyMarket.overseer.RegisterWhitelist['whitelist'] =
         {
@@ -73,6 +87,16 @@ export function PollCreateRegisterCollateralAttributes() {
         {
           asset: tokenContractAddress as CW20Addr,
           feeder: priceFeeder as HumanAddr,
+        };
+
+      const registerWhiteListCollateral: liquidation.liquidationQueueContract.WhitelistCollateral['whitelist_collateral'] =
+        {
+          collateral_token: tokenContractAddress as CW20Addr,
+          bid_threshold: (
+            parseFloat(bidThreshold) * 1000000
+          ).toString() as u<UST>,
+          max_slot: parseInt(maxSlot, 10) as number,
+          premium_rate_per_slot: premiumRatePerSlot as Rate,
         };
 
       const msgs: Omit<ExecuteMsg, 'order'>[] = [];
@@ -98,6 +122,14 @@ export function PollCreateRegisterCollateralAttributes() {
               }),
             ).toString('base64'),
           },
+          {
+            contract: address.liquidation.liquidationQueueContract,
+            msg: Buffer.from(
+              JSON.stringify({
+                whitelist_collateral: registerWhiteListCollateral,
+              }),
+            ).toString('base64'),
+          },
         );
       }
 
@@ -106,7 +138,11 @@ export function PollCreateRegisterCollateralAttributes() {
         ...msg,
       }));
     },
-    [address.moneyMarket.oracle, address.moneyMarket.overseer],
+    [
+      address.moneyMarket.oracle,
+      address.moneyMarket.overseer,
+      address.liquidation.liquidationQueueContract,
+    ],
   );
 
   // ---------------------------------------------
@@ -134,6 +170,9 @@ export function PollCreateRegisterCollateralAttributes() {
           priceFeeder,
           maxLtv,
           custodyContractAddress,
+          bidThreshold,
+          maxSlot,
+          premiumRatePerSlot,
         )
       }
     >
@@ -258,6 +297,66 @@ export function PollCreateRegisterCollateralAttributes() {
         helperText={invalidCustodyContractAddress}
         onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
           setCustodyContractAddress(target.value)
+        }
+      />
+
+      <div className="description">
+        <p>
+          <IconSpan>
+            Bid Threshold{' '}
+            <InfoTooltip>
+              Bid amount threshold under which bids will be activated upon
+              submission
+            </InfoTooltip>
+          </IconSpan>
+        </p>
+        <p />
+      </div>
+
+      <NumberInput
+        placeholder="0"
+        maxIntegerPoinsts={21}
+        maxDecimalPoints={6}
+        value={bidThreshold}
+        onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+          setBidThreshold(target.value)
+        }
+      />
+      <div className="description">
+        <p>
+          <IconSpan>
+            Max Slot <InfoTooltip>Maximum premium slot</InfoTooltip>
+          </IconSpan>
+        </p>
+        <p />
+      </div>
+
+      <NumberInput
+        placeholder="0"
+        maxIntegerPoinsts={3}
+        maxDecimalPoints={0}
+        value={maxSlot}
+        onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+          setMaxSlot(target.value)
+        }
+      />
+      <div className="description">
+        <p>
+          <IconSpan>
+            Premium Rate Per Slot{' '}
+            <InfoTooltip>Premium rate increase for each slot</InfoTooltip>
+          </IconSpan>
+        </p>
+        <p />
+      </div>
+
+      <NumberInput
+        placeholder="0"
+        maxIntegerPoinsts={1}
+        maxDecimalPoints={5}
+        value={premiumRatePerSlot}
+        onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+          setPremiumRatePerSlot(target.value)
         }
       />
     </PollCreateBase>

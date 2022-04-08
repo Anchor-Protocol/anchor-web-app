@@ -39,7 +39,7 @@ export function TerraMobileHeader() {
     status,
   ]);
 
-  const airdropElement = useAirdropElement(open);
+  const airdropElement = useAirdropElement(open, true);
 
   const [vestingClaimNotificationElement] = useVestingClaimNotification();
 

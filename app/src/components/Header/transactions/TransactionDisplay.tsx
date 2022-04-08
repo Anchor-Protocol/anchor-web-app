@@ -8,7 +8,6 @@ import { formatTxKind, TxKind } from 'tx/evm/utils';
 import useClipboard from 'react-use-clipboard';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Check } from '@material-ui/icons';
-import { useResumeBackgroundTx } from './background/useResumeBackgroundTx';
 import { CrossChainEventKind } from '@anchor-protocol/crossanchor-sdk';
 import { useCountdown } from 'usehooks-ts';
 import { TransactionProgress } from './TransactionProgress';
@@ -56,7 +55,6 @@ function TransactionDisplayBase(props: TransactionDisplayProps) {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useResumeBackgroundTx(tx);
   return (
     <div className={className} key={tx.txHash}>
       <div className="details">

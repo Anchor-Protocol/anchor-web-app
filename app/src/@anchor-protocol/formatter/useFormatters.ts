@@ -13,18 +13,16 @@ import {
   formatInput,
 } from '.';
 
-const createFormatter = <T>(
-  symbol: string,
-  tokenDecimals: number,
-): Formatter<T> => {
+const createFormatter = <T>(symbol: string, decimals: number): Formatter<T> => {
   return {
     formatOutput: (amount: T & NoMicro, options?: FormatterOutputOptions) =>
       formatOutput(amount, options),
-    formatInput: (amount: BigSource): T => formatInput(amount, tokenDecimals),
-    microfy: (amount: T): u<T> => microfy(amount, tokenDecimals),
+    formatInput: (amount: BigSource): T => formatInput(amount, decimals),
+    microfy: (amount: T): u<T> => microfy(amount, decimals),
     demicrofy: (amount: u<T> | Token<BigSource>): T =>
-      demicrofy(amount, tokenDecimals),
+      demicrofy(amount, decimals),
     symbol,
+    decimals,
   };
 };
 

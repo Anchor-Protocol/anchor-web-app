@@ -1,4 +1,5 @@
 import { DateTime, Rate } from '@anchor-protocol/types';
+import { hiveFetch } from '@libs/query-client';
 
 export interface BorrowAPYData {
   borrowerDistributionAPYs: Array<{
@@ -13,14 +14,39 @@ export interface BorrowAPYData {
     Height: number;
   }>;
 
-  lpRewards: Array<{
-    APY: Rate;
-    Height: number;
-    Timestamp: DateTime;
-  }>;
+  lpRewards: Array<LPReward>;
 }
 
-export async function borrowAPYQuery(endpoint: string): Promise<BorrowAPYData> {
+type LPReward = {
+  apr: Rate<number>;
+  apy: Rate<number>;
+};
+
+type LpRewardsQueryResult = {
+  pool: {
+    total_rewards: {
+      apr: number;
+      apy: number;
+    };
+  };
+};
+
+// language=graphql
+const LP_REWARDS_QUERY = `
+  query LpRewardsQuery($address: String!) {
+    pool(address: $address) {
+      total_rewards {
+        apr
+        apy
+      }
+    }
+  }
+`;
+
+export async function borrowAPYQuery(
+  endpoint: string,
+  ancUstPair: string,
+): Promise<BorrowAPYData> {
   const borrowerDistributionAPYs = await fetch(
     `${endpoint}/v2/distribution-apy`,
   )
@@ -63,35 +89,23 @@ export async function borrowAPYQuery(endpoint: string): Promise<BorrowAPYData> {
       },
     );
 
-  const lpRewards = await fetch(`${endpoint}/v2/ust-lp-reward`)
-    .then((res) => res.json())
-    .then(
-      ({
-        height,
-        timestamp,
-        apy,
-      }: {
-        height: number;
-        timestamp: DateTime;
-        apy: Rate;
-      }) => {
-        return {
-          APY: apy,
-          Height: height,
-          Timestamp: timestamp,
-        };
-      },
-    );
+  const ancAstroLPRewards = await hiveFetch<any, {}, LpRewardsQueryResult>({
+    hiveEndpoint: 'https://api.astroport.fi/graphql',
+    variables: {
+      address: ancUstPair,
+    },
+    wasmQuery: {},
+    query: LP_REWARDS_QUERY,
+  }).then((res) => {
+    if (!res.pool) {
+      return { apr: 0, apy: 0 };
+    }
+    return res.pool.total_rewards;
+  });
 
   return {
     borrowerDistributionAPYs: [borrowerDistributionAPYs],
     govRewards: [govRewards],
-    lpRewards: [lpRewards],
+    lpRewards: [ancAstroLPRewards as LPReward],
   };
-
-  //return await mantleFetch<{}, BorrowAPYData>(
-  //  BORROW_APY_QUERY,
-  //  {},
-  //  `${mantleEndpoint}?borrow--apy`,
-  //);
 }

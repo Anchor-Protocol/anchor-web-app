@@ -38,6 +38,7 @@ import { findPrevDay } from './components/internal/axisUtils';
 import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
 import { CollateralMarket } from './components/CollateralMarket';
+import { useRewards } from 'pages/mypage/logics/useRewards';
 
 export interface DashboardProps {
   className?: string;
@@ -87,6 +88,19 @@ function DashboardBase({ className }: DashboardProps) {
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
   const { data: marketUST } = useMarketUstQuery();
   const { data: marketANC } = useMarketAncQuery();
+  const ancPriceRelevantHistory = useMemo(() => {
+    const history = marketANC?.history;
+    if (!history) return;
+
+    const currentDate = new Date();
+    const yearAgoDate = currentDate.setFullYear(currentDate.getFullYear() - 1);
+    const yearAgoTimestamp = yearAgoDate.valueOf();
+
+    return history
+      .filter(({ timestamp }) => timestamp >= yearAgoTimestamp)
+      .sort((a, b) => a.timestamp - b.timestamp);
+  }, [marketANC?.history]);
+
   const { data: marketDepositAndBorrow } = useMarketDepositAndBorrowQuery();
   const { data: marketCollaterals } = useMarketCollateralsQuery();
   const { data: marketBuybackTotal } = useMarketBuybackQuery('total');
@@ -107,28 +121,31 @@ function DashboardBase({ className }: DashboardProps) {
     };
   }, [marketCollaterals?.now, marketDepositAndBorrow?.now, marketUST]);
 
+  const { ancPrice: ancPriceUST } = useRewards();
+
   const ancPrice = useMemo(() => {
     if (!marketANC || marketANC.history.length === 0) {
       return undefined;
     }
 
     const last = marketANC.now;
+    const lastPrice = ancPriceUST?.ANCPrice ?? last.anc_price;
     const last1DayBefore =
       marketANC.history.find(findPrevDay(last.timestamp)) ??
       marketANC.history[marketANC.history.length - 2] ??
       marketANC.history[marketANC.history.length - 1];
 
     return {
-      ancPriceDiff: big(
-        big(last.anc_price).minus(last1DayBefore.anc_price),
-      ).div(last1DayBefore.anc_price) as Rate<Big>,
-      ancPrice: last.anc_price,
+      ancPriceDiff: big(big(lastPrice).minus(last1DayBefore.anc_price)).div(
+        last1DayBefore.anc_price,
+      ) as Rate<Big>,
+      ancPrice: lastPrice,
       circulatingSupply: last.anc_circulating_supply,
-      ancMarketCap: big(last.anc_price).mul(last.anc_circulating_supply) as u<
+      ancMarketCap: big(lastPrice).mul(last.anc_circulating_supply) as u<
         UST<Big>
       >,
     };
-  }, [marketANC]);
+  }, [marketANC, ancPriceUST]);
 
   const stableCoin = useMemo(() => {
     if (
@@ -266,7 +283,9 @@ function DashboardBase({ className }: DashboardProps) {
                     )}
                   </h2>
                   <p className="amount">
-                    {ancPrice ? formatUST(ancPrice.ancPrice) : 0}
+                    <AnimateNumber format={formatUST}>
+                      {ancPrice ? ancPrice.ancPrice : (0 as u<UST<number>>)}
+                    </AnimateNumber>
                     <span>UST</span>
                   </p>
                 </div>
@@ -296,7 +315,7 @@ function DashboardBase({ className }: DashboardProps) {
               <figure>
                 <div>
                   <ANCPriceChart
-                    data={marketANC?.history ?? EMPTY_ARRAY}
+                    data={ancPriceRelevantHistory ?? EMPTY_ARRAY}
                     theme={theme}
                     isMobile={isMobile}
                   />

@@ -17,7 +17,7 @@ export function EvmDepositDialog(props: DialogProps<{}, void>) {
 
   const depositUstTx = useDepositUstTx();
   const [deposit, depositTxResult] = depositUstTx?.stream ?? [null, null];
-  const { isTxMinimizable } = depositUstTx?.utils ?? {};
+  const { isTxMinimizable, minimize } = depositUstTx?.utils ?? {};
 
   return (
     <DepositDialog
@@ -29,6 +29,7 @@ export function EvmDepositDialog(props: DialogProps<{}, void>) {
           onExit={props.closeDialog}
           txStreamResult={depositTxResult}
           minimizable={isTxMinimizable}
+          onMinimize={minimize}
         />
       }
     >

@@ -1,5 +1,5 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
@@ -10,7 +10,7 @@ import {
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { aUST } from '@anchor-protocol/types';
@@ -62,13 +62,10 @@ export function useWithdrawUstTx():
 
       try {
         await xAnchor.approveLimit(
-          { token: 'aust' },
+          { token: 'aUST' },
           withdrawAmount,
           address!,
           TX_GAS_LIMIT,
-          (event) => {
-            txEvents.next({ event, txParams });
-          },
         );
 
         writer.withdrawUST();
@@ -102,19 +99,21 @@ export function useWithdrawUstTx():
     ],
   );
 
-  const persistedTxResult = useBackgroundTx<
-    WithdrawUstTxParams,
-    WithdrawUstTxResult
-  >(
-    withdrawTx,
-    (resp) => resp.tx,
-    null,
-    (txParams) => ({
+  const displayTx = useCallback(
+    (txParams: WithdrawUstTxParams) => ({
       txKind: TxKind.WithdrawUst,
       amount: `${formatOutput(txParams.withdrawAmount as aUST)} aUST`,
       timestamp: Date.now(),
     }),
+    [formatOutput],
   );
+
+  const persistedTxResult = useBackgroundTx<
+    WithdrawUstTxParams,
+    WithdrawUstTxResult
+  >(withdrawTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const parseTx = (resp: NonNullable<WithdrawUstTxResult>) => resp.tx;

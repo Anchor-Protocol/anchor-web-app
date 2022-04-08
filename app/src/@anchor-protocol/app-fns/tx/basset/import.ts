@@ -104,8 +104,8 @@ export function bAssetImportTx($: {
               value:
                 formatNumeric(
                   amount,
-                  $.bAssetInfo.tokenDisplay.anchor.decimals,
-                ) + ` ${$.bAssetInfo.tokenDisplay.anchor.symbol}`,
+                  $.bAssetInfo.tokenDisplay.wormhole.decimals,
+                ) + ` ${$.bAssetInfo.tokenDisplay.wormhole.symbol}`,
             },
             mintedAmount && {
               name: 'Converted amount',

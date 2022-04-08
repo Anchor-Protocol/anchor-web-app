@@ -1,5 +1,5 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
-import { EvmChainId, useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
@@ -9,7 +9,7 @@ import {
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
@@ -58,13 +58,10 @@ export function useBorrowUstTx():
 
       try {
         await xAnchor.approveLimit(
-          { token: 'ust' },
+          { token: 'UST' },
           amount,
           address!,
           TX_GAS_LIMIT,
-          (event) => {
-            txEvents.next({ event, txParams });
-          },
         );
 
         writer.borrowUST();
@@ -98,19 +95,21 @@ export function useBorrowUstTx():
     ],
   );
 
-  const persistedTxResult = useBackgroundTx<
-    BorrowUstTxParams,
-    BorrowUstTxResult
-  >(
-    borrowTx,
-    (resp) => resp.tokenTransfer,
-    null,
-    (txParams) => ({
+  const displayTx = useCallback(
+    (txParams: BorrowUstTxParams) => ({
       txKind: TxKind.BorrowUst,
       amount: `${formatOutput(txParams.amount as UST)} UST`,
       timestamp: Date.now(),
     }),
+    [formatOutput],
   );
+
+  const persistedTxResult = useBackgroundTx<
+    BorrowUstTxParams,
+    BorrowUstTxResult
+  >(borrowTx, parseTx, null, displayTx);
 
   return chainId && connection && address ? persistedTxResult : undefined;
 }
+
+const parseTx = (resp: NonNullable<BorrowUstTxResult>) => resp.tx;

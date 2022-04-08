@@ -104,7 +104,6 @@ export * from './queries/market/ust';
 export * from './queries/market/utils/dedupeTimestamp';
 export * from './queries/mypage/txHistory';
 export * from './queries/rewards/ancGovernanceRewards';
-export * from './queries/rewards/anchorLpRewards';
 export * from './queries/rewards/ancUstLpRewards';
 export * from './queries/rewards/claimableUstBorrowRewards';
 export * from './queries/rewards/ustBorrowRewards';
