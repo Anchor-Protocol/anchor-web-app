@@ -5,4 +5,5 @@ export * from './collateral/useWhitelistCollateralQuery';
 export * from './collateral/useWhitelistCollateralByTokenAddrQuery';
 export * from './erc20/useERC20TokenQuery';
 export * from './evm/useEvmTerraAddressQuery';
+export * from './evm/useEvmBlockNumberQuery';
 export * from './useAnchorQuery';

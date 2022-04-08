@@ -3,11 +3,11 @@ import { ANCHOR_QUERY_KEY } from '@anchor-protocol/app-provider/env';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { useQuery } from 'react-query';
 
-export function useEvmBlockNumber() {
+export function useEvmBlockNumberQuery() {
   const { provider } = useEvmWallet();
   const { queryErrorReporter } = useAnchorWebapp();
 
-  const result = useQuery(
+  return useQuery(
     [ANCHOR_QUERY_KEY.EVM_BLOCK_NUMBER, provider?.network?.chainId],
     async () => {
       const blockNumber = await provider?.getBlockNumber();
@@ -20,6 +20,4 @@ export function useEvmBlockNumber() {
       onError: queryErrorReporter,
     },
   );
-
-  return result.data;
 }
