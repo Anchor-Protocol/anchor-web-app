@@ -129,22 +129,6 @@ function ComponentBase({
           <h2>With Fiat</h2>
           <EmbossButton
             component="a"
-            href="https://ramp.kado.money"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span>
-              Kado Ramp{' '}
-              <sub>
-                <Launch />
-              </sub>
-            </span>
-            <i>
-              <img src={kado} alt="Kado Ramp" />
-            </i>
-          </EmbossButton>
-          <EmbossButton
-            component="a"
             href="https://global.transak.com/?apiKey=db70aca0-ca84-4344-8dcc-036f470414fc&cryptoCurrencyList=UST,LUNA&defaultCryptoCurrency=UST&networks=terra"
             target="_blank"
             rel="noreferrer"
@@ -157,6 +141,22 @@ function ComponentBase({
             </span>
             <i>
               <img src={transak} alt="Transak" />
+            </i>
+          </EmbossButton>
+          <EmbossButton
+            component="a"
+            href="https://ramp.kado.money"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Kado Ramp{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={kado} alt="Kado Ramp" />
             </i>
           </EmbossButton>
         </section>
