@@ -40,11 +40,9 @@ const assetPriceQuery = async (
   const assetPoolSize = assetShare.amount;
   const ustPoolSize = ustShare.amount;
 
-  const assetPrice = big(ustPoolSize)
+  return big(ustPoolSize)
     .div(+assetPoolSize === 0 ? '1' : assetPoolSize)
     .toString() as UST;
-
-  return assetPrice;
 };
 
 const queryFn = createQueryFn(assetPriceQuery);
