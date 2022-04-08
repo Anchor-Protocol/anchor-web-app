@@ -12,8 +12,9 @@ import {
   useBorrowAPYQuery,
   useDeploymentTarget,
   useGovStateQuery,
+  useRewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/app-provider';
-import { formatRate } from '@libs/formatter';
+import { demicrofy, formatRate } from '@libs/formatter';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -31,6 +32,7 @@ import React, { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAssetPriceInUstQuery } from 'queries';
+import { formatOutput } from '@anchor-protocol/formatter';
 
 export interface OverviewProps {
   className?: string;
@@ -46,6 +48,8 @@ function OverviewBase({ className }: OverviewProps) {
   const { data: ancPrice } = useAssetPriceInUstQuery('anc');
 
   const { data: { govRewards, lpRewards } = {} } = useBorrowAPYQuery();
+
+  const { data: ancUstLpRewards } = useRewardsAncUstLpRewardsQuery();
 
   const navigate = useNavigate();
 
@@ -128,6 +132,13 @@ function OverviewBase({ className }: OverviewProps) {
     investorTeamLockANCBalance,
     lpStakingANCBalance,
   ]);
+
+  const ancRewards = ancUstLpRewards?.userLPPendingToken?.pending_on_proxy;
+  const astroRewards = ancUstLpRewards?.userLPPendingToken?.pending;
+
+  const hasAstroRewards = astroRewards && !big(astroRewards).eq(0);
+  const hasAncRewards = ancRewards && !big(ancRewards).eq(0);
+  const hasRewards = hasAstroRewards || hasAncRewards;
 
   return (
     <div className={className}>
@@ -230,6 +241,19 @@ function OverviewBase({ className }: OverviewProps) {
           <IconSpan>ANC-UST LP {isNative && <ChevronRight />}</IconSpan>
         </h2>
         <div className="lp-labels">
+          {hasRewards && (
+            <div>
+              <TooltipLabel title="Rewards" placement="top">
+                Rewards
+              </TooltipLabel>
+              {hasAncRewards && (
+                <p>{formatOutput(demicrofy(ancRewards))} ANC</p>
+              )}
+              {hasAstroRewards && (
+                <p>{formatOutput(demicrofy(astroRewards))} ASTRO</p>
+              )}
+            </div>
+          )}
           <div>
             <TooltipLabel title={ancUstLpAprTooltip} placement="top">
               APR
@@ -357,11 +381,10 @@ export const Overview = styled(OverviewBase)`
           padding: 5px;
           width: 110px;
           margin-bottom: 5px;
+          font-size: 12px;
         }
 
-        > :last-child {
-          font-size: 18px;
-        }
+        font-size: 16px;
       }
     }
   }
