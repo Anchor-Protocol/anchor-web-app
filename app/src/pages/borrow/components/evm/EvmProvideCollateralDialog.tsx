@@ -1,5 +1,5 @@
 import React from 'react';
-import { bAsset, ERC20Addr, NoMicro, u } from '@anchor-protocol/types';
+import { bAsset, NoMicro, u } from '@anchor-protocol/types';
 import type { DialogProps } from '@libs/use-dialog';
 import { useAccount } from 'contexts/account';
 import { useCallback } from 'react';
@@ -14,16 +14,16 @@ import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
 export const EvmProvideCollateralDialog = (
   props: DialogProps<ProvideCollateralFormParams>,
 ) => {
-  const { token, tokenDisplay } = props;
+  const { collateral } = props;
 
   const { connected } = useAccount();
 
-  const erc20TokenBalance = useERC20Balance<bAsset>(token as ERC20Addr);
+  const erc20TokenBalance = useERC20Balance<bAsset>(collateral.bridgedAddress);
 
-  const erc20Decimals = useERC20Decimals(token);
+  const erc20Decimals = useERC20Decimals(collateral.bridgedAddress);
 
   const uTokenBalance = erc20Decimals
-    ? normalize(erc20TokenBalance, erc20Decimals, tokenDisplay?.decimals ?? 6)
+    ? normalize(erc20TokenBalance, erc20Decimals, collateral.decimals)
     : ('0' as u<bAsset>);
 
   const provideCollateralTx = useProvideCollateralTx();
@@ -34,14 +34,13 @@ export const EvmProvideCollateralDialog = (
     (amount: bAsset & NoMicro) => {
       if (connected && postTx && erc20Decimals) {
         postTx({
-          collateralContract: token,
+          collateral,
           amount,
           erc20Decimals,
-          tokenDisplay,
         });
       }
     },
-    [connected, postTx, token, tokenDisplay, erc20Decimals],
+    [connected, postTx, collateral, erc20Decimals],
   );
 
   return (

@@ -1,6 +1,6 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { CW20TokenDisplayInfo, TxResultRendering } from '@libs/app-fns';
+import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
@@ -9,7 +9,7 @@ import {
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { EvmChainId, OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy } from '@anchor-protocol/formatter';
@@ -17,26 +17,21 @@ import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
 import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
+import { WhitelistCollateral } from 'queries';
 
 type ProvideCollateralTxResult = OneWayTxResponse<ContractReceipt> | null;
 type ProvideCollateralTxRender = TxResultRendering<ProvideCollateralTxResult>;
 
 export interface ProvideCollateralTxParams {
-  collateralContract: string;
+  collateral: WhitelistCollateral;
   amount: bAsset & NoMicro;
   erc20Decimals: number;
-  tokenDisplay?: CW20TokenDisplayInfo;
 }
 
 export function useProvideCollateralTx():
   | BackgroundTxResult<ProvideCollateralTxParams, ProvideCollateralTxResult>
   | undefined {
-  const {
-    address,
-    connection,
-    connectType,
-    chainId = EvmChainId.ETHEREUM_ROPSTEN,
-  } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
@@ -46,22 +41,19 @@ export function useProvideCollateralTx():
       renderTxResults: Subject<ProvideCollateralTxRender>,
       txEvents: Subject<TxEvent<ProvideCollateralTxParams>>,
     ) => {
-      const { collateralContract, amount, tokenDisplay, erc20Decimals } =
-        txParams;
+      const {
+        collateral: { bridgedAddress, symbol },
+        amount,
+        erc20Decimals,
+      } = txParams;
 
-      const symbol = tokenDisplay?.symbol ?? 'Collateral';
-
-      const writer = new EvmTxProgressWriter(
-        renderTxResults,
-        chainId,
-        connectType,
-      );
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.approveCollateral(symbol);
       writer.timer.start();
 
       try {
         await xAnchor.approveLimit(
-          { contract: collateralContract },
+          { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
           address!,
           TX_GAS_LIMIT,
@@ -71,7 +63,7 @@ export function useProvideCollateralTx():
         writer.timer.reset();
 
         const response = await xAnchor.lockCollateral(
-          { contract: collateralContract },
+          { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
           address!,
           TX_GAS_LIMIT,
@@ -91,7 +83,7 @@ export function useProvideCollateralTx():
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectType, chainId, refetchQueries],
+    [xAnchor, address, connectionType, refetchQueries],
   );
 
   const persistedTxResult = useBackgroundTx<
@@ -99,13 +91,14 @@ export function useProvideCollateralTx():
     ProvideCollateralTxResult
   >(provideTx, parseTx, null, displayTx);
 
-  return chainId && connection && address ? persistedTxResult : undefined;
+  return address ? persistedTxResult : undefined;
 }
 
 const displayTx = (txParams: ProvideCollateralTxParams) => {
-  const { amount, tokenDisplay } = txParams;
-
-  const symbol = tokenDisplay?.symbol ?? 'UST';
+  const {
+    amount,
+    collateral: { symbol },
+  } = txParams;
 
   return {
     txKind: TxKind.ProvideCollateral,

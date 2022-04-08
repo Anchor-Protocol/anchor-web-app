@@ -9,6 +9,7 @@ import { wasmFetch, QueryClient, WasmQuery } from '@libs/query-client';
 import { moneyMarket } from '@anchor-protocol/types';
 import { terraNativeBalancesQuery } from '@libs/app-fns';
 import { useAnchorQuery } from 'queries/useAnchorQuery';
+import { useNetwork } from '@anchor-protocol/app-provider';
 
 interface ProjectedEarnApyWasmQuery {
   overseerDynRateState: WasmQuery<
@@ -86,10 +87,15 @@ const computeNewRate = (
 };
 
 const earnApyProjectionQuery = async (
+  network: string,
   blocksPerYear: number,
   overseerContract: HumanAddr,
   queryClient: QueryClient,
 ) => {
+  if (network === 'mainnet') {
+    return undefined;
+  }
+
   const { uUST } = await terraNativeBalancesQuery(
     overseerContract,
     queryClient,
@@ -141,9 +147,12 @@ export const useEarnApyProjectionQuery =
       constants: { blocksPerYear },
     } = useAnchorWebapp();
 
+    const { network } = useNetwork();
+
     return useAnchorQuery(
       [
         ANCHOR_QUERY_KEY.PROJECTED_EARN_APY,
+        network.name,
         blocksPerYear,
         contractAddress.moneyMarket.overseer,
         queryClient,

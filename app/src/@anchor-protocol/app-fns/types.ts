@@ -11,7 +11,10 @@ import {
   Rate,
   u,
   UST,
+  CollateralAmount,
 } from '@anchor-protocol/types';
+import Big from 'big.js';
+import { WhitelistCollateral } from 'queries';
 
 /**
  * You can cast the token values as nominal types
@@ -51,9 +54,13 @@ export interface AnchorBalances {
   uUST: u<UST>;
   uaUST: u<aUST>;
   uANC: u<ANC>;
+
+  fetchWalletBalance: (
+    collateral?: WhitelistCollateral,
+  ) => Promise<u<CollateralAmount<Big>>>;
 }
 
-export const DefaultAnchorBalances: AnchorBalances = {
+export const DefaultAnchorBalances: Partial<AnchorBalances> = {
   uNative: '0' as u<Native>,
   uUST: '0' as u<UST>,
   uaUST: '0' as u<aUST>,

@@ -42,19 +42,21 @@ function FooterBase({ className, style }: FooterProps) {
   return (
     <footer className={className} style={style}>
       <Info>
-        <a
-          href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <BlockInfo
-            chainName={Chain.Terra}
-            networkName={network.name}
-            blockNumber={lastSyncedHeight}
-          />
-        </a>
+        <div className="blocks">
+          <a
+            href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <BlockInfo
+              chainName={Chain.Terra}
+              networkName={network.name}
+              blockNumber={lastSyncedHeight}
+            />
+          </a>
 
-        {isEVM && <EvmBlockInfo />}
+          {isEVM && <EvmBlockInfo />}
+        </div>
 
         {appVersion && <p>{appVersion}</p>}
 
@@ -115,10 +117,6 @@ export const Footer = styled(FooterBase)`
     text-decoration: none;
   }
 
-  .point {
-    color: ${({ theme }) => theme.colors.positive};
-  }
-
   a,
   .MuiIconButton-root {
     color: ${({ theme }) => c(theme.dimTextColor).alpha(0.5).toString()};
@@ -143,6 +141,13 @@ export const Footer = styled(FooterBase)`
 
   @media (max-width: ${screen.tablet.max}px) {
     flex-direction: column;
+  }
+
+  .blocks {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
   }
 `;
 

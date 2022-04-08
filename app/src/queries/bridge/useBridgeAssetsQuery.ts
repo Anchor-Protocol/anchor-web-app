@@ -5,17 +5,14 @@ import {
   useNetwork,
 } from '@anchor-protocol/app-provider';
 import { createQueryFn } from '@libs/react-query-utils';
+import { WhitelistCollateral } from 'queries/collateral/types';
 import { useQuery, UseQueryResult } from 'react-query';
-import {
-  BridgeAssets,
-  bridgeAssetsQuery,
-  WhiltelistCollateral,
-} from './bridgeAssetsQuery';
+import { BridgeAssets, bridgeAssetsQuery } from './bridgeAssetsQuery';
 
 const queryFn = createQueryFn(bridgeAssetsQuery);
 
 export function useBridgeAssetsQuery(
-  whitelist: WhiltelistCollateral[] | undefined,
+  whitelist: WhitelistCollateral[] | undefined,
 ): UseQueryResult<BridgeAssets | undefined> {
   const { target } = useDeploymentTarget();
 
@@ -27,6 +24,7 @@ export function useBridgeAssetsQuery(
     [ANCHOR_QUERY_KEY.BRIDGE_ASSETS, whitelist, target, network],
     queryFn,
     {
+      refetchOnMount: false,
       keepPreviousData: false,
       onError: queryErrorReporter,
     },

@@ -10,7 +10,7 @@ import {
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
@@ -28,12 +28,7 @@ export interface DepositUstTxParams {
 export function useDepositUstTx():
   | BackgroundTxResult<DepositUstTxParams, DepositUstTxResult>
   | undefined {
-  const {
-    address,
-    connection,
-    connectType,
-    chainId = EvmChainId.ETHEREUM_ROPSTEN,
-  } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
@@ -50,11 +45,7 @@ export function useDepositUstTx():
         formatInput(txParams.depositAmount),
       ).toString();
 
-      const writer = new EvmTxProgressWriter(
-        renderTxResults,
-        chainId,
-        connectType,
-      );
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.approveUST();
       writer.timer.start();
 
@@ -86,15 +77,7 @@ export function useDepositUstTx():
         writer.timer.stop();
       }
     },
-    [
-      address,
-      connectType,
-      xAnchor,
-      chainId,
-      microfy,
-      formatInput,
-      refetchQueries,
-    ],
+    [address, connectionType, xAnchor, microfy, formatInput, refetchQueries],
   );
 
   const displayTx = useCallback(
@@ -111,7 +94,7 @@ export function useDepositUstTx():
     DepositUstTxResult
   >(depositTx, parseTx, null, displayTx);
 
-  return chainId && connection && address ? persistedTxResult : undefined;
+  return address ? persistedTxResult : undefined;
 }
 
 const parseTx = (resp: NonNullable<DepositUstTxResult>) => resp.tx;

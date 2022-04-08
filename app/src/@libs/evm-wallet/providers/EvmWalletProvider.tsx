@@ -1,112 +1,107 @@
-import React, { createContext, ReactNode, useCallback, useMemo } from 'react';
-import { ConnectorData, useConnectors } from '../connectors';
+import React, { createContext, useMemo } from 'react';
 import { Connection, ConnectType, ERC20Token, WalletStatus } from '../types';
-import { availableConnectTypes, availableConnections } from '../constants';
-import { useLocalStorage } from 'usehooks-ts';
+import { AvailableConnections } from '../constants';
+import { Web3Provider } from '@ethersproject/providers';
+import { UIElementProps } from '@libs/ui';
+import { MetaMask } from '@web3-react/metamask';
+import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
 
 export type EvmWallet = {
-  actions: {
-    activate: (connectType: ConnectType) => Promise<void>;
-    deactivate: () => Promise<void>;
-    watchAsset: (token: ERC20Token) => void;
-  };
+  activate: (chainId?: number) => Promise<Error | undefined>;
+  watchAsset: (token: ERC20Token) => void;
   availableConnectTypes: ConnectType[];
   availableConnections: Connection[];
   connection: Connection | null;
   status: WalletStatus;
-  connectType: ConnectType;
-} & Omit<ConnectorData, 'isActive' | 'isActivating'>;
+  connectionType: ConnectType;
+  chainId?: number;
+  address?: string;
+  error?: Error;
+  provider: Web3Provider | undefined;
+};
 
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
 
-interface EvmWalletProviderProps {
-  children: ReactNode;
+export function EvmWalletProvider({ children }: UIElementProps) {
+  return (
+    <Web3ReactProvider>
+      <WalletProvider>{children}</WalletProvider>
+    </Web3ReactProvider>
+  );
 }
 
-export function EvmWalletProvider({ children }: EvmWalletProviderProps) {
-  const [connectType, setConnectType] = useLocalStorage<ConnectType | null>(
-    '__anchor_evm_wallet_connect_type__',
-    null,
-  );
-
-  const connectors = useConnectors();
-  const { data } = connectType ? connectors[connectType] : { data: undefined };
-  const address = data ? data.address : undefined;
-  const chainId = data ? data.chainId : undefined;
-  const error = data ? data.error : undefined;
-  const provider = data ? data.provider : undefined;
-  const isActivating = data ? data.isActivating : false;
-  const isActive = data ? data.isActive : false;
-  const status: WalletStatus = isActivating
-    ? 'initialization'
-    : isActive
-    ? 'connected'
-    : 'disconnected';
-
-  const activate = useCallback(
-    (connectType: ConnectType) => {
-      return connectors[connectType].connector
-        .activate()
-        .then(() => setConnectType(connectType));
-    },
-    [connectors, setConnectType],
-  );
-
-  const deactivate = useCallback(() => {
-    setConnectType(null);
-
-    if (connectType) {
-      return (
-        connectors[connectType].connector.deactivate?.() || Promise.resolve()
-      );
-    }
-
-    return Promise.resolve();
-  }, [connectType, connectors, setConnectType]);
-
-  const evmWallet = useMemo(() => {
-    const isConnected =
-      connectType && availableConnectTypes.includes(connectType);
-
-    const connection = isConnected
-      ? availableConnections.find(({ type }) => type === connectType) || null
-      : null;
-
-    const watchAsset = (token: ERC20Token) => {
-      provider?.provider?.request &&
-        provider.provider
-          .request({
-            method: 'wallet_watchAsset',
-            params: {
-              // @ts-ignore ethers has wrong params type (Array<any>)
-              type: 'ERC20',
-              options: token,
-            },
-          })
-          .catch(console.error);
-    };
-
-    return {
-      actions: { activate, deactivate, watchAsset },
-      connectType: connectType as ConnectType,
-      address,
-      availableConnectTypes: [...availableConnectTypes],
-      availableConnections,
-      chainId,
-      connection,
-      error,
-      provider,
-      status,
-    };
-  }, [
-    activate,
-    address,
+function WalletProvider({ children }: UIElementProps) {
+  const {
+    connector,
+    store,
     chainId,
-    connectType,
-    deactivate,
+    isActive,
+    isActivating,
+    account,
     error,
     provider,
-    status,
+    connectionType,
+  } = useWeb3React();
+
+  const evmWallet = useMemo<EvmWallet>(() => {
+    const status: WalletStatus = isActivating
+      ? WalletStatus.Initializing
+      : isActive
+      ? WalletStatus.Connected
+      : WalletStatus.Disconnected;
+
+    const activate = async (chainId?: number): Promise<Error | undefined> => {
+      await connector.activate(chainId);
+
+      // the activate method doesnt fail as it reports any
+      // errors to its local zustand store so we need
+      // to access that to determine if it failed
+      const { error } = store.getState();
+
+      return error;
+    };
+
+    const watchAsset = async (token: ERC20Token) => {
+      if (connector instanceof MetaMask && connector.provider) {
+        await connector.provider?.request({
+          method: 'wallet_watchAsset',
+          params: {
+            // @ts-ignore ethers has wrong params type (Array<any>)
+            type: 'ERC20',
+            options: token,
+          },
+        });
+      }
+    };
+
+    const connection =
+      account === undefined
+        ? null
+        : AvailableConnections.filter((c) => c.type === connectionType)[0];
+
+    return {
+      activate,
+      watchAsset,
+      connectionType,
+      availableConnectTypes: [ConnectType.MetaMask, ConnectType.WalletConnect],
+      availableConnections: AvailableConnections,
+      connection,
+      address: account,
+      chainId,
+      status,
+      error,
+      provider: provider as Web3Provider,
+    };
+  }, [
+    connectionType,
+    connector,
+    store,
+    account,
+    isActivating,
+    isActive,
+    chainId,
+    error,
+    provider,
   ]);
 
   return (

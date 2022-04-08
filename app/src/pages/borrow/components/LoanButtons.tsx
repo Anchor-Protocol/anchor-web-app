@@ -5,6 +5,7 @@ import {
 import {
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
+  useDeploymentTarget,
 } from '@anchor-protocol/app-provider';
 import { u, UST } from '@anchor-protocol/types';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -15,9 +16,10 @@ import { useBorrowDialog } from './useBorrowDialog';
 import { useRepayDialog } from './useRepayDialog';
 
 export function LoanButtons() {
-  // ---------------------------------------------
-  // dependencies
-  // ---------------------------------------------
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
+
   const { data: borrowMarket } = useBorrowMarketQuery();
 
   const { data: borrowBorrower } = useBorrowBorrowerQuery();
@@ -28,9 +30,6 @@ export function LoanButtons() {
 
   const [openRepayDialog, repayDialogElement] = useRepayDialog();
 
-  // ---------------------------------------------
-  // logics
-  // ---------------------------------------------
   const collateralsValue = useMemo(() => {
     if (!borrowBorrower || !borrowMarket) {
       return '0' as u<UST>;
@@ -45,15 +44,19 @@ export function LoanButtons() {
     return computeBorrowedAmount(borrowBorrower?.marketBorrowerInfo);
   }, [borrowBorrower?.marketBorrowerInfo]);
 
+  const enableBorrowing = isNative
+    ? Boolean(
+        connected &&
+          borrowMarket &&
+          borrowBorrower &&
+          big(collateralsValue).gt(0),
+      )
+    : Boolean(connected && borrowMarket);
+
   return (
     <>
       <ActionButton
-        disabled={
-          !connected ||
-          !borrowMarket ||
-          !borrowBorrower ||
-          big(collateralsValue).lte(0)
-        }
+        disabled={enableBorrowing !== true}
         onClick={() =>
           borrowMarket &&
           borrowBorrower &&

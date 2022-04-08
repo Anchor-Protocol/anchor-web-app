@@ -12,29 +12,28 @@ import { normalize } from '@anchor-protocol/formatter';
 export const TerraProvideCollateralDialog = (
   props: DialogProps<ProvideCollateralFormParams>,
 ) => {
-  const { collateralToken, tokenDisplay } = props;
+  const { collateral } = props;
 
   const { connected, terraWalletAddress } = useAccount();
 
   const cw20Balance = useCW20Balance<bAsset>(
-    collateralToken,
+    collateral.collateral_token,
     terraWalletAddress,
   );
 
-  const uTokenBalance = normalize(cw20Balance, 6, tokenDisplay?.decimals ?? 6);
+  const uTokenBalance = normalize(cw20Balance, 6, collateral.decimals);
 
-  const [postTx, txResult] = useBorrowProvideCollateralTx(collateralToken);
+  const [postTx, txResult] = useBorrowProvideCollateralTx(collateral);
 
   const proceed = useCallback(
     (depositAmount: bAsset) => {
       if (connected && postTx) {
         postTx({
           depositAmount,
-          tokenDisplay,
         });
       }
     },
-    [connected, postTx, tokenDisplay],
+    [connected, postTx],
   );
 
   return (

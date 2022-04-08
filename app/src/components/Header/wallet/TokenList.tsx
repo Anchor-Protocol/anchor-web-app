@@ -50,16 +50,12 @@ export function TokenListBase(props: TokenListProps) {
 
   return (
     <ul className={className}>
-      {big(uNative).gt(0) && (
-        <li>
-          <span>{formatters.native.symbol}</span>
-          <span>
-            {formatters.native.formatOutput(
-              formatters.native.demicrofy(uNative),
-            )}
-          </span>
-        </li>
-      )}
+      <li>
+        <span>{formatters.native.symbol}</span>
+        <span>
+          {formatters.native.formatOutput(formatters.native.demicrofy(uNative))}
+        </span>
+      </li>
       {(big(uUST).gt(0) || onAddToken) && (
         <li>
           <span className="symbol">

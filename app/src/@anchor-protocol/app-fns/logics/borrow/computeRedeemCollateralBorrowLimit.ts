@@ -15,7 +15,6 @@ export function computeRedeemCollateralBorrowLimit(
     return big(0) as u<UST<Big>>;
   }
   return computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs, [
-    collateralToken,
-    big(redeemAmount).mul(-1) as u<bAsset<BigSource>>,
+    [collateralToken, big(redeemAmount).mul(-1) as u<bAsset<BigSource>>],
   ]);
 }

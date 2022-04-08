@@ -10,7 +10,7 @@ import {
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { EvmChainId, TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { aUST } from '@anchor-protocol/types';
@@ -28,12 +28,7 @@ export interface WithdrawUstTxParams {
 export function useWithdrawUstTx():
   | BackgroundTxResult<WithdrawUstTxParams, WithdrawUstTxResult>
   | undefined {
-  const {
-    address,
-    connection,
-    connectType,
-    chainId = EvmChainId.ETHEREUM_ROPSTEN,
-  } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
 
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
@@ -52,11 +47,7 @@ export function useWithdrawUstTx():
         formatInput(txParams.withdrawAmount),
       ).toString();
 
-      const writer = new EvmTxProgressWriter(
-        renderTxResults,
-        chainId,
-        connectType,
-      );
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.approveUST();
       writer.timer.start();
 
@@ -88,15 +79,7 @@ export function useWithdrawUstTx():
         writer.timer.stop();
       }
     },
-    [
-      xAnchor,
-      address,
-      connectType,
-      formatInput,
-      microfy,
-      chainId,
-      refetchQueries,
-    ],
+    [xAnchor, address, connectionType, formatInput, microfy, refetchQueries],
   );
 
   const displayTx = useCallback(
@@ -113,7 +96,7 @@ export function useWithdrawUstTx():
     WithdrawUstTxResult
   >(withdrawTx, parseTx, null, displayTx);
 
-  return chainId && connection && address ? persistedTxResult : undefined;
+  return address ? persistedTxResult : undefined;
 }
 
 const parseTx = (resp: NonNullable<WithdrawUstTxResult>) => resp.tx;

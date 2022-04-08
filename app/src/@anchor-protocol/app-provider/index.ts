@@ -31,8 +31,6 @@ export * from './queries/borrow/apy';
 export * from './queries/borrow/borrower';
 export * from './queries/borrow/market';
 export * from './queries/borrow/utils';
-export * from './queries/collateral/useWhitelistCollateralQuery';
-export * from './queries/collateral/useWhitelistCollateralByTokenAddrQuery';
 export * from './queries/earn/apyHistory';
 export * from './queries/earn/epochStates';
 export * from './queries/gov/config';

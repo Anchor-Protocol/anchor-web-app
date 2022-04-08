@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDeploymentTarget } from '@anchor-protocol/app-provider';
-import { useEvmBlockNumber } from '@anchor-protocol/app-provider/queries/evm/evmBlockNumber';
+import { useEvmBlockNumberQuery } from 'queries';
 import { BlockInfo } from './BlockInfo';
 
 export const EvmBlockInfo = () => {
@@ -8,9 +8,11 @@ export const EvmBlockInfo = () => {
     target: { chain },
   } = useDeploymentTarget();
 
-  const evmBlockNumber = useEvmBlockNumber();
+  const { data: evmBlockNumber } = useEvmBlockNumberQuery();
 
-  if (!evmBlockNumber) return null;
+  if (evmBlockNumber === undefined) {
+    return null;
+  }
 
   return <BlockInfo blockNumber={evmBlockNumber} chainName={chain} />;
 };

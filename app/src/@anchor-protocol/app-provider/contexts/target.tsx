@@ -3,7 +3,6 @@ import { UIElementProps } from '@libs/ui';
 import { createContext, useContext } from 'react';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
-import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 
 export enum Chain {
   Terra = 'Terra',
@@ -20,13 +19,13 @@ export const DEPLOYMENT_TARGETS = [
   },
   // {
   //   chain: Chain.Ethereum,
-  //   icon: '/assets/ethereum-eth-logo.png',
+  //   icon: '/assets/ethereum-logo.svg',
   //   isNative: false,
   //   isEVM: true,
   // },
   {
     chain: Chain.Avalanche,
-    icon: '/assets/avalanche-avax-logo.svg',
+    icon: '/assets/avalanche-logo.svg',
     isNative: false,
     isEVM: true,
   },
@@ -37,12 +36,11 @@ export interface DeploymentTarget {
   icon: string;
   isNative: boolean;
   isEVM: boolean;
-  evmChainId?: EvmChainId;
 }
 
 interface UseDeploymentTargetReturn {
   target: DeploymentTarget;
-  updateTarget: (target: DeploymentTarget) => void;
+  updateTarget: (chainOrTarget: Chain | DeploymentTarget) => void;
 }
 
 export const DeploymentTargetContext = createContext<
@@ -82,9 +80,16 @@ const DeploymentTargetProvider = (props: UIElementProps) => {
   const value = useMemo(() => {
     return {
       target,
-      updateTarget: (t: DeploymentTarget) => {
-        updateTarget(t);
-        setChain(t.chain);
+      updateTarget: (chainOrTarget: Chain | DeploymentTarget) => {
+        let found =
+          typeof chainOrTarget === 'string'
+            ? DEPLOYMENT_TARGETS.find((t) => t.chain === chainOrTarget)
+            : chainOrTarget;
+
+        if (found) {
+          updateTarget(found);
+          setChain(found.chain);
+        }
       },
     };
   }, [target, updateTarget, setChain]);

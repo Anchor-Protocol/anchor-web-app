@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 
 export const Marker = styled.span`
-  top: -50px;
+  top: -40px;
 
   > span {
     display: inline-block;
@@ -18,10 +18,6 @@ export const Marker = styled.span`
 
     user-select: none;
 
-    sup {
-      xmargin-right: 4px;
-    }
-
     .text {
       margin: 0 10px 0 0;
       padding: 0;
@@ -29,7 +25,7 @@ export const Marker = styled.span`
 
     &::after {
       content: '';
-      height: 50px;
+      height: 40px;
       border-left: 1px solid
         ${({ theme }) =>
           rulerShadowColor({
@@ -44,7 +40,7 @@ export const Marker = styled.span`
           })};
       position: absolute;
       left: calc(100% - 1px);
-      bottom: -35px;
+      bottom: -25px;
       z-index: 1;
     }
   }
