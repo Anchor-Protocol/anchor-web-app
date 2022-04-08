@@ -432,6 +432,12 @@ export namespace moneyMarket {
       stable_denom: NativeDenom;
       epoch_period: number;
       price_timeframe: number;
+      threshold_deposit_rate: Rate;
+      dyn_rate_epoch: number;
+      dyn_rate_maxchange: Rate;
+      dyn_rate_min: Rate;
+      dyn_rate_max: Rate;
+      dyn_rate_yr_increase_expectation: Rate;
     }
 
     /**
@@ -465,6 +471,15 @@ export namespace moneyMarket {
       prev_aterra_supply: u<aToken>;
       prev_exchange_rate: Rate;
       last_executed_height: number;
+    }
+
+    export interface DynRateState {
+      dynrate_state: {};
+    }
+
+    export interface DynRateStateResponse {
+      last_executed_height: number;
+      prev_yield_reserve: u<UST>;
     }
 
     export interface UpdateConfig {
