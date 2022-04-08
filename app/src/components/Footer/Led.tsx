@@ -22,35 +22,53 @@ const LedBase = (props: LedProps) => {
     };
   }, [blockNumber]);
 
-  return <span className={classNames(className, { pulse: animating })} />;
+  return (
+    <div className={className}>
+      <div className={classNames('pulse', { animate: animating })} />
+      <div className="inner" />
+    </div>
+  );
 };
 
 export const Led = styled(LedBase)`
-  background: ${({ theme }) => theme.colors.positive};
-  border-radius: 50%;
+  position: relative;
   height: 10px;
   width: 10px;
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 1);
-  transform: scale(1);
 
-  &.pulse {
-    animation: pulse 1.5s normal;
+  .inner {
+    position: absolute;
+    background: ${({ theme }) => theme.colors.positive};
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+  }
+
+  .pulse {
+    position: absolute;
+    border-radius: 50%;
+    background: ${({ theme }) => theme.colors.positive};
+    height: 100%;
+    width: 100%;
+
+    &.animate {
+      animation: pulse 1.5s normal;
+    }
   }
 
   @keyframes pulse {
     0% {
-      transform: scale(0.95);
-      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+      transform: scale(1);
+      opacity: 1;
     }
 
     70% {
-      transform: scale(1);
-      box-shadow: 0 0 0 8px rgba(0, 0, 0, 0);
+      transform: scale(2.5);
+      opacity: 0;
     }
 
     100% {
-      transform: scale(0.95);
-      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+      transform: scale(1);
+      opacity: 0;
     }
   }
 `;
