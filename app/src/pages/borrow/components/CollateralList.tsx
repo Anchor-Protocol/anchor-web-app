@@ -9,8 +9,7 @@ import {
   demicrofy,
 } from '@anchor-protocol/formatter';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import { bAsset, CW20Addr, ERC20Addr, u, UST } from '@anchor-protocol/types';
-import { CW20TokenDisplayInfo } from '@libs/app-fns';
+import { bAsset, u, UST } from '@anchor-protocol/types';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -20,8 +19,8 @@ import { Launch } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import { BuyLink } from 'components/BuyButton';
 import { useAccount } from 'contexts/account';
-import { useBridgeAssetsQuery } from 'queries/bridge/useBridgeAssetsQuery';
-import React, { ReactNode, useMemo } from 'react';
+import { useWhitelistCollateralQuery, WhitelistCollateral } from 'queries';
+import React, { useMemo } from 'react';
 import { microfyPrice } from 'utils/microfyPrice';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
@@ -31,17 +30,11 @@ export interface CollateralListProps {
 }
 
 interface CollateralInfo {
-  icon: ReactNode;
-  collateralToken: CW20Addr;
-  token: CW20Addr | ERC20Addr;
-  name: string;
-  symbol: string;
-  decimals: number;
+  collateral: WhitelistCollateral;
   price: UST;
   liquidationPrice: UST | undefined;
   lockedAmount: u<bAsset>;
   lockedAmountInUST: u<UST<BigSource>>;
-  tokenDisplay?: CW20TokenDisplayInfo;
 }
 
 export function CollateralList({ className }: CollateralListProps) {
@@ -57,66 +50,50 @@ export function CollateralList({ className }: CollateralListProps) {
   const [openRedeemCollateralDialog, redeemCollateralDialogElement] =
     useRedeemCollateralDialog();
 
-  const { data: bridgeAssets } = useBridgeAssetsQuery(
-    borrowMarket?.overseerWhitelist.elems,
-  );
+  const { data: whitelist } = useWhitelistCollateralQuery();
 
   const {
     ust: { formatOutput: formatUSTOutput, demicrofy: demicrofyUST },
   } = useFormatters();
 
   const collaterals = useMemo<CollateralInfo[]>(() => {
-    if (!borrowMarket || !bridgeAssets) {
+    if (!borrowMarket || !whitelist) {
       return [];
     }
 
-    const whitelist = borrowMarket.overseerWhitelist.elems.filter((elem) => {
-      return bridgeAssets.has(elem.collateral_token);
-    });
-
     return whitelist
-      .map(({ collateral_token, name, symbol, tokenDisplay }) => {
+      .filter((collateral) => collateral.bridgedAddress !== undefined)
+      .map((collateral) => {
         const oracle = borrowMarket.oraclePrices.prices.find(
-          ({ asset }) => collateral_token === asset,
+          ({ asset }) => collateral.collateral_token === asset,
         );
-        const collateral = borrowBorrower?.overseerCollaterals.collaterals.find(
-          ([collateralToken]) => collateral_token === collateralToken,
-        );
+        const collateralAmount =
+          borrowBorrower?.overseerCollaterals.collaterals.find(
+            ([collateralToken]) =>
+              collateral.collateral_token === collateralToken,
+          );
 
         return {
-          icon: tokenDisplay ? (
-            <TokenIcon
-              symbol={tokenDisplay?.symbol}
-              path={tokenDisplay?.icon}
-            />
-          ) : (
-            <TokenIcon token="bluna" />
-          ),
-          tokenDisplay,
-          collateralToken: collateral_token,
-          token: bridgeAssets.get(collateral_token)!,
-          name,
-          symbol: tokenDisplay?.symbol ?? symbol,
-          decimals: tokenDisplay?.decimals ?? 6,
-          price: microfyPrice(oracle?.price, tokenDisplay?.decimals ?? 6),
+          collateral,
+          price: microfyPrice(oracle?.price, collateral.decimals),
           liquidationPrice:
             borrowBorrower &&
             borrowBorrower.overseerCollaterals.collaterals.length === 1 &&
             collateral
               ? microfyPrice(
                   computeLiquidationPrice(
-                    collateral_token,
+                    collateral.collateral_token,
                     borrowBorrower.marketBorrowerInfo,
                     borrowBorrower.overseerBorrowLimit,
                     borrowBorrower.overseerCollaterals,
                     borrowMarket.overseerWhitelist,
                     borrowMarket.oraclePrices,
                   ),
-                  tokenDisplay?.decimals ?? 6,
+                  collateral.decimals,
                 )
               : undefined,
-          lockedAmount: collateral?.[1] ?? ('0' as u<bAsset>),
-          lockedAmountInUST: big(collateral?.[1] ?? 0).mul(
+          lockedAmount: collateralAmount?.[1] ?? ('0' as u<bAsset>),
+          lockedAmountInUST: big(collateralAmount?.[1] ?? 0).mul(
             oracle?.price ?? 1,
           ) as u<UST<Big>>,
         };
@@ -125,7 +102,7 @@ export function CollateralList({ className }: CollateralListProps) {
         big(a.lockedAmountInUST).gte(big(b.lockedAmountInUST)) ? -1 : 1,
       )
       .filter((collateral) => Number(collateral.price) !== 0);
-  }, [borrowBorrower, borrowMarket, bridgeAssets]);
+  }, [borrowBorrower, borrowMarket, whitelist]);
 
   // ---------------------------------------------
   // presentation
@@ -166,25 +143,24 @@ export function CollateralList({ className }: CollateralListProps) {
         <tbody>
           {collaterals.map(
             ({
-              collateralToken,
-              token,
-              icon,
-              name,
-              symbol,
-              decimals,
+              collateral,
               price,
               liquidationPrice,
               lockedAmount,
               lockedAmountInUST,
-              tokenDisplay,
             }) => (
-              <tr key={collateralToken}>
+              <tr key={collateral.collateral_token}>
                 <td>
-                  <i>{icon}</i>
+                  <i>
+                    <TokenIcon
+                      symbol={collateral.symbol}
+                      path={collateral.icon}
+                    />
+                  </i>
                   <div>
                     <div className="coin">
-                      {symbol}{' '}
-                      {symbol === 'bETH' && (
+                      {collateral.symbol}{' '}
+                      {collateral.symbol === 'bETH' && (
                         <BuyLink
                           href="https://anchor.lido.fi/"
                           target="_blank"
@@ -195,7 +171,7 @@ export function CollateralList({ className }: CollateralListProps) {
                         </BuyLink>
                       )}
                     </div>
-                    <p className="name">{name}</p>
+                    <p className="name">{collateral.name}</p>
                   </div>
                 </td>
                 <td>
@@ -207,10 +183,13 @@ export function CollateralList({ className }: CollateralListProps) {
                 </td>
                 <td>
                   <div className="value">
-                    {formatOutput(demicrofy(lockedAmount, decimals), {
-                      decimals,
-                    })}{' '}
-                    {symbol}
+                    {formatOutput(
+                      demicrofy(lockedAmount, collateral.decimals),
+                      {
+                        decimals: collateral.decimals,
+                      },
+                    )}{' '}
+                    {collateral.symbol}
                   </div>
                   <p className="volatility">
                     {formatUSTOutput(demicrofyUST(lockedAmountInUST))} UST
@@ -223,11 +202,9 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowMarket &&
                       borrowBorrower &&
                       openProvideCollateralDialog({
-                        collateralToken,
-                        token,
+                        collateral,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
-                        tokenDisplay,
                       })
                     }
                   >
@@ -244,11 +221,9 @@ export function CollateralList({ className }: CollateralListProps) {
                       borrowMarket &&
                       borrowBorrower &&
                       openRedeemCollateralDialog({
-                        collateralToken,
-                        token,
+                        collateral,
                         fallbackBorrowMarket: borrowMarket,
                         fallbackBorrowBorrower: borrowBorrower,
-                        tokenDisplay,
                       })
                     }
                   >

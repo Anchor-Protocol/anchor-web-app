@@ -1,7 +1,9 @@
 import React from 'react';
 import {
+  ConnectType,
   EvmWalletProvider,
-  supportedChainIds,
+  getDefaultEvmChainId,
+  SupportedChainIds,
   useEvmWallet,
 } from '@libs/evm-wallet';
 import { UIElementProps } from '@libs/ui';
@@ -14,24 +16,50 @@ import { lightTheme as ethereumLightTheme } from 'themes/ethereum/lightTheme';
 import { lightTheme as avalancheLightTheme } from 'themes/avalanche/lightTheme';
 import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { QueryProvider } from 'providers/QueryProvider';
-import { EvmWrongNetwork } from 'components/EvmWrongNetwork';
+import { EvmUnsupportedNetwork } from 'components/EvmUnsupportedNetwork';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { BackgroundTxRequestProvider } from 'tx/evm/background';
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
+import { EvmWrongNetwork } from 'components/EvmWrongNetwork';
 
 const isSupportedChain = (evmChainId?: EvmChainId): boolean => {
-  return Boolean(evmChainId) && supportedChainIds.includes(evmChainId!);
+  return Boolean(evmChainId) && SupportedChainIds.includes(evmChainId!);
 };
 
 const ChainGaurdian = (props: UIElementProps) => {
   const { children } = props;
-  const { chainId: evmChainId } = useEvmWallet();
 
-  if (evmChainId !== undefined && isSupportedChain(evmChainId) === false) {
+  const {
+    target: { chain },
+  } = useDeploymentTarget();
+
+  const { chainId, connectionType } = useEvmWallet();
+
+  const showUnsupportedNetwork =
+    chainId !== undefined && isSupportedChain(chainId) === false;
+
+  if (showUnsupportedNetwork) {
     return (
       <>
         <GlobalStyle />
-        <EvmWrongNetwork />
+        <EvmUnsupportedNetwork />
+      </>
+    );
+  }
+
+  const { mainnet, testnet } = getDefaultEvmChainId(chain);
+
+  const showWrongNetwork =
+    chainId !== undefined &&
+    connectionType !== ConnectType.None &&
+    chainId !== mainnet &&
+    chainId !== testnet;
+
+  if (showWrongNetwork) {
+    return (
+      <>
+        <GlobalStyle />
+        <EvmWrongNetwork chain={chain} chainId={mainnet} />
       </>
     );
   }

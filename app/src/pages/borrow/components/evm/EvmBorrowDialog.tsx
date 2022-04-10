@@ -1,43 +1,69 @@
 import React from 'react';
-import { u, UST } from '@anchor-protocol/types';
+import { CollateralAmount, u, UST } from '@anchor-protocol/types';
 import type { DialogProps } from '@libs/use-dialog';
 import { useAccount } from 'contexts/account';
 import { useCallback } from 'react';
 import { BorrowDialog } from '../BorrowDialog';
 import { BorrowFormParams } from '../types';
 import { useBorrowUstTx } from 'tx/evm';
-import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { useFormatters } from '@anchor-protocol/formatter';
+import Big from 'big.js';
+import { WhitelistCollateral } from 'queries';
+import '@extensions/xanchor';
 
-export const EvmBorrowDialog = (props: DialogProps<BorrowFormParams>) => {
+export const EvmBorrowDialog = (
+  props: DialogProps<Omit<BorrowFormParams, 'input' | 'states'>>,
+) => {
   const { connected } = useAccount();
+
+  const { ust } = useFormatters();
 
   const borrowUstTx = useBorrowUstTx();
   const { isTxMinimizable, minimize } = borrowUstTx?.utils ?? {};
-  const [postTx, txResult] = borrowUstTx?.stream ?? [null, null];
+  const [postBorrowUstTx, borrowUstTxResult] = borrowUstTx?.stream ?? [
+    null,
+    null,
+  ];
 
   const proceed = useCallback(
-    (amount: UST, _txFee: u<UST>) => {
-      if (connected && postTx) {
-        postTx({ amount });
+    (
+      amount: UST,
+      txFee: u<UST>,
+      collateral?: WhitelistCollateral,
+      collateralAmount?: u<CollateralAmount<Big>>,
+    ) => {
+      if (connected && postBorrowUstTx) {
+        const borrowAmount = ust.microfy(ust.formatInput(amount));
+        if (collateral && collateralAmount && collateralAmount.gt(0)) {
+          postBorrowUstTx({
+            borrowAmount,
+            collateral,
+            collateralAmount,
+          });
+          return;
+        }
+
+        postBorrowUstTx({ borrowAmount });
       }
     },
-    [postTx, connected],
+    [postBorrowUstTx, connected, ust],
   );
 
   return (
     <BorrowDialog
       {...props}
-      txResult={txResult}
-      proceedable={postTx !== undefined}
+      txResult={borrowUstTxResult}
+      proceedable={postBorrowUstTx !== undefined}
       onProceed={proceed}
-      renderBroadcastTxResult={
-        <EvmTxResultRenderer
-          onExit={props.closeDialog}
-          txStreamResult={txResult}
+      renderTxResult={({ txResult, closeDialog }) => (
+        <TxResultRenderer
+          onExit={closeDialog}
+          resultRendering={txResult.value}
           minimizable={isTxMinimizable}
           onMinimize={minimize}
         />
-      }
+      )}
     />
   );
 };

@@ -1,7 +1,6 @@
 import {
   CrossChainEvent,
   CrossChainEventKind,
-  EvmChainId,
 } from '@anchor-protocol/crossanchor-sdk';
 import { TxReceiptLike, TxResultRendering } from '@libs/app-fns';
 import { ConnectType } from '@libs/evm-wallet';
@@ -25,18 +24,10 @@ const DEFAULT_STATUS = new Map<CrossChainEventKind, string>([
 export class EvmTxProgressWriter<
   T extends TxResultRendering,
 > extends TxProgressWriter<T> {
-  private readonly _chainId: EvmChainId;
-  private readonly _connnectType: ConnectType;
   private readonly _description: string;
 
-  constructor(
-    subject: Subject<T>,
-    chainId: EvmChainId,
-    connnectType: ConnectType,
-  ) {
+  constructor(subject: Subject<T>, connnectType: ConnectType) {
     super(subject);
-    this._chainId = chainId;
-    this._connnectType = connnectType;
     this._description = `Transaction sent, please check your ${capitalize(
       connnectType,
     )} wallet for further instructions.`;
@@ -110,12 +101,19 @@ export class EvmTxProgressWriter<
     });
   }
 
-  public borrowUST(event?: CrossChainEvent<ContractReceipt>) {
+  public borrowUST(
+    event?: CrossChainEvent<ContractReceipt>,
+    collateral?: string,
+  ) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
       [CrossChainEventKind.OutgoingTxSubmitted, 'Borrowing'],
       [CrossChainEventKind.OutgoingTxRequested, 'Borrowing'],
     ]);
+
+    // TODO: output the collateral information to the TxReceipt in the form of
+    // sAVAX Collateral  ...  34.5
+
     this.write((current) => {
       return {
         ...current,

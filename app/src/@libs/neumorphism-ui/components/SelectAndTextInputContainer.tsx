@@ -15,6 +15,8 @@ export interface SelectAndTextInputContainerProps
   error?: boolean;
   gridColumns: GridTemplate[];
   gridRows?: number[];
+  gutters?: 'large' | 'small' | 'none';
+  disableColumnDivider?: boolean;
 }
 
 function parseGridTemplate(template: GridTemplate[]): string {
@@ -46,6 +48,7 @@ function SelectAndTextInputContainerBase({
   children,
   gridColumns,
   gridRows,
+  disableColumnDivider,
   ...divProps
 }: SelectAndTextInputContainerProps) {
   return (
@@ -102,8 +105,6 @@ export const SelectAndTextInputContainer = styled(
       intensity: theme.intensity * 2,
     })};
 
-  //padding: 2px 20px;
-
   > :first-child {
     display: grid;
 
@@ -124,8 +125,10 @@ export const SelectAndTextInputContainer = styled(
     }
 
     > * {
-      padding-right: 20px;
-      padding-left: 20px;
+      padding-left: ${({ gutters = 'large' }) =>
+        gutters === 'large' ? '20' : gutters === 'small' ? '5' : '0'}px;
+      padding-right: ${({ gutters = 'large' }) =>
+        gutters === 'large' ? '20' : gutters === 'small' ? '5' : '0'}px;
     }
 
     > ${({ gridColumns }) => notFirstRow(gridColumns.length)} {
@@ -147,7 +150,8 @@ export const SelectAndTextInputContainer = styled(
           })};
     }
 
-    > ${({ gridColumns }) => notLastColumn(gridColumns.length)} {
+    > ${({ gridColumns, disableColumnDivider }) =>
+        !disableColumnDivider && notLastColumn(gridColumns.length)} {
       border-right: 1px solid
         ${({ theme }) =>
           rulerShadowColor({
@@ -156,7 +160,8 @@ export const SelectAndTextInputContainer = styled(
           })};
     }
 
-    > ${({ gridColumns }) => notFirstColumn(gridColumns.length)} {
+    > ${({ gridColumns, disableColumnDivider }) =>
+        !disableColumnDivider && notFirstColumn(gridColumns.length)} {
       border-left: 1px solid
         ${({ theme }) =>
           rulerLightColor({

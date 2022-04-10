@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Connection, useEvmWallet } from '@libs/evm-wallet';
+import { Connection, ConnectType, useEvmWallet } from '@libs/evm-wallet';
 import { WalletContent } from '../WalletContent';
 import { UIElementProps } from '@libs/ui';
 import { HumanAddr } from '@libs/types';
@@ -23,10 +23,7 @@ const ContentBase = (props: ContentProps) => {
   const { className, walletAddress, connection, onClose, onDisconnectWallet } =
     props;
 
-  const {
-    chainId,
-    actions: { watchAsset },
-  } = useEvmWallet();
+  const { chainId, watchAsset, connectionType } = useEvmWallet();
 
   const [adding, setAdding] = useState(false);
 
@@ -67,6 +64,9 @@ const ContentBase = (props: ContentProps) => {
     }
   };
 
+  const shouldShowAddButton =
+    connectionType === ConnectType.MetaMask && onAddToken;
+
   return (
     <WalletContent
       className={className}
@@ -80,9 +80,14 @@ const ContentBase = (props: ContentProps) => {
         onClose={onClose}
         onAddToken={adding ? onAddToken : undefined}
       />
-      <button className="add-wallet" onClick={() => setAdding((prev) => !prev)}>
-        {adding ? 'Done' : 'Add to Wallet'}
-      </button>
+      {shouldShowAddButton && (
+        <button
+          className="add-wallet"
+          onClick={() => setAdding((prev) => !prev)}
+        >
+          {adding ? 'Done' : 'Add to Wallet'}
+        </button>
+      )}
       <WithdrawableAssets />
       <div className="restore-tx">
         <div className="restore-tx-inner">

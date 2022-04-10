@@ -8,7 +8,7 @@ export type aUST<T = string> = T & NominalType<'aust'>;
 export type ANC<T = string> = T & NominalType<'anc'>;
 
 // generic for all other assets
-export type Collateral<T = string> = T & NominalType<'collateral'>;
+export type CollateralAmount<T = string> = T & NominalType<'collateral_amount'>;
 
 // LP tokens for governance
 export type AncUstLP<T = string> = T & NominalType<'anc_ust_lp'>;

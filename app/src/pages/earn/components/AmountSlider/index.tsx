@@ -1,4 +1,4 @@
-import { formatRate } from '@libs/formatter';
+import { formatDemimal, formatRate } from '@libs/formatter';
 import {
   HorizontalGraphBar,
   Rect,
@@ -8,9 +8,8 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { Rate } from '@libs/types';
 import { InfoOutlined } from '@material-ui/icons';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useTheme } from 'styled-components';
-import { Label } from './Label';
 import { Marker } from './Marker';
 
 export interface Data {
@@ -26,12 +25,12 @@ const colorFunction = ({ color }: Data) => color;
 const valueFunction = ({ value }: Data) => value;
 
 const labelRenderer = (
-  { variant, label, tooltip, color }: Data,
+  { label, tooltip }: Data,
   rect: Rect,
   i: number,
   onClick?: () => void,
 ) => {
-  return variant === 'label' ? (
+  return (
     <Marker
       key={'label' + i}
       style={{ left: rect.x + rect.width }}
@@ -50,16 +49,13 @@ const labelRenderer = (
         label
       )}
     </Marker>
-  ) : (
-    <Label
-      key={'label' + i}
-      style={{ left: rect.x + rect.width, color, cursor: 'pointer' }}
-      onClick={onClick}
-    >
-      <span>{label}</span>
-    </Label>
   );
 };
+
+const formatter = formatDemimal({
+  decimalPoints: 0,
+  delimiter: true,
+});
 
 export interface AmountSliderProps {
   value: number;
@@ -89,10 +85,10 @@ export const AmountSlider = ({
     [max, onChange],
   );
 
-  const quarterValueUST = useMemo(() => (0.25 * max).toFixed(2), [max]);
-  const halfValueUST = useMemo(() => (0.5 * max).toFixed(2), [max]);
-  const threeFourthsValueUST = useMemo(() => (0.75 * max).toFixed(2), [max]);
-  const maxValueUST = useMemo(() => max.toFixed(2), [max]);
+  const quarterValueUST = (0.25 * max).toFixed(2);
+  const halfValueUST = (0.5 * max).toFixed(2);
+  const threeFourthsValueUST = (0.75 * max).toFixed(2);
+  const maxValueUST = max.toFixed(2);
 
   return (
     <HorizontalGraphBar<Data>
@@ -150,6 +146,7 @@ export const AmountSlider = ({
               end={max}
               value={value}
               onChange={onChange}
+              label={`${valueRatio < 1 ? formatter(valueRatio * 100) : '100'}%`}
             />
           )}
         </>

@@ -1,6 +1,6 @@
 import { Chain, DeploymentTarget } from '@anchor-protocol/app-provider';
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
-import { CW20Addr, ERC20Addr, moneyMarket } from '@anchor-protocol/types';
+import { CW20Addr, ERC20Addr } from '@anchor-protocol/types';
 import {
   ChainId,
   CHAIN_ID_AVAX,
@@ -13,17 +13,16 @@ import {
   hexToUint8Array,
   uint8ArrayToNative,
 } from '@certusone/wormhole-sdk';
+import { BaseProvider } from '@ethersproject/providers';
 import { LCDClient } from '@terra-money/terra.js';
 import { NetworkInfo } from '@terra-money/use-wallet';
 import { ethers } from 'ethers';
+import { WhitelistCollateral } from 'queries';
 
 export type BridgeAssets = Map<CW20Addr, CW20Addr | ERC20Addr>;
 
-export type WhiltelistCollateral =
-  moneyMarket.overseer.WhitelistResponse['elems'][0];
-
 export function bridgeAssetsQuery(
-  whitelist: WhiltelistCollateral[] | undefined,
+  whitelist: WhitelistCollateral[] | undefined,
   target: DeploymentTarget,
   network: NetworkInfo,
 ): Promise<BridgeAssets | undefined> {
@@ -45,20 +44,76 @@ export function bridgeAssetsQuery(
 }
 
 function bridgeTerraAssetsQuery(
-  whitelist: WhiltelistCollateral[],
+  whitelist: WhitelistCollateral[],
 ): BridgeAssets {
   return new Map<CW20Addr, CW20Addr | ERC20Addr>(
     whitelist.map((elem) => [elem.collateral_token, elem.collateral_token]),
   );
 }
 
+// async function bridgeEvmAssetsQuery(
+//   whitelist: WhitelistCollateral[],
+//   target: DeploymentTarget,
+//   network: NetworkInfo,
+// ): Promise<BridgeAssets> {
+//   const ETH_ADDR_ZERO = '0x0000000000000000000000000000000000000000';
+
+//   const lcd = new LCDClient({
+//     URL: network.lcd,
+//     chainID: network.chainID,
+//   });
+
+//   const provider = ethers.getDefaultProvider(getEvmChainId(target, network));
+
+//   const wormholeChainId = getWormholeChainId(target, network);
+
+//   const map = new Map<CW20Addr, CW20Addr | ERC20Addr>();
+
+//   for (let collateral of whitelist) {
+//     const wormhole = await getOriginalAssetTerra(
+//       lcd as any,
+//       collateral.collateral_token,
+//     );
+//     if (wormhole.isWrapped) {
+//       // the token is wrapped on terra which means this
+//       // the information we get back is the original
+//       if (wormhole.chainId === wormholeChainId) {
+//         map.set(
+//           collateral.collateral_token,
+//           uint8ArrayToNative(
+//             wormhole.assetAddress,
+//             wormhole.chainId,
+//           ) as ERC20Addr,
+//         );
+//       }
+//     } else {
+//       // the token is on Terra so need to check if
+//       // it is wrapped onto our selected chain
+//       const foreignAsset = await getForeignAssetEth(
+//         // TODO: need a better way to handle this
+//         network.chainID === 'bombay-12'
+//           ? '0x61E44E506Ca5659E6c0bba9b678586fA2d729756'
+//           : '0x0e082F06FF657D94310cB8cE8B0D9a04541d8052',
+//         provider,
+//         CHAIN_ID_TERRA,
+//         hexToUint8Array(
+//           await getEmitterAddressTerra(collateral.collateral_token),
+//         ),
+//       );
+//       if (foreignAsset && foreignAsset !== ETH_ADDR_ZERO) {
+//         map.set(collateral.collateral_token, foreignAsset as ERC20Addr);
+//       }
+//     }
+//   }
+
+//   return map;
+// }
+
 async function bridgeEvmAssetsQuery(
-  whitelist: WhiltelistCollateral[],
+  whitelist: WhitelistCollateral[],
   target: DeploymentTarget,
   network: NetworkInfo,
 ): Promise<BridgeAssets> {
-  const ETH_ADDR_ZERO = '0x0000000000000000000000000000000000000000';
-
   const lcd = new LCDClient({
     URL: network.lcd,
     chainID: network.chainID,
@@ -68,47 +123,73 @@ async function bridgeEvmAssetsQuery(
 
   const wormholeChainId = getWormholeChainId(target, network);
 
-  const map = new Map<CW20Addr, CW20Addr | ERC20Addr>();
-
-  for (let collateral of whitelist) {
-    const wormhole = await getOriginalAssetTerra(
-      lcd as any,
-      collateral.collateral_token,
-    );
-    if (wormhole.isWrapped) {
-      // the token is wrapped on terra which means this
-      // the information we get back is the original
-      if (wormhole.chainId === wormholeChainId) {
-        map.set(
-          collateral.collateral_token,
-          uint8ArrayToNative(
-            wormhole.assetAddress,
-            wormhole.chainId,
-          ) as ERC20Addr,
-        );
-      }
-    } else {
-      // the token is on Terra so need to check if
-      // it is wrapped onto our selected chain
-      const foreignAsset = await getForeignAssetEth(
-        // TODO: need a better way to handle this
-        network.chainID === 'bombay-12'
-          ? '0x61E44E506Ca5659E6c0bba9b678586fA2d729756'
-          : '0x0e082F06FF657D94310cB8cE8B0D9a04541d8052',
+  const promises = await Promise.allSettled(
+    whitelist.map((collateral) =>
+      fetchEvmAddr(
+        lcd,
+        wormholeChainId,
         provider,
-        CHAIN_ID_TERRA,
-        hexToUint8Array(
-          await getEmitterAddressTerra(collateral.collateral_token),
-        ),
-      );
-      if (foreignAsset && foreignAsset !== ETH_ADDR_ZERO) {
-        map.set(collateral.collateral_token, foreignAsset as ERC20Addr);
-      }
+        network,
+        collateral.collateral_token,
+      ),
+    ),
+  );
+
+  const map = promises.reduce((previous, current) => {
+    if (current.status === 'fulfilled' && current.value !== undefined) {
+      previous = [
+        ...previous,
+        [current.value[0] as CW20Addr, current.value[1] as ERC20Addr],
+      ];
     }
+    return previous;
+  }, [] as Array<[CW20Addr, CW20Addr | ERC20Addr]>);
+
+  return new Map<CW20Addr, CW20Addr | ERC20Addr>(map);
+}
+
+const fetchEvmAddr = async (
+  lcd: LCDClient,
+  wormholeChainId: ChainId,
+  provider: BaseProvider,
+  network: NetworkInfo,
+  tokenAddr: string,
+) => {
+  const ETH_ADDR_ZERO = '0x0000000000000000000000000000000000000000';
+
+  const wormhole = await getOriginalAssetTerra(lcd as any, tokenAddr);
+  if (wormhole.isWrapped) {
+    // the token is wrapped on terra which means this
+    // the information we get back is the original
+    if (wormhole.chainId === wormholeChainId) {
+      return [
+        tokenAddr,
+        uint8ArrayToNative(
+          wormhole.assetAddress,
+          wormhole.chainId,
+        ) as ERC20Addr,
+      ];
+    }
+    return undefined;
   }
 
-  return map;
-}
+  // the token is on Terra so need to check if
+  // it is wrapped onto our selected chain
+  const foreignAsset = await getForeignAssetEth(
+    // TODO: need a better way to handle this
+    network.chainID === 'bombay-12'
+      ? '0x61E44E506Ca5659E6c0bba9b678586fA2d729756'
+      : '0x0e082F06FF657D94310cB8cE8B0D9a04541d8052',
+    provider,
+    CHAIN_ID_TERRA,
+    hexToUint8Array(await getEmitterAddressTerra(tokenAddr)),
+  );
+  if (foreignAsset && foreignAsset !== ETH_ADDR_ZERO) {
+    return [tokenAddr, foreignAsset as ERC20Addr];
+  }
+
+  return undefined;
+};
 
 const getWormholeChainId = (
   target: DeploymentTarget,

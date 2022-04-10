@@ -94,7 +94,16 @@ const StyledComponent = styled(Component)`
         font-size: 50px;
         font-weight: 500;
         color: ${({ theme }) => theme.colors.primary};
+      }
+
+      .projectedValue {
+        font-size: 12px;
+        color: ${({ theme }) => theme.textColor};
         margin-bottom: 50px;
+
+        b {
+          font-weight: 500;
+        }
       }
 
       figure {

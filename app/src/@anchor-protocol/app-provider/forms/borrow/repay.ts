@@ -8,6 +8,7 @@ import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
+import { useWhitelistCollateralQuery } from 'queries';
 import { useAnchorWebapp } from '../../contexts/context';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
@@ -30,13 +31,14 @@ export function useBorrowRepayForm(
 
   const { uUST } = useBalances();
 
+  const { data: whitelist = [] } = useWhitelistCollateralQuery();
+
   const {
     data: {
       borrowRate,
       oraclePrices,
       marketState,
       bAssetLtvs,
-      overseerWhitelist,
     } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
@@ -61,7 +63,7 @@ export function useBorrowRepayForm(
       overseerCollaterals,
       blocksPerYear,
       marketBorrowerInfo,
-      overseerWhitelist,
+      whitelist,
       fixedFee,
       blockHeight,
       marketState,

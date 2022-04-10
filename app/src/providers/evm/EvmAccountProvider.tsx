@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { AccountContext, Account } from 'contexts/account';
 import { HumanAddr } from '@libs/types';
-import { useEvmWallet } from '@libs/evm-wallet';
+import { useEvmWallet, WalletStatus } from '@libs/evm-wallet';
 import { useEvmTerraAddressQuery } from 'queries';
 
 const EvmAccountProvider = ({ children }: UIElementProps) => {
@@ -11,7 +11,7 @@ const EvmAccountProvider = ({ children }: UIElementProps) => {
   const { data: terraWalletAddress } = useEvmTerraAddressQuery(address);
 
   const account = useMemo<Account>(() => {
-    if (status !== 'connected') {
+    if (status !== WalletStatus.Connected) {
       return {
         status,
         connected: false,

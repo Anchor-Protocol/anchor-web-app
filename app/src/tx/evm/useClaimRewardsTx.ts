@@ -24,7 +24,7 @@ export interface ClaimRewardsTxParams {}
 export function useClaimRewardsTx():
   | BackgroundTxResult<ClaimRewardsTxParams, ClaimRewardsTxResult>
   | undefined {
-  const { address, connection, connectType, chainId } = useEvmWallet();
+  const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
@@ -34,11 +34,7 @@ export function useClaimRewardsTx():
       renderTxResults: Subject<ClaimRewardsTxRender>,
       txEvents: Subject<TxEvent<ClaimRewardsTxParams>>,
     ) => {
-      const writer = new EvmTxProgressWriter(
-        renderTxResults,
-        chainId!,
-        connectType,
-      );
+      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
       writer.claimRewards();
       writer.timer.start();
 
@@ -58,7 +54,7 @@ export function useClaimRewardsTx():
         writer.timer.stop();
       }
     },
-    [address, connectType, xAnchor, chainId, refetchQueries],
+    [address, connectionType, xAnchor, refetchQueries],
   );
 
   const persistedTxResult = useBackgroundTx<
@@ -66,7 +62,7 @@ export function useClaimRewardsTx():
     ClaimRewardsTxResult
   >(claimRewards, parseTx, null, displayTx);
 
-  return chainId && connection && address ? persistedTxResult : undefined;
+  return address ? persistedTxResult : undefined;
 }
 
 const displayTx = () => ({

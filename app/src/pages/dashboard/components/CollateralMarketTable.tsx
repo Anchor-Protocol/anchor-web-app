@@ -1,7 +1,4 @@
-import {
-  MarketCollateralsHistory,
-  WhitelistCollateral,
-} from '@anchor-protocol/app-fns';
+import { MarketCollateralsHistory } from '@anchor-protocol/app-fns';
 import {
   formatUST,
   formatUSTWithPostfixUnits,
@@ -17,6 +14,7 @@ import { u, UST } from '@libs/types';
 import { AnimateNumber } from '@libs/ui';
 import Big from 'big.js';
 import { UIElementProps } from 'components/layouts/UIElementProps';
+import { WhitelistCollateral } from 'queries';
 import React, { useMemo } from 'react';
 
 interface CollateralMarketTableProps extends UIElementProps {

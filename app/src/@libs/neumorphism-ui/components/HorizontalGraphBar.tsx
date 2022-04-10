@@ -182,13 +182,11 @@ function HorizontalGraphBarBase<T>({
       <svg width={width} height={barHeight}>
         <g ref={rectsRef} />
       </svg>
-
       <div ref={labelsRef}>
         {typeof labelRenderer === 'function' &&
           data.length > 0 &&
           graphRects.map((rect, i) => labelRenderer(data[i], rect as Rect, i))}
       </div>
-
       {typeof children === 'function' ? children(coordinateSpace) : children}
     </div>
   );

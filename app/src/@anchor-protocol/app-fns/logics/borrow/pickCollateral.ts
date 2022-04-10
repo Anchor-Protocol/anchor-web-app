@@ -1,11 +1,11 @@
-import { OverseerWhitelistWithDisplay } from '@anchor-protocol/app-provider';
 import { CW20Addr } from '@anchor-protocol/types';
+import { WhitelistCollateral } from 'queries';
 
 export function pickCollateral(
   collateralToken: CW20Addr,
-  overseerWhitelist: OverseerWhitelistWithDisplay,
-) {
-  const elem = overseerWhitelist.elems.find(
+  whitelist: WhitelistCollateral[],
+): WhitelistCollateral {
+  const elem = whitelist.find(
     ({ collateral_token }) => collateral_token === collateralToken,
   );
 

@@ -7,18 +7,20 @@ import { IconButton } from '@material-ui/core';
 import {
   Brightness3,
   Brightness5,
-  FiberManualRecord,
   GitHub,
   Telegram,
   Twitter,
 } from '@material-ui/icons';
-import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { useTheme } from 'contexts/theme';
 import { screen } from 'env';
 import c from 'color';
 import React, { CSSProperties } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { BlockInfo } from './BlockInfo';
+import { Chain } from '@anchor-protocol/app-provider';
+import { EvmBlockInfo } from './EvmBlockInfo';
 
 export interface FooterProps {
   className?: string;
@@ -29,6 +31,10 @@ function FooterBase({ className, style }: FooterProps) {
   const { network } = useNetwork();
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
+  const {
+    target: { isEVM },
+  } = useDeploymentTarget();
+
   const { themeColor, switchable, updateTheme } = useTheme();
 
   const appVersion = import.meta.env.VITE_APP_VERSION;
@@ -36,21 +42,23 @@ function FooterBase({ className, style }: FooterProps) {
   return (
     <footer className={className} style={style}>
       <Info>
-        {appVersion && <p>{appVersion}</p>}
+        <div className="blocks">
+          <a
+            href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <BlockInfo
+              chainName={Chain.Terra}
+              networkName={network.name}
+              blockNumber={lastSyncedHeight}
+            />
+          </a>
 
-        <a
-          href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <IconSpan>
-            <FiberManualRecord className="point" />{' '}
-            {network.name.toLowerCase().indexOf('mainnet') !== 0 && (
-              <b>[{network.name.toUpperCase()}] </b>
-            )}
-            Latest Block: {lastSyncedHeight}
-          </IconSpan>
-        </a>
+          {isEVM && <EvmBlockInfo />}
+        </div>
+
+        {appVersion && <p>{appVersion}</p>}
 
         <Link to="/terms">Terms</Link>
       </Info>
@@ -109,10 +117,6 @@ export const Footer = styled(FooterBase)`
     text-decoration: none;
   }
 
-  .point {
-    color: ${({ theme }) => theme.colors.positive};
-  }
-
   a,
   .MuiIconButton-root {
     color: ${({ theme }) => c(theme.dimTextColor).alpha(0.5).toString()};
@@ -138,10 +142,18 @@ export const Footer = styled(FooterBase)`
   @media (max-width: ${screen.tablet.max}px) {
     flex-direction: column;
   }
+
+  .blocks {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
 `;
 
 const Info = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 28px;
 `;
