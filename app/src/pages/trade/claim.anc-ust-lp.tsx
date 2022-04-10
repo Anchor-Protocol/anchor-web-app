@@ -117,7 +117,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
           )}
           {hasAncRewards && (
             <TxFeeListItem label="ANC">
-              {formatUToken(ancRewards as u<ANC<Big>>)} ANC
+              {formatUToken(ancRewards)} ANC
             </TxFeeListItem>
           )}
           <TxFeeListItem label="Tx Fee">
