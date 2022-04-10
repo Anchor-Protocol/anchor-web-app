@@ -40,7 +40,7 @@ export function useAncAncUstLpWithdrawTx() {
         // fabricateTerraswapWithdrawLiquidityANC
         walletAddr: terraWalletAddress,
         lpAmount,
-        ancUstPairAddr: contractAddress.terraswap.ancUstPair,
+        ancUstPairAddr: contractAddress.astroport.ancUstPair,
         ancUstLpTokenAddr: contractAddress.cw20.AncUstLP,
         // post
         network: connectedWallet.network,
@@ -63,7 +63,7 @@ export function useAncAncUstLpWithdrawTx() {
       availablePost,
       connected,
       connectedWallet,
-      contractAddress.terraswap.ancUstPair,
+      contractAddress.astroport.ancUstPair,
       contractAddress.cw20.AncUstLP,
       terraWalletAddress,
       fixedFee,

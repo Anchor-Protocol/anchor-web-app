@@ -160,7 +160,7 @@ export function TradeSell() {
 
         resolveSimulation(
           terraswapSimulationQuery(
-            address.terraswap.ancUstPair,
+            address.astroport.ancUstPair,
             {
               info: {
                 token: {
@@ -186,7 +186,7 @@ export function TradeSell() {
     },
     [
       address.cw20.ANC,
-      address.terraswap.ancUstPair,
+      address.astroport.ancUstPair,
       bank.tax,
       fixedFee,
       queryClient,
@@ -213,7 +213,7 @@ export function TradeSell() {
 
         resolveSimulation(
           terraswapSimulationQuery(
-            address.terraswap.ancUstPair,
+            address.astroport.ancUstPair,
             {
               info: {
                 native_token: {
@@ -238,7 +238,7 @@ export function TradeSell() {
       }
     },
     [
-      address.terraswap.ancUstPair,
+      address.astroport.ancUstPair,
       bank.tax,
       fixedFee,
       queryClient,

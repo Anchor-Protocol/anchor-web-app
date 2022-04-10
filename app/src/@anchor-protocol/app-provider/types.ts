@@ -37,10 +37,11 @@ export interface AnchorContractAddress extends AppContractAddress {
   terraswap: {
     factory: HumanAddr;
     blunaLunaPair: HumanAddr;
-    ancUstPair: HumanAddr;
   };
   astroport: {
     generator: HumanAddr;
+    astroUstPair: HumanAddr;
+    ancUstPair: HumanAddr;
   };
   cw20: {
     bLuna: CW20Addr;

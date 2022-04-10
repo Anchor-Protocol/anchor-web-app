@@ -30,7 +30,6 @@ export type RewardsAncUstLpRewards =
 
 export async function rewardsAncUstLpRewardsQuery(
   walletAddr: HumanAddr | undefined,
-  stakingContract: HumanAddr,
   ancUstLpContract: CW20Addr,
   astroportGeneratorAddr: HumanAddr,
   queryClient: QueryClient,

@@ -10,3 +10,4 @@ export * from './useEstimatedTimestamp';
 export * from './evm/useEvmTerraAddressQuery';
 export * from './evm/useEvmBlockNumberQuery';
 export * from './useAnchorQuery';
+export * from './astroport/useAssetPriceInUstQuery';

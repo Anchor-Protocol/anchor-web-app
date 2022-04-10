@@ -13,7 +13,7 @@ export function useAncPriceQuery(): UseQueryResult<AncPriceData | undefined> {
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.ANC_PRICE,
-      contractAddress.terraswap.ancUstPair,
+      contractAddress.astroport.ancUstPair,
       queryClient,
     ],
     queryFn,
