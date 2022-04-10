@@ -37,12 +37,14 @@ const assetPriceQuery = async (
     },
   });
 
-  const assetPoolSize = assetShare.amount;
-  const ustPoolSize = ustShare.amount;
+  const assetPoolSize = big(assetShare.amount);
+  const ustPoolSize = big(ustShare.amount);
 
-  return big(ustPoolSize)
-    .div(+assetPoolSize === 0 ? '1' : assetPoolSize)
-    .toString() as UST;
+  const assetPrice = assetPoolSize.eq(0)
+    ? ustPoolSize
+    : ustPoolSize.div(assetPoolSize);
+
+  return assetPrice.toString() as UST;
 };
 
 const queryFn = createQueryFn(assetPriceQuery);
