@@ -155,18 +155,38 @@ export function useRewards() {
     return { reward, rewardValue };
   }, [borrowerInfo, marketState, ancPrice]);
 
-  const total = useMemo(() => {
+  const rewards = useMemo(() => {
     if (!ustBorrow || !ancUstLp || !ancPrice) {
       return undefined;
     }
 
-    const reward = ustBorrow.reward.plus(ancUstLp.rewardsAmountInUst) as u<
-      ANC<Big>
-    >;
-    const rewardValue = reward.mul(ancPrice.ANCPrice) as u<UST<Big>>;
+    const ancRewardFromLP = ancUstLp.rewards.find(
+      ({ symbol }) => symbol === 'ANC',
+    );
 
-    return { reward, rewardValue };
+    const ancRewardAmount = big(ancRewardFromLP?.amount || 0)
+      .plus(ustBorrow.reward)
+      .toString() as u<Token>;
+
+    const ancReward: Reward = {
+      symbol: 'ANC',
+      amount: ancRewardAmount,
+      amountInUst: getRewardAmountInUst(ancRewardAmount, ancPrice.ANCPrice),
+    };
+
+    return [
+      ancReward,
+      ...ancUstLp.rewards.filter(({ symbol }) => symbol !== 'ANC'),
+    ];
   }, [ancPrice, ancUstLp, ustBorrow]);
+
+  const rewardsAmountInUst = useMemo(
+    () =>
+      rewards
+        ? (sum(...rewards.map((reward) => reward.amountInUst)) as u<UST<Big>>)
+        : undefined,
+    [rewards],
+  );
 
   return {
     ancPrice,
@@ -174,7 +194,8 @@ export function useRewards() {
     govGorvernance,
     ancUstLp,
     lpRewards,
-    total,
+    rewards,
+    rewardsAmountInUst,
     borrowerDistributionAPYs,
     ustBorrow,
   };

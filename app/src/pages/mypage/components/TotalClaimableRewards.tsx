@@ -1,9 +1,9 @@
+import { formatOutput } from '@anchor-protocol/formatter';
 import {
-  formatANCWithPostfixUnits,
   formatUST,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
-import { ANC, UST } from '@anchor-protocol/types';
+import { UST } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
@@ -14,6 +14,7 @@ import { Sub } from 'components/Sub';
 import { useAccount } from 'contexts/account';
 import { fixHMR } from 'fix-hmr';
 import { useRewards } from 'pages/mypage/logics/useRewards';
+import { useAssetPriceInUstQuery } from 'queries';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -25,7 +26,10 @@ export interface TotalClaimableRewardsProps {
 function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
   const { connected } = useAccount();
 
-  const { total, ancPrice } = useRewards();
+  const { data: ancPrice } = useAssetPriceInUstQuery('anc');
+  const { data: astroPrice } = useAssetPriceInUstQuery('astro');
+
+  const { rewards, rewardsAmountInUst } = useRewards();
 
   return (
     <Section className={className}>
@@ -34,20 +38,30 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
           <IconSpan>
             TOTAL CLAIMABLE REWARDS{' '}
             <InfoTooltip>
-              Total number of claimable ANC from UST Borrow and LP staking
+              Total number of claimable ANC and ASTRO from UST Borrow and LP
+              staking
             </InfoTooltip>
           </IconSpan>
         </h4>
         <p>
-          <AnimateNumber format={formatANCWithPostfixUnits}>
-            {total?.reward ? demicrofy(total.reward) : (0 as ANC<number>)}
-          </AnimateNumber>
-          <Sub> ANC</Sub>
+          {rewards &&
+            rewards.map(({ amount, symbol }, index) => (
+              <React.Fragment key={symbol}>
+                <AnimateNumber format={formatOutput}>
+                  {demicrofy(amount)}
+                </AnimateNumber>
+                <Sub>
+                  {' '}
+                  {symbol}
+                  {index < rewards.length - 1 && ' + '}
+                </Sub>
+              </React.Fragment>
+            ))}
         </p>
         <p>
           <AnimateNumber format={formatUSTWithPostfixUnits}>
-            {total?.rewardValue
-              ? demicrofy(total.rewardValue)
+            {rewardsAmountInUst
+              ? demicrofy(rewardsAmountInUst)
               : (0 as UST<number>)}
           </AnimateNumber>{' '}
           UST
@@ -58,7 +72,17 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
         <h5>ANC PRICE</h5>
         <p>
           <AnimateNumber format={formatUST}>
-            {ancPrice ? ancPrice.ANCPrice : (0 as UST<number>)}
+            {ancPrice ? ancPrice : (0 as UST<number>)}
+          </AnimateNumber>
+          <Sub> UST</Sub>
+        </p>
+      </div>
+
+      <div className="anc-price">
+        <h5>ASTRO PRICE</h5>
+        <p>
+          <AnimateNumber format={formatUST}>
+            {astroPrice ? astroPrice : (0 as UST<number>)}
           </AnimateNumber>
           <Sub> UST</Sub>
         </p>
