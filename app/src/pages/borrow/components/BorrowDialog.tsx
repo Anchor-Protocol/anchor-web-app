@@ -295,23 +295,24 @@ function BorrowDialogBase(props: BorrowDialogProps) {
           </EstimatedLiquidationPrice>
         )}
 
-        {isNative === false && (
-          <>
-            <PageDivider />
-            <BorrowCollateralInput
-              collateral={states.collateral}
-              onCollateralChange={onCollateralChanged}
-              maxCollateralAmount={states.maxCollateralAmount}
-              warningMessage={states.invalidCollateralAmount}
-              amount={states.collateralAmount}
-              onAmountChange={(collateralAmount) => {
-                input({
-                  collateralAmount,
-                });
-              }}
-            />
-          </>
-        )}
+        {isNative === false ||
+          (false && (
+            <>
+              <PageDivider />
+              <BorrowCollateralInput
+                collateral={states.collateral}
+                onCollateralChange={onCollateralChanged}
+                maxCollateralAmount={states.maxCollateralAmount}
+                warningMessage={states.invalidCollateralAmount}
+                amount={states.collateralAmount}
+                onAmountChange={(collateralAmount) => {
+                  input({
+                    collateralAmount,
+                  });
+                }}
+              />
+            </>
+          ))}
 
         {states.txFee &&
           states.txFee.gt(0) &&
