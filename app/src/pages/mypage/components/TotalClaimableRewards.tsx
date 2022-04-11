@@ -15,7 +15,8 @@ import { useAccount } from 'contexts/account';
 import { fixHMR } from 'fix-hmr';
 import { useRewards } from 'pages/mypage/logics/useRewards';
 import { useAssetPriceInUstQuery } from 'queries';
-import React from 'react';
+import React, { useMemo } from 'react';
+import big from 'big.js';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -29,7 +30,12 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
   const { data: ancPrice } = useAssetPriceInUstQuery('anc');
   const { data: astroPrice } = useAssetPriceInUstQuery('astro');
 
-  const { rewards, rewardsAmountInUst } = useRewards();
+  const { rewards: allRewards, rewardsAmountInUst } = useRewards();
+  const rewards = useMemo(
+    () =>
+      allRewards && allRewards.filter(({ amount }) => !big(amount).eq(big(0))),
+    [allRewards],
+  );
 
   return (
     <Section className={className}>
