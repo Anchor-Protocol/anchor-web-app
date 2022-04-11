@@ -28,7 +28,7 @@ export function useAncVestingAccountQuery(): UseQueryResult<
     ],
     queryFn,
     {
-      refetchInterval: 1000 * 60 * 2,
+      refetchOnMount: false,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },
