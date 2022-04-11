@@ -13,7 +13,6 @@ export const computeDepositAmountToBorrowLimit =
   ) =>
   (depositAmount: u<bAsset<BigSource>>): u<UST<Big>> => {
     return computeBorrowLimit(overseerCollaterals, oraclePrices, bAssetLtvs, [
-      collateralToken,
-      depositAmount,
+      [collateralToken, depositAmount],
     ]);
   };

@@ -47,8 +47,8 @@ export function useContractNickname(): (addr: HumanAddr | CW20Addr) => string {
         return `Anchor Token / Distributor`;
       case address.terraswap.blunaLunaPair:
         return `Terraswap / bLUNA-LUNA Pair`;
-      case address.terraswap.ancUstPair:
-        return `Terraswap / ANC-UST Pair`;
+      case address.astroport.ancUstPair:
+        return `Astroport / ANC-UST Pair`;
       case address.cw20.bLuna:
         return `bLUNA`;
       case address.cw20.aUST:

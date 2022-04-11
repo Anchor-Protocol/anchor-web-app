@@ -1,15 +1,20 @@
 import {
   ANCHOR_DANGER_RATIO,
   ANCHOR_SAFE_RATIO,
+  computeBorrowAmountToLtv,
+  computeLtvToBorrowAmount,
 } from '@anchor-protocol/app-fns';
-import { useBorrowBorrowForm } from '@anchor-protocol/app-provider';
+import {
+  useBorrowBorrowForm,
+  useDeploymentTarget,
+} from '@anchor-protocol/app-provider';
 import {
   formatUST,
   formatUSTInput,
   UST_INPUT_MAXIMUM_DECIMAL_POINTS,
   UST_INPUT_MAXIMUM_INTEGER_POINTS,
 } from '@anchor-protocol/notation';
-import { Rate, u, UST } from '@anchor-protocol/types';
+import { CollateralAmount, Rate, u, UST } from '@anchor-protocol/types';
 import { TxResultRendering } from '@libs/app-fns';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -21,52 +26,80 @@ import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
 import { UIElementProps } from '@libs/ui';
 import type { DialogProps } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
-import { StreamResult, StreamStatus } from '@rx-stream/react';
+import {
+  StreamDone,
+  StreamInProgress,
+  StreamResult,
+  StreamStatus,
+} from '@rx-stream/react';
 import { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import { ChangeEvent, ReactNode, useMemo } from 'react';
+import { ChangeEvent, ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
+import big from 'big.js';
+import { BorrowCollateralInput } from './BorrowCollateralInput';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
-import { BroadcastTxStreamResult } from 'pages/earn/components/types';
-import big from 'big.js';
+import { PageDivider } from './PageDivider';
+import { WhitelistCollateral } from 'queries';
+import { useBalances } from 'contexts/balances';
 
 export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   txResult: StreamResult<TxResultRendering> | null;
   proceedable: boolean;
-  onProceed: (borrowAmount: UST, txFee: u<UST>) => void;
+  onProceed: (
+    borrowAmount: UST,
+    txFee: u<UST>,
+    collateral?: WhitelistCollateral,
+    collateralAmount?: u<CollateralAmount<Big>>,
+  ) => void;
 }
 
+interface TxRenderFnProps {
+  txResult:
+    | StreamInProgress<TxResultRendering<unknown>>
+    | StreamDone<TxResultRendering<unknown>>;
+  closeDialog: () => void;
+}
+
+type TxRenderFn = (props: TxRenderFnProps) => JSX.Element;
+
 export type BorrowDialogProps = DialogProps<BorrowDialogParams> & {
-  renderBroadcastTxResult?: JSX.Element;
+  renderTxResult?: TxRenderFn;
 };
 
 function BorrowDialogBase(props: BorrowDialogProps) {
   const {
     className,
     closeDialog,
-    fallbackBorrowMarket,
-    fallbackBorrowBorrower,
     txResult,
     proceedable,
     onProceed,
-    renderBroadcastTxResult,
+    renderTxResult,
+    fallbackBorrowMarket,
+    fallbackBorrowBorrower,
   } = props;
+
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
 
   const { availablePost, connected } = useAccount();
 
-  const [openConfirm, confirmElement] = useConfirm();
+  const { fetchWalletBalance } = useBalances();
 
   const [input, states] = useBorrowBorrowForm(
     fallbackBorrowMarket,
     fallbackBorrowBorrower,
   );
+
+  const [openConfirm, confirmElement] = useConfirm();
 
   const updateBorrowAmount = useCallback(
     (nextBorrowAmount: string) => {
@@ -77,8 +110,29 @@ function BorrowDialogBase(props: BorrowDialogProps) {
     [input],
   );
 
+  const onCollateralChanged = useCallback(
+    (collateral: WhitelistCollateral) => {
+      input({
+        collateral,
+        collateralAmount: undefined,
+        maxCollateralAmount: Big(0) as u<CollateralAmount<Big>>,
+      });
+
+      fetchWalletBalance(collateral).then((maxCollateralAmount) => {
+        input({ maxCollateralAmount });
+      });
+    },
+    [input, fetchWalletBalance],
+  );
+
   const proceed = useCallback(
-    async (borrowAmount: UST, txFee: u<UST>, confirm: ReactNode) => {
+    async (
+      borrowAmount: UST,
+      txFee: u<UST>,
+      confirm: ReactNode,
+      collateral?: WhitelistCollateral,
+      collateralAmount?: u<CollateralAmount<Big>>,
+    ) => {
       if (!connected || !onProceed) {
         return;
       }
@@ -95,36 +149,43 @@ function BorrowDialogBase(props: BorrowDialogProps) {
         }
       }
 
-      onProceed(borrowAmount, txFee);
+      onProceed(borrowAmount, txFee, collateral, collateralAmount);
     },
     [onProceed, connected, openConfirm],
   );
 
+  const ltvStepFunction = useCallback(
+    (draftLtv: Rate<Big>) => {
+      const amount = computeLtvToBorrowAmount(
+        draftLtv,
+        states.borrowLimit,
+        states.borrowedAmount,
+      );
+
+      return computeBorrowAmountToLtv(
+        amount,
+        states.borrowLimit,
+        states.borrowedAmount,
+      );
+    },
+    [states.borrowLimit, states.borrowedAmount],
+  );
+
   const onLtvChange = useCallback(
     (nextLtv: Rate<Big>) => {
-      const ltvToAmount = states.ltvToAmount;
       try {
-        const nextAmount = ltvToAmount(nextLtv);
+        const nextAmount = computeLtvToBorrowAmount(
+          nextLtv,
+          states.borrowLimit,
+          states.borrowedAmount,
+        );
         input({
           borrowAmount: formatUSTInput(demicrofy(nextAmount)),
         });
       } catch {}
     },
-    [input, states.ltvToAmount],
+    [input, states.borrowLimit, states.borrowedAmount],
   );
-
-  const renderBroadcastTx = useMemo(() => {
-    if (renderBroadcastTxResult) {
-      return renderBroadcastTxResult;
-    }
-
-    return (
-      <TxResultRenderer
-        resultRendering={(txResult as BroadcastTxStreamResult).value}
-        onExit={closeDialog}
-      />
-    );
-  }, [renderBroadcastTxResult, closeDialog, txResult]);
 
   if (
     txResult?.status === StreamStatus.IN_PROGRESS ||
@@ -132,7 +193,16 @@ function BorrowDialogBase(props: BorrowDialogProps) {
   ) {
     return (
       <Modal open disableBackdropClick disableEnforceFocus>
-        <Dialog className={className}>{renderBroadcastTx}</Dialog>
+        <Dialog className={className}>
+          {renderTxResult ? (
+            renderTxResult({ txResult, closeDialog })
+          ) : (
+            <TxResultRenderer
+              resultRendering={txResult.value}
+              onExit={closeDialog}
+            />
+          )}
+        </Dialog>
       </Modal>
     );
   }
@@ -203,7 +273,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
             end={ANCHOR_DANGER_RATIO}
             value={states.nextLtv}
             onChange={onLtvChange}
-            onStep={states.ltvStepFunction}
+            onStep={ltvStepFunction}
           />
         </figure>
 
@@ -225,18 +295,40 @@ function BorrowDialogBase(props: BorrowDialogProps) {
           </EstimatedLiquidationPrice>
         )}
 
-        {states.txFee && states.receiveAmount && states.receiveAmount.gt(0) && (
-          <TxFeeList className="receipt">
-            {big(states.txFee).gt(0) && (
-              <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-                {formatUST(demicrofy(states.txFee))} UST
+        {isNative === false ||
+          (false && (
+            <>
+              <PageDivider />
+              <BorrowCollateralInput
+                collateral={states.collateral}
+                onCollateralChange={onCollateralChanged}
+                maxCollateralAmount={states.maxCollateralAmount}
+                warningMessage={states.invalidCollateralAmount}
+                amount={states.collateralAmount}
+                onAmountChange={(collateralAmount) => {
+                  input({
+                    collateralAmount,
+                  });
+                }}
+              />
+            </>
+          ))}
+
+        {states.txFee &&
+          states.txFee.gt(0) &&
+          states.receiveAmount &&
+          states.receiveAmount.gt(0) && (
+            <TxFeeList className="receipt">
+              {big(states.txFee).gt(0) && (
+                <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+                  {formatUST(demicrofy(states.txFee))} UST
+                </TxFeeListItem>
+              )}
+              <TxFeeListItem label="Receive Amount">
+                {formatUST(demicrofy(states.receiveAmount))} UST
               </TxFeeListItem>
-            )}
-            <TxFeeListItem label="Receive Amount">
-              {formatUST(demicrofy(states.receiveAmount))} UST
-            </TxFeeListItem>
-          </TxFeeList>
-        )}
+            </TxFeeList>
+          )}
 
         <ViewAddressWarning>
           <ActionButton
@@ -253,6 +345,8 @@ function BorrowDialogBase(props: BorrowDialogProps) {
                 states.borrowAmount,
                 states.txFee.toFixed() as u<UST>,
                 states.warningOverSafeLtv,
+                states.collateral,
+                states.collateralAmount,
               )
             }
           >
@@ -306,7 +400,7 @@ export const BorrowDialog = styled(BorrowDialogBase)`
   }
 
   .graph {
-    margin-top: 80px;
+    margin-top: 70px;
     margin-bottom: 40px;
   }
 

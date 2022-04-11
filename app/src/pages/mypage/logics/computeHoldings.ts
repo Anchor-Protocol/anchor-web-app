@@ -1,6 +1,5 @@
 import {
   AnchorBalances,
-  AncPrice,
   BAssetInfoAndBalancesTotal,
 } from '@anchor-protocol/app-fns';
 import { moneyMarket, u, UST } from '@anchor-protocol/types';
@@ -9,7 +8,7 @@ import { Big } from 'big.js';
 
 export function computeHoldings(
   tokenBalances: AnchorBalances,
-  ancPrice: AncPrice | undefined,
+  ancPrice: UST | undefined,
   oraclePrices: moneyMarket.oracle.PricesResponse | undefined,
   bAssetBalanceTotal: BAssetInfoAndBalancesTotal | undefined,
 ) {
@@ -19,7 +18,7 @@ export function computeHoldings(
 
   const holdingsVector = [tokenBalances.uANC];
 
-  const holdingsPriceVector = [ancPrice.ANCPrice];
+  const holdingsPriceVector = [ancPrice];
 
   const holdingsUst = vectorMultiply(holdingsVector, holdingsPriceVector);
 

@@ -21,6 +21,7 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { AncUstLpRewards } from './AncUstLpRewards';
 
 export interface RewardsProps {
   className?: string;
@@ -230,23 +231,12 @@ export function RewardsBase({ className }: RewardsProps) {
                 </p>
               </td>
               <td>
-                <p>
-                  {ancUstLp?.reward
-                    ? formatANCWithPostfixUnits(demicrofy(ancUstLp.reward))
-                    : 0}{' '}
-                  ANC
-                </p>
-                <p className="subtext">
-                  <IconSpan>
-                    ≈{' '}
-                    {ancUstLp?.rewardValue
-                      ? formatUSTWithPostfixUnits(
-                          demicrofy(ancUstLp.rewardValue),
-                        )
-                      : 0}{' '}
-                    UST
-                  </IconSpan>
-                </p>
+                {ancUstLp && (
+                  <AncUstLpRewards
+                    rewards={ancUstLp.rewards}
+                    rewardsAmountInUst={ancUstLp.rewardsAmountInUst}
+                  />
+                )}
               </td>
               <td>
                 <MoreMenu>

@@ -12,26 +12,26 @@ import { normalize } from '@anchor-protocol/formatter';
 export const TerraRedeemCollateralDialog = (
   props: DialogProps<RedeemCollateralFormParams>,
 ) => {
-  const { collateralToken, tokenDisplay } = props;
+  const { collateral } = props;
 
   const { connected, terraWalletAddress } = useAccount();
 
   const cw20Balance = useCW20Balance<bAsset>(
-    collateralToken,
+    collateral.collateral_token,
     terraWalletAddress,
   );
 
-  const uTokenBalance = normalize(cw20Balance, 6, tokenDisplay?.decimals ?? 6);
+  const uTokenBalance = normalize(cw20Balance, 6, collateral.decimals);
 
-  const [postTx, txResult] = useBorrowRedeemCollateralTx(collateralToken);
+  const [postTx, txResult] = useBorrowRedeemCollateralTx(collateral);
 
   const proceed = useCallback(
     (redeemAmount: bAsset) => {
       if (connected && postTx) {
-        postTx({ redeemAmount, tokenDisplay });
+        postTx({ redeemAmount });
       }
     },
-    [connected, postTx, tokenDisplay],
+    [connected, postTx],
   );
 
   return (

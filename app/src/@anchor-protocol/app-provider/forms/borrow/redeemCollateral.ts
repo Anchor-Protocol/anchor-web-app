@@ -7,14 +7,14 @@ import { useBorrowMarketQuery } from '@anchor-protocol/app-provider/queries/borr
 import { BorrowMarketWithDisplay } from '@anchor-protocol/app-provider';
 import { bAsset } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
-import { CW20Addr, u } from '@libs/types';
+import { u } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
+import { WhitelistCollateral } from 'queries';
 
 export function useBorrowRedeemCollateralForm(
-  collateralToken: CW20Addr,
-  collateralTokenDecimals: number,
+  collateral: WhitelistCollateral,
   balance: u<bAsset>,
   fallbackBorrowMarket: BorrowMarketWithDisplay,
   fallbackBorrowBorrower: BorrowBorrower,
@@ -25,13 +25,8 @@ export function useBorrowRedeemCollateralForm(
 
   const { uUST } = useBalances();
 
-  const {
-    data: {
-      oraclePrices,
-      bAssetLtvs,
-      overseerWhitelist,
-    } = fallbackBorrowMarket,
-  } = useBorrowMarketQuery();
+  const { data: { oraclePrices, bAssetLtvs } = fallbackBorrowMarket } =
+    useBorrowMarketQuery();
 
   const {
     data: { marketBorrowerInfo, overseerCollaterals } = fallbackBorrowBorrower,
@@ -40,15 +35,13 @@ export function useBorrowRedeemCollateralForm(
   return useForm(
     borrowRedeemCollateralForm,
     {
-      collateralToken,
-      collateralTokenDecimals,
+      collateral,
       userBAssetBalance: balance,
       userUSTBalance: uUST,
       connected,
       oraclePrices,
       overseerCollaterals,
       marketBorrowerInfo,
-      overseerWhitelist,
       fixedFee,
       bAssetLtvs,
     },

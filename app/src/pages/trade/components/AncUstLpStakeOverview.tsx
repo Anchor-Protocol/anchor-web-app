@@ -4,13 +4,14 @@ import {
   useAncPriceQuery,
   useRewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/app-provider';
-import { formatANCWithPostfixUnits, formatLP } from '@anchor-protocol/notation';
-import { ANC, AncUstLP, u, UST } from '@anchor-protocol/types';
+import { formatLP } from '@anchor-protocol/notation';
+import { ANC, AncUstLP, u, UST, Token } from '@anchor-protocol/types';
 import { useAstroportDepositQuery } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { rulerLightColor, rulerShadowColor } from '@libs/styled-neumorphism';
 import big, { Big } from 'big.js';
+import { SumOfTokens } from 'components/SumOfTokens';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -58,9 +59,23 @@ function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
 
     const stakable = userLPBalance.balance;
 
-    const reward = userLPPendingToken.pending_on_proxy;
+    const ancReward = userLPPendingToken.pending_on_proxy;
+    const astroReward = userLPPendingToken.pending;
 
-    return { withdrawableAssets, staked, stakable, reward };
+    const rewards = [
+      {
+        symbol: 'ASTRO',
+        amount: astroReward as u<Token>,
+      },
+    ];
+    if (!big(ancReward).eq(0)) {
+      rewards.push({
+        symbol: 'ANC',
+        amount: ancReward as u<Token>,
+      });
+    }
+
+    return { withdrawableAssets, staked, stakable, rewards };
   }, [
     ancPrice,
     deposit,
@@ -96,12 +111,7 @@ function AncUstLpStakeOverviewBase({ className }: AncUstLpStakeOverviewProps) {
         >
           Reward
         </TooltipLabel>
-        <p>
-          {ancUstLp?.reward
-            ? formatANCWithPostfixUnits(demicrofy(ancUstLp.reward))
-            : 0}{' '}
-          ANC
-        </p>
+        {ancUstLp && <SumOfTokens tokens={ancUstLp?.rewards} />}
       </li>
     </ul>
   );

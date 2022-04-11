@@ -102,6 +102,7 @@ const COLUMBUS_CONTRACT_ADDRESS = {
   terraswapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
   astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
   vesting: 'terra13v4ln23tmfs2zk4nh5dw5mzufckekp4fpafpcy',
+  astroUstPair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
 };
 
 const BOMBAY_CONTRACT_ADDRESS = {
@@ -138,6 +139,7 @@ const BOMBAY_CONTRACT_ADDRESS = {
   terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
   astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
   vesting: 'terra15rq8j7auyyd6ydcfkktm3kdagcg56228uclkzy',
+  astroUstPair: 'terra1ec0fnjk2u6mms05xyyrte44jfdgdaqnx0upesr',
 };
 
 export const ANCHOR_CONTRACT_ADDRESS = (
@@ -184,10 +186,11 @@ export const ANCHOR_CONTRACT_ADDRESS = (
     terraswap: {
       factory: addressMap.terraswapFactory as HumanAddr,
       blunaLunaPair: addressMap.bLunaLunaPair as HumanAddr,
-      ancUstPair: addressMap.ancUstPair as HumanAddr,
     },
     astroport: {
       generator: addressMap.astroportGenerator as HumanAddr,
+      astroUstPair: addressMap.astroUstPair as HumanAddr,
+      ancUstPair: addressMap.ancUstPair as HumanAddr,
     },
     cw20: {
       bLuna: addressMap.bLunaToken as CW20Addr,

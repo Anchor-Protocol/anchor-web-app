@@ -16,7 +16,9 @@ import { Section } from '@libs/neumorphism-ui/components/Section';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { AnimateNumber } from '@libs/ui';
 import big from 'big.js';
+import { useEarnApyProjectionQuery } from 'queries';
 import React, { useMemo } from 'react';
+import { EarnApyProjection } from './EarnApyProjection';
 
 export interface InterestSectionProps {
   className?: string;
@@ -32,6 +34,8 @@ export function InterestSection({ className }: InterestSectionProps) {
   const apy = useMemo(() => {
     return computeCurrentAPY(overseerEpochState, constants.blocksPerYear);
   }, [constants.blocksPerYear, overseerEpochState]);
+
+  const { data: earnApyProjection } = useEarnApyProjectionQuery();
 
   const apyChartItems = useMemo<APYChartItem[] | undefined>(() => {
     const history = apyHistory
@@ -75,6 +79,17 @@ export function InterestSection({ className }: InterestSectionProps) {
         <div className="value">
           <AnimateNumber format={formatRate}>{apy}</AnimateNumber>%
         </div>
+        <p
+          style={{ opacity: earnApyProjection !== undefined ? 1 : 0 }}
+          className="projectedValue"
+        >
+          {earnApyProjection && (
+            <EarnApyProjection
+              height={earnApyProjection.height}
+              rate={earnApyProjection.rate}
+            />
+          )}
+        </p>
         {apyChartItems && (
           <APYChart
             margin={{ top: 20, bottom: 20, left: 100, right: 100 }}

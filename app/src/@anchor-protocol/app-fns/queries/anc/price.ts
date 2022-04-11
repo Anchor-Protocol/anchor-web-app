@@ -28,7 +28,6 @@ export interface AncPriceData {
   ancPrice: AncPrice;
 }
 
-/** @deprecated use @libs/app-fns */
 export async function ancPriceQuery(
   ancUstPairAddr: HumanAddr,
   queryClient: QueryClient,

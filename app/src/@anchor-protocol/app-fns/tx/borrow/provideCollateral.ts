@@ -12,7 +12,6 @@ import {
 import {
   bAsset,
   bLuna,
-  CW20Addr,
   Gas,
   HumanAddr,
   Rate,
@@ -20,7 +19,6 @@ import {
   UST,
 } from '@anchor-protocol/types';
 import {
-  CW20TokenDisplayInfo,
   pickAttributeValue,
   pickEvent,
   pickRawLog,
@@ -45,6 +43,7 @@ import {
   MsgExecuteContract,
 } from '@terra-money/terra.js';
 import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
+import { WhitelistCollateral } from 'queries';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
 import { BorrowBorrower } from '../../queries/borrow/borrower';
@@ -52,13 +51,10 @@ import { BorrowMarket } from '../../queries/borrow/market';
 import { _fetchBorrowData } from './_fetchBorrowData';
 
 export function borrowProvideCollateralTx($: {
-  tokenDisplay?: CW20TokenDisplayInfo;
+  collateral: WhitelistCollateral;
   walletAddr: HumanAddr;
   depositAmount: bAsset;
   overseerAddr: HumanAddr;
-  bAssetTokenAddr: CW20Addr;
-  bAssetCustodyAddr: HumanAddr;
-  bAssetSymbol: string;
   gasFee: Gas;
   gasAdjustment: Rate<number>;
   fixedGas: u<UST>;
@@ -75,18 +71,17 @@ export function borrowProvideCollateralTx($: {
   onTxSucceed?: () => void;
 }): Observable<TxResultRendering> {
   const helper = new TxHelper({ ...$, txFee: $.fixedGas });
-  const collateralDecimals = $.tokenDisplay?.decimals ?? 6;
 
   return pipe(
     _createTxOptions({
       msgs: [
         // provide_collateral call
-        new MsgExecuteContract($.walletAddr, $.bAssetTokenAddr, {
+        new MsgExecuteContract($.walletAddr, $.collateral.collateral_token, {
           send: {
-            contract: $.bAssetCustodyAddr,
+            contract: $.collateral.custody_contract,
             amount: formatInput(
-              microfy($.depositAmount, collateralDecimals),
-              collateralDecimals,
+              microfy($.depositAmount, $.collateral.decimals),
+              $.collateral.decimals,
             ),
             msg: createHookMsg({
               deposit_collateral: {},
@@ -99,10 +94,10 @@ export function borrowProvideCollateralTx($: {
           lock_collateral: {
             collaterals: [
               [
-                $.bAssetTokenAddr,
+                $.collateral.collateral_token,
                 formatInput(
-                  microfy($.depositAmount, collateralDecimals),
-                  collateralDecimals,
+                  microfy($.depositAmount, $.collateral.decimals),
+                  $.collateral.decimals,
                 ),
               ],
             ],
@@ -157,9 +152,9 @@ export function borrowProvideCollateralTx($: {
             collateralizedAmount && {
               name: 'Collateralized Amount',
               value: `${formatOutput(
-                demicrofy(collateralizedAmount, collateralDecimals),
-                { decimals: collateralDecimals },
-              )} ${$.bAssetSymbol}`,
+                demicrofy(collateralizedAmount, $.collateral.decimals),
+                { decimals: $.collateral.decimals },
+              )} ${$.collateral.symbol}`,
             },
             ltv && {
               name: 'New Borrow Usage',

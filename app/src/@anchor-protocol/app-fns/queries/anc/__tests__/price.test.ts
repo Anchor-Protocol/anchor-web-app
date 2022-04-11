@@ -5,7 +5,7 @@ import { ancPriceQuery } from '../price';
 describe('queries/ancPrice', () => {
   test('should get result from query', async () => {
     const { ancPrice } = await ancPriceQuery(
-      TEST_ADDRESSES.terraswap.ancUstPair,
+      TEST_ADDRESSES.astroport.ancUstPair,
       TEST_HIVE_CLIENT,
     );
 

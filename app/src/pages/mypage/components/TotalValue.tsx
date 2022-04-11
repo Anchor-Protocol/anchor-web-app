@@ -3,7 +3,6 @@ import {
   computeTotalDeposit,
 } from '@anchor-protocol/app-fns';
 import {
-  useAncPriceQuery,
   useBAssetInfoAndBalanceTotalQuery,
   useBorrowBorrowerQuery,
   useBorrowMarketQuery,
@@ -29,6 +28,7 @@ import { fixHMR } from 'fix-hmr';
 import { computeHoldings } from 'pages/mypage/logics/computeHoldings';
 import { useRewards } from 'pages/mypage/logics/useRewards';
 import { useSendDialog } from 'pages/send/useSendDialog';
+import { useAssetPriceInUstQuery } from 'queries';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
@@ -65,7 +65,7 @@ function TotalValueBase({ className }: TotalValueProps) {
 
   const { ancUstLp, ustBorrow } = useRewards();
 
-  const { data: { ancPrice } = {} } = useAncPriceQuery();
+  const { data: ancPrice } = useAssetPriceInUstQuery('anc');
 
   const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
@@ -109,18 +109,19 @@ function TotalValueBase({ className }: TotalValueProps) {
 
     const pool =
       ancUstLp && ancPrice
-        ? (big(big(ancUstLp.poolAssets.anc).mul(ancPrice.ANCPrice)).plus(
+        ? (big(big(ancUstLp.poolAssets.anc).mul(ancPrice)).plus(
             ancUstLp.poolAssets.ust,
           ) as u<UST<Big>>)
         : ('0' as u<UST>);
+
     const farming = ancUstLp
-      ? (big(ancUstLp.stakedValue).plus(ancUstLp.rewardValue) as u<UST<Big>>)
+      ? (big(ancUstLp.stakedValue).plus(ancUstLp.rewardsAmountInUst) as u<
+          UST<Big>
+        >)
       : ('0' as u<UST>);
     const govern =
       userGovStakingInfo && ancPrice
-        ? (big(userGovStakingInfo.balance).mul(ancPrice.ANCPrice) as u<
-            UST<Big>
-          >)
+        ? (big(userGovStakingInfo.balance).mul(ancPrice) as u<UST<Big>>)
         : ('0' as u<UST>);
 
     const totalValue = sum(

@@ -9,7 +9,6 @@ import {
   useDeploymentTarget,
 } from '@anchor-protocol/app-provider';
 import styled from 'styled-components';
-import { useSwitchNetwork } from '@libs/evm-wallet/hooks/useSwitchNetwork';
 
 interface ChainListProps extends UIElementProps {
   onClose: () => void;
@@ -20,8 +19,8 @@ function ChainListBase(props: ChainListProps) {
 
   const {
     target: { chain },
+    updateTarget,
   } = useDeploymentTarget();
-  const switchNetwork = useSwitchNetwork();
 
   return (
     <ButtonList
@@ -34,7 +33,7 @@ function ChainListBase(props: ChainListProps) {
           key={target.chain}
           className="button"
           onClick={() => {
-            switchNetwork(target);
+            updateTarget(target);
             onClose();
           }}
         >

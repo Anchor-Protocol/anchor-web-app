@@ -53,7 +53,7 @@ export function useAncAncUstLpProvideTx() {
       return ancAncUstLpProvideTx({
         // fabricateTerraswapProvideLiquidityANC
         ancTokenAddr: contractAddress.cw20.ANC,
-        ancUstPairAddr: contractAddress.terraswap.ancUstPair,
+        ancUstPairAddr: contractAddress.astroport.ancUstPair,
         walletAddr: terraWalletAddress,
         ancAmount,
         ustAmount,
@@ -85,7 +85,7 @@ export function useAncAncUstLpProvideTx() {
       connectedWallet,
       ancPrice,
       contractAddress.cw20.ANC,
-      contractAddress.terraswap.ancUstPair,
+      contractAddress.astroport.ancUstPair,
       terraWalletAddress,
       tax,
       fixedFee,

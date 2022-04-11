@@ -14,7 +14,7 @@ export function useBorrowAPYQuery(): UseQueryResult<BorrowAPYData | undefined> {
     [
       ANCHOR_QUERY_KEY.BORROW_APY,
       indexerApiEndpoint,
-      contractAddress.terraswap.ancUstPair,
+      contractAddress.astroport.ancUstPair,
     ],
     queryFn,
     {

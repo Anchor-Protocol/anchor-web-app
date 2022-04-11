@@ -26,8 +26,7 @@ export interface WithdrawAssetsTxParams {
 }
 
 export const useWithdrawAssetsTx = () => {
-  const { connection, provider, address, connectType, chainId } =
-    useEvmWallet();
+  const { provider, address, connectionType, chainId } = useEvmWallet();
 
   const xAnchor = useEvmCrossAnchorSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
@@ -45,7 +44,7 @@ export const useWithdrawAssetsTx = () => {
           TX_GAS_LIMIT,
           (event) => {
             renderTxResults.next(
-              txResult(event, connectType, chainId!, TxKind.WithdrawAssets),
+              txResult(event, connectionType, chainId!, TxKind.WithdrawAssets),
             );
             txEvents.next({ event, txParams });
           },
@@ -57,7 +56,7 @@ export const useWithdrawAssetsTx = () => {
         throw error;
       }
     },
-    [xAnchor, chainId, connectType, address, refetchQueries],
+    [xAnchor, chainId, connectionType, address, refetchQueries],
   );
 
   const withdrawAssetsTx = useBackgroundTx<
@@ -65,7 +64,7 @@ export const useWithdrawAssetsTx = () => {
     WithdrawAssetsTxResult
   >(withdrawTx, parseTx, null, displayTx);
 
-  return connection && provider && connectType && chainId && address
+  return provider && connectionType && chainId && address
     ? withdrawAssetsTx
     : undefined;
 };

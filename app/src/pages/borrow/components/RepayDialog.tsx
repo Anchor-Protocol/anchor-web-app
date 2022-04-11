@@ -265,7 +265,7 @@ export const RepayDialog = styled(RepayDialogBase)`
   }
 
   .graph {
-    margin-top: 70px;
+    margin-top: 60px;
     margin-bottom: 40px;
   }
 

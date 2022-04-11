@@ -52,7 +52,7 @@ export function useAncBuyTx() {
         // fabricatebBuy
         walletAddr: terraWalletAddress,
         fromAmount,
-        ancUstPairAddr: contractAddress.terraswap.ancUstPair,
+        ancUstPairAddr: contractAddress.astroport.ancUstPair,
         beliefPrice: formatExecuteMsgNumber(
           big(ancPrice.USTPoolSize).div(ancPrice.ANCPoolSize),
         ) as UST,
@@ -81,7 +81,7 @@ export function useAncBuyTx() {
       connected,
       connectedWallet,
       ancPrice,
-      contractAddress.terraswap.ancUstPair,
+      contractAddress.astroport.ancUstPair,
       terraWalletAddress,
       tax,
       fixedFee,

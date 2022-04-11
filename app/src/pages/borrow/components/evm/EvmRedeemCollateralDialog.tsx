@@ -14,16 +14,18 @@ import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
 export const EvmRedeemCollateralDialog = (
   props: DialogProps<RedeemCollateralFormParams>,
 ) => {
-  const { token, collateralToken, tokenDisplay } = props;
+  const { collateral } = props;
 
   const { connected } = useAccount();
 
-  const erc20TokenBalance = useERC20Balance<bAsset>(token as ERC20Addr);
+  const erc20TokenBalance = useERC20Balance<bAsset>(
+    collateral.bridgedAddress as ERC20Addr,
+  );
 
-  const erc20Decimals = useERC20Decimals(token);
+  const erc20Decimals = useERC20Decimals(collateral.bridgedAddress);
 
   const uTokenBalance = erc20Decimals
-    ? normalize(erc20TokenBalance, erc20Decimals, tokenDisplay?.decimals ?? 6)
+    ? normalize(erc20TokenBalance, erc20Decimals, collateral.decimals)
     : ('0' as u<bAsset>);
 
   const redeemCollateralTx = useRedeemCollateralTx();
@@ -35,14 +37,12 @@ export const EvmRedeemCollateralDialog = (
     (amount: bAsset) => {
       if (connected && postTx) {
         postTx({
-          collateralContractEvm: token,
-          collateralContractTerra: collateralToken,
+          collateral,
           amount,
-          tokenDisplay,
         });
       }
     },
-    [connected, postTx, token, collateralToken, tokenDisplay],
+    [connected, postTx, collateral],
   );
 
   return (

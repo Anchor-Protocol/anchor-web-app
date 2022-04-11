@@ -1,9 +1,6 @@
 import { ExecuteMsg } from '@anchor-protocol/app-fns';
 import { anchorToken, Rate } from '@anchor-protocol/types';
-import {
-  useAnchorWebapp,
-  useWhitelistCollateralQuery,
-} from '@anchor-protocol/app-provider';
+import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -19,6 +16,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useWhitelistCollateralQuery } from 'queries';
 
 export function PollCreateModifyCollateralAttribute() {
   // ---------------------------------------------

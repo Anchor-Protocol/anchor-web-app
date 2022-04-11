@@ -1,23 +1,16 @@
 import { initializeConnector } from '@web3-react/core';
 import { WalletConnect } from '@web3-react/walletconnect';
-import { ConnectorData } from './types';
+import { SupportedChainRpcs } from '../constants';
 
-const [connector, hooks] = initializeConnector<WalletConnect>(
-  (actions) =>
-    new WalletConnect(actions, {
-      infuraId: process.env.INFURA_KEY, // TODO
-    }),
-);
-
-function useConnectorData(): ConnectorData {
-  return {
-    address: hooks.useAccount(),
-    chainId: hooks.useChainId(),
-    error: hooks.useError(),
-    isActivating: hooks.useIsActivating(),
-    isActive: hooks.useIsActive(),
-    provider: hooks.useProvider(),
-  };
-}
-
-export { connector, useConnectorData };
+export const [walletConnect, walletConnectHooks, walletConnectStore] =
+  initializeConnector<WalletConnect>(
+    (actions) =>
+      new WalletConnect(
+        actions,
+        {
+          rpc: SupportedChainRpcs,
+        },
+        true,
+      ),
+    Object.keys(SupportedChainRpcs).map((chainId) => Number(chainId)),
+  );

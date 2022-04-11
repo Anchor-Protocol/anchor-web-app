@@ -8,6 +8,7 @@ import { UST } from '@libs/types';
 import { useForm } from '@libs/use-form';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
+import { useWhitelistCollateralQuery } from 'queries';
 import { useAnchorWebapp } from '../../contexts/context';
 import { useBorrowBorrowerQuery } from '../../queries/borrow/borrower';
 import { useBorrowMarketQuery } from '../../queries/borrow/market';
@@ -30,13 +31,10 @@ export function useBorrowBorrowForm(
 
   const { taxRate, maxTax } = useUstTax();
 
+  const { data: whitelist = [] } = useWhitelistCollateralQuery();
+
   const {
-    data: {
-      borrowRate,
-      oraclePrices,
-      bAssetLtvs,
-      overseerWhitelist,
-    } = fallbackBorrowMarket,
+    data: { borrowRate, oraclePrices, bAssetLtvs } = fallbackBorrowMarket,
   } = useBorrowMarketQuery();
 
   const {
@@ -57,9 +55,11 @@ export function useBorrowBorrowForm(
       overseerCollaterals,
       blocksPerYear,
       marketBorrowerInfo,
-      overseerWhitelist,
+      whitelist,
       fixedFee,
     },
-    () => ({ borrowAmount: '' as UST }),
+    () => ({
+      borrowAmount: '' as UST,
+    }),
   );
 }

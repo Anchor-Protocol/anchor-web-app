@@ -1,7 +1,4 @@
-import {
-  DeploymentTarget,
-  OverseerWhitelistWithDisplay,
-} from '@anchor-protocol/app-provider';
+import { DeploymentTarget } from '@anchor-protocol/app-provider';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { u, UST } from '@libs/types';
 import { FormReturn } from '@libs/use-form';
@@ -24,6 +21,7 @@ import {
   computeBorrowLimit,
 } from '@anchor-protocol/app-fns';
 import { computebAssetLtvsAvg } from '@anchor-protocol/app-fns/logics/borrow/computebAssetLtvsAvg';
+import { WhitelistCollateral } from 'queries';
 
 export interface BorrowRepayFormInput {
   repayAmount: UST;
@@ -38,7 +36,7 @@ export interface BorrowRepayFormDependency {
   oraclePrices: moneyMarket.oracle.PricesResponse;
   borrowRate: moneyMarket.interestModel.BorrowRateResponse;
   marketState: moneyMarket.market.StateResponse;
-  overseerWhitelist: OverseerWhitelistWithDisplay;
+  whitelist: WhitelistCollateral[];
   bAssetLtvs: BAssetLtvs;
   blocksPerYear: number;
   blockHeight: number;
@@ -77,7 +75,7 @@ export const borrowRepayForm = ({
   oraclePrices,
   borrowRate,
   marketState,
-  overseerWhitelist,
+  whitelist,
   blocksPerYear,
   blockHeight,
   taxRate,
@@ -139,8 +137,8 @@ export const borrowRepayForm = ({
     const estimatedLiquidationPrice = nextLtv
       ? computeEstimateLiquidationPrice(
           nextLtv,
-          overseerWhitelist,
-          overseerCollaterals,
+          whitelist,
+          overseerCollaterals.collaterals,
           oraclePrices,
         )
       : null;

@@ -5,7 +5,7 @@ import {
 import { createContext, useContext } from 'react';
 
 export const BalancesContext = createContext<AnchorBalances>(
-  DefaultAnchorBalances,
+  DefaultAnchorBalances as AnchorBalances,
 );
 
 const useBalances = (): AnchorBalances => {

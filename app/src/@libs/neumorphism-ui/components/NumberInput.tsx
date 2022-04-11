@@ -1,12 +1,11 @@
-import { TextFieldProps } from '@material-ui/core';
 import {
   RestrictedNumberInputParams,
   useRestrictedNumberInput,
 } from '@libs/use-restricted-input';
 import React from 'react';
-import { TextInput } from './TextInput';
+import { TextInput, TextInputProps } from './TextInput';
 
-export type NumberInputProps = Omit<TextFieldProps, 'type'> &
+export type NumberInputProps = Omit<TextInputProps, 'type'> &
   RestrictedNumberInputParams;
 
 export function NumberInput({
@@ -16,6 +15,7 @@ export function NumberInput({
   onChange,
   inputMode = type === 'decimal' ? 'decimal' : 'numeric',
   pattern = '[0-9.]*',
+  disableBorder,
   ...props
 }: NumberInputProps) {
   const handlers = useRestrictedNumberInput({
@@ -27,6 +27,7 @@ export function NumberInput({
   return (
     <TextInput
       {...props}
+      disableBorder={disableBorder}
       type="text"
       inputProps={{
         inputMode,

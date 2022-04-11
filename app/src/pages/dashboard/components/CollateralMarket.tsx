@@ -1,7 +1,4 @@
-import {
-  useMarketCollateralsQuery,
-  useWhitelistCollateralQuery,
-} from '@anchor-protocol/app-provider';
+import { useMarketCollateralsQuery } from '@anchor-protocol/app-provider';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
 import { formatRate } from '@libs/formatter';
 import { Section } from '@libs/neumorphism-ui/components/Section';
@@ -14,6 +11,7 @@ import { useTheme } from 'styled-components';
 import { CollateralsChart } from './CollateralsChart';
 import { CollateralMarketTable } from './CollateralMarketTable';
 import { findPrevDay } from './internal/axisUtils';
+import { useWhitelistCollateralQuery } from 'queries';
 
 function CollateralMarketBase(props: UIElementProps) {
   const { className, isMobile } = props;
@@ -21,6 +19,7 @@ function CollateralMarketBase(props: UIElementProps) {
   const theme = useTheme();
 
   const { data: whitelistCollateral = [] } = useWhitelistCollateralQuery();
+
   const { data: marketCollaterals } = useMarketCollateralsQuery();
 
   const collaterals = useMemo(() => {

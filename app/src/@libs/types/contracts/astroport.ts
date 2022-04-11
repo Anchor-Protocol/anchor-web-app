@@ -1,5 +1,5 @@
 import { CW20Addr, HumanAddr } from '../addrs';
-import { Astro, Token, u } from '../tokens';
+import { Astro, Token, u, LP, rs } from '@libs/types';
 
 export namespace astroport {
   export namespace QueryMsg {
@@ -25,6 +25,19 @@ export namespace astroport {
 
       // staking rewards
       pending_on_proxy: u<T>;
+    }
+
+    export interface Pool {
+      pool: {};
+    }
+
+    interface PoolAsset {
+      amount: u<LP<rs.Uint128>>;
+    }
+
+    export interface PoolResponse {
+      total_share: u<LP<rs.Uint128>>;
+      assets: [PoolAsset, PoolAsset];
     }
   }
 }
