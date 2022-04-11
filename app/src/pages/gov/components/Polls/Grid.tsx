@@ -11,6 +11,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { PollGraph } from './PollGraph';
 import { PollList } from './types';
+import { useEstimatedBlockTime } from 'queries/useEstimatedBlockTime';
 
 export interface GridProps extends PollList {
   className?: string;
@@ -28,8 +29,14 @@ function GridBase({
 }: GridProps) {
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
 
+  const blockTime = useEstimatedBlockTime();
+
   const pollDetails = useMemo(() => {
-    return govANCBalance && govState && govConfig && lastSyncedHeight
+    return govANCBalance &&
+      govState &&
+      govConfig &&
+      lastSyncedHeight &&
+      blockTime
       ? polls.map((poll) => {
           return extractPollDetail(
             poll,
@@ -37,55 +44,78 @@ function GridBase({
             govState,
             govConfig,
             lastSyncedHeight,
+            blockTime,
           );
         })
       : [];
-  }, [govANCBalance, govConfig, govState, lastSyncedHeight, polls]);
+  }, [govANCBalance, govConfig, govState, lastSyncedHeight, polls, blockTime]);
 
   return (
     <div className={className}>
       <div className="grid">
-        {pollDetails.map(({ poll, vote, type, baseline, endsIn }) => (
-          <Section key={'grid' + poll.id} onClick={() => onClick(poll)}>
-            <div className="poll-id">
-              <span>ID: {poll.id}</span>
-              <span>{type}</span>
-            </div>
+        {pollDetails.map(
+          ({ poll, vote, type, baseline, endsIn, executionAt }) => (
+            <Section key={'grid' + poll.id} onClick={() => onClick(poll)}>
+              <div className="poll-id">
+                <span>ID: {poll.id}</span>
+                <span>{type}</span>
+              </div>
 
-            <div className="poll-status">
-              <PollStatusSpan status={poll.status} endsIn={endsIn}>
-                {pollStatusLabels[poll.status]}
-              </PollStatusSpan>
-            </div>
+              <div className="poll-status">
+                <PollStatusSpan status={poll.status} endsIn={endsIn}>
+                  {pollStatusLabels[poll.status]}
+                </PollStatusSpan>
+              </div>
 
-            <h2>{poll.title}</h2>
+              <h2>{poll.title}</h2>
 
-            <PollGraph
-              total={vote.total}
-              yes={vote.yes}
-              no={vote.no}
-              baseline={baseline.value}
-              baselineLabel={baseline.label}
-            />
+              <PollGraph
+                total={vote.total}
+                yes={vote.yes}
+                no={vote.no}
+                baseline={baseline.value}
+                baselineLabel={baseline.label}
+              />
 
-            <div className="poll-ends-in">
-              <IconSpan>
-                <b>Estimated end time</b>{' '}
-                <time>
-                  {endsIn.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                  {', '}
-                  {endsIn.toLocaleTimeString('en-US')}
-                </time>{' '}
-                <Schedule /> <TimeEnd endTime={endsIn} />
-              </IconSpan>
-            </div>
-          </Section>
-        ))}
+              {poll.status === 'in_progress' && (
+                <div className="poll-timing">
+                  <IconSpan>
+                    <b>Estimated end time</b>{' '}
+                    <time>
+                      {endsIn.toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                      {', '}
+                      {endsIn.toLocaleTimeString('en-US')}
+                    </time>{' '}
+                    <Schedule /> <TimeEnd endTime={endsIn} />
+                  </IconSpan>
+                </div>
+              )}
+
+              {poll.status === 'executed' && (
+                <div className="poll-timing">
+                  <IconSpan>
+                    <b>Executed at</b>{' '}
+                    <time>
+                      {executionAt.toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                      {', '}
+                      {endsIn.toLocaleTimeString('en-US')}
+                    </time>{' '}
+                  </IconSpan>
+                </div>
+              )}
+            </Section>
+          ),
+        )}
       </div>
 
       {!isLast && (
@@ -136,7 +166,7 @@ export const Grid = styled(GridBase)`
     margin-bottom: 25px;
   }
 
-  .poll-ends-in {
+  .poll-timing {
     margin-top: 60px;
 
     font-size: 13px;
