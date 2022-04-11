@@ -37,6 +37,7 @@ import {
 import { RewardsAncGovernance } from 'pages/trade/rewards.anc-governance';
 import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
+import { VotingMain } from 'pages/voting/main';
 import { TerraAppProviders } from 'providers/terra/TerraAppProviders';
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
@@ -138,6 +139,9 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
               path={`/claim/${ustBorrowPathname}`}
               element={<ClaimUstBorrow />}
             />
+
+            <Route path={`/voting/`} element={<VotingMain />} />
+
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/terms" element={<TermsOfService />} />
 
