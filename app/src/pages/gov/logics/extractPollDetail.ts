@@ -73,13 +73,12 @@ export function extractPollDetail(
 
   const now = Date.now();
 
-  const endsIn: Date = new Date(
-    now + (poll.end_height - currentHeight) * blockTime,
-  );
+  const endsInHeight = poll.end_height - currentHeight;
 
-  console.log(blockTime);
+  const endsIn: Date = new Date(now + endsInHeight * blockTime);
+
   const executionAt: Date = new Date(
-    now + (govConfig.timelock_period - currentHeight) * blockTime,
+    now + (endsInHeight + govConfig.timelock_period) * blockTime,
   );
 
   let msgs: anchorToken.gov.ParsedExecuteMsg[] | null = null;

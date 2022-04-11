@@ -17,6 +17,14 @@ export interface GridProps extends PollList {
   className?: string;
 }
 
+const formatDate = (date: Date): string =>
+  `${date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })} ${date.toLocaleTimeString('en-US')}`;
+
 function GridBase({
   className,
   isLast,
@@ -80,17 +88,7 @@ function GridBase({
               {poll.status === 'in_progress' && (
                 <div className="poll-timing">
                   <IconSpan>
-                    <b>Estimated end time</b>{' '}
-                    <time>
-                      {endsIn.toLocaleDateString('en-US', {
-                        weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                      {', '}
-                      {endsIn.toLocaleTimeString('en-US')}
-                    </time>{' '}
+                    <b>Estimated end time</b> <time>{formatDate(endsIn)}</time>{' '}
                     <Schedule /> <TimeEnd endTime={endsIn} />
                   </IconSpan>
                 </div>
@@ -99,19 +97,24 @@ function GridBase({
               {poll.status === 'executed' && (
                 <div className="poll-timing">
                   <IconSpan>
-                    <b>Executed at</b>{' '}
-                    <time>
-                      {executionAt.toLocaleDateString('en-US', {
-                        weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                      {', '}
-                      {endsIn.toLocaleTimeString('en-US')}
-                    </time>{' '}
+                    <b>Executed at</b> <time>{formatDate(executionAt)}</time>
                   </IconSpan>
                 </div>
+              )}
+
+              {poll.status === 'passed' && (
+                <>
+                  <div className="poll-timing">
+                    <IconSpan>
+                      <b>End time</b> <time>{formatDate(endsIn)}</time>
+                    </IconSpan>
+                    <IconSpan>
+                      <b>Estimated execution time</b>{' '}
+                      <time>{formatDate(executionAt)}</time> <Schedule />{' '}
+                      <TimeEnd endTime={executionAt} />
+                    </IconSpan>
+                  </div>
+                </>
               )}
             </Section>
           ),
@@ -171,6 +174,10 @@ export const Grid = styled(GridBase)`
 
     font-size: 13px;
     color: ${({ theme }) => theme.dimTextColor};
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
     svg {
       margin: 0 5px 0 10px;
