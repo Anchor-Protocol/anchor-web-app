@@ -1,6 +1,6 @@
 import { Transaction } from '../storage';
 import { TxActor } from './actor';
-import { TxReservations } from './reservation';
+import { TxReservations } from './reservations';
 import {
   BACKGROUND_TRANSCATION_TAB_ID,
   TxAction,
@@ -36,11 +36,7 @@ export class TxManager {
   // - on new "main" transactions
   //   - create actor (assume reserved by default)
   public async trackStoredTx(tx: Transaction) {
-    if (
-      !this.contains(tx.txHash) &&
-      !this.reservations.contains(tx) &&
-      !tx.backgroundTransactionTabId
-    ) {
+    if (this.canReserve(tx)) {
       this.reservations.add(tx);
       const reserved = await this.reservations.get(tx).take();
 
@@ -56,12 +52,7 @@ export class TxManager {
       return;
     }
 
-    if (
-      !this.contains(tx.txHash) &&
-      this.reservations.contains(tx) &&
-      tx.backgroundTransactionTabId &&
-      tx.backgroundTransactionTabId !== BACKGROUND_TRANSCATION_TAB_ID
-    ) {
+    if (this.alreadyReserved(tx)) {
       this.reservations.get(tx).free();
       this.reservations.remove(tx);
     }
@@ -90,5 +81,23 @@ export class TxManager {
 
   public clear(actor: TxActor) {
     this.actors = this.actors.filter((a) => a !== actor);
+  }
+
+  // private functions
+  private canReserve(tx: Transaction) {
+    return (
+      !this.contains(tx.txHash) &&
+      !this.reservations.contains(tx) &&
+      !tx.backgroundTransactionTabId
+    );
+  }
+
+  private alreadyReserved(tx: Transaction) {
+    return (
+      !this.contains(tx.txHash) &&
+      this.reservations.contains(tx) &&
+      tx.backgroundTransactionTabId &&
+      tx.backgroundTransactionTabId !== BACKGROUND_TRANSCATION_TAB_ID
+    );
   }
 }
