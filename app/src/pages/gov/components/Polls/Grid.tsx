@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import { PollGraph } from './PollGraph';
 import { PollList } from './types';
 import { useEstimatedBlockTime } from 'queries/useEstimatedBlockTime';
+import { format } from 'date-fns';
 
 export interface GridProps extends PollList {
   className?: string;
@@ -23,8 +24,7 @@ const formatDate = (date: Date): string =>
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-    timeZoneName: 'short',
-  })} ${date.toLocaleTimeString('en-US')}`;
+  })} ${date.toLocaleTimeString('en-US')} ${format(date, 'z')}`;
 
 function GridBase({
   className,
