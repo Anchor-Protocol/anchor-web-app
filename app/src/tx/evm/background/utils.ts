@@ -1,6 +1,5 @@
 import {
   CrossChainEvent,
-  CrossChainEventKind,
   CrossChainTxResponse,
 } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
@@ -32,33 +31,4 @@ export type TxHandlers = {
   >;
   refetch: RefCallback<(kind: TxKind) => void>;
   pushNotification: RefCallback<(tx: Transaction) => void>;
-};
-
-export enum TxType {
-  OneWay,
-  TwoWay,
-}
-
-export const txType = (tx: Transaction) => {
-  switch (tx.display.txKind) {
-    case TxKind.BorrowUst:
-    case TxKind.DepositUst:
-    case TxKind.RedeemCollateral:
-    case TxKind.WithdrawAssets:
-    case TxKind.WithdrawUst:
-      return TxType.TwoWay;
-    default:
-      return TxType.OneWay;
-  }
-};
-
-export const isTxCompleted = (
-  txType: TxType,
-  eventKind: CrossChainEventKind,
-) => {
-  if (txType === TxType.TwoWay) {
-    return eventKind === CrossChainEventKind.CrossChainTxCompleted;
-  }
-
-  return eventKind === CrossChainEventKind.OutgoingSequenceRetrieved;
 };
