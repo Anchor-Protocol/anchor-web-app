@@ -119,7 +119,7 @@
   },
   "devDependencies": {
     "@originjs/vite-plugin-commonjs": "^1.0.2",
-    "@peculiar/webcrypto": "^1.2.3",
+    "@peculiar/webcrypto": "^1.3.1",
     "@ssen/jest-transform": "^3.0.0",
     "@storybook/addon-actions": "^6.3.4",
     "@storybook/addon-essentials": "^6.3.4",
