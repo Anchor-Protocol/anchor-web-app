@@ -1,8 +1,9 @@
 {
-  "name": "@anchor-web-app/app",
-  "version": "0.1.0",
-  "license": "Apache-2.0",
+  "name": "@anchor-protocol/web-app",
+  "version": "1.0.0",
+  "license": "MIT",
   "private": true,
+  "author": "Anchor Protocol <info@anchorprotocol.com>",
   "scripts": {
     "app:dev": "VITE_APP_VERSION=$(git rev-parse --short HEAD) && vite",
     "app:dev:browser": "HTTPS=true PORT=3000 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts",

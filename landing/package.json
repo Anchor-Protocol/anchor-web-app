@@ -1,8 +1,9 @@
 {
-  "name": "@anchor-web-app/landing",
-  "version": "0.1.0",
-  "license": "Apache-2.0",
+  "name": "@anchor-protocol/web-landing",
+  "version": "1.0.0",
+  "license": "MIT",
   "private": true,
+  "author": "Anchor Protocol <info@anchorprotocol.com>",
   "scripts": {
     "app:start": "HTTPS=true SSL_CRT_FILE=$LOCALHOST_HTTPS_CERT SSL_KEY_FILE=$LOCALHOST_HTTPS_KEY PORT=9434 BROWSER=none yarn run react-app-rewired start",
     "app:start:puppeteer": "HTTPS=true PORT=9434 TS_NODE_PROJECT=tsconfig.script.json node -r ts-node/register -r tsconfig-paths/register scripts/start.ts",

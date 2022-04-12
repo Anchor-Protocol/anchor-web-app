@@ -1,28 +1,28 @@
 {
-  "version": "0.1.0",
-  "license": "Apache-2.0",
+  "version": "1.0.0",
+  "license": "MIT",
   "private": true,
-  "repository": "github:anchor-protocol/anchor-web-app",
+  "repository": "github:anchor-protocol/web-app",
   "author": "Anchor Protocol <info@anchorprotocol.com>",
   "workspaces": [
     "app",
     "landing"
   ],
   "scripts": {
-    "app:build": "yarn workspace @anchor-web-app/app run build",
-    "app:build-storybook": "yarn workspace @anchor-web-app/app run build-storybook",
-    "app:coverage": "yarn workspace @anchor-web-app/app run coverage",
-    "app:pack": "yarn workspace @anchor-web-app/app run pack",
-    "app:publish": "yarn workspace @anchor-web-app/app run publish",
-    "app:start": "yarn workspace @anchor-web-app/app run start",
-    "app:storybook": "yarn workspace @anchor-web-app/app run storybook",
-    "app:test": "yarn workspace @anchor-web-app/app run test",
+    "app:build": "yarn workspace @anchor-protocol/web-app run build",
+    "app:build-storybook": "yarn workspace @anchor-protocol/web-app run build-storybook",
+    "app:coverage": "yarn workspace @anchor-protocol/web-app run coverage",
+    "app:pack": "yarn workspace @anchor-protocol/web-app run pack",
+    "app:publish": "yarn workspace @anchor-protocol/web-app run publish",
+    "app:start": "yarn workspace @anchor-protocol/web-app run start",
+    "app:storybook": "yarn workspace @anchor-protocol/web-app run storybook",
+    "app:test": "yarn workspace @anchor-protocol/web-app run test",
     "format": "prettier --write \"**/*.{js,ts,tsx}\"",
     "graphql:download-schema": "apollo client:download-schema --endpoint \"https://bombay-mantle.terra.dev\" \"schema.graphql\"",
-    "landing:build": "yarn workspace @anchor-web-app/landing run build",
-    "landing:coverage": "yarn workspace @anchor-web-app/landing run coverage",
-    "landing:start": "yarn workspace @anchor-web-app/landing run start",
-    "landing:test": "yarn workspace @anchor-web-app/landing run test",
+    "landing:build": "yarn workspace @anchor-protocol/web-landing run build",
+    "landing:coverage": "yarn workspace @anchor-protocol/web-landing run coverage",
+    "landing:start": "yarn workspace @anchor-protocol/web-landing run start",
+    "landing:test": "yarn workspace @anchor-protocol/web-landing run test",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "markdown:build": "markdown-source-import **/src/**/*.md",
     "postinstall": "husky install"
@@ -38,6 +38,9 @@
     "babel-loader": "8.1.0",
     "webpack": "4.44.2",
     "@terra-money/terra.js": "3.0.2"
+  },
+  "peerDependencies": {
+    "eslint-config-react-app": "6.0.0"
   },
   "devDependencies": {
     "@handbook/markdown-source-import": "^1.1.0",
