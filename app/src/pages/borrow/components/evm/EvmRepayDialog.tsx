@@ -12,7 +12,7 @@ export const EvmRepayDialog = (props: DialogProps<RepayFormParams>) => {
   const { connected } = useAccount();
 
   const repayUstTx = useRepayUstTx();
-  const { isTxMinimizable, minimize } = repayUstTx?.utils ?? {};
+  const { minimizable, minimize } = repayUstTx ?? {};
   const [postTx, txResult] = repayUstTx?.stream ?? [null, null];
 
   const proceed = useCallback(
@@ -34,7 +34,7 @@ export const EvmRepayDialog = (props: DialogProps<RepayFormParams>) => {
         <EvmTxResultRenderer
           onExit={props.closeDialog}
           txStreamResult={txResult}
-          minimizable={isTxMinimizable}
+          minimizable={minimizable}
           onMinimize={minimize}
         />
       }
