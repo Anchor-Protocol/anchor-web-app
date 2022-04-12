@@ -6,6 +6,7 @@ import { TimeEnd } from '@libs/use-time-end';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
 import { PollStatusSpan } from 'pages/gov/components/PollStatusSpan';
 import { extractPollDetail } from 'pages/gov/logics/extractPollDetail';
+import { useEstimatedBlockTime } from 'queries/useEstimatedBlockTime';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { PollTinyGraph } from './PollTinyGraph';
@@ -26,9 +27,14 @@ function ListBase({
   onLoadMore,
 }: ListProps) {
   const { data: lastSyncedHeight = 0 } = useLastSyncedHeightQuery();
+  const blockTime = useEstimatedBlockTime();
 
   const pollDetails = useMemo(() => {
-    return govANCBalance && govState && govConfig && lastSyncedHeight
+    return govANCBalance &&
+      govState &&
+      govConfig &&
+      lastSyncedHeight &&
+      blockTime
       ? polls.map((poll) =>
           extractPollDetail(
             poll,
@@ -36,10 +42,11 @@ function ListBase({
             govState,
             govConfig,
             lastSyncedHeight,
+            blockTime,
           ),
         )
       : [];
-  }, [govANCBalance, govConfig, govState, lastSyncedHeight, polls]);
+  }, [govANCBalance, govConfig, govState, lastSyncedHeight, polls, blockTime]);
 
   return (
     <Section className={className}>

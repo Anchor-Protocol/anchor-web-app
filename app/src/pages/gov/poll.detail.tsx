@@ -40,6 +40,7 @@ import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { UIElementProps } from '@libs/ui';
+import { useEstimatedBlockTime } from 'queries/useEstimatedBlockTime';
 
 function PollDetailBase({ className }: UIElementProps) {
   const {
@@ -72,17 +73,25 @@ function PollDetailBase({ className }: UIElementProps) {
 
   const [openCodeViewer, codeViewerElement] = useCodeViewerDialog();
 
+  const blockTime = useEstimatedBlockTime();
+
   const pollDetail = useMemo(() => {
-    return poll && govANCBalance && govState && govConfig && lastSyncedHeight
+    return poll &&
+      govANCBalance &&
+      govState &&
+      govConfig &&
+      lastSyncedHeight &&
+      blockTime
       ? extractPollDetail(
           poll,
           govANCBalance,
           govState,
           govConfig,
           lastSyncedHeight,
+          blockTime,
         )
       : undefined;
-  }, [govANCBalance, govConfig, govState, lastSyncedHeight, poll]);
+  }, [govANCBalance, govConfig, govState, lastSyncedHeight, poll, blockTime]);
 
   if (!pollDetail) {
     return null;

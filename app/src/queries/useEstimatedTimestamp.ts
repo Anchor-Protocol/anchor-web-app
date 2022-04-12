@@ -1,27 +1,18 @@
-import { useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { useLastSyncedBlock } from './useLastSyncedBlock';
-import { millisecondsInHour, getDaysInYear } from 'date-fns';
-
-const hoursInDay = 24;
+import { useEstimatedBlockTime } from './useEstimatedBlockTime';
+import { useBlockQuery } from 'queries';
 
 export const useEstimatedTimestamp = (
   blockHeight: number,
 ): number | undefined => {
-  const {
-    constants: { blocksPerYear },
-  } = useAnchorWebapp();
+  const blockTime = useEstimatedBlockTime();
+  const { data: lastSyncedBlock } = useBlockQuery('latest');
 
-  const { data: lastSyncedBlock } = useLastSyncedBlock();
-  if (lastSyncedBlock === undefined) {
+  if (blockTime === undefined || lastSyncedBlock === undefined) {
     return;
   }
 
-  const daysInYear = getDaysInYear(new Date());
-  const millisecondsInYear = daysInYear * millisecondsInHour * hoursInDay;
-
   return (
     lastSyncedBlock.timestamp +
-    (blockHeight - lastSyncedBlock.height) *
-      (millisecondsInYear / blocksPerYear)
+    (blockHeight - lastSyncedBlock.height) * blockTime
   );
 };

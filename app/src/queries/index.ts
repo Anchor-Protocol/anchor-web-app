@@ -5,7 +5,7 @@ export * from './collateral/useWhitelistCollateralQuery';
 export * from './collateral/useWhitelistCollateralByTokenAddrQuery';
 export * from './erc20/useERC20TokenQuery';
 export * from './earn/useEarnApyProjectionQuery';
-export * from './useLastSyncedBlock';
+export * from './useBlockQuery';
 export * from './useEstimatedTimestamp';
 export * from './evm/useEvmTerraAddressQuery';
 export * from './evm/useEvmBlockNumberQuery';
