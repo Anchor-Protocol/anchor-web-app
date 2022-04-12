@@ -21,13 +21,20 @@ import {
   walletConnectStore,
 } from '../connectors/walletConnect';
 import { empty, emptyHooks, emptyStore } from '../connectors/empty';
+import {
+  ReadOnly,
+  readOnly,
+  readOnlyHooks,
+  readOnlyStore,
+} from '../connectors/readOnly';
 
 const connectors: [
-  Empty | MetaMask | WalletConnect,
+  Empty | ReadOnly | MetaMask | WalletConnect,
   Web3ReactHooks,
   Web3ReactStore,
 ][] = [
   [empty, emptyHooks, emptyStore],
+  [readOnly, readOnlyHooks, readOnlyStore],
   [metaMask, metaMaskHooks, metaMaskStore],
   [walletConnect, walletConnectHooks, walletConnectStore],
 ];

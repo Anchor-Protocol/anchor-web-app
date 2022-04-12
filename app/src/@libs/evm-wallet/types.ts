@@ -1,5 +1,6 @@
 export enum ConnectType {
   None = 'None',
+  ReadOnly = 'ReadOnly',
   MetaMask = 'MetaMask',
   WalletConnect = 'WalletConnect',
 }
