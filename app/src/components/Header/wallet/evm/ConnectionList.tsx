@@ -1,10 +1,10 @@
 import React from 'react';
-import { useEvmWallet } from '@libs/evm-wallet';
+import { ConnectType, useEvmWallet } from '@libs/evm-wallet';
 import { FlatButton } from '@libs/neumorphism-ui/components/FlatButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { ConnectionTypeList } from 'components/Header/desktop/ConnectionTypeList';
-import { TermsMessage } from 'components/Header/desktop/TermsMessage';
 import { useWeb3React } from '@libs/evm-wallet';
+import { Footer } from './Footer';
 
 interface ConnectionListProps {
   onClose: () => void;
@@ -15,10 +15,21 @@ const ConnectionList = (props: ConnectionListProps) => {
 
   const { connect } = useWeb3React();
 
-  const { availableConnections } = useEvmWallet();
+  const { availableConnections, availableConnectTypes } = useEvmWallet();
+
+  console.log(availableConnections);
 
   return (
-    <ConnectionTypeList footer={<TermsMessage />}>
+    <ConnectionTypeList
+      footer={
+        <Footer
+          onClose={onClose}
+          includesReadonly={availableConnectTypes.includes(
+            ConnectType.ReadOnly,
+          )}
+        />
+      }
+    >
       {availableConnections.map(({ icon, name, type }) => (
         <FlatButton
           key={type}

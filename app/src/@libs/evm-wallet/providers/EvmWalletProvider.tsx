@@ -83,7 +83,11 @@ function WalletProvider({ children }: UIElementProps) {
       activate,
       watchAsset,
       connectionType,
-      availableConnectTypes: [ConnectType.MetaMask, ConnectType.WalletConnect],
+      availableConnectTypes: [
+        ConnectType.MetaMask,
+        ConnectType.WalletConnect,
+        ConnectType.ReadOnly,
+      ],
       availableConnections: AvailableConnections,
       connection,
       address: account,
