@@ -23,6 +23,7 @@ const formatDate = (date: Date): string =>
     year: 'numeric',
     month: 'short',
     day: 'numeric',
+    timeZoneName: 'short',
   })} ${date.toLocaleTimeString('en-US')}`;
 
 function GridBase({
