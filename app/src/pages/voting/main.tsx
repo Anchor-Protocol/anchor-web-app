@@ -4,6 +4,8 @@ import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { links } from 'env';
 import React from 'react';
 import styled from 'styled-components';
+import { Gauges } from './components/Gauges';
+import { Overview } from './components/Overview';
 
 function VotingMainBase(props: UIElementProps) {
   const { className } = props;
@@ -12,8 +14,8 @@ function VotingMainBase(props: UIElementProps) {
       <TitleContainer>
         <PageTitle title="VOTING" docs={links.docs.voting} />
       </TitleContainer>
-      {/* <Overview className="overview" />
-      <Polls className="polls" /> */}
+      <Overview className="overview" />
+      <Gauges className="gauges" />
     </PaddedLayout>
   );
 }

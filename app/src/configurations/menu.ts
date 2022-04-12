@@ -36,6 +36,11 @@ const govern: RouteMenu = {
   title: 'GOVERN',
 };
 
+const voting: RouteMenu = {
+  to: `/voting`,
+  title: 'VOTING',
+};
+
 const useMenus = (): RouteMenu[] => {
   const {
     target: { isEVM },
@@ -44,7 +49,7 @@ const useMenus = (): RouteMenu[] => {
     if (isEVM) {
       return [dashboard, myPage, earn, borrow, govern];
     }
-    return [dashboard, myPage, earn, borrow, bAsset, govern];
+    return [dashboard, myPage, earn, borrow, bAsset, govern, voting];
   }, [isEVM]);
 };
 
