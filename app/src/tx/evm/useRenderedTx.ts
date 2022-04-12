@@ -4,9 +4,12 @@ import { merge, from, map, BehaviorSubject, Subject } from 'rxjs';
 import { useCallback, useMemo } from 'react';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { truncateEvm } from '@libs/formatter';
-import { catchTxError } from './catchTxError';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { CrossChainEvent } from '@anchor-protocol/crossanchor-sdk';
+import {
+  CrossChainEvent,
+  CrossChainTxResponse,
+} from '@anchor-protocol/crossanchor-sdk';
+import { catchTxError } from './catchTxError';
 
 export type TxEventHandler<TxParams> = (
   event: CrossChainEvent<ContractReceipt>,
@@ -18,22 +21,22 @@ export type TxEvent<TxParams> = {
   txParams: TxParams;
 };
 
-export const useTx = <TxParams, TxResult>(
+export type RenderedTxResult<TxParams> = {
+  stream: StreamReturn<TxParams, TxResultRendering<ContractReceipt>>;
+  renderTxResults: Subject<TxResultRendering<ContractReceipt | null>>;
+};
+
+export const useRenderedTx = <TxParams>(
   sendTx: (
     txParams: TxParams,
-    renderTxResults: Subject<TxResultRendering<TxResult>>,
-    txEvents: Subject<TxEvent<TxParams>>,
-  ) => Promise<TxResult | null>,
-  parseTx: (txResult: NonNullable<TxResult>) => ContractReceipt,
-  emptyTxResult: TxResult,
-): StreamReturn<TxParams, TxResultRendering<TxResult>> => {
+  ) => Promise<CrossChainTxResponse<ContractReceipt> | null>,
+  emptyTxResult: ContractReceipt | null = null,
+): RenderedTxResult<TxParams> => {
   const { txErrorReporter } = useAnchorWebapp();
 
-  // TODO: represent renderingEvents stream as txEvents.map(render) and remove the need for two subjects
-  const txEvents = useMemo(() => new Subject<TxEvent<TxParams>>(), []);
   const renderingEvents = useMemo(
     () =>
-      new BehaviorSubject<TxResultRendering<TxResult>>({
+      new BehaviorSubject<TxResultRendering<ContractReceipt | null>>({
         value: emptyTxResult,
         message: 'Processing transaction...',
         phase: TxStreamPhase.BROADCAST,
@@ -45,33 +48,39 @@ export const useTx = <TxParams, TxResult>(
   const txCallback = useCallback(
     (txParams: TxParams) => {
       return merge(
-        from(sendTx(txParams, renderingEvents, txEvents))
+        from(sendTx(txParams))
           .pipe(
             map((txResult) => {
               renderingEvents.complete();
-              txEvents.complete();
 
               return {
                 value: txResult,
                 phase: TxStreamPhase.SUCCEED,
-                receipts: Boolean(txResult)
-                  ? [txReceipt(parseTx(txResult!))]
-                  : [],
+                receipts: Boolean(txResult) ? [txReceipt(txResult!.tx)] : [],
               };
             }),
           )
-          .pipe(catchTxError<TxResult | null>({ txErrorReporter })),
+          .pipe(
+            catchTxError<CrossChainTxResponse<ContractReceipt> | null>({
+              txErrorReporter,
+            }),
+          ),
         renderingEvents,
       );
     },
-    [sendTx, parseTx, txErrorReporter, renderingEvents, txEvents],
+    [sendTx, txErrorReporter, renderingEvents],
   );
 
   const [fetch, result] = useStream(txCallback);
   const txStreamResult = useMemo(
-    () =>
-      [fetch, result] as StreamReturn<TxParams, TxResultRendering<TxResult>>,
-    [fetch, result],
+    () => ({
+      stream: [fetch, result] as StreamReturn<
+        TxParams,
+        TxResultRendering<ContractReceipt>
+      >,
+      renderTxResults: renderingEvents,
+    }),
+    [fetch, result, renderingEvents],
   );
 
   return txStreamResult;

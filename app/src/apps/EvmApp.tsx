@@ -11,7 +11,6 @@ import { Restore } from 'pages/bridge/restore';
 import { Mypage } from 'pages/mypage';
 import { ClaimAll } from 'pages/trade/claim.all';
 import '../configurations/chartjs';
-import { BackgroundTransactions } from 'components/Header/transactions/BackgroundTransactions';
 import { PollDetail } from 'pages/gov/poll.detail';
 import { GovernanceMain } from 'pages/gov/main';
 
@@ -33,7 +32,6 @@ export function EvmApp() {
           <Route path="/claim/all" element={<ClaimAll />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        <BackgroundTransactions />
       </div>
     </EvmAppProviders>
   );

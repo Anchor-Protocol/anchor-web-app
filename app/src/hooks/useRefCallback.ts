@@ -1,9 +1,12 @@
+import { NominalType } from '@anchor-protocol/crossanchor-sdk';
 import { DependencyList, useEffect, useMemo, useRef } from 'react';
+
+export type RefCallback<T> = T & NominalType<'RefCallback'>;
 
 export const useRefCallback = <T extends (...args: any[]) => any>(
   callback: T,
   deps: DependencyList,
-): T => {
+): RefCallback<T> => {
   const ref = useRef(callback);
 
   useEffect(() => {
@@ -16,7 +19,7 @@ export const useRefCallback = <T extends (...args: any[]) => any>(
       ((...args) => {
         const fn = ref.current;
         return fn(...args);
-      }) as T,
+      }) as RefCallback<T>,
     [ref],
   );
 };

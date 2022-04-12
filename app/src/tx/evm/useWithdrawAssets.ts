@@ -1,23 +1,10 @@
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
-import { TxResultRendering } from '@libs/app-fns';
-import { useRefetchQueries } from '@libs/app-provider';
+import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
-import { Subject } from 'rxjs';
 import { useBackgroundTx } from './useBackgroundTx';
-import { TxEvent } from './useTx';
-import {
-  EVM_ANCHOR_TX_REFETCH_MAP,
-  refetchQueryByTxKind,
-  TxKind,
-  txResult,
-  TX_GAS_LIMIT,
-} from './utils';
-
-type WithdrawAssetsTxResult = TwoWayTxResponse<ContractReceipt> | null;
-type WithdrawAssetsTxRender = TxResultRendering<WithdrawAssetsTxResult>;
+import { TxKind, TX_GAS_LIMIT } from './utils';
 
 export interface WithdrawAssetsTxParams {
   tokenContract: string;
@@ -27,15 +14,12 @@ export interface WithdrawAssetsTxParams {
 
 export const useWithdrawAssetsTx = () => {
   const { provider, address, connectionType, chainId } = useEvmWallet();
-
   const xAnchor = useEvmCrossAnchorSdk();
-  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const withdrawTx = useCallback(
     async (
       txParams: WithdrawAssetsTxParams,
-      renderTxResults: Subject<WithdrawAssetsTxRender>,
-      txEvents: Subject<TxEvent<WithdrawAssetsTxParams>>,
+      handleEvent: CrossChainEventHandler<ContractReceipt>,
     ) => {
       try {
         const result = await xAnchor.withdrawAssets(
@@ -43,26 +27,22 @@ export const useWithdrawAssetsTx = () => {
           address!,
           TX_GAS_LIMIT,
           (event) => {
-            renderTxResults.next(
-              txResult(event, connectionType, chainId!, TxKind.WithdrawAssets),
-            );
-            txEvents.next({ event, txParams });
+            handleEvent(event);
           },
         );
-        refetchQueries(refetchQueryByTxKind(TxKind.WithdrawAssets));
         return result;
       } catch (error: any) {
         console.log(error);
         throw error;
       }
     },
-    [xAnchor, chainId, connectionType, address, refetchQueries],
+    [xAnchor, address],
   );
 
-  const withdrawAssetsTx = useBackgroundTx<
-    WithdrawAssetsTxParams,
-    WithdrawAssetsTxResult
-  >(withdrawTx, parseTx, null, displayTx);
+  const withdrawAssetsTx = useBackgroundTx<WithdrawAssetsTxParams>(
+    withdrawTx,
+    displayTx,
+  );
 
   return provider && connectionType && chainId && address
     ? withdrawAssetsTx
@@ -74,5 +54,3 @@ const displayTx = (txParams: WithdrawAssetsTxParams) => ({
   amount: `${txParams.amount} ${txParams.symbol}`,
   timestamp: Date.now(),
 });
-
-const parseTx = (resp: NonNullable<WithdrawAssetsTxResult>) => resp.tx;

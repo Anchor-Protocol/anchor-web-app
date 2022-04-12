@@ -1,26 +1,16 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import {
-  EVM_ANCHOR_TX_REFETCH_MAP,
-  refetchQueryByTxKind,
-  TxKind,
-  TX_GAS_LIMIT,
-} from './utils';
+import { TxKind, TX_GAS_LIMIT } from './utils';
 import { Subject } from 'rxjs';
-import { useCallback } from 'react';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { useCallback, useRef } from 'react';
+import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy } from '@anchor-protocol/formatter';
-import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
-import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 import { WhitelistCollateral } from 'queries';
-
-type RedeemCollateralTxResult = TwoWayTxResponse<ContractReceipt> | null;
-type RedeemCollateralTxRender = TxResultRendering<RedeemCollateralTxResult>;
 
 export interface RedeemCollateralTxParams {
   collateral: WhitelistCollateral;
@@ -28,24 +18,27 @@ export interface RedeemCollateralTxParams {
 }
 
 export function useRedeemCollateralTx():
-  | BackgroundTxResult<RedeemCollateralTxParams, RedeemCollateralTxResult>
+  | BackgroundTxResult<RedeemCollateralTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
-  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
+  const renderTxResultsRef =
+    useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
 
   const redeemTx = useCallback(
     async (
       txParams: RedeemCollateralTxParams,
-      renderTxResults: Subject<RedeemCollateralTxRender>,
-      txEvents: Subject<TxEvent<RedeemCollateralTxParams>>,
+      handleEvent: CrossChainEventHandler<ContractReceipt>,
     ) => {
       const {
         collateral: { collateral_token, symbol, decimals },
         amount,
       } = txParams;
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
+      const writer = new EvmTxProgressWriter(
+        renderTxResultsRef.current!,
+        connectionType,
+      );
       writer.withdrawCollateral(symbol);
       writer.timer.start();
 
@@ -57,26 +50,26 @@ export function useRedeemCollateralTx():
           TX_GAS_LIMIT,
           (event) => {
             writer.withdrawCollateral(symbol, event);
-            txEvents.next({ event, txParams });
+            handleEvent(event);
           },
         );
-
-        refetchQueries(refetchQueryByTxKind(TxKind.RedeemCollateral));
 
         return result;
       } finally {
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectionType, refetchQueries],
+    [xAnchor, address, connectionType],
   );
 
-  const persistedTxResult = useBackgroundTx<
-    RedeemCollateralTxParams,
-    RedeemCollateralTxResult
-  >(redeemTx, parseTx, null, displayTx);
+  const backgroundTxResult = useBackgroundTx<RedeemCollateralTxParams>(
+    redeemTx,
+    displayTx,
+  );
 
-  return address ? persistedTxResult : undefined;
+  renderTxResultsRef.current = backgroundTxResult?.renderTxResults;
+
+  return address ? backgroundTxResult : undefined;
 }
 
 const displayTx = (txParams: RedeemCollateralTxParams) => {
@@ -91,5 +84,3 @@ const displayTx = (txParams: RedeemCollateralTxParams) => {
     timestamp: Date.now(),
   };
 };
-
-const parseTx = (resp: NonNullable<RedeemCollateralTxResult>) => resp.tx;

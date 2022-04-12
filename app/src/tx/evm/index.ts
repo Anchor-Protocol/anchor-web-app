@@ -5,7 +5,7 @@ export * from './useRepayUstTx';
 export * from './useProvideCollateralTx';
 export * from './useRedeemCollateralTx';
 export * from './storage';
+export * from './background';
 export * from './useRestoreTx';
-export * from './useResumeTx';
 export * from './useBackgroundTx';
 export * from './useWithdrawAssets';

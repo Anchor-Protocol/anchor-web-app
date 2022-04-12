@@ -1,34 +1,33 @@
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { TxResultRendering } from '@libs/app-fns';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { Subject } from 'rxjs';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 import { useTransactions } from './storage';
-import { TxEvent, useTx } from './useTx';
+import { RenderedTxResult, useRenderedTx } from './useRenderedTx';
 import { errorContains, formatError, TxError } from './utils';
-
-type TxResult = CrossChainTxResponse<ContractReceipt> | null;
-type TxRender = TxResultRendering<TxResult>;
 
 export interface RestoreTxParams {
   txHash: string;
 }
 
-export const useRestoreTx = () => {
+export const useRestoreTx = ():
+  | RenderedTxResult<RestoreTxParams>
+  | undefined => {
   const { provider, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const { removeTransaction } = useTransactions();
+  const renderTxResultsRef =
+    useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
 
   const restoreTx = useCallback(
-    async (
-      txParams: RestoreTxParams,
-      renderTxResults: Subject<TxRender>,
-      txEvents: Subject<TxEvent<RestoreTxParams>>,
-    ) => {
-      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
+    async (txParams: RestoreTxParams) => {
+      const writer = new EvmTxProgressWriter(
+        renderTxResultsRef.current!,
+        connectionType,
+      );
       writer.restoreTx();
       writer.timer.start();
 
@@ -37,7 +36,6 @@ export const useRestoreTx = () => {
           txParams.txHash,
           (event) => {
             writer.restoreTx(event);
-            txEvents.next({ event, txParams });
           },
           { manualRedemption: true },
         );
@@ -63,9 +61,9 @@ export const useRestoreTx = () => {
     [xAnchor, connectionType, removeTransaction],
   );
 
-  const restoreTxStream = useTx(restoreTx, parseTx, null);
+  const restoreTxResult = useRenderedTx(restoreTx);
 
-  return provider && connectionType ? restoreTxStream : [null, null];
+  renderTxResultsRef.current = restoreTxResult?.renderTxResults;
+
+  return provider && connectionType ? restoreTxResult : undefined;
 };
-
-const parseTx = (resp: NonNullable<TxResult>) => resp.tx;
