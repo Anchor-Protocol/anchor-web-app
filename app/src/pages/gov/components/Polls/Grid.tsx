@@ -108,11 +108,13 @@ function GridBase({
                     <IconSpan>
                       <b>End time</b> <time>{formatDate(endsIn)}</time>
                     </IconSpan>
-                    <IconSpan>
-                      <b>Estimated execution time</b>{' '}
-                      <time>{formatDate(executionAt)}</time> <Schedule />{' '}
-                      <TimeEnd endTime={executionAt} />
-                    </IconSpan>
+                    {poll.execute_data && (
+                      <IconSpan>
+                        <b>Estimated execution time</b>{' '}
+                        <time>{formatDate(executionAt)}</time> <Schedule />{' '}
+                        <TimeEnd endTime={executionAt} />
+                      </IconSpan>
+                    )}
                   </div>
                 </>
               )}
