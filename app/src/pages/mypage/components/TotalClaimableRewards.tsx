@@ -13,7 +13,7 @@ import { AnimateNumber } from '@libs/ui';
 import { Sub } from 'components/Sub';
 import { useAccount } from 'contexts/account';
 import { fixHMR } from 'fix-hmr';
-import { useRewards } from 'pages/mypage/logics/useRewards';
+import { Reward, useRewards } from 'pages/mypage/logics/useRewards';
 import { useAssetPriceInUstQuery } from 'queries';
 import React, { useMemo } from 'react';
 import big from 'big.js';
@@ -23,6 +23,11 @@ import styled from 'styled-components';
 export interface TotalClaimableRewardsProps {
   className?: string;
 }
+
+const hasReward = (rewards: Reward[] | undefined, target: string) =>
+  rewards?.find((reward) =>
+    reward.symbol.toLowerCase().includes(target.toLowerCase()),
+  );
 
 function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
   const { connected } = useAccount();
@@ -36,6 +41,9 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
       allRewards && allRewards.filter(({ amount }) => !big(amount).eq(big(0))),
     [allRewards],
   );
+
+  const hasANCReward = useMemo(() => hasReward(rewards, 'ANC'), [rewards]);
+  const hasAstroReward = useMemo(() => hasReward(rewards, 'ASTRO'), [rewards]);
 
   return (
     <Section className={className}>
@@ -74,25 +82,29 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
         </p>
       </header>
 
-      <div className="anc-price">
-        <h5>ANC PRICE</h5>
-        <p>
-          <AnimateNumber format={formatUST}>
-            {ancPrice ? ancPrice : (0 as UST<number>)}
-          </AnimateNumber>
-          <Sub> UST</Sub>
-        </p>
-      </div>
+      {hasANCReward && (
+        <div className="anc-price">
+          <h5>ANC PRICE</h5>
+          <p>
+            <AnimateNumber format={formatUST}>
+              {ancPrice ? ancPrice : (0 as UST<number>)}
+            </AnimateNumber>
+            <Sub> UST</Sub>
+          </p>
+        </div>
+      )}
 
-      <div className="anc-price">
-        <h5>ASTRO PRICE</h5>
-        <p>
-          <AnimateNumber format={formatUST}>
-            {astroPrice ? astroPrice : (0 as UST<number>)}
-          </AnimateNumber>
-          <Sub> UST</Sub>
-        </p>
-      </div>
+      {hasAstroReward && (
+        <div className="anc-price">
+          <h5>ASTRO PRICE</h5>
+          <p>
+            <AnimateNumber format={formatUST}>
+              {astroPrice ? astroPrice : (0 as UST<number>)}
+            </AnimateNumber>
+            <Sub> UST</Sub>
+          </p>
+        </div>
+      )}
 
       <div className="spacer" />
 
