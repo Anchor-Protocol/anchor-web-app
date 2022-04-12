@@ -19,7 +19,7 @@ export function TerraAppProviders({
   walletConnectChainIds,
   defaultNetwork,
 }: UIElementProps & WalletControllerChainOptions) {
-  const [createReadonlyWalletSession, createReadonlyWalletDialog] =
+  const [createReadOnlyWalletSession, createReadonlyWalletDialog] =
     useCreateReadOnlyWallet();
 
   return (
@@ -27,7 +27,7 @@ export function TerraAppProviders({
       defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{ bridge: 'https://walletconnect.terra.dev/' }}
-      createReadonlyWalletSession={createReadonlyWalletSession}
+      createReadOnlyWalletSession={createReadOnlyWalletSession}
     >
       <TerraNetworkProvider>
         <QueryProvider>

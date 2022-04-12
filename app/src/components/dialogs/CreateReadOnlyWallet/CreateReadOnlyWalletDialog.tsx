@@ -42,6 +42,7 @@ const CreateReadOnlyWalletDialogBase = ({
 }: CreateReadOnlyWalletDialogProps) => {
   const [chainId, setchainId] = useState<string>(() => networks[1].chainId);
   const [address, setAddress] = useState<string>('');
+  console.log('dialog!');
 
   const invalidAddress = useMemo(() => {
     if (address.length === 0) {

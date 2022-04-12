@@ -5,7 +5,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { UIElementProps } from '@libs/ui';
 import { MetaMask } from '@web3-react/metamask';
 import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
-import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/evm/useCreateReadonlyWallet';
+import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/evm/useCreateReadOnlyWallet';
 
 export interface NetworkInfo {
   name: string;
@@ -29,7 +29,7 @@ export type EvmWallet = {
   address?: string;
   error?: Error;
   provider: Web3Provider | undefined;
-  createReadonlyWalletSession: () => void;
+  createReadOnlyWalletSession: () => void;
 };
 
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
@@ -55,7 +55,7 @@ function WalletProvider({ children }: UIElementProps) {
     connectionType,
   } = useWeb3React();
 
-  const [requestReadonlyWalletCreationFlow, createReadonlyWalletDialog] =
+  const [requestReadOnlyWalletCreationFlow, createReadOnlyWalletDialog] =
     useCreateReadOnlyWallet();
 
   const evmWallet = useMemo<EvmWallet>(() => {
@@ -89,9 +89,9 @@ function WalletProvider({ children }: UIElementProps) {
       }
     };
 
-    const createReadonlyWalletSession = async () => {
+    const createReadOnlyWalletSession = async () => {
       // TODO: provide networks
-      const readonlyWallet = await requestReadonlyWalletCreationFlow([]);
+      const readonlyWallet = await requestReadOnlyWalletCreationFlow([]);
 
       if (readonlyWallet !== null) {
         // TODO: connect readonly wallet
@@ -120,7 +120,7 @@ function WalletProvider({ children }: UIElementProps) {
       status,
       error,
       provider: provider as Web3Provider,
-      createReadonlyWalletSession,
+      createReadOnlyWalletSession,
     };
   }, [
     isActivating,
@@ -130,7 +130,7 @@ function WalletProvider({ children }: UIElementProps) {
     chainId,
     error,
     provider,
-    requestReadonlyWalletCreationFlow,
+    requestReadOnlyWalletCreationFlow,
     connector,
     store,
   ]);
@@ -138,7 +138,7 @@ function WalletProvider({ children }: UIElementProps) {
   return (
     <EvmWalletContext.Provider value={evmWallet}>
       {children}
-      {createReadonlyWalletDialog}
+      {createReadOnlyWalletDialog}
     </EvmWalletContext.Provider>
   );
 }

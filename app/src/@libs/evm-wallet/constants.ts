@@ -29,3 +29,10 @@ export const SupportedChainRpcs: Record<EvmChainId, string> = {
   [EvmChainId.AVALANCHE_FUJI_TESTNET]:
     'https://api.avax-test.network/ext/bc/C/rpc',
 };
+
+export const SupportedChainName: Record<EvmChainId, string> = {
+  [EvmChainId.ETHEREUM]: 'Ehtereum Mainnet',
+  [EvmChainId.ETHEREUM_ROPSTEN]: 'Ropsten Testnet',
+  [EvmChainId.AVALANCHE]: 'Avalanche Mainnet',
+  [EvmChainId.AVALANCHE_FUJI_TESTNET]: 'Fuji Testnet',
+};
