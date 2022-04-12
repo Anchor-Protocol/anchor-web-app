@@ -3,7 +3,7 @@ import { useBlockQuery } from './useBlockQuery';
 
 const refetchInterval = millisecondsInHour * 24;
 
-export const useEstimatedBlockTime = (delta = 100) => {
+export const useEstimatedBlockTime = (delta = 10000) => {
   const { data: latestBlock } = useBlockQuery('latest', { refetchInterval });
   const { data: oldBlock } = useBlockQuery(
     latestBlock ? latestBlock.height - delta : undefined,
