@@ -27,6 +27,8 @@ export interface PollDetail {
 
   endsIn: Date;
 
+  executionAt: Date;
+
   msgs: anchorToken.gov.ParsedExecuteMsg[] | null;
 }
 
@@ -36,6 +38,7 @@ export function extractPollDetail(
   govState: anchorToken.gov.StateResponse,
   govConfig: anchorToken.gov.ConfigResponse,
   currentHeight: number,
+  blockTime: number,
 ): PollDetail {
   const total: number =
     poll.status !== 'in_progress' && poll.total_balance_at_end_poll
@@ -68,8 +71,14 @@ export function extractPollDetail(
           label: `Quorum ${formatRate(quorum.gov as Rate<number>)}%`,
         };
 
-  const endsIn: Date = new Date(
-    (poll.end_height - currentHeight) * 6000 + Date.now(),
+  const now = Date.now();
+
+  const endsInHeight = poll.end_height - currentHeight;
+
+  const endsIn: Date = new Date(now + endsInHeight * blockTime);
+
+  const executionAt: Date = new Date(
+    now + (endsInHeight + govConfig.timelock_period) * blockTime,
   );
 
   let msgs: anchorToken.gov.ParsedExecuteMsg[] | null = null;
@@ -110,6 +119,8 @@ export function extractPollDetail(
     type,
 
     endsIn,
+
+    executionAt,
 
     msgs,
   };

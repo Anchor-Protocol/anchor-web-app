@@ -38,7 +38,7 @@ import { findPrevDay } from './components/internal/axisUtils';
 import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
 import { CollateralMarket } from './components/CollateralMarket';
-import { useRewards } from 'pages/mypage/logics/useRewards';
+import { useAssetPriceInUstQuery } from 'queries';
 
 export interface DashboardProps {
   className?: string;
@@ -121,7 +121,7 @@ function DashboardBase({ className }: DashboardProps) {
     };
   }, [marketCollaterals?.now, marketDepositAndBorrow?.now, marketUST]);
 
-  const { ancPrice: ancPriceUST } = useRewards();
+  const { data: ancPriceUST } = useAssetPriceInUstQuery('anc');
 
   const ancPrice = useMemo(() => {
     if (!marketANC || marketANC.history.length === 0) {
@@ -129,7 +129,7 @@ function DashboardBase({ className }: DashboardProps) {
     }
 
     const last = marketANC.now;
-    const lastPrice = ancPriceUST?.ANCPrice ?? last.anc_price;
+    const lastPrice = ancPriceUST ?? last.anc_price;
     const last1DayBefore =
       marketANC.history.find(findPrevDay(last.timestamp)) ??
       marketANC.history[marketANC.history.length - 2] ??
