@@ -52,7 +52,7 @@
     "@rx-stream/react": "^0.7.1",
     "@sentry/react": "^6.8.0",
     "@sentry/tracing": "^6.8.0",
-    "@terra-money/terra.js": "^3.0.7",
+    "@terra-money/terra.js": "^3.0.8",
     "@terra-money/use-wallet": "^3.8.0",
     "@terra-money/wallet-provider": "^3.8.0",
     "@types/d3-array": "^3.0.2",
