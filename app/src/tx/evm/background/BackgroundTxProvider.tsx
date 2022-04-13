@@ -63,8 +63,7 @@ export const BackgroundTxProvider = ({ children }: UIElementProps) => {
 
   useEffect(() => {
     setBackgroundTxManager(
-      BackgroundTxManager.fromStorage(
-        transactions,
+      new BackgroundTxManager(
         {
           createRestoreTx,
           refetch,
