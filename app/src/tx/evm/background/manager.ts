@@ -35,11 +35,6 @@ export class TxManager {
     return manager;
   }
 
-  // - subscribe to transaction storage changes
-  //   - on each new transaction, attempt reservation
-  //   - if reservation successful, create actor
-  // - on new "main" transactions
-  //   - create actor (assume reserved by default)
   public async trackStoredTx(tx: Transaction) {
     if (this.canReserve(tx)) {
       this.reservations.add(tx);
