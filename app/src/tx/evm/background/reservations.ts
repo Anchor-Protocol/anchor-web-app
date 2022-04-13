@@ -1,22 +1,8 @@
 import { Transaction } from '../storage';
-import { TxManager } from './manager';
 import { TxReservation } from './reservation';
 
 export class TxReservations {
   private reservations: { [txHash: string]: TxReservation } = {};
-
-  constructor(manager: TxManager) {
-    // unreserve all active actors in current tab on page reload
-    window.addEventListener('beforeunload', () => {
-      manager.actors.forEach((actor) => {
-        if (actor.state.storedTx?.txHash) {
-          manager.storage.update(actor.state.storedTx.txHash, {
-            backgroundTransactionTabId: undefined,
-          });
-        }
-      });
-    });
-  }
 
   public contains(tx: Transaction) {
     return Boolean(this.reservations[tx.txHash]);
