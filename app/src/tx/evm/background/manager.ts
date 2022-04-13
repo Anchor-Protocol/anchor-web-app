@@ -16,8 +16,13 @@ export class TxManager {
 
   constructor(handlers: TxHandlers, storage: TxStorage) {
     this.handlers = handlers;
-    this.reservations = new TxReservations(this);
+    this.reservations = new TxReservations();
     this.storage = storage;
+
+    // free all active actors in current tab on page reload
+    window.addEventListener('beforeunload', () => {
+      this.destroy();
+    });
   }
 
   public static fromStorage(
@@ -81,6 +86,12 @@ export class TxManager {
 
   public clear(actor: TxActor) {
     this.actors = this.actors.filter((a) => a !== actor);
+  }
+
+  public destroy() {
+    this.actors.forEach((actor) => {
+      actor.destroy();
+    });
   }
 
   // private functions

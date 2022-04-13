@@ -75,6 +75,16 @@ export class TxActor {
     return Boolean(this.state.storedTx?.txHash);
   }
 
+  public destroy() {
+    this.event$.unsubscribe();
+
+    if (this.state.storedTx) {
+      this.manager.storage.update(this.state.storedTx.txHash, {
+        backgroundTransactionTabId: undefined,
+      });
+    }
+  }
+
   // private functions
 
   private async track() {
