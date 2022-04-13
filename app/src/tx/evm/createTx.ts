@@ -6,7 +6,7 @@ import {
 } from '@anchor-protocol/crossanchor-sdk';
 
 export type CreateTxResult<TxParams, TxResult> = {
-  createTx: (txParams: TxParams) => Promise<TxResult>;
+  tx: (txParams: TxParams) => Promise<TxResult>;
   txEvents: Observable<CrossChainEvent<ContractReceipt>>;
 };
 
@@ -22,13 +22,13 @@ export const createTx = <TxParams, TxResult>(
     txEvents.next(event);
   };
 
-  const createTxCallback = async (txParams: TxParams) => {
+  const txCallback = async (txParams: TxParams) => {
     const result = await sendTx(txParams, handleEvent);
 
     return result;
   };
 
-  const result = { createTx: createTxCallback, txEvents } as CreateTxResult<
+  const result = { tx: txCallback, txEvents } as CreateTxResult<
     TxParams,
     TxResult
   >;

@@ -30,7 +30,7 @@ export const useBackgroundTx = <TxParams>(
 
   const sendTxCallback = useCallback(
     async (txParams: TxParams) => {
-      const txRequest = createTxResult.createTx(txParams);
+      const txRequest = createTxResult.tx(txParams);
       const display = displayTx(txParams);
 
       backgroundTxRef.current = backgroundTxManager!.trackNewTx({
