@@ -33,7 +33,7 @@ export class TxActor {
   }
 
   public static fromStorage(tx: Transaction, manager: TxManager) {
-    const { txEvents, createTx } = manager.handlers.createRestoreTx();
+    const { txEvents, tx: restoreTx } = manager.handlers.createRestoreTx();
 
     return new TxActor({
       state: new TxState({ minimized: true, storedTx: tx }),
@@ -41,7 +41,7 @@ export class TxActor {
         events: txEvents,
         display: tx.display,
         kind: tx.display.txKind,
-        request: createTx(tx.txHash),
+        request: restoreTx(tx.txHash),
       },
       manager,
     });
