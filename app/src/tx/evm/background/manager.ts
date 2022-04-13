@@ -25,16 +25,6 @@ export class TxManager {
     });
   }
 
-  public static fromStorage(
-    txs: Transaction[],
-    handlers: TxHandlers,
-    storage: TxStorage,
-  ) {
-    const manager = new TxManager(handlers, storage);
-    txs.forEach((tx) => manager.trackStoredTx(tx));
-    return manager;
-  }
-
   public async trackStoredTx(tx: Transaction) {
     if (this.canReserve(tx)) {
       this.reservations.add(tx);
