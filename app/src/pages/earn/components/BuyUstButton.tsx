@@ -19,12 +19,11 @@ export function BuyUstButton(buttonProps: ButtonBaseProps) {
 }
 
 const Button = styled(BorderButton)`
-  padding: 0 10px;
-
+  height: initial;
+  padding: 7px 10px;
   border: none !important;
-
   font-size: 16px;
-  height: 34px;
+  line-height: 20px;
 
   svg {
     font-size: 1em;
