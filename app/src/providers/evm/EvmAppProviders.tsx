@@ -84,17 +84,17 @@ export function EvmAppProviders({ children }: UIElementProps) {
   const { target } = useDeploymentTarget();
 
   return (
-    <EvmWalletProvider>
-      <ThemeProvider
-        initialTheme="light"
-        lightTheme={
-          target.chain === Chain.Ethereum
-            ? ethereumLightTheme
-            : avalancheLightTheme
-        }
-      >
+    <ThemeProvider
+      initialTheme="light"
+      lightTheme={
+        target.chain === Chain.Ethereum
+          ? ethereumLightTheme
+          : avalancheLightTheme
+      }
+    >
+      <EvmWalletProvider>
         <ChainGaurdian>{children}</ChainGaurdian>
-      </ThemeProvider>
-    </EvmWalletProvider>
+      </EvmWalletProvider>
+    </ThemeProvider>
   );
 }

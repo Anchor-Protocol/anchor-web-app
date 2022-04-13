@@ -27,7 +27,7 @@ export function TerraAppProviders({
       defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{ bridge: 'https://walletconnect.terra.dev/' }}
-      createReadOnlyWalletSession={createReadOnlyWalletSession}
+      createReadonlyWalletSession={createReadOnlyWalletSession}
     >
       <TerraNetworkProvider>
         <QueryProvider>

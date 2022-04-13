@@ -33,6 +33,8 @@ export function useCreateReadOnlyWallet(): UseCreateReadonlyWalletResult {
         const result = await openDialog({
           networks,
           validateAddress: (address: string) => AccAddress.validate(address),
+          defaultChainId: networks.find(({ name }) => name.includes('mainnet'))
+            ?.chainId,
         });
 
         if (result === null) {

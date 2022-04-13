@@ -17,8 +17,6 @@ const ConnectionList = (props: ConnectionListProps) => {
 
   const { availableConnections, availableConnectTypes } = useEvmWallet();
 
-  console.log(availableConnections);
-
   return (
     <ConnectionTypeList
       footer={

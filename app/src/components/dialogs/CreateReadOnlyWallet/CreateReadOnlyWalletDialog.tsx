@@ -21,6 +21,7 @@ export interface NetworkInfo {
 export interface CreateReadOnlyWalletFormParams {
   className?: string;
   networks: NetworkInfo[];
+  defaultChainId?: string;
   validateAddress: (address: string) => boolean;
 }
 
@@ -39,10 +40,12 @@ const CreateReadOnlyWalletDialogBase = ({
   closeDialog,
   networks,
   validateAddress,
+  defaultChainId,
 }: CreateReadOnlyWalletDialogProps) => {
-  const [chainId, setchainId] = useState<string>(() => networks[1].chainId);
+  const [chainId, setchainId] = useState<string>(
+    () => defaultChainId || networks[0].chainId,
+  );
   const [address, setAddress] = useState<string>('');
-  console.log('dialog!');
 
   const invalidAddress = useMemo(() => {
     if (address.length === 0) {
