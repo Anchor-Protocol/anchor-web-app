@@ -1,30 +1,22 @@
 import { initializeConnector } from '@web3-react/core';
-import { Actions } from '@web3-react/types';
 import { Connector } from '@web3-react/types';
-import { JsonRpcProvider } from '@ethersproject/providers';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { SupportedChainIds, SupportedChainRpcs } from '../constants';
-
-const jsonRpcProvider = new JsonRpcProvider();
-
-type UrlMap = Record<number, string>;
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 
 export class ReadOnly extends Connector {
-  public customProvider: JsonRpcProvider;
+  public customProvider: StaticJsonRpcProvider | undefined;
 
-  constructor(actions: Actions, urlMap: UrlMap) {
-    super(actions);
-
-    // this.urlMap = urlMap;
-    this.customProvider = jsonRpcProvider;
-  }
-
-  public async activate(account: string) {
-    this.actions.update({ accounts: [account] });
+  public async activate(chainId: EvmChainId, account: string) {
+    this.customProvider = new StaticJsonRpcProvider(
+      SupportedChainRpcs[chainId],
+    );
+    this.actions.update({ chainId, accounts: [account] });
   }
 }
 
 export const [readOnly, readOnlyHooks, readOnlyStore] =
   initializeConnector<ReadOnly>(
-    (actions) => new ReadOnly(actions, SupportedChainRpcs),
+    (actions) => new ReadOnly(actions),
     SupportedChainIds,
   );

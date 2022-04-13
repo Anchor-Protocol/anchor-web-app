@@ -12,6 +12,7 @@ import { MetaMask } from '@web3-react/metamask';
 import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
 import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/evm/useCreateReadOnlyWallet';
 import { useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 
 export interface NetworkInfo {
   name: string;
@@ -59,6 +60,7 @@ function WalletProvider({ children }: UIElementProps) {
     error,
     provider,
     connectionType,
+    connect,
   } = useWeb3React();
 
   const {
@@ -100,18 +102,21 @@ function WalletProvider({ children }: UIElementProps) {
     };
 
     const createReadOnlyWalletSession = async () => {
-      // TODO: provide networks
-      const supportedChainIds =
-        SupportedChainIdsByChain[chain as SupportedEvmChain];
-      const networks = supportedChainIds.map((chainId) => ({
-        chainId: chainId.toString(),
-        name: SupportedChainName[chainId],
-      }));
+      const networks = SupportedChainIdsByChain[chain as SupportedEvmChain].map(
+        (chainId) => ({
+          chainId: chainId.toString(),
+          name: SupportedChainName[chainId],
+        }),
+      );
       const readonlyWallet = await requestReadOnlyWalletCreationFlow(networks);
 
       if (readonlyWallet !== null) {
-        // TODO: connect readonly wallet
-        console.log(readonlyWallet);
+        const { chainId: stringifiedChainId, address } = readonlyWallet;
+        const chainId = Number(stringifiedChainId) as EvmChainId;
+
+        const connector = connect(ConnectType.ReadOnly);
+        console.log(connector);
+        await connector.activate(chainId, address);
       }
     };
 
@@ -150,6 +155,7 @@ function WalletProvider({ children }: UIElementProps) {
     store,
     chain,
     requestReadOnlyWalletCreationFlow,
+    connect,
   ]);
 
   return (

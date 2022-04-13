@@ -4,6 +4,7 @@ import {
   CreateReadOnlyWalletDialog,
   NetworkInfo,
 } from '../CreateReadOnlyWalletDialog';
+import { isAddress } from '@ethersproject/address';
 
 interface ReadOnlyWalletSession {
   address: string;
@@ -25,10 +26,9 @@ export function useCreateReadOnlyWallet(): UseCreateReadOnlyWalletResult {
   const requestReadOnlyWalletCreationFlow: RequestReadOnlyWalletCreationFlow =
     useCallback(
       async (networks) => {
-        // TODO: readOnly wallet creation flow
         const result = await openDialog({
           networks,
-          validateAddres: (address: string) => true,
+          validateAddress: isAddress,
         });
 
         return result;
