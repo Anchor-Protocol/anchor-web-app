@@ -13,6 +13,11 @@ export const AvailableConnections: Connection[] = [
     type: ConnectType.WalletConnect,
     icon: 'https://assets.terra.money/icon/wallet-provider/walletconnect.svg',
   },
+  {
+    name: 'View an address',
+    icon: 'https://assets.terra.money/icon/wallet-provider/readonly.svg',
+    type: ConnectType.ReadOnly,
+  },
 ];
 
 export const SupportedChainIds: EvmChainId[] = [

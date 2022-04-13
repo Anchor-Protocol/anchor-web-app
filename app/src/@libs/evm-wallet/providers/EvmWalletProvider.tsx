@@ -14,6 +14,7 @@ import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet
 import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { ReadOnly } from '../connectors/readOnly';
 
 export interface NetworkInfo {
   name: string;
@@ -117,9 +118,8 @@ function WalletProvider({ children }: UIElementProps) {
         const { chainId: stringifiedChainId, address } = readonlyWallet;
         const chainId = Number(stringifiedChainId) as EvmChainId;
 
-        const connector = connect(ConnectType.ReadOnly);
-        console.log(connector);
-        await connector.activate(chainId, address);
+        const connector = connect(ConnectType.ReadOnly) as ReadOnly;
+        await connector.activate({ chainId, account: address });
       }
     };
 
