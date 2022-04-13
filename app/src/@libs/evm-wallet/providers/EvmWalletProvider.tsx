@@ -1,11 +1,17 @@
 import React, { createContext, useMemo } from 'react';
 import { Connection, ConnectType, ERC20Token, WalletStatus } from '../types';
-import { AvailableConnections } from '../constants';
+import {
+  AvailableConnections,
+  SupportedChainIdsByChain,
+  SupportedChainName,
+  SupportedEvmChain,
+} from '../constants';
 import { Web3Provider } from '@ethersproject/providers';
 import { UIElementProps } from '@libs/ui';
 import { MetaMask } from '@web3-react/metamask';
 import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
 import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/evm/useCreateReadOnlyWallet';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 
 export interface NetworkInfo {
   name: string;
@@ -55,6 +61,10 @@ function WalletProvider({ children }: UIElementProps) {
     connectionType,
   } = useWeb3React();
 
+  const {
+    target: { chain },
+  } = useDeploymentTarget();
+
   const [requestReadOnlyWalletCreationFlow, createReadOnlyWalletDialog] =
     useCreateReadOnlyWallet();
 
@@ -91,7 +101,13 @@ function WalletProvider({ children }: UIElementProps) {
 
     const createReadOnlyWalletSession = async () => {
       // TODO: provide networks
-      const readonlyWallet = await requestReadOnlyWalletCreationFlow([]);
+      const supportedChainIds =
+        SupportedChainIdsByChain[chain as SupportedEvmChain];
+      const networks = supportedChainIds.map((chainId) => ({
+        chainId: chainId.toString(),
+        name: SupportedChainName[chainId],
+      }));
+      const readonlyWallet = await requestReadOnlyWalletCreationFlow(networks);
 
       if (readonlyWallet !== null) {
         // TODO: connect readonly wallet
@@ -130,9 +146,10 @@ function WalletProvider({ children }: UIElementProps) {
     chainId,
     error,
     provider,
-    requestReadOnlyWalletCreationFlow,
     connector,
     store,
+    chain,
+    requestReadOnlyWalletCreationFlow,
   ]);
 
   return (

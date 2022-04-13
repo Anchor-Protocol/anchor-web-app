@@ -1,4 +1,4 @@
-import { Chain } from '@anchor-protocol/app-provider';
+import { Chain } from '@anchor-protocol/types';
 import { CW20Addr } from '@libs/types';
 
 export type CW20TokenDisplayInfo = {

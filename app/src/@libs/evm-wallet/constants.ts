@@ -1,4 +1,5 @@
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
+import { Chain } from '@anchor-protocol/types/Chain';
 import { Connection, ConnectType } from './types';
 
 export const AvailableConnections: Connection[] = [
@@ -35,4 +36,11 @@ export const SupportedChainName: Record<EvmChainId, string> = {
   [EvmChainId.ETHEREUM_ROPSTEN]: 'Ropsten Testnet',
   [EvmChainId.AVALANCHE]: 'Avalanche Mainnet',
   [EvmChainId.AVALANCHE_FUJI_TESTNET]: 'Fuji Testnet',
-};
+} as const;
+
+export const SupportedChainIdsByChain = {
+  [Chain.Ethereum]: [EvmChainId.ETHEREUM, EvmChainId.ETHEREUM_ROPSTEN],
+  [Chain.Avalanche]: [EvmChainId.AVALANCHE, EvmChainId.AVALANCHE_FUJI_TESTNET],
+} as const;
+
+export type SupportedEvmChain = keyof typeof SupportedChainIdsByChain;
