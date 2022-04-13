@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { UIElementProps } from '@libs/ui';
 import styled, { useTheme } from 'styled-components';
-import { useWithdrawAssetsTx } from 'tx/evm';
+import { useWithdrawAssetTx } from 'tx/evm';
 import { StreamStatus } from '@rx-stream/react';
 import { CircleSpinner } from 'react-spinners-kit';
 import { WithdrawButton } from './WithdrawButton';
@@ -14,8 +14,8 @@ export interface WithdrawableAssetProps extends UIElementProps {
 
 const WithdrawableAssetBase = (props: WithdrawableAssetProps) => {
   const { tokenContract, balance, symbol } = props;
-  const withdrawAssetsTx = useWithdrawAssetsTx();
-  const [withdrawAsset, txResult] = withdrawAssetsTx?.stream ?? [null, null];
+  const withdrawAssetTx = useWithdrawAssetTx();
+  const [withdrawAsset, txResult] = withdrawAssetTx?.stream ?? [null, null];
   const theme = useTheme();
 
   const withdraw = useCallback(() => {

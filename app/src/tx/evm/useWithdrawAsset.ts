@@ -16,16 +16,16 @@ import {
   TX_GAS_LIMIT,
 } from './utils';
 
-type WithdrawAssetsTxResult = TwoWayTxResponse<ContractReceipt> | null;
-type WithdrawAssetsTxRender = TxResultRendering<WithdrawAssetsTxResult>;
+type WithdrawAssetTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type WithdrawAssetTxRender = TxResultRendering<WithdrawAssetTxResult>;
 
-export interface WithdrawAssetsTxParams {
+export interface WithdrawAssetTxParams {
   tokenContract: string;
   amount: string;
   symbol: string;
 }
 
-export const useWithdrawAssetsTx = () => {
+export const useWithdrawAssetTx = () => {
   const { provider, address, connectionType, chainId } = useEvmWallet();
 
   const xAnchor = useEvmCrossAnchorSdk();
@@ -33,23 +33,23 @@ export const useWithdrawAssetsTx = () => {
 
   const withdrawTx = useCallback(
     async (
-      txParams: WithdrawAssetsTxParams,
-      renderTxResults: Subject<WithdrawAssetsTxRender>,
-      txEvents: Subject<TxEvent<WithdrawAssetsTxParams>>,
+      txParams: WithdrawAssetTxParams,
+      renderTxResults: Subject<WithdrawAssetTxRender>,
+      txEvents: Subject<TxEvent<WithdrawAssetTxParams>>,
     ) => {
       try {
-        const result = await xAnchor.withdrawAssets(
+        const result = await xAnchor.withdrawAsset(
           { contract: txParams.tokenContract },
           address!,
           TX_GAS_LIMIT,
           (event) => {
             renderTxResults.next(
-              txResult(event, connectionType, chainId!, TxKind.WithdrawAssets),
+              txResult(event, connectionType, chainId!, TxKind.WithdrawAsset),
             );
             txEvents.next({ event, txParams });
           },
         );
-        refetchQueries(refetchQueryByTxKind(TxKind.WithdrawAssets));
+        refetchQueries(refetchQueryByTxKind(TxKind.WithdrawAsset));
         return result;
       } catch (error: any) {
         console.log(error);
@@ -59,20 +59,20 @@ export const useWithdrawAssetsTx = () => {
     [xAnchor, chainId, connectionType, address, refetchQueries],
   );
 
-  const withdrawAssetsTx = useBackgroundTx<
-    WithdrawAssetsTxParams,
-    WithdrawAssetsTxResult
+  const withdrawAssetTx = useBackgroundTx<
+    WithdrawAssetTxParams,
+    WithdrawAssetTxResult
   >(withdrawTx, parseTx, null, displayTx);
 
   return provider && connectionType && chainId && address
-    ? withdrawAssetsTx
+    ? withdrawAssetTx
     : undefined;
 };
 
-const displayTx = (txParams: WithdrawAssetsTxParams) => ({
-  txKind: TxKind.WithdrawAssets,
+const displayTx = (txParams: WithdrawAssetTxParams) => ({
+  txKind: TxKind.WithdrawAsset,
   amount: `${txParams.amount} ${txParams.symbol}`,
   timestamp: Date.now(),
 });
 
-const parseTx = (resp: NonNullable<WithdrawAssetsTxResult>) => resp.tx;
+const parseTx = (resp: NonNullable<WithdrawAssetTxResult>) => resp.tx;
