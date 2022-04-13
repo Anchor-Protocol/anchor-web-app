@@ -13,6 +13,7 @@ import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
 import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/evm/useCreateReadOnlyWallet';
 import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 
 export interface NetworkInfo {
   name: string;
@@ -23,6 +24,8 @@ export interface ReadonlyWalletSession {
   chainId: string;
   address: string;
 }
+
+type EvmWalletWeb3Provider = Web3Provider | StaticJsonRpcProvider | undefined;
 
 export type EvmWallet = {
   activate: (chainId?: number) => Promise<Error | undefined>;
@@ -35,7 +38,7 @@ export type EvmWallet = {
   chainId?: number;
   address?: string;
   error?: Error;
-  provider: Web3Provider | undefined;
+  provider: EvmWalletWeb3Provider;
   createReadOnlyWalletSession: () => void;
 };
 
@@ -140,7 +143,7 @@ function WalletProvider({ children }: UIElementProps) {
       chainId,
       status,
       error,
-      provider: provider as Web3Provider,
+      provider: provider as EvmWalletWeb3Provider,
       createReadOnlyWalletSession,
     };
   }, [
