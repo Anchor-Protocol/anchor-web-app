@@ -13,6 +13,7 @@ import { ClaimAll } from 'pages/trade/claim.all';
 import '../configurations/chartjs';
 import { PollDetail } from 'pages/gov/poll.detail';
 import { GovernanceMain } from 'pages/gov/main';
+import { Hackathon } from './Hackathon';
 
 export function EvmApp() {
   return (
@@ -27,6 +28,7 @@ export function EvmApp() {
           <Route path="/borrow" element={<Borrow />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/gov/" element={<GovernanceMain />} />
+          <Route path="/hackathon" element={<Hackathon />} />
           <Route path="/poll/:id" element={<PollDetail />} />
           <Route path="/bridge/restore" element={<Restore />} />
           <Route path="/claim/all" element={<ClaimAll />} />

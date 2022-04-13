@@ -36,15 +36,20 @@ const govern: RouteMenu = {
   title: 'GOVERN',
 };
 
+const hackathon: RouteMenu = {
+  to: `/hackathon`,
+  title: 'HACKATHON',
+};
+
 const useMenus = (): RouteMenu[] => {
   const {
     target: { isEVM },
   } = useDeploymentTarget();
   return useMemo(() => {
     if (isEVM) {
-      return [dashboard, myPage, earn, borrow, govern];
+      return [dashboard, myPage, earn, borrow, govern, hackathon];
     }
-    return [dashboard, myPage, earn, borrow, bAsset, govern];
+    return [dashboard, myPage, earn, borrow, bAsset, govern, hackathon];
   }, [isEVM]);
 };
 
