@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { UIElementProps } from '@libs/ui';
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useMemo } from 'react';
 import { useRefCallback } from 'hooks';
 import { useTransactionSnackbar } from 'components/Header/transactions/background/useTransactionSnackbar';
 import { Transaction, useTransactions } from '../storage';
@@ -23,11 +23,6 @@ export const BackgroundTxContext = createContext<BackgroundTxContextValue>({
 });
 
 export const BackgroundTxProvider = ({ children }: UIElementProps) => {
-  const [backgroundTxManager, setBackgroundTxManager] =
-    useState<BackgroundTxManager>();
-
-  const value = useMemo(() => ({ backgroundTxManager }), [backgroundTxManager]);
-
   const { add: addTxSnackbar } = useTransactionSnackbar();
 
   const pushNotification = useRefCallback(
@@ -61,8 +56,8 @@ export const BackgroundTxProvider = ({ children }: UIElementProps) => {
     [refetchQueries],
   );
 
-  useEffect(() => {
-    setBackgroundTxManager(
+  const backgroundTxManager = useMemo(
+    () =>
       new BackgroundTxManager(
         {
           createRestoreTx,
@@ -75,18 +70,15 @@ export const BackgroundTxProvider = ({ children }: UIElementProps) => {
           update: updateTransaction,
         },
       ),
-    );
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    [],
+  );
 
   useEffect(() => {
-    if (!backgroundTxManager) {
-      return;
-    }
-
     transactions.forEach((tx) => backgroundTxManager.trackStoredTx(tx));
   }, [transactions, backgroundTxManager]);
+
+  const value = useMemo(() => ({ backgroundTxManager }), [backgroundTxManager]);
 
   return (
     <BackgroundTxContext.Provider value={value}>
