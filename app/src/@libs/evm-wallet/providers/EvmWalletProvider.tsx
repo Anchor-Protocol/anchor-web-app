@@ -16,16 +16,6 @@ import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { ReadOnly } from '../connectors/readOnly';
 
-export interface NetworkInfo {
-  name: string;
-  chainId: string;
-}
-
-export interface ReadonlyWalletSession {
-  chainId: string;
-  address: string;
-}
-
 type EvmWalletWeb3Provider = Web3Provider | StaticJsonRpcProvider | undefined;
 
 export type EvmWallet = {
