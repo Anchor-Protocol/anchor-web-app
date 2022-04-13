@@ -29,19 +29,15 @@ import { TermsOfService } from 'pages/terms';
 import { ClaimAll } from 'pages/trade/claim.all';
 import { ClaimAncUstLp } from 'pages/trade/claim.anc-ust-lp';
 import { ClaimUstBorrow } from 'pages/trade/claim.ust-borrow';
-import {
-  ancGovernancePathname,
-  ancUstLpPathname,
-  ustBorrowPathname,
-} from 'pages/trade/env';
-import { RewardsAncGovernance } from 'pages/trade/rewards.anc-governance';
+import { ROUTES } from 'pages/trade/env';
 import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
-import { VotingMain } from 'pages/voting/main';
+import { GaugesMain } from 'pages/gauges/main';
 import { TerraAppProviders } from 'providers/terra/TerraAppProviders';
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import '../configurations/chartjs';
+import { AncGovernance } from 'pages/gov/AncGovernance';
 
 type TerraAppProps = {
   chainOptions: WalletControllerChainOptions | null;
@@ -122,25 +118,26 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
             <Route path={`/trade/*`} element={<Trade />} />
 
             <Route
-              path={`/${ancUstLpPathname}/*`}
+              path={`/${ROUTES.ANC_UST_LP}/*`}
               element={<RewardsAncUstLp />}
             />
 
             <Route
-              path={`/${ancGovernancePathname}/*`}
-              element={<RewardsAncGovernance />}
+              path={`/${ROUTES.ANC_GOVERNANCE}/*`}
+              element={<AncGovernance />}
             />
+
             <Route path={`/claim/all`} element={<ClaimAll />} />
             <Route
-              path={`/claim/${ancUstLpPathname}`}
+              path={`/claim/${ROUTES.ANC_UST_LP}`}
               element={<ClaimAncUstLp />}
             />
             <Route
-              path={`/claim/${ustBorrowPathname}`}
+              path={`/claim/${ROUTES.UST_BORROW}`}
               element={<ClaimUstBorrow />}
             />
 
-            <Route path={`/voting/`} element={<VotingMain />} />
+            <Route path={`/gauges/`} element={<GaugesMain />} />
 
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/terms" element={<TermsOfService />} />

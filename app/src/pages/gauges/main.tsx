@@ -7,12 +7,12 @@ import styled from 'styled-components';
 import { Gauges } from './components/Gauges';
 import { Overview } from './components/Overview';
 
-function VotingMainBase(props: UIElementProps) {
+function GaugesMainBase(props: UIElementProps) {
   const { className } = props;
   return (
     <PaddedLayout className={className}>
       <TitleContainer>
-        <PageTitle title="VOTING" docs={links.docs.voting} />
+        <PageTitle title="GAUGES" docs={links.docs.gauges} />
       </TitleContainer>
       <Overview className="overview" />
       <Gauges className="gauges" />
@@ -20,7 +20,7 @@ function VotingMainBase(props: UIElementProps) {
   );
 }
 
-export const VotingMain = styled(VotingMainBase)`
+export const GaugesMain = styled(GaugesMainBase)`
   header {
     display: flex;
     align-items: center;

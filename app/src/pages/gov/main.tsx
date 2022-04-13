@@ -3,7 +3,7 @@ import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { links } from 'env';
 import React from 'react';
 import styled from 'styled-components';
-import { Overview } from './components/Overview';
+import { Overview2 } from './components/Overview2';
 import { Polls } from './components/Polls';
 
 export interface GovernanceMainProps {
@@ -16,7 +16,7 @@ function GovernanceMainBase({ className }: GovernanceMainProps) {
       <TitleContainer>
         <PageTitle title="GOVERNANCE" docs={links.docs.gov} />
       </TitleContainer>
-      <Overview className="overview" />
+      <Overview2 className="overview" />
       <Polls className="polls" />
     </PaddedLayout>
   );

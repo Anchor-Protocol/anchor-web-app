@@ -27,7 +27,7 @@ import big, { Big } from 'big.js';
 import { Circles } from 'components/primitives/Circles';
 import { Sub } from 'components/Sub';
 import { screen } from 'env';
-import { ancGovernancePathname, ancUstLpPathname } from 'pages/trade/env';
+import { ROUTES } from 'pages/trade/env';
 import React, { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -157,6 +157,11 @@ function OverviewBase({ className }: OverviewProps) {
           </AnimateNumber>{' '}
           <Sub>UST</Sub>
         </div>
+        {isNative && (
+          <BorderButton className="trade-button" component={Link} to={`/trade`}>
+            Trade ANC
+          </BorderButton>
+        )}
       </Section>
       <Section className="total-staked">
         <h2>
@@ -209,16 +214,16 @@ function OverviewBase({ className }: OverviewProps) {
         </div>
         {isNative && (
           <div className="staking-buttons">
-            <BorderButton component={Link} to={`/trade`}>
+            {/* <BorderButton component={Link} to={`/trade`}>
               Trade ANC
-            </BorderButton>
+            </BorderButton> */}
             <Tooltip
               title="Stake ANC to participate in governance voting or to obtain governance rewards"
               placement="top"
             >
               <BorderButton
                 component={Link}
-                to={`/${ancGovernancePathname}/stake`}
+                to={`/${ROUTES.ANC_GOVERNANCE}/stake`}
               >
                 Gov Stake
               </BorderButton>
@@ -228,7 +233,7 @@ function OverviewBase({ className }: OverviewProps) {
       </Section>
       <Section
         className={isNative ? 'lp lp-action' : 'lp'}
-        onClick={() => isNative && navigate(`/${ancUstLpPathname}/provide`)}
+        onClick={() => isNative && navigate(`/${ROUTES.ANC_UST_LP}/provide`)}
       >
         <Circles backgroundColors={['#ffffff', '#2C2C2C']}>
           <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
@@ -328,6 +333,13 @@ export const Overview = styled(OverviewBase)`
           color: ${({ theme }) => theme.dimTextColor};
         }
       }
+    }
+  }
+
+  .anc-price {
+    .trade-button {
+      margin-top: 20px;
+      width: 50%;
     }
   }
 

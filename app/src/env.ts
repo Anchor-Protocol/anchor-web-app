@@ -42,7 +42,7 @@ export const links = {
     borrow: 'https://docs.anchorprotocol.com/user-guide/webapp/borrow',
     bond: 'https://docs.anchorprotocol.com/user-guide/webapp/bond',
     gov: 'https://docs.anchorprotocol.com/user-guide/webapp/govern',
-    voting: 'https://docs.anchorprotocol.com/user-guide/webapp/voting',
+    gauges: 'https://docs.anchorprotocol.com/user-guide/webapp/gauges',
   },
 } as const;
 

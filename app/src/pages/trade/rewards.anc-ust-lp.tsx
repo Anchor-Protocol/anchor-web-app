@@ -10,7 +10,7 @@ import { AncUstLpStake } from 'pages/trade/components/AncUstLpStake';
 import { AncUstLpStakeOverview } from 'pages/trade/components/AncUstLpStakeOverview';
 import { AncUstLpUnstake } from 'pages/trade/components/AncUstLpUnstake';
 import { AncUstLpWithdraw } from 'pages/trade/components/AncUstLpWithdraw';
-import { ancUstLpPathname } from 'pages/trade/env';
+import { ROUTES } from 'pages/trade/env';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import {
   Navigate,
@@ -67,7 +67,7 @@ const stakeItems: Item[] = [
 function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
   const navigate = useNavigate();
 
-  const pageMatch = useMatch(`/${ancUstLpPathname}/:view`);
+  const pageMatch = useMatch(`/${ROUTES.ANC_UST_LP}/:view`);
 
   const tab = useMemo<Item | undefined>(() => {
     switch (pageMatch?.params.view) {
@@ -84,8 +84,8 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
     (nextTab: Item) => {
       navigate(
         nextTab.value === 'stake'
-          ? `/${ancUstLpPathname}/stake`
-          : `/${ancUstLpPathname}/provide`,
+          ? `/${ROUTES.ANC_UST_LP}/stake`
+          : `/${ROUTES.ANC_UST_LP}/provide`,
       );
     },
     [navigate],
@@ -106,7 +106,7 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
 
   const subTabChange = useCallback(
     (nextTab: Item) => {
-      navigate(`/${ancUstLpPathname}/${nextTab.value}`);
+      navigate(`/${ROUTES.ANC_UST_LP}/${nextTab.value}`);
     },
     [navigate],
   );
@@ -159,11 +159,11 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
             <Route path={`/unstake`} element={<AncUstLpUnstake />} />
             <Route
               path={``}
-              element={<Navigate to={`/${ancUstLpPathname}/provide`} />}
+              element={<Navigate to={`/${ROUTES.ANC_UST_LP}/provide`} />}
             />
             <Route
               path={`*`}
-              element={<Navigate to={`/${ancUstLpPathname}/provide`} />}
+              element={<Navigate to={`/${ROUTES.ANC_UST_LP}/provide`} />}
             />
           </Routes>
 
