@@ -5,10 +5,9 @@ import { EmbossButton } from '@libs/neumorphism-ui/components/EmbossButton';
 import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
-import busd from './busd.svg';
-import dai from './dai.svg';
-import usdc from './usdc.svg';
-import usdt from './usdt.svg';
+import orion from '../../assets/orion.svg';
+import curve from '../../assets/curve.svg';
+import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
 
 interface FormParams {
   className?: string;
@@ -23,41 +22,58 @@ export function useEarnOnNonUstStablecoinsDialog(): [
   return useDialog(Component);
 }
 
-const tokens = [
-  { name: 'USD Coin', image: usdc },
-  { name: 'Tether', image: usdt },
-  { name: 'Binance USD', image: busd },
-  { name: 'DAI', image: dai },
-];
-
 function ComponentBase({
   className,
   closeDialog,
 }: DialogProps<FormParams, FormReturn>) {
+  const {
+    target: { chain },
+  } = useDeploymentTarget();
+
   return (
     <Modal open onClose={() => closeDialog()}>
       <Dialog className={className} onClose={() => closeDialog()}>
         <h1>Earn on Non-UST Stablecoins</h1>
 
-        {tokens.map(({ name, image }) => (
+        {chain === Chain.Ethereum && (
           <EmbossButton
-            key={name}
             component="a"
             href="https://app.orion.money/"
             target="_blank"
             rel="noreferrer"
           >
             <span>
-              {name}&nbsp;
+              Orion Money&nbsp;
               <sub>
                 <Launch />
               </sub>
             </span>
             <i>
-              <img src={image} alt={name} />
+              <img src={orion} alt="Orion Money" />
             </i>
           </EmbossButton>
-        ))}
+        )}
+
+        <EmbossButton
+          component="a"
+          href={
+            chain === Chain.Ethereum
+              ? 'https://curve.fi/'
+              : 'https://avax.curve.fi/'
+          }
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span>
+            Curve&nbsp;
+            <sub>
+              <Launch />
+            </sub>
+          </span>
+          <i>
+            <img src={curve} alt="Curve" />
+          </i>
+        </EmbossButton>
       </Dialog>
     </Modal>
   );

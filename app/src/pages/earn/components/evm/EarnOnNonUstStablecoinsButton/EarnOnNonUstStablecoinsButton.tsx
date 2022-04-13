@@ -2,7 +2,7 @@ import { ButtonBaseProps } from '@material-ui/core';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import React from 'react';
 import styled from 'styled-components';
-import { OrionIcon } from './OrionIcon';
+import { DollarCoin } from '@anchor-protocol/icons';
 import { useEarnOnNonUstStablecoinsDialog } from './useEarnOnNonUstStablecoinsDialog';
 
 export function EarnOnNonUstStablecoinsButton(buttonProps: ButtonBaseProps) {
@@ -11,7 +11,7 @@ export function EarnOnNonUstStablecoinsButton(buttonProps: ButtonBaseProps) {
   return (
     <>
       <Button {...buttonProps} onClick={() => openDialog({})}>
-        <OrionIcon />
+        <DollarCoin />
         <span>Earn on Non-UST Stablecoins</span>
       </Button>
       {dialogElement}

@@ -17,12 +17,12 @@ export const DEPLOYMENT_TARGETS = [
     isNative: true,
     isEVM: false,
   },
-  // {
-  //   chain: Chain.Ethereum,
-  //   icon: '/assets/ethereum-logo.svg',
-  //   isNative: false,
-  //   isEVM: true,
-  // },
+  {
+    chain: Chain.Ethereum,
+    icon: '/assets/ethereum-logo.svg',
+    isNative: false,
+    isEVM: true,
+  },
   {
     chain: Chain.Avalanche,
     icon: '/assets/avalanche-logo.svg',
