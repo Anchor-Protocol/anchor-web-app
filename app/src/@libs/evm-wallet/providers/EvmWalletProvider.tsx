@@ -30,7 +30,7 @@ export type EvmWallet = {
   address?: string;
   error?: Error;
   provider: EvmWalletWeb3Provider;
-  createReadOnlyWalletSession: () => void;
+  requestReadOnlyConnection: () => void;
 };
 
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
@@ -95,7 +95,7 @@ function WalletProvider({ children }: UIElementProps) {
       }
     };
 
-    const createReadOnlyWalletSession = async () => {
+    const requestReadOnlyConnection = async () => {
       const networks = SupportedChainIdsByChain[chain as SupportedEvmChain].map(
         (chainId) => ({
           chainId: chainId.toString(),
@@ -134,7 +134,7 @@ function WalletProvider({ children }: UIElementProps) {
       status,
       error,
       provider: provider as EvmWalletWeb3Provider,
-      createReadOnlyWalletSession,
+      requestReadOnlyConnection,
     };
   }, [
     isActivating,

@@ -9,7 +9,7 @@ export function EvmMobileHeader() {
   const [open, setOpen] = useState<boolean>(false);
   const [openWalletDialog, walletDialogElement] = useWalletDialog();
   const { status } = useAccount();
-  const { createReadOnlyWalletSession } = useEvmWallet();
+  const { requestReadOnlyConnection } = useEvmWallet();
 
   const toggleWallet = useCallback(() => {
     openWalletDialog({});
@@ -18,8 +18,8 @@ export function EvmMobileHeader() {
   const viewAddress = useCallback(() => {
     setOpen(false);
 
-    createReadOnlyWalletSession();
-  }, [createReadOnlyWalletSession]);
+    requestReadOnlyConnection();
+  }, [requestReadOnlyConnection]);
 
   const viewAddressButtonElement = useMemo(() => {
     return (

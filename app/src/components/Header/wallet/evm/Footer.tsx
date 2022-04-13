@@ -10,7 +10,7 @@ interface FooterProps {
 }
 
 export const Footer = ({ includesReadonly, onClose }: FooterProps) => {
-  const { createReadOnlyWalletSession } = useEvmWallet();
+  const { requestReadOnlyConnection } = useEvmWallet();
 
   return (
     <>
@@ -22,7 +22,7 @@ export const Footer = ({ includesReadonly, onClose }: FooterProps) => {
           <BorderButton
             className="readonly"
             onClick={() => {
-              createReadOnlyWalletSession();
+              requestReadOnlyConnection();
               onClose();
             }}
           >
