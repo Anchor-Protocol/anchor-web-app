@@ -8,6 +8,7 @@ import { useAccount } from 'contexts/account';
 import { Content } from '../../wallet/evm/Content';
 import { useEvmWallet, useWeb3React } from '@libs/evm-wallet';
 import { ConnectionList } from 'components/Header/wallet/evm/ConnectionList';
+import { HumanAddr } from '@libs/types';
 
 // TODO: see if this can be merged with useWalletDialog on the Terra side
 
@@ -26,9 +27,9 @@ export function useWalletDialog(): [
 
 function ComponentBase(props: DialogProps<FormParams, FormReturn>) {
   const { className, closeDialog } = props;
-  const { disconnect } = useWeb3React();
+  const { disconnect, account } = useWeb3React();
   const { connection } = useEvmWallet();
-  const { connected, terraWalletAddress } = useAccount();
+  const { connected } = useAccount();
 
   const disconnectWallet = useCallback(() => {
     disconnect();
@@ -40,7 +41,7 @@ function ComponentBase(props: DialogProps<FormParams, FormReturn>) {
       <Dialog className={className} onClose={() => closeDialog()}>
         {connected && connection ? (
           <Content
-            walletAddress={terraWalletAddress!}
+            walletAddress={account as HumanAddr}
             connection={connection}
             onClose={closeDialog}
             onDisconnectWallet={disconnectWallet}
