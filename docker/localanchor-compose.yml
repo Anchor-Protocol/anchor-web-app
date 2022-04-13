@@ -5,7 +5,7 @@ services:
   web-app:
     #image: ghcr.io/anchor-protocol/web-app
     build:
-      context: ../modules/web-app
+      context: ./modules/web-app
       dockerfile: docker/Dockerfile
       args:
         BUILD_ENV: ci
