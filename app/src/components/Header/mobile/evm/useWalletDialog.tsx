@@ -14,6 +14,7 @@ import { HumanAddr } from '@libs/types';
 
 interface FormParams {
   className?: string;
+  onRequestReadOnlyWallet: () => void;
 }
 
 type FormReturn = void;
@@ -37,20 +38,25 @@ function ComponentBase(props: DialogProps<FormParams, FormReturn>) {
   }, [closeDialog, disconnect]);
 
   return (
-    <Modal open onClose={() => closeDialog()}>
-      <Dialog className={className} onClose={() => closeDialog()}>
-        {connected && connection ? (
-          <Content
-            walletAddress={account as HumanAddr}
-            connection={connection}
-            onClose={closeDialog}
-            onDisconnectWallet={disconnectWallet}
-          />
-        ) : (
-          <ConnectionList onClose={closeDialog} />
-        )}
-      </Dialog>
-    </Modal>
+    <>
+      <Modal open onClose={() => closeDialog()}>
+        <Dialog className={className} onClose={() => closeDialog()}>
+          {connected && connection ? (
+            <Content
+              walletAddress={account as HumanAddr}
+              connection={connection}
+              onClose={closeDialog}
+              onDisconnectWallet={disconnectWallet}
+            />
+          ) : (
+            <ConnectionList
+              onRequestReadOnlyWallet={props.onRequestReadOnlyWallet}
+              onClose={closeDialog}
+            />
+          )}
+        </Dialog>
+      </Modal>
+    </>
   );
 }
 

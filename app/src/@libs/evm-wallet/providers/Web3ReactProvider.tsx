@@ -3,7 +3,6 @@ import React, {
   ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
 } from 'react';
 import { getSelectedConnector, Web3ReactHooks } from '@web3-react/core';
@@ -22,16 +21,11 @@ import {
   walletConnectStore,
 } from '../connectors/walletConnect';
 import { empty, emptyHooks, emptyStore } from '../connectors/empty';
-import {
-  ReadOnly,
-  readOnly,
-  ReadOnlyConnectionConfig,
-  readOnlyHooks,
-  readOnlyStore,
-} from '../connectors/readOnly';
+import { readOnly, readOnlyHooks, readOnlyStore } from '../connectors/readOnly';
+import { ReadOnlyConnector } from '../connectors/ReadOnlyConnector';
 
 const connectors: [
-  Empty | ReadOnly | MetaMask | WalletConnect,
+  Empty | ReadOnlyConnector | MetaMask | WalletConnect,
   Web3ReactHooks,
   Web3ReactStore,
 ][] = [
@@ -79,12 +73,6 @@ export function Web3ReactProvider<T extends BaseProvider = Web3Provider>(
     ConnectType.None,
   );
 
-  const [readOnlyConnectionConfig, setReadOnlyConnectionConfig] =
-    useLocalStorage<ReadOnlyConnectionConfig | null>(
-      '__anchor_evm_readonly_connection_config',
-      null,
-    );
-
   const {
     useSelectedChainId,
     useSelectedAccounts,
@@ -116,34 +104,6 @@ export function Web3ReactProvider<T extends BaseProvider = Web3Provider>(
   const disconnect = useCallback(() => {
     setConnectionType(ConnectType.None);
   }, [setConnectionType]);
-
-  const isReadOnlyConnection = connectionType === ConnectType.ReadOnly;
-
-  useEffect(() => {
-    if (isReadOnlyConnection && chainId && account) {
-      if (
-        readOnlyConnectionConfig?.chainId !== chainId ||
-        readOnlyConnectionConfig?.account !== account
-      ) {
-        setReadOnlyConnectionConfig({ account, chainId });
-      }
-    } else if (!isReadOnlyConnection && readOnlyConnectionConfig !== null) {
-      setReadOnlyConnectionConfig(null);
-    }
-  }, [
-    account,
-    chainId,
-    isReadOnlyConnection,
-    readOnlyConnectionConfig,
-    setReadOnlyConnectionConfig,
-  ]);
-
-  useEffect(() => {
-    if (isReadOnlyConnection && !account && readOnlyConnectionConfig) {
-      const connector = connect(ConnectType.ReadOnly) as ReadOnly;
-      connector.activate(readOnlyConnectionConfig);
-    }
-  }, [account, connect, isReadOnlyConnection, readOnlyConnectionConfig]);
 
   const value = useMemo(() => {
     return {

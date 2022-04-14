@@ -2,16 +2,18 @@ import React from 'react';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { TermsMessage } from '../../desktop/TermsMessage';
-import { useEvmWallet } from '@libs/evm-wallet';
 
 interface FooterProps {
   includesReadonly: boolean;
   onClose: () => void;
+  onRequestReadOnlyWallet: () => void;
 }
 
-export const Footer = ({ includesReadonly, onClose }: FooterProps) => {
-  const { requestReadOnlyConnection } = useEvmWallet();
-
+export const Footer = ({
+  includesReadonly,
+  onClose,
+  onRequestReadOnlyWallet,
+}: FooterProps) => {
   return (
     <>
       {includesReadonly && (
@@ -22,7 +24,7 @@ export const Footer = ({ includesReadonly, onClose }: FooterProps) => {
           <BorderButton
             className="readonly"
             onClick={() => {
-              requestReadOnlyConnection();
+              onRequestReadOnlyWallet();
               onClose();
             }}
           >
