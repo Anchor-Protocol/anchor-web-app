@@ -10,6 +10,7 @@ import { ConnectionList } from './ConnectionList';
 import { Content } from './Content';
 import styled from 'styled-components';
 import { UIElementProps } from '@libs/ui';
+import { useCreateEvmReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/evm/useCreateEvmReadOnlyWallet';
 
 const EvmWalletSelectorBase = ({ className }: UIElementProps) => {
   const { nativeWalletAddress } = useAccount();
@@ -29,6 +30,9 @@ const EvmWalletSelectorBase = ({ className }: UIElementProps) => {
     disconnect();
   }, [disconnect, onClose]);
 
+  const [createEvmReadOnlyWallet, createEvmReadOnlyWalletDialog] =
+    useCreateEvmReadOnlyWallet();
+
   return (
     <WalletSelector
       className={className}
@@ -42,7 +46,10 @@ const EvmWalletSelectorBase = ({ className }: UIElementProps) => {
           <DropdownContainer>
             <DropdownBox>
               {!nativeWalletAddress || !connection ? (
-                <ConnectionList onClose={onClose} />
+                <ConnectionList
+                  onClose={onClose}
+                  onRequestReadOnlyWallet={createEvmReadOnlyWallet}
+                />
               ) : (
                 <Content
                   walletAddress={nativeWalletAddress}
@@ -55,6 +62,7 @@ const EvmWalletSelectorBase = ({ className }: UIElementProps) => {
           </DropdownContainer>
         )}
       </>
+      {createEvmReadOnlyWalletDialog}
     </WalletSelector>
   );
 };

@@ -5,6 +5,9 @@ import { Web3Provider } from '@ethersproject/providers';
 import { UIElementProps } from '@libs/ui';
 import { MetaMask } from '@web3-react/metamask';
 import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
+
+type EvmWalletWeb3Provider = Web3Provider | StaticJsonRpcProvider | undefined;
 
 export type EvmWallet = {
   activate: (chainId?: number) => Promise<Error | undefined>;
@@ -17,7 +20,7 @@ export type EvmWallet = {
   chainId?: number;
   address?: string;
   error?: Error;
-  provider: Web3Provider | undefined;
+  provider: EvmWalletWeb3Provider;
 };
 
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
@@ -83,25 +86,29 @@ function WalletProvider({ children }: UIElementProps) {
       activate,
       watchAsset,
       connectionType,
-      availableConnectTypes: [ConnectType.MetaMask, ConnectType.WalletConnect],
+      availableConnectTypes: [
+        ConnectType.MetaMask,
+        ConnectType.WalletConnect,
+        ConnectType.ReadOnly,
+      ],
       availableConnections: AvailableConnections,
       connection,
       address: account,
       chainId,
       status,
       error,
-      provider: provider as Web3Provider,
+      provider: provider as EvmWalletWeb3Provider,
     };
   }, [
+    account,
+    chainId,
     connectionType,
     connector,
-    store,
-    account,
+    error,
     isActivating,
     isActive,
-    chainId,
-    error,
     provider,
+    store,
   ]);
 
   return (

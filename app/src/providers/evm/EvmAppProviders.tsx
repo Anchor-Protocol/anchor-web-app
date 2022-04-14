@@ -14,13 +14,14 @@ import { EvmNetworkProvider } from './EvmNetworkProvider';
 import { ThemeProvider } from 'contexts/theme';
 import { lightTheme as ethereumLightTheme } from 'themes/ethereum/lightTheme';
 import { lightTheme as avalancheLightTheme } from 'themes/avalanche/lightTheme';
-import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { QueryProvider } from 'providers/QueryProvider';
 import { EvmUnsupportedNetwork } from 'components/EvmUnsupportedNetwork';
 import { GlobalStyle } from '@libs/neumorphism-ui/themes/GlobalStyle';
 import { BackgroundTxRequestProvider } from 'tx/evm/background';
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 import { EvmWrongNetwork } from 'components/EvmWrongNetwork';
+import { Chain } from '@anchor-protocol/types';
 
 const isSupportedChain = (evmChainId?: EvmChainId): boolean => {
   return Boolean(evmChainId) && SupportedChainIds.includes(evmChainId!);
@@ -83,17 +84,17 @@ export function EvmAppProviders({ children }: UIElementProps) {
   const { target } = useDeploymentTarget();
 
   return (
-    <EvmWalletProvider>
-      <ThemeProvider
-        initialTheme="light"
-        lightTheme={
-          target.chain === Chain.Ethereum
-            ? ethereumLightTheme
-            : avalancheLightTheme
-        }
-      >
+    <ThemeProvider
+      initialTheme="light"
+      lightTheme={
+        target.chain === Chain.Ethereum
+          ? ethereumLightTheme
+          : avalancheLightTheme
+      }
+    >
+      <EvmWalletProvider>
         <ChainGaurdian>{children}</ChainGaurdian>
-      </ThemeProvider>
-    </EvmWalletProvider>
+      </EvmWalletProvider>
+    </ThemeProvider>
   );
 }

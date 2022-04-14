@@ -1,4 +1,5 @@
-import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { Chain } from '@anchor-protocol/types';
 import React, { FunctionComponent, ReactNode } from 'react';
 
 interface DeploymentSwitchProps {

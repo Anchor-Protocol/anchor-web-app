@@ -5,11 +5,12 @@ import styled, { useTheme } from 'styled-components';
 import { TransactionButton } from './TransactionButton';
 import { DropdownBox, DropdownContainer } from '../desktop/DropdownContainer';
 import { TransactionList } from './TransactionList';
-import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { useBackgroundTransactions } from 'tx/evm/storage/useBackgroundTransactions';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { useNavigate } from 'react-router-dom';
 import { screen } from 'env';
+import { Chain } from '@anchor-protocol/types';
 
 const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
   const theme = useTheme();

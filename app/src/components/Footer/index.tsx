@@ -19,8 +19,8 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { BlockInfo } from './BlockInfo';
-import { Chain } from '@anchor-protocol/app-provider';
 import { EvmBlockInfo } from './EvmBlockInfo';
+import { Chain } from '@anchor-protocol/types';
 
 export interface FooterProps {
   className?: string;
