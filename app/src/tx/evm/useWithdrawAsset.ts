@@ -13,7 +13,6 @@ import {
   refetchQueryByTxKind,
   TxKind,
   txResult,
-  TX_GAS_LIMIT,
 } from './utils';
 
 type WithdrawAssetTxResult = TwoWayTxResponse<ContractReceipt> | null;
@@ -41,12 +40,13 @@ export const useWithdrawAssetTx = () => {
         const result = await xAnchor.withdrawAsset(
           { contract: txParams.tokenContract },
           address!,
-          TX_GAS_LIMIT,
-          (event) => {
-            renderTxResults.next(
-              txResult(event, connectionType, chainId!, TxKind.WithdrawAsset),
-            );
-            txEvents.next({ event, txParams });
+          {
+            handleEvent: (event) => {
+              renderTxResults.next(
+                txResult(event, connectionType, chainId!, TxKind.WithdrawAsset),
+              );
+              txEvents.next({ event, txParams });
+            },
           },
         );
         refetchQueries(refetchQueryByTxKind(TxKind.WithdrawAsset));

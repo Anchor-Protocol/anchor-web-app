@@ -5,7 +5,6 @@ import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
@@ -72,7 +71,6 @@ export function useBorrowUstTx():
             { contract: collateral.bridgedAddress as ERC20Addr },
             nativeCollateralAmount.toString(),
             address!,
-            TX_GAS_LIMIT,
           );
 
           writer.borrowUST();
@@ -84,10 +82,11 @@ export function useBorrowUstTx():
             nativeCollateralAmount.toString(),
             borrowAmount,
             address!,
-            TX_GAS_LIMIT,
-            (event) => {
-              writer.borrowUST(event, collateral.symbol);
-              txEvents.next({ event, txParams });
+            {
+              handleEvent: (event) => {
+                writer.borrowUST(event, collateral.symbol);
+                txEvents.next({ event, txParams });
+              },
             },
           );
 
@@ -98,15 +97,12 @@ export function useBorrowUstTx():
         }
 
         // just borrowing based on current collateral
-        const borrowResult = await sdk.borrowStable(
-          borrowAmount,
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
+        const borrowResult = await sdk.borrowStable(borrowAmount, address!, {
+          handleEvent: (event) => {
             writer.borrowUST(event);
             txEvents.next({ event, txParams });
           },
-        );
+        });
         refetchQueries(refetchQueryByTxKind(TxKind.BorrowUst));
 
         return borrowResult;
