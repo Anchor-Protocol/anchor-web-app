@@ -17,7 +17,9 @@ import { WhitelistCollateral } from 'queries';
 import { useAccount } from 'contexts/account';
 import { useEvmNativeBalanceQuery } from 'queries/evm/useEvmNativeBalanceQuery';
 
-const EvmBalancesProvider = ({ children }: UIElementProps) => {
+const EvmBalancesProvider = (props: UIElementProps) => {
+  const { children } = props;
+
   const { nativeWalletAddress: walletAddress } = useAccount();
   const { data: native } = useEvmNativeBalanceQuery(walletAddress);
   const evmSdk = useEvmCrossAnchorSdk();
