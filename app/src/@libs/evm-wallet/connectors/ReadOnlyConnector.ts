@@ -1,4 +1,4 @@
-import { Connector } from '@web3-react/types';
+import { Connector, Actions } from '@web3-react/types';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { SupportedChainRpcs } from '../constants';
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
@@ -8,13 +8,48 @@ export interface ReadOnlyConnectionConfig {
   account: string;
 }
 
+const localStorageConfigKey = '__anchor_evm_readonly_connection_config';
+
 export class ReadOnlyConnector extends Connector {
   public customProvider: StaticJsonRpcProvider | undefined;
 
-  public async activate({ chainId, account }: ReadOnlyConnectionConfig) {
+  constructor(actions: Actions, connectEagerly = false) {
+    super(actions);
+
+    if (connectEagerly) {
+      this.connectEagerly();
+    }
+  }
+
+  public async activate(config: ReadOnlyConnectionConfig) {
+    const { chainId, account } = config;
+
     this.customProvider = new StaticJsonRpcProvider(
       SupportedChainRpcs[chainId],
     );
     this.actions.update({ chainId, accounts: [account] });
+
+    window.localStorage.setItem(localStorageConfigKey, JSON.stringify(config));
+  }
+
+  public async deactivate() {
+    window.localStorage.removeItem(localStorageConfigKey);
+  }
+
+  public async connectEagerly(): Promise<void> {
+    const cancelActivation = this.actions.startActivation();
+
+    const stringifiedConfig = window.localStorage.getItem(
+      localStorageConfigKey,
+    );
+    if (stringifiedConfig) {
+      try {
+        const { chainId, account } = JSON.parse(stringifiedConfig);
+        this.actions.update({ chainId, accounts: [account] });
+      } catch (error) {
+        console.debug('Could not connect eagerly', error);
+        cancelActivation();
+      }
+    }
   }
 }

@@ -4,6 +4,6 @@ import { ReadOnlyConnector } from './ReadOnlyConnector';
 
 export const [readOnly, readOnlyHooks, readOnlyStore] =
   initializeConnector<ReadOnlyConnector>(
-    (actions) => new ReadOnlyConnector(actions),
+    (actions) => new ReadOnlyConnector(actions, true),
     SupportedChainIds,
   );
