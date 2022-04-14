@@ -30,19 +30,18 @@ export const useRenderedTx = <TxParams>(
   sendTx: (
     txParams: TxParams,
   ) => Promise<CrossChainTxResponse<ContractReceipt> | null>,
-  emptyTxResult: ContractReceipt | null = null,
 ): RenderedTxResult<TxParams> => {
   const { txErrorReporter } = useAnchorWebapp();
 
   const renderingEvents = useMemo(
     () =>
       new BehaviorSubject<TxResultRendering<ContractReceipt | null>>({
-        value: emptyTxResult,
+        value: null,
         message: 'Processing transaction...',
         phase: TxStreamPhase.BROADCAST,
         receipts: [],
       }),
-    [emptyTxResult],
+    [],
   );
 
   const txCallback = useCallback(
