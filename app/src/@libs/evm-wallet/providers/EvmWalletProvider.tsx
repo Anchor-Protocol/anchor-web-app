@@ -14,7 +14,7 @@ import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet
 import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { ReadOnly } from '../connectors/readOnly';
+import { ReadOnlyConnector } from '../connectors/ReadOnlyConnector';
 
 type EvmWalletWeb3Provider = Web3Provider | StaticJsonRpcProvider | undefined;
 
@@ -108,7 +108,7 @@ function WalletProvider({ children }: UIElementProps) {
         const { chainId: stringifiedChainId, address } = readonlyWallet;
         const chainId = Number(stringifiedChainId) as EvmChainId;
 
-        const connector = connect(ConnectType.ReadOnly) as ReadOnly;
+        const connector = connect(ConnectType.ReadOnly) as ReadOnlyConnector;
         await connector.activate({ chainId, account: address });
       }
     };

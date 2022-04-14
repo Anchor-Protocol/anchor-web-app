@@ -22,16 +22,14 @@ import {
   walletConnectStore,
 } from '../connectors/walletConnect';
 import { empty, emptyHooks, emptyStore } from '../connectors/empty';
+import { readOnly, readOnlyHooks, readOnlyStore } from '../connectors/readOnly';
 import {
-  ReadOnly,
-  readOnly,
+  ReadOnlyConnector,
   ReadOnlyConnectionConfig,
-  readOnlyHooks,
-  readOnlyStore,
-} from '../connectors/readOnly';
+} from '../connectors/ReadOnlyConnector';
 
 const connectors: [
-  Empty | ReadOnly | MetaMask | WalletConnect,
+  Empty | ReadOnlyConnector | MetaMask | WalletConnect,
   Web3ReactHooks,
   Web3ReactStore,
 ][] = [
@@ -140,7 +138,7 @@ export function Web3ReactProvider<T extends BaseProvider = Web3Provider>(
 
   useEffect(() => {
     if (isReadOnlyConnection && !account && readOnlyConnectionConfig) {
-      const connector = connect(ConnectType.ReadOnly) as ReadOnly;
+      const connector = connect(ConnectType.ReadOnly) as ReadOnlyConnector;
       connector.activate(readOnlyConnectionConfig);
     }
   }, [account, connect, isReadOnlyConnection, readOnlyConnectionConfig]);

@@ -4,7 +4,7 @@ import { MetaMask } from '@web3-react/metamask';
 import { WalletConnect } from '@web3-react/walletconnect';
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 import { Chain } from '@anchor-protocol/types';
-import { ReadOnly } from './connectors/readOnly';
+import { ReadOnlyConnector } from './connectors/ReadOnlyConnector';
 
 export const getConnectionType = (connector: Connector): ConnectType => {
   if (connector instanceof MetaMask) {
@@ -13,7 +13,7 @@ export const getConnectionType = (connector: Connector): ConnectType => {
   if (connector instanceof WalletConnect) {
     return ConnectType.WalletConnect;
   }
-  if (connector instanceof ReadOnly) {
+  if (connector instanceof ReadOnlyConnector) {
     return ConnectType.ReadOnly;
   }
   return ConnectType.None;
