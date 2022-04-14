@@ -25,7 +25,7 @@ const EvmAccountProvider = ({ children }: UIElementProps) => {
     return {
       status,
       connected: true,
-      availablePost: true,
+      availablePost: readonly === false,
       nativeWalletAddress: address as HumanAddr,
       network: 'evm',
       readonly,
