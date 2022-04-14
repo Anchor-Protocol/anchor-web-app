@@ -8,10 +8,11 @@ import { Footer } from './Footer';
 
 interface ConnectionListProps {
   onClose: () => void;
+  onRequestReadOnlyWallet: () => void;
 }
 
 const ConnectionList = (props: ConnectionListProps) => {
-  const { onClose } = props;
+  const { onClose, onRequestReadOnlyWallet } = props;
 
   const { connect } = useWeb3React();
 
@@ -22,6 +23,7 @@ const ConnectionList = (props: ConnectionListProps) => {
       footer={
         <Footer
           onClose={onClose}
+          onRequestReadOnlyWallet={onRequestReadOnlyWallet}
           includesReadonly={availableConnectTypes.includes(
             ConnectType.ReadOnly,
           )}

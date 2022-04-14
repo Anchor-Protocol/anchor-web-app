@@ -1,20 +1,11 @@
 import React, { createContext, useMemo } from 'react';
 import { Connection, ConnectType, ERC20Token, WalletStatus } from '../types';
-import {
-  AvailableConnections,
-  SupportedChainIdsByChain,
-  SupportedChainName,
-  SupportedEvmChain,
-} from '../constants';
+import { AvailableConnections } from '../constants';
 import { Web3Provider } from '@ethersproject/providers';
 import { UIElementProps } from '@libs/ui';
 import { MetaMask } from '@web3-react/metamask';
 import { Web3ReactProvider, useWeb3React } from './Web3ReactProvider';
-import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/evm/useCreateReadOnlyWallet';
-import { useDeploymentTarget } from '@anchor-protocol/app-provider';
-import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { ReadOnlyConnector } from '../connectors/ReadOnlyConnector';
 
 type EvmWalletWeb3Provider = Web3Provider | StaticJsonRpcProvider | undefined;
 
@@ -30,7 +21,6 @@ export type EvmWallet = {
   address?: string;
   error?: Error;
   provider: EvmWalletWeb3Provider;
-  requestReadOnlyConnection: () => void;
 };
 
 export const EvmWalletContext = createContext<EvmWallet | undefined>(undefined);
@@ -54,15 +44,7 @@ function WalletProvider({ children }: UIElementProps) {
     error,
     provider,
     connectionType,
-    connect,
   } = useWeb3React();
-
-  const {
-    target: { chain },
-  } = useDeploymentTarget();
-
-  const [requestReadOnlyWalletCreationFlow, createReadOnlyWalletDialog] =
-    useCreateReadOnlyWallet();
 
   const evmWallet = useMemo<EvmWallet>(() => {
     const status: WalletStatus = isActivating
@@ -95,24 +77,6 @@ function WalletProvider({ children }: UIElementProps) {
       }
     };
 
-    const requestReadOnlyConnection = async () => {
-      const networks = SupportedChainIdsByChain[chain as SupportedEvmChain].map(
-        (chainId) => ({
-          chainId: chainId.toString(),
-          name: SupportedChainName[chainId],
-        }),
-      );
-      const readonlyWallet = await requestReadOnlyWalletCreationFlow(networks);
-
-      if (readonlyWallet !== null) {
-        const { chainId: stringifiedChainId, address } = readonlyWallet;
-        const chainId = Number(stringifiedChainId) as EvmChainId;
-
-        const connector = connect(ConnectType.ReadOnly) as ReadOnlyConnector;
-        await connector.activate({ chainId, account: address });
-      }
-    };
-
     const connection =
       account === undefined
         ? null
@@ -134,27 +98,22 @@ function WalletProvider({ children }: UIElementProps) {
       status,
       error,
       provider: provider as EvmWalletWeb3Provider,
-      requestReadOnlyConnection,
     };
   }, [
+    account,
+    chainId,
+    connectionType,
+    connector,
+    error,
     isActivating,
     isActive,
-    account,
-    connectionType,
-    chainId,
-    error,
     provider,
-    connector,
     store,
-    chain,
-    requestReadOnlyWalletCreationFlow,
-    connect,
   ]);
 
   return (
     <EvmWalletContext.Provider value={evmWallet}>
       {children}
-      {createReadOnlyWalletDialog}
     </EvmWalletContext.Provider>
   );
 }

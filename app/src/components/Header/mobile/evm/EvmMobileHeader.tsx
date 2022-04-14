@@ -3,23 +3,26 @@ import { useWalletDialog } from './useWalletDialog';
 import { MobileHeader } from '../MobileHeader';
 import { useAccount } from 'contexts/account';
 import { ViewAddressButton } from '../ViewAddressButton';
-import { useEvmWallet } from '@libs/evm-wallet';
+import { useCreateEvmReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/evm/useCreateEvmReadOnlyWallet';
 
 export function EvmMobileHeader() {
   const [open, setOpen] = useState<boolean>(false);
+
+  const [createEvmReadOnlyWallet, createEvmReadOnlyWalletDialog] =
+    useCreateEvmReadOnlyWallet();
+
   const [openWalletDialog, walletDialogElement] = useWalletDialog();
   const { status } = useAccount();
-  const { requestReadOnlyConnection } = useEvmWallet();
 
   const toggleWallet = useCallback(() => {
-    openWalletDialog({});
-  }, [openWalletDialog]);
+    openWalletDialog({ onRequestReadOnlyWallet: createEvmReadOnlyWallet });
+  }, [createEvmReadOnlyWallet, openWalletDialog]);
 
   const viewAddress = useCallback(() => {
     setOpen(false);
 
-    requestReadOnlyConnection();
-  }, [requestReadOnlyConnection]);
+    createEvmReadOnlyWallet();
+  }, [createEvmReadOnlyWallet]);
 
   const viewAddressButtonElement = useMemo(() => {
     return (
@@ -37,6 +40,7 @@ export function EvmMobileHeader() {
         viewAddressButtonElement={viewAddressButtonElement}
       />
       {walletDialogElement}
+      {createEvmReadOnlyWalletDialog}
     </>
   );
 }
