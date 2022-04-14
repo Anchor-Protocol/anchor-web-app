@@ -30,22 +30,24 @@ const ConnectionList = (props: ConnectionListProps) => {
         />
       }
     >
-      {availableConnections.map(({ icon, name, type }) => (
-        <FlatButton
-          key={type}
-          className="connect"
-          onClick={() => {
-            onClose();
-            const connector = connect(type);
-            connector.activate();
-          }}
-        >
-          <IconSpan>
-            {name}
-            <img src={icon} alt={name} />
-          </IconSpan>
-        </FlatButton>
-      ))}
+      {availableConnections
+        .filter(({ type }) => type !== ConnectType.ReadOnly)
+        .map(({ icon, name, type }) => (
+          <FlatButton
+            key={type}
+            className="connect"
+            onClick={() => {
+              onClose();
+              const connector = connect(type);
+              connector.activate();
+            }}
+          >
+            <IconSpan>
+              {name}
+              <img src={icon} alt={name} />
+            </IconSpan>
+          </FlatButton>
+        ))}
     </ConnectionTypeList>
   );
 };
