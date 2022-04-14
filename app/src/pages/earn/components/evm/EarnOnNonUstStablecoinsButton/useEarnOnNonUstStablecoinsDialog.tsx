@@ -36,44 +36,50 @@ function ComponentBase({
         <h1>Earn on Non-UST Stablecoins</h1>
 
         {chain === Chain.Ethereum && (
+          <section>
+            <h2>Earn</h2>
+            <EmbossButton
+              component="a"
+              href="https://app.orion.money/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span>
+                Orion Money&nbsp;
+                <sub>
+                  <Launch />
+                </sub>
+              </span>
+              <i>
+                <img src={orion} alt="Orion Money" />
+              </i>
+            </EmbossButton>
+          </section>
+        )}
+
+        <section>
+          <h2>Swaps</h2>
           <EmbossButton
             component="a"
-            href="https://app.orion.money/"
+            href={
+              chain === Chain.Ethereum
+                ? 'https://curve.fi/'
+                : 'https://avax.curve.fi/'
+            }
             target="_blank"
             rel="noreferrer"
           >
             <span>
-              Orion Money&nbsp;
+              Curve&nbsp;
               <sub>
                 <Launch />
               </sub>
             </span>
             <i>
-              <img src={orion} alt="Orion Money" />
+              <img src={curve} alt="Curve" />
             </i>
           </EmbossButton>
-        )}
-
-        <EmbossButton
-          component="a"
-          href={
-            chain === Chain.Ethereum
-              ? 'https://curve.fi/'
-              : 'https://avax.curve.fi/'
-          }
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span>
-            Curve&nbsp;
-            <sub>
-              <Launch />
-            </sub>
-          </span>
-          <i>
-            <img src={curve} alt="Curve" />
-          </i>
-        </EmbossButton>
+        </section>
       </Dialog>
     </Modal>
   );
