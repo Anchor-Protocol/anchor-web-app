@@ -80,7 +80,7 @@ function OverviewBase({ className }: OverviewProps) {
   const ancUstLpAprTooltip = useMemo(() => {
     let defaultTooltip = 'LP rewards APR';
 
-    if (lpRewards && lpRewards.length > 0) {
+    if (lpRewards && lpRewards.length > 0 && lpRewards[0].apy) {
       return `${formatRate(lpRewards[0].apy)}% (if compounded daily)`;
     }
 
