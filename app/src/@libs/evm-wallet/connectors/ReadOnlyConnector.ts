@@ -44,8 +44,8 @@ export class ReadOnlyConnector extends Connector {
     );
     if (stringifiedConfig) {
       try {
-        const { chainId, account } = JSON.parse(stringifiedConfig);
-        this.actions.update({ chainId, accounts: [account] });
+        const config = JSON.parse(stringifiedConfig);
+        this.activate(config);
       } catch (error) {
         console.debug('Could not connect eagerly', error);
         cancelActivation();
