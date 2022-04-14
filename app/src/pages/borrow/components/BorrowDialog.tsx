@@ -295,8 +295,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
           </EstimatedLiquidationPrice>
         )}
 
-        {isNative === false ||
-          (false && (
+        {isNative === false && (
             <>
               <PageDivider />
               <BorrowCollateralInput
@@ -312,7 +311,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
                 }}
               />
             </>
-          ))}
+          )}
 
         {states.txFee &&
           states.txFee.gt(0) &&
