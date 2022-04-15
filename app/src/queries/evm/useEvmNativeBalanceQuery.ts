@@ -7,10 +7,10 @@ export function useEvmNativeBalanceQuery(
   walletAddress?: HumanAddr,
 ): UseQueryResult<u<Token> | undefined> {
   const { queryErrorReporter } = useApp();
-  const { provider } = useEvmWallet();
+  const { provider, chainId } = useEvmWallet();
 
   return useQuery(
-    [EVM_QUERY_KEY.EVM_NATIVE_BALANCES, provider, walletAddress],
+    [EVM_QUERY_KEY.EVM_NATIVE_BALANCES, chainId, walletAddress],
     () => {
       if (walletAddress === undefined || provider === undefined) {
         return;
