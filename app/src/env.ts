@@ -66,7 +66,43 @@ export const ANCHOR_CONSTANTS: AnchorConstants = {
   astroportGasWanted: 1_600_000 as Gas,
 };
 
-export const COLUMBUS_CONTRACT_ADDRESS = {
+type ContractAddressMapKey =
+  | 'bLunaHub'
+  | 'bLunaToken'
+  | 'bLunaReward'
+  | 'bLunaAirdrop'
+  | 'bLunaValidatorsRegistry'
+  | 'mmInterestModel'
+  | 'mmOracle'
+  | 'mmMarket'
+  | 'mmOverseer'
+  | 'mmCustody'
+  | 'mmCustodyBEth'
+  | 'mmLiquidation'
+  | 'mmDistributionModel'
+  | 'mmLiquidationQueue'
+  | 'aTerra'
+  | 'bLunaLunaPair'
+  | 'bLunaLunaLPToken'
+  | 'ancUstPair'
+  | 'ancUstLPToken'
+  | 'gov'
+  | 'distributor'
+  | 'collector'
+  | 'community'
+  | 'staking'
+  | 'ANC'
+  | 'anchorAirdropRegistry'
+  | 'investor_vesting'
+  | 'team_vesting'
+  | 'terraswapFactory'
+  | 'astroportGenerator'
+  | 'vesting'
+  | 'astroUstPair';
+
+export type ContractAddressMap = Partial<Record<ContractAddressMapKey, string>>;
+
+export const COLUMBUS_CONTRACT_ADDRESS: ContractAddressMap = {
   bLunaHub: 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts',
   bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
   bLunaReward: 'terra17yap3mhph35pcwvhza38c2lkj7gzywzy05h7l0',
@@ -99,18 +135,13 @@ export const COLUMBUS_CONTRACT_ADDRESS = {
   astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
   vesting: 'terra13v4ln23tmfs2zk4nh5dw5mzufckekp4fpafpcy',
   astroUstPair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
-} as const;
+};
 
-type ContractKey = keyof typeof COLUMBUS_CONTRACT_ADDRESS;
-
-export const BOMBAY_CONTRACT_ADDRESS: Record<ContractKey, string> = {
+export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
   bLunaHub: 'terra1fflas6wv4snv8lsda9knvq2w0cyt493r8puh2e',
   bLunaToken: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x',
   bLunaReward: 'terra1ac24j6pdxh53czqyrkr6ygphdeftg7u3958tl2',
-  bLunaValidatorsRegistry: '',
   bLunaAirdrop: 'terra1334h20c9ewxguw9p9vdxzmr8994qj4qu77ux6q',
-  //bEthReward: 'terra1ja3snkedk4t0zp7z3ljd064hcln8dsv5x004na',
-  //bEthToken: 'terra19mkj9nec6e3y5754tlnuz4vem7lzh4n0lc2s3l',
   mmInterestModel: 'terra1m25aqupscdw2kw4tnq5ql6hexgr34mr76azh5x',
   mmOracle: 'terra1p4gg3p2ue6qy2qfuxtrmgv2ec3f4jmgqtazum8',
   mmMarket: 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal',
@@ -132,8 +163,6 @@ export const BOMBAY_CONTRACT_ADDRESS: Record<ContractKey, string> = {
   staking: 'terra1q68gyyxqnlh58jacz5r6rxfmxqpmmjv583fzqq',
   ANC: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
   anchorAirdropRegistry: 'terra1u5ywhlve3wugzqslqvm8ks2j0nsvrqjx0mgxpk',
-  investor_vesting: 'not available in testnet',
-  team_vesting: 'not available in testnet',
   terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
   astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
   vesting: 'terra15rq8j7auyyd6ydcfkktm3kdagcg56228uclkzy',

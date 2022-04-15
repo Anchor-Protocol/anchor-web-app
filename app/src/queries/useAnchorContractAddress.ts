@@ -6,7 +6,11 @@ import {
 } from '@anchor-protocol/app-provider';
 import { useQuery } from 'react-query';
 import { createQueryFn } from '@libs/react-query-utils';
-import { BOMBAY_CONTRACT_ADDRESS, COLUMBUS_CONTRACT_ADDRESS } from 'env';
+import {
+  BOMBAY_CONTRACT_ADDRESS,
+  COLUMBUS_CONTRACT_ADDRESS,
+  ContractAddressMap,
+} from 'env';
 import { CW20Addr, HumanAddr } from '@libs/types';
 
 enum AnchorNetwork {
@@ -35,7 +39,7 @@ const anchorContractAddressesQuery = async (
 
   if (anchorNetwork === AnchorNetwork.Local) {
     try {
-      const localAnchorAddressMap: Record<string, string> = await fetch(
+      const localAnchorAddressMap: ContractAddressMap = await fetch(
         'http://localhost:3003/',
       ).then((res) => res.json());
 
