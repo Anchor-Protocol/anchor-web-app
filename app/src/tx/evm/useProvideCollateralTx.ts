@@ -1,25 +1,16 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import {
-  EVM_ANCHOR_TX_REFETCH_MAP,
-  refetchQueryByTxKind,
-  TxKind,
-} from './utils';
+import { TxKind } from './utils';
 import { Subject } from 'rxjs';
-import { useCallback } from 'react';
-import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { useCallback, useRef } from 'react';
+import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy } from '@anchor-protocol/formatter';
-import { TxEvent } from './useTx';
 import { bAsset, NoMicro } from '@anchor-protocol/types';
-import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 import { WhitelistCollateral } from 'queries';
-
-type ProvideCollateralTxResult = OneWayTxResponse<ContractReceipt> | null;
-type ProvideCollateralTxRender = TxResultRendering<ProvideCollateralTxResult>;
 
 export interface ProvideCollateralTxParams {
   collateral: WhitelistCollateral;
@@ -28,17 +19,17 @@ export interface ProvideCollateralTxParams {
 }
 
 export function useProvideCollateralTx():
-  | BackgroundTxResult<ProvideCollateralTxParams, ProvideCollateralTxResult>
+  | BackgroundTxResult<ProvideCollateralTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
-  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
+  const renderTxResultsRef =
+    useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
 
   const provideTx = useCallback(
     async (
       txParams: ProvideCollateralTxParams,
-      renderTxResults: Subject<ProvideCollateralTxRender>,
-      txEvents: Subject<TxEvent<ProvideCollateralTxParams>>,
+      handleEvent: CrossChainEventHandler<ContractReceipt>,
     ) => {
       const {
         collateral: { bridgedAddress, symbol },
@@ -46,7 +37,10 @@ export function useProvideCollateralTx():
         erc20Decimals,
       } = txParams;
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
+      const writer = new EvmTxProgressWriter(
+        renderTxResultsRef.current!,
+        connectionType,
+      );
       writer.approveCollateral(symbol);
       writer.timer.start();
 
@@ -67,12 +61,10 @@ export function useProvideCollateralTx():
           {
             handleEvent: (event) => {
               writer.provideCollateral(symbol, event);
-              txEvents.next({ event, txParams });
+              handleEvent(event);
             },
           },
         );
-
-        refetchQueries(refetchQueryByTxKind(TxKind.ProvideCollateral));
 
         return response;
       } catch (err) {
@@ -82,15 +74,17 @@ export function useProvideCollateralTx():
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectionType, refetchQueries],
+    [xAnchor, address, connectionType],
   );
 
-  const persistedTxResult = useBackgroundTx<
-    ProvideCollateralTxParams,
-    ProvideCollateralTxResult
-  >(provideTx, parseTx, null, displayTx);
+  const backgroundTxResult = useBackgroundTx<ProvideCollateralTxParams>(
+    provideTx,
+    displayTx,
+  );
 
-  return address ? persistedTxResult : undefined;
+  renderTxResultsRef.current = backgroundTxResult?.renderTxResults;
+
+  return address ? backgroundTxResult : undefined;
 }
 
 const displayTx = (txParams: ProvideCollateralTxParams) => {
@@ -105,5 +99,3 @@ const displayTx = (txParams: ProvideCollateralTxParams) => {
     timestamp: Date.now(),
   };
 };
-
-const parseTx = (resp: NonNullable<ProvideCollateralTxResult>) => resp.tx;

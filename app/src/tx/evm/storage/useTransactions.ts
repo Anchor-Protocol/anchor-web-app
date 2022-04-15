@@ -1,5 +1,6 @@
 import { CrossChainEventKind } from '@anchor-protocol/crossanchor-sdk';
-import { useCallback, useMemo } from 'react';
+import { useRefCallback } from 'hooks';
+import { useMemo } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 import { TxKind } from '../utils';
 
@@ -26,17 +27,17 @@ export const useTransactions = () => {
   const [transactionStore, setTransactionStore] =
     useLocalStorage<TransactionStore>(TRANSACTIONS_STORAGE_KEY, {});
 
-  const getTransaction = useCallback(
+  const getTransaction = useRefCallback(
     (txHash: string) => transactionStore[txHash],
     [transactionStore],
   );
 
-  const transactionExists = useCallback(
+  const transactionExists = useRefCallback(
     (txHash: string | undefined) => Boolean(txHash && getTransaction(txHash)),
     [getTransaction],
   );
 
-  const saveTransaction = useCallback(
+  const saveTransaction = useRefCallback(
     (transaction: Transaction) => {
       setTransactionStore((transactionStore) => ({
         ...transactionStore,
@@ -46,7 +47,7 @@ export const useTransactions = () => {
     [setTransactionStore],
   );
 
-  const updateTransaction = useCallback(
+  const updateTransaction = useRefCallback(
     (txHash: string, updates: Partial<Transaction>) => {
       if (transactionExists(txHash)) {
         const tx = getTransaction(txHash);
@@ -66,7 +67,7 @@ export const useTransactions = () => {
     [getTransaction, saveTransaction, transactionExists],
   );
 
-  const removeTransaction = useCallback(
+  const removeTransaction = useRefCallback(
     (transactionHash: string) => {
       setTimeout(
         () =>
@@ -80,7 +81,7 @@ export const useTransactions = () => {
     [setTransactionStore],
   );
 
-  const removeAll = useCallback(() => {
+  const removeAll = useRefCallback(() => {
     setTransactionStore({});
   }, [setTransactionStore]);
 

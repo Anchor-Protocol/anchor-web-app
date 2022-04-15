@@ -6,10 +6,10 @@ import { TransactionButton } from './TransactionButton';
 import { DropdownBox, DropdownContainer } from '../desktop/DropdownContainer';
 import { TransactionList } from './TransactionList';
 import { useDeploymentTarget } from '@anchor-protocol/app-provider';
-import { useBackgroundTransactions } from 'tx/evm/storage/useBackgroundTransactions';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { useNavigate } from 'react-router-dom';
 import { screen } from 'env';
+import { useTransactions } from 'tx/evm';
 import { Chain } from '@anchor-protocol/types';
 
 const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
@@ -17,7 +17,7 @@ const TransactionWidgetBase = (props: UIElementProps & { color?: string }) => {
   const { className, color = theme.header.textColor } = props;
 
   const [open, setOpen] = useState(false);
-  const { backgroundTransactions } = useBackgroundTransactions();
+  const { transactions: backgroundTransactions } = useTransactions();
 
   const {
     target: { chain },
