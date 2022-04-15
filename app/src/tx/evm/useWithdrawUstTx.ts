@@ -5,7 +5,6 @@ import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
@@ -52,25 +51,17 @@ export function useWithdrawUstTx():
       writer.timer.start();
 
       try {
-        await xAnchor.approveLimit(
-          { token: 'aUST' },
-          withdrawAmount,
-          address!,
-          TX_GAS_LIMIT,
-        );
+        await xAnchor.approveLimit({ token: 'aUST' }, withdrawAmount, address!);
 
         writer.withdrawUST();
         writer.timer.reset();
 
-        const result = await xAnchor.redeemStable(
-          withdrawAmount,
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
+        const result = await xAnchor.redeemStable(withdrawAmount, address!, {
+          handleEvent: (event) => {
             writer.withdrawUST(event);
             txEvents.next({ event, txParams });
           },
-        );
+        });
 
         refetchQueries(refetchQueryByTxKind(TxKind.WithdrawUst));
 

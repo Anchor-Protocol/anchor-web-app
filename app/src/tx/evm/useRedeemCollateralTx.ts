@@ -5,7 +5,6 @@ import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
@@ -54,10 +53,11 @@ export function useRedeemCollateralTx():
           { contract: collateral_token },
           microfy(amount, decimals),
           address!,
-          TX_GAS_LIMIT,
-          (event) => {
-            writer.withdrawCollateral(symbol, event);
-            txEvents.next({ event, txParams });
+          {
+            handleEvent: (event) => {
+              writer.withdrawCollateral(symbol, event);
+              txEvents.next({ event, txParams });
+            },
           },
         );
 

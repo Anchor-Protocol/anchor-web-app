@@ -5,7 +5,6 @@ import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
@@ -50,25 +49,17 @@ export function useDepositUstTx():
       writer.timer.start();
 
       try {
-        await xAnchor.approveLimit(
-          { token: 'UST' },
-          depositAmount,
-          address!,
-          TX_GAS_LIMIT,
-        );
+        await xAnchor.approveLimit({ token: 'UST' }, depositAmount, address!);
 
         writer.depositUST();
         writer.timer.reset();
 
-        const response = await xAnchor.depositStable(
-          depositAmount,
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
+        const response = await xAnchor.depositStable(depositAmount, address!, {
+          handleEvent: (event) => {
             txEvents.next({ event, txParams });
             writer.depositUST(event);
           },
-        );
+        });
 
         refetchQueries(refetchQueryByTxKind(TxKind.DepositUst));
 
