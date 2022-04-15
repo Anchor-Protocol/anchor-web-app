@@ -1,4 +1,7 @@
-import { useNetwork } from '@anchor-protocol/app-provider';
+import {
+  AnchorContractAddress,
+  useNetwork,
+} from '@anchor-protocol/app-provider';
 import { GasPrice, lastSyncedHeightQuery } from '@libs/app-fns';
 import {
   HiveQueryClient,
@@ -6,6 +9,7 @@ import {
   QueryClient,
 } from '@libs/query-client';
 import { NetworkInfo } from '@terra-money/use-wallet';
+import { useAnchorContractAddress } from 'queries/useAnchorContractAddress';
 import React, {
   Consumer,
   Context,
@@ -21,16 +25,13 @@ import {
   DEFAULT_LCD_WASM_CLIENT,
 } from '../env';
 import { useGasPriceQuery } from '../queries/gasPrice';
-import { AppConstants, AppContractAddress, TxRefetchMap } from '../types';
+import { AppConstants, TxRefetchMap } from '../types';
+import { LoadingScreen } from 'components/LoadingScreen';
 
-export interface AppProviderProps<
-  ContractAddress extends AppContractAddress,
-  Constants extends AppConstants,
-> {
+export interface AppProviderProps<Constants extends AppConstants> {
   children: ReactNode;
 
-  contractAddress: (network: NetworkInfo) => ContractAddress;
-  constants: (network: NetworkInfo) => Constants;
+  constants: Constants;
 
   defaultQueryClient?:
     | 'lcd'
@@ -53,12 +54,10 @@ export interface AppProviderProps<
   queryErrorReporter?: (error: unknown) => void;
 }
 
-export interface App<
-  ContractAddress extends AppContractAddress,
-  Constants extends AppConstants,
-> {
-  contractAddress: ContractAddress;
+export interface App<Constants extends AppConstants> {
   constants: Constants;
+
+  contractAddress: AnchorContractAddress;
 
   // functions
   lastSyncedHeight: () => Promise<number>;
@@ -82,14 +81,10 @@ export interface App<
 }
 
 //@ts-ignore
-const AppContext: Context<App<any, any>> = createContext<App<any, any>>();
+const AppContext: Context<App<any>> = createContext<App<any>>();
 
-export function AppProvider<
-  ContractAddress extends AppContractAddress,
-  Constants extends AppConstants,
->({
+export function AppProvider<Constants extends AppConstants>({
   children,
-  contractAddress,
   constants,
   defaultQueryClient = 'hive',
   lcdQueryClient: _lcdQueryClient = DEFAULT_LCD_WASM_CLIENT,
@@ -99,47 +94,35 @@ export function AppProvider<
   queryErrorReporter,
   txErrorReporter,
   refetchMap,
-}: AppProviderProps<ContractAddress, Constants>) {
+}: AppProviderProps<Constants>) {
   const { network } = useNetwork();
 
-  const networkBoundStates = useMemo<
-    Pick<
-      App<any, any>,
-      | 'contractAddress'
-      | 'constants'
-      | 'queryClient'
-      | 'lcdQueryClient'
-      | 'hiveQueryClient'
-    >
-  >(() => {
-    const lcdQueryClient = _lcdQueryClient(network);
-    const hiveQueryClient = _hiveQueryClient(network);
-    const queryClientType =
+  const { data: contractAddress } = useAnchorContractAddress();
+  console.log(contractAddress);
+
+  const lcdQueryClient = useMemo(
+    () => _lcdQueryClient(network),
+    [_lcdQueryClient, network],
+  );
+  const hiveQueryClient = useMemo(
+    () => _hiveQueryClient(network),
+    [_hiveQueryClient, network],
+  );
+  const queryClientType = useMemo(
+    () =>
       typeof defaultQueryClient === 'function'
         ? defaultQueryClient(network)
-        : defaultQueryClient;
-    const queryClient =
-      queryClientType === 'lcd' ? lcdQueryClient : hiveQueryClient;
-
-    return {
-      contractAddress: contractAddress(network),
-      constants: constants(network),
-      queryClient,
-      lcdQueryClient,
-      hiveQueryClient,
-    };
-  }, [
-    _hiveQueryClient,
-    _lcdQueryClient,
-    constants,
-    contractAddress,
-    defaultQueryClient,
-    network,
-  ]);
+        : defaultQueryClient,
+    [defaultQueryClient, network],
+  );
+  const queryClient = useMemo(
+    () => (queryClientType === 'lcd' ? lcdQueryClient : hiveQueryClient),
+    [hiveQueryClient, lcdQueryClient, queryClientType],
+  );
 
   const lastSyncedHeight = useMemo(() => {
-    return () => lastSyncedHeightQuery(networkBoundStates.queryClient);
-  }, [networkBoundStates.queryClient]);
+    return () => lastSyncedHeightQuery(queryClient);
+  }, [queryClient]);
 
   const {
     data: gasPrice = fallbackGasPrice(network) ?? fallbackGasPrice(network),
@@ -148,32 +131,34 @@ export function AppProvider<
     queryErrorReporter,
   );
 
-  const states = useMemo<App<any, any>>(() => {
-    return {
-      ...networkBoundStates,
-      lastSyncedHeight,
-      txErrorReporter,
-      queryErrorReporter,
-      gasPrice,
-      refetchMap,
-    };
-  }, [
-    gasPrice,
-    lastSyncedHeight,
-    networkBoundStates,
-    queryErrorReporter,
-    refetchMap,
-    txErrorReporter,
-  ]);
+  if (contractAddress === undefined) {
+    return <LoadingScreen text="Loading contract addresses" />;
+  }
 
-  return <AppContext.Provider value={states}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider
+      value={{
+        contractAddress,
+        lcdQueryClient,
+        hiveQueryClient,
+        queryClient,
+        lastSyncedHeight,
+        txErrorReporter,
+        queryErrorReporter,
+        gasPrice,
+        refetchMap,
+        constants,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
 }
 
 export function useApp<
-  ContractAddress extends AppContractAddress = AppContractAddress,
   Constants extends AppConstants = AppConstants,
->(): App<ContractAddress, Constants> {
+>(): App<Constants> {
   return useContext(AppContext);
 }
 
-export const AppConsumer: Consumer<App<any, any>> = AppContext.Consumer;
+export const AppConsumer: Consumer<App<any>> = AppContext.Consumer;

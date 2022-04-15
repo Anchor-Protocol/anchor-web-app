@@ -2,9 +2,7 @@ import {
   ANCHOR_QUERY_KEY,
   ANCHOR_TX_KEY,
   AnchorConstants,
-  AnchorContractAddress,
 } from '@anchor-protocol/app-provider';
-import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
 import { TERRA_QUERY_KEY, TxRefetchMap } from '@libs/app-provider';
 import { Gas, Rate } from '@libs/types';
 import { NetworkInfo } from '@terra-money/wallet-provider';
@@ -57,20 +55,18 @@ export function ANCHOR_QUERY_CLIENT(network: NetworkInfo): 'lcd' | 'hive' {
   //return 'hive';
 }
 
-export function ANCHOR_CONSTANTS(network: NetworkInfo): AnchorConstants {
-  return {
-    gasWanted: 1_000_000 as Gas,
-    fixedGas: 1_671_053 as Gas,
-    blocksPerYear: 4_656_810,
-    gasAdjustment: 1.6 as Rate<number>,
-    airdropGasWanted: 300_000 as Gas,
-    airdropGas: 334_211 as Gas,
-    bondGasWanted: 1_600_000 as Gas,
-    astroportGasWanted: 1_600_000 as Gas,
-  };
-}
+export const ANCHOR_CONSTANTS: AnchorConstants = {
+  gasWanted: 1_000_000 as Gas,
+  fixedGas: 1_671_053 as Gas,
+  blocksPerYear: 4_656_810,
+  gasAdjustment: 1.6 as Rate<number>,
+  airdropGasWanted: 300_000 as Gas,
+  airdropGas: 334_211 as Gas,
+  bondGasWanted: 1_600_000 as Gas,
+  astroportGasWanted: 1_600_000 as Gas,
+};
 
-const COLUMBUS_CONTRACT_ADDRESS = {
+export const COLUMBUS_CONTRACT_ADDRESS = {
   bLunaHub: 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts',
   bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
   bLunaReward: 'terra17yap3mhph35pcwvhza38c2lkj7gzywzy05h7l0',
@@ -96,16 +92,18 @@ const COLUMBUS_CONTRACT_ADDRESS = {
   community: 'terra12wk8dey0kffwp27l5ucfumczlsc9aned8rqueg',
   staking: 'terra1h3mf22jm68ddueryuv2yxwfmqxxadvjceuaqz6',
   ANC: 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76',
-  airdrop: 'terra146ahqn6d3qgdvmj8cj96hh03dzmeedhsf0kxqm',
+  anchorAirdropRegistry: 'terra146ahqn6d3qgdvmj8cj96hh03dzmeedhsf0kxqm',
   investor_vesting: 'terra1pm54pmw3ej0vfwn3gtn6cdmaqxt0x37e9jt0za',
   team_vesting: 'terra10evq9zxk2m86n3n3xnpw28jpqwp628c6dzuq42',
   terraswapFactory: 'terra1ulgw0td86nvs4wtpsc80thv6xelk76ut7a7apj',
   astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
   vesting: 'terra13v4ln23tmfs2zk4nh5dw5mzufckekp4fpafpcy',
   astroUstPair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
-};
+} as const;
 
-const BOMBAY_CONTRACT_ADDRESS = {
+type ContractKey = keyof typeof COLUMBUS_CONTRACT_ADDRESS;
+
+export const BOMBAY_CONTRACT_ADDRESS: Record<ContractKey, string> = {
   bLunaHub: 'terra1fflas6wv4snv8lsda9knvq2w0cyt493r8puh2e',
   bLunaToken: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x',
   bLunaReward: 'terra1ac24j6pdxh53czqyrkr6ygphdeftg7u3958tl2',
@@ -133,77 +131,13 @@ const BOMBAY_CONTRACT_ADDRESS = {
   community: 'terra17g577z0pqt6tejhceh06y3lyeudfs3v90mzduy',
   staking: 'terra1q68gyyxqnlh58jacz5r6rxfmxqpmmjv583fzqq',
   ANC: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
-  airdrop: 'terra1u5ywhlve3wugzqslqvm8ks2j0nsvrqjx0mgxpk',
+  anchorAirdropRegistry: 'terra1u5ywhlve3wugzqslqvm8ks2j0nsvrqjx0mgxpk',
   investor_vesting: 'not available in testnet',
   team_vesting: 'not available in testnet',
   terraswapFactory: 'terra18qpjm4zkvqnpjpw0zn0tdr8gdzvt8au35v45xf',
   astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
   vesting: 'terra15rq8j7auyyd6ydcfkktm3kdagcg56228uclkzy',
   astroUstPair: 'terra1ec0fnjk2u6mms05xyyrte44jfdgdaqnx0upesr',
-};
-
-export const ANCHOR_CONTRACT_ADDRESS = (
-  network: NetworkInfo,
-): AnchorContractAddress => {
-  const addressMap = network.chainID.startsWith('bombay')
-    ? BOMBAY_CONTRACT_ADDRESS
-    : COLUMBUS_CONTRACT_ADDRESS;
-
-  return {
-    bluna: {
-      reward: addressMap.bLunaReward as HumanAddr,
-      hub: addressMap.bLunaHub as HumanAddr,
-      airdropRegistry: addressMap.airdrop as HumanAddr,
-      validatorsRegistry: addressMap.bLunaValidatorsRegistry as HumanAddr,
-      custody: addressMap.mmCustody as HumanAddr,
-    },
-    moneyMarket: {
-      market: addressMap.mmMarket as HumanAddr,
-      //collaterals: {
-      //  [CollateralType.bLuna]: bLunaCollateral,
-      //  [CollateralType.bEth]: bEthCollateral,
-      //},
-      //collateralsArray: [bLunaCollateral, bEthCollateral],
-      overseer: addressMap.mmOverseer as HumanAddr,
-      oracle: addressMap.mmOracle as HumanAddr,
-      interestModel: addressMap.mmInterestModel as HumanAddr,
-      distributionModel: addressMap.mmDistributionModel as HumanAddr,
-    },
-    liquidation: {
-      liquidationContract: addressMap.mmLiquidation as HumanAddr,
-      liquidationQueueContract: addressMap.mmLiquidationQueue as HumanAddr,
-    },
-    anchorToken: {
-      gov: addressMap.gov as HumanAddr,
-      staking: addressMap.staking as HumanAddr,
-      community: addressMap.community as HumanAddr,
-      distributor: addressMap.distributor as HumanAddr,
-      investorLock: addressMap.investor_vesting as HumanAddr,
-      teamLock: addressMap.team_vesting as HumanAddr,
-      collector: addressMap.collector as HumanAddr,
-      vesting: addressMap.vesting as HumanAddr,
-    },
-    terraswap: {
-      factory: addressMap.terraswapFactory as HumanAddr,
-      blunaLunaPair: addressMap.bLunaLunaPair as HumanAddr,
-    },
-    astroport: {
-      generator: addressMap.astroportGenerator as HumanAddr,
-      astroUstPair: addressMap.astroUstPair as HumanAddr,
-      ancUstPair: addressMap.ancUstPair as HumanAddr,
-    },
-    cw20: {
-      bLuna: addressMap.bLunaToken as CW20Addr,
-      //bEth: addressMap.bEthToken as CW20Addr,
-      aUST: addressMap.aTerra as CW20Addr,
-      ANC: addressMap.ANC as CW20Addr,
-      AncUstLP: addressMap.ancUstLPToken as CW20Addr,
-      bLunaLunaLP: addressMap.bLunaLunaLPToken as CW20Addr,
-    },
-    crossAnchor: {
-      core: '' as HumanAddr,
-    },
-  };
 };
 
 export const ANCHOR_INDEXER_API_ENDPOINTS = (network: NetworkInfo): string => {

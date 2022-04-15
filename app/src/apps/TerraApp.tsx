@@ -1,6 +1,5 @@
 import { WalletControllerChainOptions } from '@terra-money/wallet-provider';
 import { AstroportGuideBanner } from 'components/AstroportGuideBanner';
-import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { Airdrop } from 'pages/airdrop';
 import { Claim as AncVestingClaim } from 'pages/anc/vesting';
@@ -51,7 +50,6 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
     chainOptions && (
       <TerraAppProviders {...chainOptions}>
         <div>
-          <GlobalStyle />
           <Header />
           <AstroportGuideBanner />
           <Routes>

@@ -8,7 +8,7 @@ import React, {
   useMemo,
 } from 'react';
 import { useNetwork } from '..';
-import { AnchorConstants, AnchorContractAddress } from '../types';
+import { AnchorConstants } from '../types';
 
 export interface AnchorWebappProviderProps {
   children: ReactNode;
@@ -46,9 +46,8 @@ export function AnchorWebappProvider({
   );
 }
 
-export function useAnchorWebapp(): App<AnchorContractAddress, AnchorConstants> &
-  AnchorWebapp {
-  const app = useApp<AnchorContractAddress, AnchorConstants>();
+export function useAnchorWebapp(): App<AnchorConstants> & AnchorWebapp {
+  const app = useApp<AnchorConstants>();
   const anchorApp = useContext(AnchorWebappContext);
 
   return useMemo(() => {
