@@ -7,7 +7,8 @@ import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import orion from '../../assets/orion.svg';
 import curve from '../../assets/curve.svg';
-import { Chain, useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { Chain } from '@anchor-protocol/types';
 
 interface FormParams {
   className?: string;
