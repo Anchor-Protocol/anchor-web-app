@@ -88,13 +88,10 @@ jobs:
       artifactPath: app/build
 
   release:
-    name: Release
+    name: Release image
     needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-
-    permissions:
-      packages: write
 
     steps:
       - name: Checkout source
@@ -166,3 +163,38 @@ jobs:
           platforms: ${{ env.PLATFORMS }}
           build-args: |
             BUILD_ENV=ci
+
+  deploy:
+    name: Deploy build
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Restore build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.test.outputs.artifactName }}
+          path: ${{ needs.test.outputs.artifactPath }}
+
+      - name: Deploy to IPFS
+        uses: web3-storage/add-to-web3@v2
+        id: ipfs
+        with:
+          web3_token: ${{ secrets.WEB3_STORAGE_TOKEN }}
+          path_to_add: 'app/build'
+
+      - name: Comment IPFS URL
+        uses: anchor-protocol/commit-comment-action@v2
+        with:
+          sha: ${{ github.sha }}
+          body: |
+            Successfully deployed `web-app` to IPFS 🚀
+
+            **CID:** ${{ steps.ipfs.outputs.cid }}
+            **URL**: ${{ steps.ipfs.outputs.url }}
