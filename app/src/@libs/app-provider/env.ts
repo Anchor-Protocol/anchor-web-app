@@ -80,12 +80,12 @@ const FALLBACK_GAS_PRICE_BOMBAY = {
   udkk: '0.9',
 };
 
-export function DEFAULT_FALLBACK_GAS_PRICE(network: NetworkInfo): GasPrice {
-  if (network.chainID.startsWith('bombay')) {
-    return FALLBACK_GAS_PRICE_BOMBAY as GasPrice;
-  } else {
+export function DEFAULT_FALLBACK_GAS_PRICE(network: AnchorNetwork): GasPrice {
+  if (network === AnchorNetwork.Main) {
     return FALLBACK_GAS_PRICE_COLUMNBUS as GasPrice;
   }
+
+  return FALLBACK_GAS_PRICE_BOMBAY as GasPrice;
 }
 
 export const EMPTY_QUERY_RESULT: UseQueryResult<undefined> = {

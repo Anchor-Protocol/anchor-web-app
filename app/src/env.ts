@@ -3,9 +3,9 @@ import {
   ANCHOR_TX_KEY,
   AnchorConstants,
 } from '@anchor-protocol/app-provider';
+import { AnchorNetwork } from '@anchor-protocol/types';
 import { TERRA_QUERY_KEY, TxRefetchMap } from '@libs/app-provider';
 import { Gas, Rate } from '@libs/types';
-import { NetworkInfo } from '@terra-money/wallet-provider';
 
 // ---------------------------------------------
 // style
@@ -46,13 +46,15 @@ export const links = {
 // ---------------------------------------------
 // chain
 // ---------------------------------------------
-export function ANCHOR_QUERY_CLIENT(network: NetworkInfo): 'lcd' | 'hive' {
-  if (network.chainID.startsWith('bombay')) {
-    return 'lcd';
-  } else {
-    return 'hive';
-  }
-  //return 'hive';
+type AnchorQueryClient = 'lcd' | 'hive';
+export function ANCHOR_QUERY_CLIENT(network: AnchorNetwork): AnchorQueryClient {
+  const queryClientRecord: Record<AnchorNetwork, AnchorQueryClient> = {
+    [AnchorNetwork.Local]: 'lcd',
+    [AnchorNetwork.Test]: 'lcd',
+    [AnchorNetwork.Main]: 'hive',
+  };
+
+  return queryClientRecord[network];
 }
 
 export const ANCHOR_CONSTANTS: AnchorConstants = {
@@ -166,13 +168,14 @@ export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
   astroUstPair: 'terra1ec0fnjk2u6mms05xyyrte44jfdgdaqnx0upesr',
 };
 
-export const ANCHOR_INDEXER_API_ENDPOINTS = (network: NetworkInfo): string => {
-  if (network.chainID.startsWith('bombay')) {
-    return 'https://api-testnet.anchorprotocol.com/api';
-  } else {
-    return 'https://api.anchorprotocol.com/api';
-  }
+const anchorIndexerEndpointRecord: Record<AnchorNetwork, string> = {
+  [AnchorNetwork.Local]: '',
+  [AnchorNetwork.Main]: 'https://api.anchorprotocol.com/api',
+  [AnchorNetwork.Test]: 'https://api-testnet.anchorprotocol.com/api',
 };
+
+export const ANCHOR_INDEXER_API_ENDPOINTS = (network: AnchorNetwork): string =>
+  anchorIndexerEndpointRecord[network];
 
 // ---------------------------------------------
 // query refetch

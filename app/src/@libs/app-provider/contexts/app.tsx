@@ -38,13 +38,13 @@ export interface AppProviderProps<Constants extends AppConstants> {
   defaultQueryClient?:
     | 'lcd'
     | 'hive'
-    | ((network: NetworkInfo) => 'lcd' | 'hive');
+    | ((network: AnchorNetwork) => 'lcd' | 'hive');
   lcdQueryClient?: (network: NetworkInfo) => LcdQueryClient;
   hiveQueryClient?: (network: AnchorNetwork) => HiveQueryClient;
 
   // gas
   gasPriceEndpoint?: (network: NetworkInfo) => string;
-  fallbackGasPrice?: (network: NetworkInfo) => GasPrice;
+  fallbackGasPrice?: (network: AnchorNetwork) => GasPrice;
 
   // refetch map
   refetchMap: TxRefetchMap;
@@ -113,9 +113,9 @@ export function AppProvider<Constants extends AppConstants>({
   const queryClientType = useMemo(
     () =>
       typeof defaultQueryClient === 'function'
-        ? defaultQueryClient(network)
+        ? defaultQueryClient(anchorNetwork)
         : defaultQueryClient,
-    [defaultQueryClient, network],
+    [defaultQueryClient, anchorNetwork],
   );
   const queryClient = useMemo(
     () => (queryClientType === 'lcd' ? lcdQueryClient : hiveQueryClient),
@@ -126,9 +126,7 @@ export function AppProvider<Constants extends AppConstants>({
     return () => lastSyncedHeightQuery(queryClient);
   }, [queryClient]);
 
-  const {
-    data: gasPrice = fallbackGasPrice(network) ?? fallbackGasPrice(network),
-  } = useGasPriceQuery(
+  const { data: gasPrice = fallbackGasPrice(anchorNetwork) } = useGasPriceQuery(
     gasPriceEndpoint(network) ?? gasPriceEndpoint(network),
     queryErrorReporter,
   );
