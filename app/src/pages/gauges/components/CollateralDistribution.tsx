@@ -8,6 +8,7 @@ import { sum } from '@libs/big-math';
 import { getPaletteColor } from '@libs/ui/colors/palette';
 import { colorToCSSValue } from '@libs/ui/colors/colorToCSSValue';
 import { DoughnutChart } from 'pages/dashboard/components/DoughnutChart';
+import { HStack, VStack } from '@libs/ui/Stack';
 
 const collateral = [
   {
@@ -45,7 +46,7 @@ export const CollateralDistribution = () => {
   );
 
   return (
-    <Container>
+    <VStack gap={40}>
       <div>
         <h2>TOTAL STAKED</h2>
         <Amount>
@@ -55,16 +56,27 @@ export const CollateralDistribution = () => {
           <Denomination>veANC</Denomination>
         </Amount>
       </div>
-      <DoughnutChart descriptors={descriptors} />
-    </Container>
+      <HStack alignItems="center" gap={40}>
+        <ChartWr>
+          <DoughnutChart descriptors={descriptors} />
+        </ChartWr>
+        <VStack gap={20}>
+          {collateral.map(({ symbol, value }) => (
+            <VStack gap={8} key={symbol}>
+              {symbol}
+              <Amount>
+                <AnimateNumber format={formatUTokenIntegerWithoutPostfixUnits}>
+                  {(value || 0) as u<Token<BigSource>>}
+                </AnimateNumber>
+                <Denomination>veANC</Denomination>
+              </Amount>
+            </VStack>
+          ))}
+        </VStack>
+      </HStack>
+    </VStack>
   );
 };
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-`;
 
 const Amount = styled.p`
   font-size: 32px;
@@ -74,4 +86,8 @@ const Amount = styled.p`
 const Denomination = styled.span`
   margin-left: 8px;
   font-size: 0.555556em;
+`;
+
+const ChartWr = styled.div`
+  width: 200px;
 `;
