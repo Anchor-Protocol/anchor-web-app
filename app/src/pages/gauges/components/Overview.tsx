@@ -1,6 +1,7 @@
 import { UIElementProps } from '@libs/ui';
 import React from 'react';
 import styled from 'styled-components';
+import { CollateralDistribution } from './CollateralDistribution';
 import { OverviewCard } from './OverviewCard';
 
 function OverviewBase(props: UIElementProps) {
@@ -14,7 +15,7 @@ function OverviewBase(props: UIElementProps) {
         <div>asdkj</div>
       </OverviewCard>
       <OverviewCard className="card">
-        <div>asdkj</div>
+        <CollateralDistribution />
       </OverviewCard>
     </div>
   );
