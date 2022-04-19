@@ -8,22 +8,8 @@ import { useQuery } from 'react-query';
 import { createQueryFn } from '@libs/react-query-utils';
 import { BOMBAY_CONTRACT_ADDRESS, COLUMBUS_CONTRACT_ADDRESS } from 'env';
 import { CW20Addr, HumanAddr } from '@libs/types';
-
-enum AnchorNetwork {
-  Main = 'Main',
-  Test = 'Test',
-  Local = 'Local',
-}
-
-const getAnchorNetwork = (chainId: string): AnchorNetwork => {
-  if (chainId.startsWith('local')) {
-    return AnchorNetwork.Local;
-  } else if (chainId.startsWith('bombay')) {
-    return AnchorNetwork.Test;
-  }
-
-  return AnchorNetwork.Main;
-};
+import { AnchorNetwork } from '@anchor-protocol/types';
+import { getAnchorNetwork } from 'utils/getAnchorNetwork';
 
 const anchorContractAddressesQuery = async (
   anchorNetwork: AnchorNetwork,

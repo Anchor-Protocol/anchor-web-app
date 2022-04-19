@@ -27,6 +27,8 @@ import {
 import { useGasPriceQuery } from '../queries/gasPrice';
 import { AppConstants, TxRefetchMap } from '../types';
 import { LoadingScreen } from 'components/LoadingScreen';
+import { getAnchorNetwork } from 'utils/getAnchorNetwork';
+import { AnchorNetwork } from '@anchor-protocol/types';
 
 export interface AppProviderProps<Constants extends AppConstants> {
   children: ReactNode;
@@ -38,7 +40,7 @@ export interface AppProviderProps<Constants extends AppConstants> {
     | 'hive'
     | ((network: NetworkInfo) => 'lcd' | 'hive');
   lcdQueryClient?: (network: NetworkInfo) => LcdQueryClient;
-  hiveQueryClient?: (network: NetworkInfo) => HiveQueryClient;
+  hiveQueryClient?: (network: AnchorNetwork) => HiveQueryClient;
 
   // gas
   gasPriceEndpoint?: (network: NetworkInfo) => string;
@@ -96,17 +98,17 @@ export function AppProvider<Constants extends AppConstants>({
   refetchMap,
 }: AppProviderProps<Constants>) {
   const { network } = useNetwork();
+  const anchorNetwork = getAnchorNetwork(network.chainID);
 
   const { data: contractAddress } = useAnchorContractAddress();
-  console.log(contractAddress);
 
   const lcdQueryClient = useMemo(
     () => _lcdQueryClient(network),
     [_lcdQueryClient, network],
   );
   const hiveQueryClient = useMemo(
-    () => _hiveQueryClient(network),
-    [_hiveQueryClient, network],
+    () => _hiveQueryClient(anchorNetwork),
+    [_hiveQueryClient, anchorNetwork],
   );
   const queryClientType = useMemo(
     () =>

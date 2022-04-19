@@ -1,3 +1,4 @@
+import { AnchorNetwork } from '@anchor-protocol/types';
 import { GasPrice } from '@libs/app-fns';
 import {
   defaultHiveFetcher,
@@ -8,21 +9,18 @@ import {
 import { NetworkInfo } from '@terra-money/use-wallet';
 import { UseQueryResult } from 'react-query';
 
-export function DEFAULT_HIVE_WASM_CLIENT(
-  network: NetworkInfo,
-): HiveQueryClient {
-  if (network.chainID.startsWith('bombay')) {
-    return {
-      hiveEndpoint: 'https://bombay-mantle.terra.dev',
-      hiveFetcher: defaultHiveFetcher,
-    };
-  } else {
-    return {
-      hiveEndpoint: 'https://mantle.terra.dev',
-      hiveFetcher: defaultHiveFetcher,
-    };
-  }
-}
+const hiveEndpointRecord: Record<AnchorNetwork, string> = {
+  [AnchorNetwork.Main]: 'https://mantle.terra.dev',
+  [AnchorNetwork.Test]: 'https://bombay-mantle.terra.dev',
+  [AnchorNetwork.Local]: 'https://localhost:8085',
+};
+
+export const DEFAULT_HIVE_WASM_CLIENT = (
+  network: AnchorNetwork,
+): HiveQueryClient => ({
+  hiveEndpoint: hiveEndpointRecord[network],
+  hiveFetcher: defaultHiveFetcher,
+});
 
 export function DEFAULT_LCD_WASM_CLIENT(network: NetworkInfo): LcdQueryClient {
   return {
