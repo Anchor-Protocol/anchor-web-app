@@ -28,6 +28,7 @@ export function useAncVestingAccountQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      enabled: !!contractAddress.anchorToken.vesting,
       refetchInterval: 1000 * 60 * 2,
       keepPreviousData: true,
       onError: queryErrorReporter,

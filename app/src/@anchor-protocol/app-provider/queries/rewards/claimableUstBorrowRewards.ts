@@ -19,6 +19,10 @@ export function useRewardsClaimableUstBorrowRewardsQuery(): UseQueryResult<
 
   const { connected, terraWalletAddress } = useAccount();
 
+  const enabled =
+    connected &&
+    !!(contractAddress.cw20.ANC && contractAddress.moneyMarket.market);
+
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_CLAIMABLE_UST_BORROW_REWARDS,
@@ -31,7 +35,7 @@ export function useRewardsClaimableUstBorrowRewardsQuery(): UseQueryResult<
     queryFn,
     {
       refetchInterval: 1000 * 60 * 5,
-      enabled: connected,
+      enabled,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

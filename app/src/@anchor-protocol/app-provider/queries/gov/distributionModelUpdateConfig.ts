@@ -23,6 +23,7 @@ export function useGovDistributionModelUpdateConfigQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      enabled: !!contractAddress.moneyMarket.distributionModel,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

@@ -32,7 +32,7 @@ export function useBorrowBorrowerQuery(): UseQueryResult<
     queryFn,
     {
       refetchInterval: connected && 1000 * 60 * 5,
-      enabled: connected,
+      enabled: connected && !!moneyMarket.market && !!moneyMarket.overseer,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

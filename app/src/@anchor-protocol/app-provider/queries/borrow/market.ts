@@ -17,6 +17,13 @@ export function useBorrowMarketQuery(): UseQueryResult<
   const { contractAddress, hiveQueryClient, queryErrorReporter } =
     useAnchorWebapp();
 
+  const enabled = !!(
+    contractAddress.moneyMarket.market &&
+    contractAddress.moneyMarket.interestModel &&
+    contractAddress.moneyMarket.oracle &&
+    contractAddress.moneyMarket.overseer
+  );
+
   const borrowMarket = useQuery(
     [
       ANCHOR_QUERY_KEY.BORROW_MARKET,
@@ -28,6 +35,7 @@ export function useBorrowMarketQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      enabled,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
       onError: queryErrorReporter,

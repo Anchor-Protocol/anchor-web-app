@@ -18,6 +18,11 @@ export function useMarketStableCoinQuery(): UseQueryResult<
 
   const { data: { marketState, marketBalances } = {} } = useMarketStateQuery();
 
+  const enabled = !!(
+    contractAddress.moneyMarket.interestModel &&
+    contractAddress.moneyMarket.overseer
+  );
+
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.MARKET_STABLE_COIN,
@@ -30,6 +35,7 @@ export function useMarketStableCoinQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      enabled,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

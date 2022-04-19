@@ -31,7 +31,10 @@ export function useBAssetInfoAndBalanceTotalQuery(): UseQueryResult<
     queryFn,
     {
       refetchInterval: connected && 1000 * 60 * 5,
-      enabled: connected,
+      enabled:
+        connected &&
+        !!contractAddress.moneyMarket.overseer &&
+        !!contractAddress.moneyMarket.oracle,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

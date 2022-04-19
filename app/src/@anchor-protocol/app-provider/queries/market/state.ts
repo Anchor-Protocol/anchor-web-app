@@ -18,6 +18,7 @@ export function useMarketStateQuery(): UseQueryResult<MarketState | undefined> {
     ],
     queryFn,
     {
+      enabled: !!contractAddress.moneyMarket.market,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

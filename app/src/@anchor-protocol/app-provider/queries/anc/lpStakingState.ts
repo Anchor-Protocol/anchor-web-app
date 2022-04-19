@@ -23,6 +23,7 @@ export function useAncLpStakingStateQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      enabled: !!contractAddress.anchorToken.staking,
       refetchInterval: 1000 * 60 * 2,
       keepPreviousData: true,
       onError: queryErrorReporter,

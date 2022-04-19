@@ -29,7 +29,7 @@ export function useRewardsUstBorrowRewardsQuery(): UseQueryResult<
     queryFn,
     {
       refetchInterval: 1000 * 60 * 1,
-      enabled: connected,
+      enabled: connected && !!contractAddress.moneyMarket.market,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

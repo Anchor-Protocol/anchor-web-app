@@ -30,6 +30,7 @@ export function useBAssetInfoByTokenAddrQuery(
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,
+      enabled: !!contractAddress.moneyMarket.overseer,
     },
   );
 
