@@ -85,7 +85,7 @@ type ContractAddressMapKey =
   | 'aTerra'
   | 'bLunaLunaPair'
   | 'bLunaLunaLPToken'
-  | 'anchorTokenUstPair'
+  | 'ancUstPair'
   | 'anchorLpToken'
   | 'anchorGov'
   | 'anchorDistributor'
@@ -120,7 +120,7 @@ export const COLUMBUS_CONTRACT_ADDRESS: ContractAddressMap = {
   aTerra: 'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu',
   bLunaLunaPair: 'terra1j66jatn3k50hjtg2xemnjm8s7y8dws9xqa5y8w',
   bLunaLunaLPToken: 'terra1htw7hm40ch0hacm8qpgd24sus4h0tq3hsseatl',
-  anchorTokenUstPair: 'terra1qr2k6yjjd5p2kaewqvg93ag74k6gyjr7re37fs',
+  ancUstPair: 'terra1qr2k6yjjd5p2kaewqvg93ag74k6gyjr7re37fs',
   anchorLpToken: 'terra1wmaty65yt7mjw6fjfymkd9zsm6atsq82d9arcd',
   anchorGov: 'terra1f32xyep306hhcxxxf7mlyh0ucggc00rm2s9da5',
   anchorDistributor: 'terra1mxf7d5updqxfgvchd7lv6575ehhm8qfdttuqzz',
@@ -153,7 +153,7 @@ export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
   aTerra: 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl',
   bLunaLunaPair: 'terra1esle9h9cjeavul53dqqws047fpwdhj6tynj5u4',
   bLunaLunaLPToken: 'terra14e7z2ll6eweq6cxe6qkvl28hatapmw2uflxcyt',
-  anchorTokenUstPair: 'terra13r3vngakfw457dwhw9ef36mc8w6agggefe70d9',
+  ancUstPair: 'terra13r3vngakfw457dwhw9ef36mc8w6agggefe70d9',
   anchorLpToken: 'terra1agu2qllktlmf0jdkuhcheqtchnkppzrl4759y6',
   anchorGov: 'terra16ckeuu7c6ggu52a8se005mg5c0kd2kmuun63cu',
   anchorDistributor: 'terra1z7nxemcnm8kp7fs33cs7ge4wfuld307v80gypj',

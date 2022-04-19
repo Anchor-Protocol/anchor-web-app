@@ -69,7 +69,7 @@ const anchorContractAddressesQuery = async (
     astroport: {
       generator: addressMap.astroportGenerator as HumanAddr,
       astroUstPair: addressMap.astroUstPair as HumanAddr,
-      ancUstPair: addressMap.anchorTokenUstPair as HumanAddr,
+      ancUstPair: addressMap.ancUstPair as HumanAddr,
     },
     cw20: {
       bLuna: addressMap.bLunaToken as CW20Addr,
