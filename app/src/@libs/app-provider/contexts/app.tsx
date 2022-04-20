@@ -9,7 +9,7 @@ import {
   QueryClient,
 } from '@libs/query-client';
 import { NetworkInfo } from '@terra-money/use-wallet';
-import { useAnchorContractAddress } from 'queries/useAnchorContractAddress';
+import { useLocalAnchorContractAddressQuery } from 'queries';
 import React, {
   Consumer,
   Context,
@@ -29,6 +29,8 @@ import { AppConstants, TxRefetchMap } from '../types';
 import { LoadingScreen } from 'components/LoadingScreen';
 import { getAnchorNetwork } from 'utils/getAnchorNetwork';
 import { AnchorNetwork } from '@anchor-protocol/types';
+import { BOMBAY_CONTRACT_ADDRESS, COLUMBUS_CONTRACT_ADDRESS } from 'env';
+import { getAnchorContractAddress } from '@anchor-protocol/app-provider/utils/getAnchorContractAddress';
 
 export interface AppProviderProps<Constants extends AppConstants> {
   children: ReactNode;
@@ -99,8 +101,25 @@ export function AppProvider<Constants extends AppConstants>({
 }: AppProviderProps<Constants>) {
   const { network } = useNetwork();
   const anchorNetwork = getAnchorNetwork(network.chainID);
+  const isLocalAnchor = anchorNetwork === AnchorNetwork.Local;
 
-  const { data: contractAddress } = useAnchorContractAddress();
+  const { data: localAnchorContractAddress } =
+    useLocalAnchorContractAddressQuery({
+      enabled: anchorNetwork === AnchorNetwork.Local,
+    });
+
+  const contractAddress = useMemo(() => {
+    if (isLocalAnchor) {
+      return localAnchorContractAddress;
+    }
+
+    const addressMap =
+      anchorNetwork === AnchorNetwork.Main
+        ? COLUMBUS_CONTRACT_ADDRESS
+        : BOMBAY_CONTRACT_ADDRESS;
+
+    return getAnchorContractAddress(addressMap);
+  }, [anchorNetwork, isLocalAnchor, localAnchorContractAddress]);
 
   const lcdQueryClient = useMemo(
     () => _lcdQueryClient(network),
@@ -132,7 +151,9 @@ export function AppProvider<Constants extends AppConstants>({
   );
 
   if (contractAddress === undefined) {
-    return <LoadingScreen text="Loading contract addresses" />;
+    return isLocalAnchor ? (
+      <LoadingScreen text="Loading contract addresses" />
+    ) : null;
   }
 
   return (
