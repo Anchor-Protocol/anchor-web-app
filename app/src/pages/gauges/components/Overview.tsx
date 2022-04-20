@@ -9,12 +9,6 @@ function OverviewBase(props: UIElementProps) {
   return (
     <div className={className}>
       <OverviewCard className="card">
-        <div>asdkj</div>
-      </OverviewCard>
-      <OverviewCard className="card">
-        <div>asdkj</div>
-      </OverviewCard>
-      <OverviewCard className="card">
         <CollateralDistribution />
       </OverviewCard>
     </div>
@@ -22,7 +16,6 @@ function OverviewBase(props: UIElementProps) {
 }
 
 export const Overview = styled(OverviewBase)`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   grid-gap: 40px;
 `;

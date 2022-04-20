@@ -9,6 +9,7 @@ import { getPaletteColor } from '@libs/ui/colors/palette';
 import { colorToCSSValue } from '@libs/ui/colors/colorToCSSValue';
 import { DoughnutChart } from 'pages/dashboard/components/DoughnutChart';
 import { HStack, VStack } from '@libs/ui/Stack';
+import { CollateralInfo } from './CollateralInfo';
 
 const collateral = [
   {
@@ -61,16 +62,14 @@ export const CollateralDistribution = () => {
           <DoughnutChart descriptors={descriptors} />
         </ChartWr>
         <VStack gap={20}>
-          {collateral.map(({ symbol, value }) => (
-            <VStack gap={8} key={symbol}>
-              {symbol}
-              <Amount>
-                <AnimateNumber format={formatUTokenIntegerWithoutPostfixUnits}>
-                  {(value || 0) as u<Token<BigSource>>}
-                </AnimateNumber>
-                <Denomination>veANC</Denomination>
-              </Amount>
-            </VStack>
+          {collateral.map(({ symbol, value }, index) => (
+            <CollateralInfo
+              key={symbol}
+              color={getPaletteColor(index)}
+              name={symbol}
+              amount={value as u<Token<BigSource>>}
+              share={value.div(totalValueLocked).toNumber()}
+            />
           ))}
         </VStack>
       </HStack>
@@ -85,7 +84,7 @@ const Amount = styled.p`
 
 const Denomination = styled.span`
   margin-left: 8px;
-  font-size: 0.555556em;
+  font-size: 0.56em;
 `;
 
 const ChartWr = styled.div`
