@@ -10,6 +10,7 @@ import { HumanAddr } from '@libs/types';
 import styled from 'styled-components';
 import { useNetwork } from '@anchor-protocol/app-provider';
 import { TokenList } from '../TokenList';
+import { getAccountUrl } from 'utils/terrascope';
 
 type Action = () => void;
 
@@ -38,10 +39,7 @@ const ContentBase = (props: ContentProps) => {
   const { network } = useNetwork();
 
   const viewOnTerraFinder = useCallback(() => {
-    window.open(
-      `https://finder.terra.money/${network.chainID}/account/${walletAddress}`,
-      '_blank',
-    );
+    window.open(getAccountUrl(network.chainID, walletAddress), '_blank');
   }, [network.chainID, walletAddress]);
 
   return (
