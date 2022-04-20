@@ -4,46 +4,26 @@ import { AnimateNumber } from '@libs/ui';
 import Big, { BigSource } from 'big.js';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { sum } from '@libs/big-math';
 import { getPaletteColor } from '@libs/ui/colors/palette';
 import { colorToCSSValue } from '@libs/ui/colors/colorToCSSValue';
 import { DoughnutChart } from 'pages/dashboard/components/DoughnutChart';
 import { HStack, VStack } from '@libs/ui/Stack';
 import { CollateralInfo } from './CollateralInfo';
-
-const collateral = [
-  {
-    symbol: 'bLUNA',
-    value: Big('6789069442123'),
-  },
-  {
-    symbol: 'bETH',
-    value: Big('2789069442123'),
-  },
-  {
-    symbol: 'bATOM',
-    value: Big('1789069442123'),
-  },
-  {
-    symbol: 'wasAVAX',
-    value: Big('1189069442123'),
-  },
-];
+import { useGaugesQuery } from 'queries/gov/useGaugesQuery';
 
 export const CollateralDistribution = () => {
-  const totalValueLocked = useMemo(
-    () => sum(...collateral.map((c) => c.value)),
-    [],
-  );
+  const {
+    data: { collateral, totalVotes } = { collateral: [], totalVotes: 0 },
+  } = useGaugesQuery();
 
   const descriptors = useMemo(
     () =>
-      collateral.map(({ symbol, value }, index) => ({
+      collateral.map(({ symbol, votes }, index) => ({
         label: symbol,
         color: colorToCSSValue(getPaletteColor(index)),
-        value: value.toNumber(),
+        value: Big(votes).toNumber(),
       })),
-    [],
+    [collateral],
   );
 
   return (
@@ -52,7 +32,7 @@ export const CollateralDistribution = () => {
         <h2>TOTAL STAKED</h2>
         <Amount>
           <AnimateNumber format={formatUTokenIntegerWithoutPostfixUnits}>
-            {(totalValueLocked || 0) as u<Token<BigSource>>}
+            {(totalVotes || 0) as u<Token<BigSource>>}
           </AnimateNumber>
           <Denomination>veANC</Denomination>
         </Amount>
@@ -62,13 +42,13 @@ export const CollateralDistribution = () => {
           <DoughnutChart descriptors={descriptors} />
         </ChartWr>
         <VStack gap={20}>
-          {collateral.map(({ symbol, value }, index) => (
+          {collateral.map(({ symbol, votes, share }, index) => (
             <CollateralInfo
               key={symbol}
               color={getPaletteColor(index)}
               name={symbol}
-              amount={value as u<Token<BigSource>>}
-              share={value.div(totalValueLocked).toNumber()}
+              amount={votes}
+              share={share}
             />
           ))}
         </VStack>
