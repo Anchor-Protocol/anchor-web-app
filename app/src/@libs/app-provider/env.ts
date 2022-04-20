@@ -12,7 +12,7 @@ import { UseQueryResult } from 'react-query';
 const hiveEndpointRecord: Record<AnchorNetwork, string> = {
   [AnchorNetwork.Main]: 'https://mantle.terra.dev',
   [AnchorNetwork.Test]: 'https://bombay-mantle.terra.dev',
-  [AnchorNetwork.Local]: 'http://localhost:8085',
+  [AnchorNetwork.Local]: 'https://localhost:8086',
 };
 
 export const DEFAULT_HIVE_WASM_CLIENT = (

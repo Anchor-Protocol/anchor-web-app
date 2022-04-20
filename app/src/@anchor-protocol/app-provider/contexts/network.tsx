@@ -1,6 +1,8 @@
+import { AnchorNetwork } from '@anchor-protocol/types';
 import { LCDClient } from '@terra-money/terra.js';
 import { NetworkInfo } from '@terra-money/use-wallet';
 import { createContext, useContext } from 'react';
+import { getAnchorNetwork } from 'utils/getAnchorNetwork';
 
 export const TESTNET: NetworkInfo = {
   name: 'testnet',
@@ -14,14 +16,18 @@ export const MAINNET: NetworkInfo = {
   lcd: 'https://lcd.terra.dev',
 };
 
-const LCDClients: Record<string, LCDClient> = {
-  testnet: new LCDClient({
+const LCDClients: Record<AnchorNetwork, LCDClient> = {
+  [AnchorNetwork.Test]: new LCDClient({
     chainID: TESTNET.chainID,
     URL: TESTNET.lcd,
   }),
-  mainnet: new LCDClient({
+  [AnchorNetwork.Main]: new LCDClient({
     chainID: MAINNET.chainID,
     URL: MAINNET.lcd,
+  }),
+  [AnchorNetwork.Local]: new LCDClient({
+    chainID: 'localterra',
+    URL: 'https://localhost:1338',
   }),
 };
 
@@ -37,9 +43,12 @@ const useNetwork = (): UseNetworkReturn => {
   if (context === undefined) {
     throw new Error('The NetworkContext has not been defined.');
   }
+
+  const anchorNetwork = getAnchorNetwork(context.chainID);
+
   return {
     network: context,
-    lcdClient: LCDClients[context.name ?? 'mainnet'],
+    lcdClient: LCDClients[anchorNetwork],
   };
 };
 
