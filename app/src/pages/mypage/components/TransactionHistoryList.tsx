@@ -5,6 +5,7 @@ import styled, { keyframes } from 'styled-components';
 import useResizeObserver from 'use-resize-observer/polyfilled';
 import { CallMade } from '@material-ui/icons';
 import { useNetwork } from '@anchor-protocol/app-provider';
+import { getTransactionDetailUrl } from 'utils/terrascope';
 
 export interface TransactionHistoryListProps {
   className?: string;
@@ -27,7 +28,7 @@ function TransactionHistoryListBase({
         return (
           <li key={'txhistory' + tx_hash + '_' + i}>
             <a
-              href={`https://terrasco.pe/${network.chainID}/tx/${tx_hash}`}
+              href={getTransactionDetailUrl(network.chainID, tx_hash)}
               target="_blank"
               rel="noreferrer"
             >
