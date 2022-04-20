@@ -99,11 +99,13 @@ const anchorContractAddressesQuery = async (
       .filter(([, value]) => value === undefined)
       .map(([key]) => key);
 
-    console.info(
-      `${anchorNetwork} network missing ${
-        missingAddresses.length
-      } contract addresses:\n${missingAddresses.join('\n')}`,
-    );
+    if (missingAddresses.length > 0) {
+      console.info(
+        `${anchorNetwork} network missing ${
+          missingAddresses.length
+        } contract addresses:\n${missingAddresses.join('\n')}`,
+      );
+    }
 
     if (anchorNetwork === AnchorNetwork.Local) {
       const usedAddresses = new Set(
@@ -116,13 +118,15 @@ const anchorContractAddressesQuery = async (
         .filter(([, value]) => !usedAddresses.has(value))
         .map(([key]) => key);
 
-      console.info(
-        `The app doesn't use ${
-          unusedLocalAnchorAddresses.length
-        } LocalAnchor contract addresses:\n${unusedLocalAnchorAddresses.join(
-          '\n',
-        )}`,
-      );
+      if (unusedLocalAnchorAddresses.length > 0) {
+        console.info(
+          `The app doesn't use ${
+            unusedLocalAnchorAddresses.length
+          } LocalAnchor contract addresses:\n${unusedLocalAnchorAddresses.join(
+            '\n',
+          )}`,
+        );
+      }
     }
   }
 
