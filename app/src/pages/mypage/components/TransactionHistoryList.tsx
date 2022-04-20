@@ -27,7 +27,7 @@ function TransactionHistoryListBase({
         return (
           <li key={'txhistory' + tx_hash + '_' + i}>
             <a
-              href={`https://finder.terra.money/${network.chainID}/tx/${tx_hash}`}
+              href={`https://terrasco.pe/${network.chainID}/tx/${tx_hash}`}
               target="_blank"
               rel="noreferrer"
             >

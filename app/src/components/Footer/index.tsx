@@ -21,6 +21,7 @@ import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { BlockInfo } from './BlockInfo';
 import { Chain } from '@anchor-protocol/app-provider';
 import { EvmBlockInfo } from './EvmBlockInfo';
+import { getBlockUrl } from 'utils/terrascope';
 
 export interface FooterProps {
   className?: string;
@@ -44,7 +45,7 @@ function FooterBase({ className, style }: FooterProps) {
       <Info>
         <div className="blocks">
           <a
-            href={`https://finder.terra.money/${network.chainID}/blocks/${lastSyncedHeight}`}
+            href={getBlockUrl(network.chainID, lastSyncedHeight)}
             target="_blank"
             rel="noreferrer"
           >
