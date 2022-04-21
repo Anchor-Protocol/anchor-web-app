@@ -4,7 +4,7 @@ import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { links } from 'env';
 import React from 'react';
 import styled from 'styled-components';
-import { Gauges } from './components/Gauges';
+import { CollateralList } from './components/CollateralList';
 import { Overview } from './components/Overview';
 
 function GaugesMainBase(props: UIElementProps) {
@@ -15,7 +15,7 @@ function GaugesMainBase(props: UIElementProps) {
         <PageTitle title="GAUGES" docs={links.docs.gauges} />
       </TitleContainer>
       <Overview className="overview" />
-      <Gauges className="gauges" />
+      <CollateralList />
     </PaddedLayout>
   );
 }

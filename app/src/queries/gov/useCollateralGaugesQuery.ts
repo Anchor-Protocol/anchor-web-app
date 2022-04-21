@@ -34,7 +34,7 @@ export interface GaugeCollateral {
   share: number;
 }
 
-export const useGaugesQuery = () => {
+export const useCollateralGaugesQuery = () => {
   return useQuery(
     [ANCHOR_QUERY_KEY.GAUGES],
     () => {

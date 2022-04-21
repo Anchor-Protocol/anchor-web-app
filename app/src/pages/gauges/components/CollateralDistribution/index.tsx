@@ -7,13 +7,13 @@ import styled from 'styled-components';
 import { DoughnutChart } from 'pages/dashboard/components/DoughnutChart';
 import { HStack, VStack } from '@libs/ui/Stack';
 import { CollateralInfo } from './CollateralInfo';
-import { useGaugesQuery } from 'queries/gov/useGaugesQuery';
+import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
 import { useTheme } from 'styled-components';
 
 export const CollateralDistribution = () => {
   const {
     data: { collateral, totalVotes } = { collateral: [], totalVotes: 0 },
-  } = useGaugesQuery();
+  } = useCollateralGaugesQuery();
 
   const theme = useTheme();
 
