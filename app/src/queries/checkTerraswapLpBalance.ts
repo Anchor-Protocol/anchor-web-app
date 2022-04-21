@@ -1,7 +1,7 @@
 import { useAnchorWebapp, useNetwork } from '@anchor-protocol/app-provider';
 import {
   ANC,
-  AnchorNetwork,
+  NetworkMoniker,
   anchorToken,
   AncUstLP,
   cw20,
@@ -17,7 +17,6 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'contexts/account';
-import { getAnchorNetwork } from 'utils/getAnchorNetwork';
 
 const address = {
   'columbus-5': {
@@ -38,8 +37,7 @@ const address = {
 
 export function useCheckTerraswapLpBalance() {
   const { connected, terraWalletAddress } = useAccount();
-  const { network } = useNetwork();
-  const anchorNetwork = getAnchorNetwork(network.chainID);
+  const { moniker: networkMoniker } = useNetwork();
 
   const connectedWallet = useConnectedWallet();
 
@@ -55,7 +53,7 @@ export function useCheckTerraswapLpBalance() {
     if (
       !connected ||
       !connectedWallet ||
-      anchorNetwork === AnchorNetwork.Local
+      networkMoniker === NetworkMoniker.Local
     ) {
       return;
     }
@@ -92,7 +90,7 @@ export function useCheckTerraswapLpBalance() {
       }
     });
   }, [
-    anchorNetwork,
+    networkMoniker,
     connected,
     connectedWallet,
     queryClient,

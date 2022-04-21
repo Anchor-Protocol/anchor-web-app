@@ -3,7 +3,7 @@ import {
   ANCHOR_TX_KEY,
   AnchorConstants,
 } from '@anchor-protocol/app-provider';
-import { AnchorNetwork } from '@anchor-protocol/types';
+import { NetworkMoniker } from '@anchor-protocol/types';
 import { TERRA_QUERY_KEY, TxRefetchMap } from '@libs/app-provider';
 import { Gas, Rate } from '@libs/types';
 
@@ -47,11 +47,13 @@ export const links = {
 // chain
 // ---------------------------------------------
 type AnchorQueryClient = 'lcd' | 'hive';
-export function ANCHOR_QUERY_CLIENT(network: AnchorNetwork): AnchorQueryClient {
-  const queryClientRecord: Record<AnchorNetwork, AnchorQueryClient> = {
-    [AnchorNetwork.Local]: 'lcd',
-    [AnchorNetwork.Test]: 'lcd',
-    [AnchorNetwork.Main]: 'hive',
+export function ANCHOR_QUERY_CLIENT(
+  network: NetworkMoniker,
+): AnchorQueryClient {
+  const queryClientRecord: Record<NetworkMoniker, AnchorQueryClient> = {
+    [NetworkMoniker.Local]: 'lcd',
+    [NetworkMoniker.Testnet]: 'lcd',
+    [NetworkMoniker.Mainnet]: 'hive',
   };
 
   return queryClientRecord[network];
@@ -177,14 +179,14 @@ export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
   astroUstPair: 'terra1ec0fnjk2u6mms05xyyrte44jfdgdaqnx0upesr',
 };
 
-const anchorIndexerEndpointRecord: Record<AnchorNetwork, string> = {
+const anchorIndexerEndpointRecord: Record<NetworkMoniker, string> = {
   // LocalAnchor doesn't support indexer yet
-  [AnchorNetwork.Local]: 'https://api.anchorprotocol.com/api',
-  [AnchorNetwork.Main]: 'https://api.anchorprotocol.com/api',
-  [AnchorNetwork.Test]: 'https://api-testnet.anchorprotocol.com/api',
+  [NetworkMoniker.Local]: 'https://api.anchorprotocol.com/api',
+  [NetworkMoniker.Mainnet]: 'https://api.anchorprotocol.com/api',
+  [NetworkMoniker.Testnet]: 'https://api-testnet.anchorprotocol.com/api',
 };
 
-export const ANCHOR_INDEXER_API_ENDPOINTS = (network: AnchorNetwork): string =>
+export const ANCHOR_INDEXER_API_ENDPOINTS = (network: NetworkMoniker): string =>
   anchorIndexerEndpointRecord[network];
 
 // ---------------------------------------------

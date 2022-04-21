@@ -27,8 +27,7 @@ import {
 import { useGasPriceQuery } from '../queries/gasPrice';
 import { AppConstants, TxRefetchMap } from '../types';
 import { LoadingScreen } from 'components/LoadingScreen';
-import { getAnchorNetwork } from 'utils/getAnchorNetwork';
-import { AnchorNetwork } from '@anchor-protocol/types';
+import { NetworkMoniker } from '@anchor-protocol/types';
 import { BOMBAY_CONTRACT_ADDRESS, COLUMBUS_CONTRACT_ADDRESS } from 'env';
 import { getAnchorContractAddress } from '@anchor-protocol/app-provider/utils/getAnchorContractAddress';
 
@@ -40,13 +39,13 @@ export interface AppProviderProps<Constants extends AppConstants> {
   defaultQueryClient?:
     | 'lcd'
     | 'hive'
-    | ((network: AnchorNetwork) => 'lcd' | 'hive');
+    | ((network: NetworkMoniker) => 'lcd' | 'hive');
   lcdQueryClient?: (network: NetworkInfo) => LcdQueryClient;
-  hiveQueryClient?: (network: AnchorNetwork) => HiveQueryClient;
+  hiveQueryClient?: (network: NetworkMoniker) => HiveQueryClient;
 
   // gas
   gasPriceEndpoint?: (network: NetworkInfo) => string;
-  fallbackGasPrice?: (network: AnchorNetwork) => GasPrice;
+  fallbackGasPrice?: (network: NetworkMoniker) => GasPrice;
 
   // refetch map
   refetchMap: TxRefetchMap;
@@ -99,13 +98,12 @@ export function AppProvider<Constants extends AppConstants>({
   txErrorReporter,
   refetchMap,
 }: AppProviderProps<Constants>) {
-  const { network } = useNetwork();
-  const anchorNetwork = getAnchorNetwork(network.chainID);
-  const isLocalAnchor = anchorNetwork === AnchorNetwork.Local;
+  const { network, moniker: networkMoniker } = useNetwork();
+  const isLocalAnchor = networkMoniker === NetworkMoniker.Local;
 
   const { data: localAnchorContractAddress } =
     useLocalAnchorContractAddressQuery({
-      enabled: anchorNetwork === AnchorNetwork.Local,
+      enabled: isLocalAnchor,
     });
 
   const contractAddress = useMemo(() => {
@@ -114,27 +112,27 @@ export function AppProvider<Constants extends AppConstants>({
     }
 
     const addressMap =
-      anchorNetwork === AnchorNetwork.Main
+      networkMoniker === NetworkMoniker.Mainnet
         ? COLUMBUS_CONTRACT_ADDRESS
         : BOMBAY_CONTRACT_ADDRESS;
 
     return getAnchorContractAddress(addressMap);
-  }, [anchorNetwork, isLocalAnchor, localAnchorContractAddress]);
+  }, [networkMoniker, isLocalAnchor, localAnchorContractAddress]);
 
   const lcdQueryClient = useMemo(
     () => _lcdQueryClient(network),
     [_lcdQueryClient, network],
   );
   const hiveQueryClient = useMemo(
-    () => _hiveQueryClient(anchorNetwork),
-    [_hiveQueryClient, anchorNetwork],
+    () => _hiveQueryClient(networkMoniker),
+    [_hiveQueryClient, networkMoniker],
   );
   const queryClientType = useMemo(
     () =>
       typeof defaultQueryClient === 'function'
-        ? defaultQueryClient(anchorNetwork)
+        ? defaultQueryClient(networkMoniker)
         : defaultQueryClient,
-    [defaultQueryClient, anchorNetwork],
+    [defaultQueryClient, networkMoniker],
   );
   const queryClient = useMemo(
     () => (queryClientType === 'lcd' ? lcdQueryClient : hiveQueryClient),
@@ -145,10 +143,11 @@ export function AppProvider<Constants extends AppConstants>({
     return () => lastSyncedHeightQuery(queryClient);
   }, [queryClient]);
 
-  const { data: gasPrice = fallbackGasPrice(anchorNetwork) } = useGasPriceQuery(
-    gasPriceEndpoint(network) ?? gasPriceEndpoint(network),
-    queryErrorReporter,
-  );
+  const { data: gasPrice = fallbackGasPrice(networkMoniker) } =
+    useGasPriceQuery(
+      gasPriceEndpoint(network) ?? gasPriceEndpoint(network),
+      queryErrorReporter,
+    );
 
   if (contractAddress === undefined) {
     return isLocalAnchor ? (

@@ -1,4 +1,4 @@
-import { AnchorNetwork } from '@anchor-protocol/types';
+import { NetworkMoniker } from '@anchor-protocol/types';
 import { GasPrice } from '@libs/app-fns';
 import {
   defaultHiveFetcher,
@@ -9,15 +9,15 @@ import {
 import { NetworkInfo } from '@terra-money/use-wallet';
 import { UseQueryResult } from 'react-query';
 
-const hiveEndpointRecord: Record<AnchorNetwork, string> = {
-  [AnchorNetwork.Main]: 'https://mantle.terra.dev',
-  [AnchorNetwork.Test]: 'https://bombay-mantle.terra.dev',
+const hiveEndpointRecord: Record<NetworkMoniker, string> = {
+  [NetworkMoniker.Mainnet]: 'https://mantle.terra.dev',
+  [NetworkMoniker.Testnet]: 'https://bombay-mantle.terra.dev',
   // HTTPS: http://localhost:8086
-  [AnchorNetwork.Local]: 'http://localhost:8085',
+  [NetworkMoniker.Local]: 'http://localhost:8085',
 };
 
 export const DEFAULT_HIVE_WASM_CLIENT = (
-  network: AnchorNetwork,
+  network: NetworkMoniker,
 ): HiveQueryClient => ({
   hiveEndpoint: hiveEndpointRecord[network],
   hiveFetcher: defaultHiveFetcher,
@@ -81,8 +81,8 @@ const FALLBACK_GAS_PRICE_BOMBAY = {
   udkk: '0.9',
 };
 
-export function DEFAULT_FALLBACK_GAS_PRICE(network: AnchorNetwork): GasPrice {
-  if (network === AnchorNetwork.Main) {
+export function DEFAULT_FALLBACK_GAS_PRICE(network: NetworkMoniker): GasPrice {
+  if (network === NetworkMoniker.Mainnet) {
     return FALLBACK_GAS_PRICE_COLUMNBUS as GasPrice;
   }
 
