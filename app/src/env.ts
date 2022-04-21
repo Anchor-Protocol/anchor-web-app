@@ -169,7 +169,8 @@ export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
 };
 
 const anchorIndexerEndpointRecord: Record<AnchorNetwork, string> = {
-  [AnchorNetwork.Local]: '',
+  // LocalAnchor doesn't support indexer yet
+  [AnchorNetwork.Local]: 'https://api.anchorprotocol.com/api',
   [AnchorNetwork.Main]: 'https://api.anchorprotocol.com/api',
   [AnchorNetwork.Test]: 'https://api-testnet.anchorprotocol.com/api',
 };
