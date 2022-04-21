@@ -27,7 +27,8 @@ const LCDClients: Record<AnchorNetwork, LCDClient> = {
   }),
   [AnchorNetwork.Local]: new LCDClient({
     chainID: 'localterra',
-    URL: 'https://localhost:1338',
+    // HTTPS: http://localhost:1338
+    URL: 'http://localhost:1337',
   }),
 };
 
