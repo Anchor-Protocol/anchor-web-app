@@ -4,26 +4,27 @@ import { AnimateNumber } from '@libs/ui';
 import Big, { BigSource } from 'big.js';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { getPaletteColor } from '@libs/ui/colors/palette';
-import { colorToCSSValue } from '@libs/ui/colors/colorToCSSValue';
 import { DoughnutChart } from 'pages/dashboard/components/DoughnutChart';
 import { HStack, VStack } from '@libs/ui/Stack';
 import { CollateralInfo } from './CollateralInfo';
 import { useGaugesQuery } from 'queries/gov/useGaugesQuery';
+import { useTheme } from 'styled-components';
 
 export const CollateralDistribution = () => {
   const {
     data: { collateral, totalVotes } = { collateral: [], totalVotes: 0 },
   } = useGaugesQuery();
 
+  const theme = useTheme();
+
   const descriptors = useMemo(
     () =>
       collateral.map(({ symbol, votes }, index) => ({
         label: symbol,
-        color: colorToCSSValue(getPaletteColor(index)),
+        color: theme.chart[index % theme.chart.length],
         value: Big(votes).toNumber(),
       })),
-    [collateral],
+    [collateral, theme.chart],
   );
 
   return (
@@ -45,7 +46,7 @@ export const CollateralDistribution = () => {
           {collateral.map(({ symbol, votes, share }, index) => (
             <CollateralInfo
               key={symbol}
-              color={getPaletteColor(index)}
+              color={theme.chart[index % theme.chart.length]}
               name={symbol}
               amount={votes}
               share={share}

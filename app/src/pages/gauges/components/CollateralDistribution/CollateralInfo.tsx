@@ -1,15 +1,13 @@
 import { Token, u } from '@libs/types';
-import { HSLA } from '@libs/ui/colors';
 import { HStack, VStack } from '@libs/ui/Stack';
 import { BigSource } from 'big.js';
 import React from 'react';
 import styled from 'styled-components';
 import { AnimateNumber } from '@libs/ui';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
-import { colorToCSSValue } from '@libs/ui/colors/colorToCSSValue';
 
 interface CollateralInfoProps {
-  color: HSLA;
+  color: string;
   name: string;
   amount: u<Token<BigSource>>;
   share: number;
@@ -39,11 +37,11 @@ export const CollateralInfo = ({
   );
 };
 
-const Color = styled.div<{ $color: HSLA }>`
+const Color = styled.div<{ $color: string }>`
   width: 12px;
   height: 12px;
   border-radius: 3px;
-  background: ${({ $color }) => colorToCSSValue($color)};
+  background: ${({ $color }) => $color};
 `;
 
 const Name = styled.p`
