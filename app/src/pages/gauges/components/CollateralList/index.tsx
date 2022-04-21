@@ -1,9 +1,15 @@
+import { TokenIcon } from '@anchor-protocol/token-icons';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@libs/neumorphism-ui/components/Section';
+import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
 import React from 'react';
 import styled from 'styled-components';
+import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
 
 export const CollateralList = () => {
+  const { data: { collateral } = { collateral: [] } } =
+    useCollateralGaugesQuery();
+
   return (
     <Container>
       <HorizontalScrollTable minWidth={850}>
@@ -21,6 +27,27 @@ export const CollateralList = () => {
             <th>Actions</th>
           </tr>
         </thead>
+        <tbody>
+          {collateral.map(({ symbol, icon, name, votes, share }) => (
+            <tr key={symbol}>
+              <td>
+                <i>
+                  <TokenIcon symbol={symbol} path={icon} />
+                </i>
+                <div>
+                  <div className="coin">{symbol}</div>
+                  <p className="name">{name}</p>
+                </div>
+              </td>
+              <td>
+                <div className="value">
+                  {formatUTokenIntegerWithoutPostfixUnits(votes)} veANC
+                </div>
+                <p className="volatility">{(share * 100).toFixed(2)}%</p>
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </HorizontalScrollTable>
     </Container>
   );

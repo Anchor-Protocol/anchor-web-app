@@ -8,21 +8,25 @@ const rawCollateral = [
   {
     symbol: 'bLuna',
     name: 'Bonded Luna',
+    icon: 'https://whitelist.anchorprotocol.com/logo/bLUNA.png',
     votes: Big('6789069442123') as u<Token<BigSource>>,
   },
   {
     symbol: 'bETH',
     name: 'Bonded ETH',
+    icon: 'https://whitelist.anchorprotocol.com/logo/bETH.png',
     votes: Big('2789069442123') as u<Token<BigSource>>,
   },
   {
     symbol: 'bATOM',
     name: 'Bonded ATOM',
+    icon: 'https://files.pstake.finance/logos/bAssets/bATOM.svg',
     votes: Big('1789069442123') as u<Token<BigSource>>,
   },
   {
     symbol: 'wasAVAX',
     name: 'BENQI Staked AVAX (Portal)',
+    icon: 'https://benqi.fi/images/assets/savax.svg',
     votes: Big('1189069442123') as u<Token<BigSource>>,
   },
 ];
@@ -30,6 +34,7 @@ const rawCollateral = [
 export interface GaugeCollateral {
   symbol: string;
   name: string;
+  icon: string;
   votes: u<Token<BigSource>>;
   share: number;
 }
