@@ -1,5 +1,11 @@
-import { useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { ANC, anchorToken, AncUstLP, cw20 } from '@anchor-protocol/types';
+import { useAnchorWebapp, useNetwork } from '@anchor-protocol/app-provider';
+import {
+  ANC,
+  AnchorNetwork,
+  anchorToken,
+  AncUstLP,
+  cw20,
+} from '@anchor-protocol/types';
 import {
   QueryClient,
   wasmFetch,
@@ -11,6 +17,7 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import big from 'big.js';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'contexts/account';
+import { getAnchorNetwork } from 'utils/getAnchorNetwork';
 
 const address = {
   'columbus-5': {
@@ -31,6 +38,8 @@ const address = {
 
 export function useCheckTerraswapLpBalance() {
   const { connected, terraWalletAddress } = useAccount();
+  const { network } = useNetwork();
+  const anchorNetwork = getAnchorNetwork(network.chainID);
 
   const connectedWallet = useConnectedWallet();
 
@@ -43,7 +52,11 @@ export function useCheckTerraswapLpBalance() {
   } | null>(null);
 
   useEffect(() => {
-    if (!connected || !connectedWallet) {
+    if (
+      !connected ||
+      !connectedWallet ||
+      anchorNetwork === AnchorNetwork.Local
+    ) {
       return;
     }
 
@@ -78,7 +91,13 @@ export function useCheckTerraswapLpBalance() {
         });
       }
     });
-  }, [connected, connectedWallet, queryClient, terraWalletAddress]);
+  }, [
+    anchorNetwork,
+    connected,
+    connectedWallet,
+    queryClient,
+    terraWalletAddress,
+  ]);
 
   return balances;
 }

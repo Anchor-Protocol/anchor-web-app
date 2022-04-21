@@ -13,7 +13,7 @@ const localAnchorContractAddressesQuery = async (): Promise<
 > => {
   try {
     const addressMap: ContractAddressMap = await fetch(
-      'http://localhost:3003/',
+      'http://localhost:3003/addressProvider',
     ).then((res) => res.json());
 
     const contractAddress = getAnchorContractAddress(addressMap);
@@ -39,26 +39,6 @@ const localAnchorContractAddressesQuery = async (): Promise<
           `LocalAnchor missing ${
             missingAddresses.length
           } contract addresses:\n${missingAddresses.join('\n')}`,
-        );
-      }
-
-      const usedAddresses = new Set(
-        flatAddressMap
-          .map(([, value]) => value)
-          .filter((value) => value !== undefined),
-      );
-
-      const unusedLocalAnchorAddresses = Object.entries(addressMap)
-        .filter(([, value]) => !usedAddresses.has(value))
-        .map(([key]) => key);
-
-      if (unusedLocalAnchorAddresses.length > 0) {
-        console.info(
-          `The app doesn't use ${
-            unusedLocalAnchorAddresses.length
-          } LocalAnchor contract addresses:\n${unusedLocalAnchorAddresses.join(
-            '\n',
-          )}`,
         );
       }
     }
