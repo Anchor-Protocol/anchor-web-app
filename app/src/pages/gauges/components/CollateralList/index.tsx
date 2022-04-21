@@ -5,10 +5,15 @@ import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
 import React from 'react';
 import styled from 'styled-components';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
+import { useCurrentAccountGaugesVotesQuery } from 'queries/gov/useCurrentAccountGaugeVotesQuery';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
     useCollateralGaugesQuery();
+
+  const { data: currentAccountGaugeVotes = {} } =
+    useCurrentAccountGaugesVotesQuery();
 
   return (
     <Container>
@@ -28,25 +33,49 @@ export const CollateralList = () => {
           </tr>
         </thead>
         <tbody>
-          {collateral.map(({ symbol, icon, name, votes, share }) => (
-            <tr key={symbol}>
-              <td>
-                <i>
-                  <TokenIcon symbol={symbol} path={icon} />
-                </i>
-                <div>
-                  <div className="coin">{symbol}</div>
-                  <p className="name">{name}</p>
-                </div>
-              </td>
-              <td>
-                <div className="value">
-                  {formatUTokenIntegerWithoutPostfixUnits(votes)} veANC
-                </div>
-                <p className="volatility">{(share * 100).toFixed(2)}%</p>
-              </td>
-            </tr>
-          ))}
+          {collateral.map(({ symbol, icon, name, votes, share }) => {
+            const currentAccountVotes = currentAccountGaugeVotes[symbol];
+
+            return (
+              <tr key={symbol}>
+                <td>
+                  <i>
+                    <TokenIcon symbol={symbol} path={icon} />
+                  </i>
+                  <div>
+                    <div className="coin">{symbol}</div>
+                    <p className="name">{name}</p>
+                  </div>
+                </td>
+                <td>
+                  <div className="value">
+                    {formatUTokenIntegerWithoutPostfixUnits(votes)} veANC
+                  </div>
+                  <p className="volatility">{(share * 100).toFixed(2)}%</p>
+                </td>
+                <td>
+                  <div className="value">
+                    {currentAccountVotes
+                      ? `${formatUTokenIntegerWithoutPostfixUnits(
+                          currentAccountVotes,
+                        )} veANC`
+                      : '-'}
+                  </div>
+                </td>
+                <td>
+                  <BorderButton onClick={() => console.log('Vote!')}>
+                    Vote
+                  </BorderButton>
+                  <BorderButton
+                    disabled={currentAccountVotes === undefined}
+                    onClick={() => console.log('Cancel!')}
+                  >
+                    Cancel
+                  </BorderButton>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </HorizontalScrollTable>
     </Container>
