@@ -67,10 +67,13 @@ export function useAssetPriceInUstQuery(
     astro: astroUstPair,
   };
 
+  const address = astroportAddress[asset];
+
   return useQuery(
     [ANCHOR_QUERY_KEY.ASTRO_PRICE, astroportAddress[asset], queryClient],
     queryFn,
     {
+      enabled: !!address,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

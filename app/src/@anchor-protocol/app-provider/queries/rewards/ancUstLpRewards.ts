@@ -19,6 +19,10 @@ export function useRewardsAncUstLpRewardsQuery(): UseQueryResult<
 
   const { connected, terraWalletAddress } = useAccount();
 
+  const enabled = !!(
+    contractAddress.cw20.AncUstLP && contractAddress.astroport.generator
+  );
+
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_ANC_UST_LP_REWARDS,
@@ -30,7 +34,7 @@ export function useRewardsAncUstLpRewardsQuery(): UseQueryResult<
     queryFn,
     {
       refetchInterval: 1000 * 60 * 5,
-      enabled: connected,
+      enabled,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

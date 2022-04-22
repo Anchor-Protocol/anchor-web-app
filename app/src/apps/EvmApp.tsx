@@ -1,5 +1,4 @@
 import React from 'react';
-import { GlobalStyle } from 'components/GlobalStyle';
 import { Header } from 'components/Header';
 import { Dashboard } from 'pages/dashboard';
 import { Route, Routes, Navigate } from 'react-router-dom';
@@ -18,7 +17,6 @@ export function EvmApp() {
   return (
     <EvmAppProviders>
       <div>
-        <GlobalStyle />
         <Header />
         <Routes>
           <Route index={true} element={<Dashboard />} />

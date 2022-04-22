@@ -24,7 +24,7 @@ export function useAncBalanceQuery(
     queryFn,
     {
       refetchInterval: !!walletAddress && 1000 * 60 * 2,
-      enabled: !!walletAddress,
+      enabled: !!walletAddress && !!contractAddress.cw20.ANC,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

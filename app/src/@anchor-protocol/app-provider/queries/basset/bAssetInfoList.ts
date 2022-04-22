@@ -25,6 +25,7 @@ export function useBAssetInfoListQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      enabled: !!contractAddress.moneyMarket.overseer,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

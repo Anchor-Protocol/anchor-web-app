@@ -16,6 +16,7 @@ export function useAncTokenInfoQuery(): UseQueryResult<
     [ANCHOR_QUERY_KEY.ANC_TOKEN_INFO, contractAddress.cw20.ANC, queryClient],
     queryFn,
     {
+      enabled: !!contractAddress.cw20.ANC,
       refetchInterval: 1000 * 60 * 10,
       keepPreviousData: true,
       onError: queryErrorReporter,

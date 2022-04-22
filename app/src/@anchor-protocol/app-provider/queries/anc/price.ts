@@ -18,6 +18,7 @@ export function useAncPriceQuery(): UseQueryResult<AncPriceData | undefined> {
     ],
     queryFn,
     {
+      enabled: !!contractAddress.astroport.ancUstPair,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

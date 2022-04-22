@@ -1,5 +1,11 @@
-import { useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { ANC, anchorToken, AncUstLP, cw20 } from '@anchor-protocol/types';
+import { useAnchorWebapp, useNetwork } from '@anchor-protocol/app-provider';
+import {
+  ANC,
+  NetworkMoniker,
+  anchorToken,
+  AncUstLP,
+  cw20,
+} from '@anchor-protocol/types';
 import {
   QueryClient,
   wasmFetch,
@@ -31,6 +37,7 @@ const address = {
 
 export function useCheckTerraswapLpBalance() {
   const { connected, terraWalletAddress } = useAccount();
+  const { moniker: networkMoniker } = useNetwork();
 
   const connectedWallet = useConnectedWallet();
 
@@ -43,7 +50,11 @@ export function useCheckTerraswapLpBalance() {
   } | null>(null);
 
   useEffect(() => {
-    if (!connected || !connectedWallet) {
+    if (
+      !connected ||
+      !connectedWallet ||
+      networkMoniker === NetworkMoniker.Local
+    ) {
       return;
     }
 
@@ -78,7 +89,13 @@ export function useCheckTerraswapLpBalance() {
         });
       }
     });
-  }, [connected, connectedWallet, queryClient, terraWalletAddress]);
+  }, [
+    networkMoniker,
+    connected,
+    connectedWallet,
+    queryClient,
+    terraWalletAddress,
+  ]);
 
   return balances;
 }
