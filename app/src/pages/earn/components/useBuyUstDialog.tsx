@@ -10,6 +10,7 @@ import kucoin from './assets/kucoin.svg';
 import transak from './assets/transak.svg';
 import kado from './assets/kado.svg';
 import binance from './assets/binance.svg';
+import kraken from './assets/kraken.svg';
 import ftx from './assets/ftx.svg';
 import { dialogStyle } from './useInsuranceCoverageDialog';
 import okex from './assets/okex.svg';
@@ -121,6 +122,23 @@ function ComponentBase({
             </span>
             <i>
               <img src={ftx} alt="FTX" />
+            </i>
+          </EmbossButton>
+
+          <EmbossButton
+            component="a"
+            href="https://trade.kraken.com/charts/KRAKEN:UST-USD"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              Kraken{' '}
+              <sub>
+                <Launch />
+              </sub>
+            </span>
+            <i>
+              <img src={kraken} alt="Kraken" />
             </i>
           </EmbossButton>
         </section>
