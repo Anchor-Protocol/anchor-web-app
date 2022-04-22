@@ -8,8 +8,12 @@ import { veANC } from '@anchor-protocol/types';
 type AccountGaugesVotes = Record<string, u<veANC<BigSource>>>;
 
 const accountGaugesVotes: AccountGaugesVotes = {
-  bLuna: Big('6789069442123') as u<veANC<BigSource>>,
-  wasAVAX: Big('1789069442123') as u<veANC<BigSource>>,
+  terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp: Big('6789069442123') as u<
+    veANC<BigSource>
+  >,
+  terra1z3e2e4jpk4n0xzzwlkgcfvc95pc5ldq0xcny58: Big('1789069442123') as u<
+    veANC<BigSource>
+  >,
 };
 
 export const useMyGaugeVoting = () => {

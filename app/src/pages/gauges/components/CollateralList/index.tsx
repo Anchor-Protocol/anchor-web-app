@@ -12,7 +12,7 @@ export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
     useCollateralGaugesQuery();
 
-  const { data: currentAccountGaugeVotes = {} } = useMyGaugeVoting();
+  const { data: myGaugeVoting = {} } = useMyGaugeVoting();
 
   return (
     <Container>
@@ -32,49 +32,51 @@ export const CollateralList = () => {
           </tr>
         </thead>
         <tbody>
-          {collateral.map(({ symbol, icon, name, votes, share }) => {
-            const currentAccountVotes = currentAccountGaugeVotes[symbol];
+          {collateral.map(
+            ({ symbol, icon, name, votes, share, tokenAddress }) => {
+              const myVotes = myGaugeVoting[tokenAddress];
 
-            return (
-              <tr key={symbol}>
-                <td>
-                  <i>
-                    <TokenIcon symbol={symbol} path={icon} />
-                  </i>
-                  <div>
-                    <div className="coin">{symbol}</div>
-                    <p className="name">{name}</p>
-                  </div>
-                </td>
-                <td>
-                  <div className="value">
-                    {formatUTokenIntegerWithoutPostfixUnits(votes)} veANC
-                  </div>
-                  <p className="volatility">{(share * 100).toFixed(2)}%</p>
-                </td>
-                <td>
-                  <div className="value">
-                    {currentAccountVotes
-                      ? `${formatUTokenIntegerWithoutPostfixUnits(
-                          currentAccountVotes,
-                        )} veANC`
-                      : '-'}
-                  </div>
-                </td>
-                <td>
-                  <BorderButton onClick={() => console.log('Vote!')}>
-                    Vote
-                  </BorderButton>
-                  <BorderButton
-                    disabled={currentAccountVotes === undefined}
-                    onClick={() => console.log('Cancel!')}
-                  >
-                    Cancel
-                  </BorderButton>
-                </td>
-              </tr>
-            );
-          })}
+              return (
+                <tr key={symbol}>
+                  <td>
+                    <i>
+                      <TokenIcon symbol={symbol} path={icon} />
+                    </i>
+                    <div>
+                      <div className="coin">{symbol}</div>
+                      <p className="name">{name}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      {formatUTokenIntegerWithoutPostfixUnits(votes)} veANC
+                    </div>
+                    <p className="volatility">{(share * 100).toFixed(2)}%</p>
+                  </td>
+                  <td>
+                    <div className="value">
+                      {myVotes
+                        ? `${formatUTokenIntegerWithoutPostfixUnits(
+                            myVotes,
+                          )} veANC`
+                        : '-'}
+                    </div>
+                  </td>
+                  <td>
+                    <BorderButton onClick={() => console.log('Vote!')}>
+                      Vote
+                    </BorderButton>
+                    <BorderButton
+                      disabled={myVotes === undefined}
+                      onClick={() => console.log('Cancel!')}
+                    >
+                      Cancel
+                    </BorderButton>
+                  </td>
+                </tr>
+              );
+            },
+          )}
         </tbody>
       </HorizontalScrollTable>
     </Container>
