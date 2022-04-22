@@ -27,8 +27,14 @@ export const CollateralList = () => {
         <thead>
           <tr>
             <th>COLLATERAL LIST</th>
-            <th>Total votes ({VEANC_SYMBOL})</th>
-            <th>Your votes ({VEANC_SYMBOL})</th>
+            <th>
+              <p>Total votes</p>
+              <p>{VEANC_SYMBOL}</p>
+            </th>
+            <th>
+              <p>Total votes</p>
+              <p>{VEANC_SYMBOL}</p>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -88,6 +94,7 @@ const Container = styled(Section)`
     thead {
       th {
         text-align: right;
+        vertical-align: top;
 
         &:first-child {
           font-size: 12px;
