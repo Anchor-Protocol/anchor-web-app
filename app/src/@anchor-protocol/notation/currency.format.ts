@@ -9,6 +9,7 @@ import {
   Luna,
   Token,
   UST,
+  veANC,
 } from '@anchor-protocol/types';
 import { formatDemimal, formatInteger, MICRO } from '@libs/formatter';
 import { u } from '@libs/types';
@@ -89,6 +90,12 @@ export function formatANCInput<C extends ANC<BigSource>>(
   return d6InputFormatter(n) as any;
 }
 
+export function formatVeAncInput<C extends veANC<BigSource>>(
+  n: C,
+): C extends veANC<BigSource> ? veANC : never {
+  return d6InputFormatter(n) as any;
+}
+
 export function formatLPInput<C extends LPToken<BigSource>>(
   n: C,
 ): C extends AncUstLP<BigSource>
@@ -102,6 +109,10 @@ export function formatLPInput<C extends LPToken<BigSource>>(
 }
 
 export function formatANC(n: ANC<BigSource>): string {
+  return d6Formatter(n);
+}
+
+export function formatVeAnc(n: veANC<BigSource>): string {
   return d6Formatter(n);
 }
 
