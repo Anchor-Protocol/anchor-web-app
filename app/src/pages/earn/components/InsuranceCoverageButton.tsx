@@ -5,13 +5,24 @@ import React from 'react';
 import styled from 'styled-components';
 import { useInsuranceCoverageDialog } from './useInsuranceCoverageDialog';
 
-export function InsuranceCoverageButton(buttonProps: ButtonBaseProps) {
+interface InsuranceCoverageButtonProps extends ButtonBaseProps {
+  useManualWidthOnMobile?: boolean;
+}
+
+export function InsuranceCoverageButton({
+  useManualWidthOnMobile = false,
+  ...buttonProps
+}: InsuranceCoverageButtonProps) {
   const [openInsuranceCoverage, insuranceCoverageElement] =
     useInsuranceCoverageDialog();
 
   return (
     <>
-      <Button {...buttonProps} onClick={() => openInsuranceCoverage({})}>
+      <Button
+        {...buttonProps}
+        className={useManualWidthOnMobile && 'manualWidth'}
+        onClick={() => openInsuranceCoverage({})}
+      >
         <ShieldPlus /> Protect Your Deposit
       </Button>
       {insuranceCoverageElement}
@@ -20,16 +31,22 @@ export function InsuranceCoverageButton(buttonProps: ButtonBaseProps) {
 }
 
 const Button = styled(BorderButton)`
-  padding: 0 10px;
-
+  height: initial;
+  padding: 7px 10px;
   border: none !important;
-
   font-size: 16px;
-  height: 34px;
+  line-height: 20px;
 
   svg {
     font-size: 1em;
     transform: scale(1.2);
     margin-right: 8px;
+  }
+
+  @media (min-width: 701px) and (max-width: 1050px) {
+    &.manualWidth {
+      max-width: 145px;
+      flex-shrink: 0;
+    }
   }
 `;

@@ -1,72 +1,63 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import {
-  EVM_ANCHOR_TX_REFETCH_MAP,
-  refetchQueryByTxKind,
-  TxKind,
-  TX_GAS_LIMIT,
-} from './utils';
+import { TxKind } from './utils';
 import { Subject } from 'rxjs';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { ContractReceipt } from 'ethers';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
-import { TxEvent } from './useTx';
-import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
-import { useRefetchQueries } from '@libs/app-provider';
+import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
-
-type ClaimRewardsTxResult = OneWayTxResponse<ContractReceipt> | null;
-type ClaimRewardsTxRender = TxResultRendering<ClaimRewardsTxResult>;
 
 export interface ClaimRewardsTxParams {}
 
 export function useClaimRewardsTx():
-  | BackgroundTxResult<ClaimRewardsTxParams, ClaimRewardsTxResult>
+  | BackgroundTxResult<ClaimRewardsTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
-  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
+  const renderTxResultsRef =
+    useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
 
   const claimRewards = useCallback(
     async (
       txParams: ClaimRewardsTxParams,
-      renderTxResults: Subject<ClaimRewardsTxRender>,
-      txEvents: Subject<TxEvent<ClaimRewardsTxParams>>,
+      handleEvent: CrossChainEventHandler<ContractReceipt>,
     ) => {
-      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
+      const writer = new EvmTxProgressWriter(
+        renderTxResultsRef.current!,
+        connectionType,
+      );
       writer.claimRewards();
       writer.timer.start();
 
       try {
-        const result = await xAnchor.claimRewards(
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
+        const result = await xAnchor.claimRewards(address!, {
+          handleEvent: (event) => {
             writer.claimRewards(event);
-            txEvents.next({ event, txParams });
+            handleEvent(event);
           },
-        );
+        });
 
-        refetchQueries(refetchQueryByTxKind(TxKind.ClaimRewards));
         return result;
       } finally {
         writer.timer.stop();
       }
     },
-    [address, connectionType, xAnchor, refetchQueries],
+    [address, connectionType, xAnchor],
   );
 
-  const persistedTxResult = useBackgroundTx<
-    ClaimRewardsTxParams,
-    ClaimRewardsTxResult
-  >(claimRewards, parseTx, null, displayTx);
+  const backgroundTxResult = useBackgroundTx<ClaimRewardsTxParams>(
+    claimRewards,
+    displayTx,
+  );
 
-  return address ? persistedTxResult : undefined;
+  renderTxResultsRef.current = backgroundTxResult?.renderTxResults;
+
+  return address ? backgroundTxResult : undefined;
 }
 
 const displayTx = () => ({
   txKind: TxKind.ClaimRewards,
   timestamp: Date.now(),
 });
-const parseTx = (resp: NonNullable<ClaimRewardsTxResult>) => resp.tx;

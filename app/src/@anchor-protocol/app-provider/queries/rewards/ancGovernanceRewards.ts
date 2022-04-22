@@ -19,6 +19,10 @@ export function useRewardsAncGovernanceRewardsQuery(): UseQueryResult<
 
   const { connected, terraWalletAddress } = useAccount();
 
+  const enabled =
+    connected &&
+    !!(contractAddress.anchorToken.gov && contractAddress.cw20.ANC);
+
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
@@ -30,7 +34,7 @@ export function useRewardsAncGovernanceRewardsQuery(): UseQueryResult<
     queryFn,
     {
       refetchInterval: 1000 * 60 * 5,
-      enabled: connected,
+      enabled,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

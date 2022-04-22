@@ -12,6 +12,12 @@ export function useMarketBAssetQuery(): UseQueryResult<
   const { queryClient, contractAddress, queryErrorReporter } =
     useAnchorWebapp();
 
+  const enabled = !!(
+    contractAddress.cw20.bLuna &&
+    contractAddress.moneyMarket.oracle &&
+    contractAddress.bluna.custody
+  );
+
   const result = useQuery(
     [
       ANCHOR_QUERY_KEY.MARKET_BASSET,
@@ -22,6 +28,7 @@ export function useMarketBAssetQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      enabled,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

@@ -14,6 +14,7 @@ export function useGovConfigQuery(): UseQueryResult<GovConfig | undefined> {
     [ANCHOR_QUERY_KEY.GOV_CONFIG, contractAddress.anchorToken.gov, queryClient],
     queryFn,
     {
+      enabled: !!contractAddress.anchorToken.gov,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

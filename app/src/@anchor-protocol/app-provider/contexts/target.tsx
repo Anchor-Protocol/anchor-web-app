@@ -3,12 +3,7 @@ import { UIElementProps } from '@libs/ui';
 import { createContext, useContext } from 'react';
 import { useMemo, useState } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
-
-export enum Chain {
-  Terra = 'Terra',
-  Ethereum = 'Ethereum',
-  Avalanche = 'Avalanche',
-}
+import { Chain } from '@anchor-protocol/types';
 
 export const DEPLOYMENT_TARGETS = [
   {

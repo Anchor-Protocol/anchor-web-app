@@ -21,6 +21,7 @@ export function useGovPollQuery(
     ],
     queryFn,
     {
+      enabled: !!contractAddress.anchorToken.gov,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

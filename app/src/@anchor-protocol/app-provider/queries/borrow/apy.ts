@@ -18,6 +18,7 @@ export function useBorrowAPYQuery(): UseQueryResult<BorrowAPYData | undefined> {
     ],
     queryFn,
     {
+      enabled: !!contractAddress.astroport.ancUstPair,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

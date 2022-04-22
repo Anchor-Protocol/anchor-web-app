@@ -2,12 +2,10 @@ import {
   ANCHOR_QUERY_KEY,
   ANCHOR_TX_KEY,
   AnchorConstants,
-  AnchorContractAddress,
 } from '@anchor-protocol/app-provider';
-import { CW20Addr, HumanAddr } from '@anchor-protocol/types';
+import { NetworkMoniker } from '@anchor-protocol/types';
 import { TERRA_QUERY_KEY, TxRefetchMap } from '@libs/app-provider';
 import { Gas, Rate } from '@libs/types';
-import { NetworkInfo } from '@terra-money/wallet-provider';
 
 // ---------------------------------------------
 // style
@@ -49,29 +47,68 @@ export const links = {
 // ---------------------------------------------
 // chain
 // ---------------------------------------------
-export function ANCHOR_QUERY_CLIENT(network: NetworkInfo): 'lcd' | 'hive' {
-  if (network.chainID.startsWith('bombay')) {
-    return 'lcd';
-  } else {
-    return 'hive';
-  }
-  //return 'hive';
-}
-
-export function ANCHOR_CONSTANTS(network: NetworkInfo): AnchorConstants {
-  return {
-    gasWanted: 1_000_000 as Gas,
-    fixedGas: 1_671_053 as Gas,
-    blocksPerYear: 4_656_810,
-    gasAdjustment: 1.6 as Rate<number>,
-    airdropGasWanted: 300_000 as Gas,
-    airdropGas: 334_211 as Gas,
-    bondGasWanted: 1_600_000 as Gas,
-    astroportGasWanted: 1_600_000 as Gas,
+type AnchorQueryClient = 'lcd' | 'hive';
+export function ANCHOR_QUERY_CLIENT(
+  network: NetworkMoniker,
+): AnchorQueryClient {
+  const queryClientRecord: Record<NetworkMoniker, AnchorQueryClient> = {
+    [NetworkMoniker.Local]: 'lcd',
+    [NetworkMoniker.Testnet]: 'lcd',
+    [NetworkMoniker.Mainnet]: 'hive',
   };
+
+  return queryClientRecord[network];
 }
 
-const COLUMBUS_CONTRACT_ADDRESS = {
+export const ANCHOR_CONSTANTS: AnchorConstants = {
+  gasWanted: 1_000_000 as Gas,
+  fixedGas: 1_671_053 as Gas,
+  blocksPerYear: 4_656_810,
+  gasAdjustment: 1.6 as Rate<number>,
+  airdropGasWanted: 300_000 as Gas,
+  airdropGas: 334_211 as Gas,
+  bondGasWanted: 1_600_000 as Gas,
+  astroportGasWanted: 1_600_000 as Gas,
+};
+
+type ContractAddressMapKey =
+  | 'bLunaHub'
+  | 'bLunaToken'
+  | 'bLunaReward'
+  | 'bLunaAirdrop'
+  | 'bLunaValidatorsRegistry'
+  | 'mmInterestModel'
+  | 'mmOracle'
+  | 'mmMarket'
+  | 'mmOverseer'
+  | 'mmCustody'
+  | 'mmCustodyBEth'
+  | 'mmLiquidation'
+  | 'mmDistributionModel'
+  | 'mmLiquidationQueue'
+  | 'aTerra'
+  | 'bLunaLunaPair'
+  | 'bLunaLunaLPToken'
+  | 'ancUstPair'
+  | 'ancUstLPToken'
+  | 'gov'
+  | 'distributor'
+  | 'collector'
+  | 'community'
+  | 'staking'
+  | 'ANC'
+  | 'airdrop'
+  | 'vesting'
+  | 'investor_vesting'
+  | 'team_vesting'
+  | 'terraswapFactory'
+  | 'astroportGenerator'
+  | 'anchorVesting'
+  | 'astroUstPair';
+
+export type ContractAddressMap = Partial<Record<ContractAddressMapKey, string>>;
+
+export const COLUMBUS_CONTRACT_ADDRESS: ContractAddressMap = {
   bLunaHub: 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts',
   bLunaToken: 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp',
   bLunaReward: 'terra17yap3mhph35pcwvhza38c2lkj7gzywzy05h7l0',
@@ -106,7 +143,7 @@ const COLUMBUS_CONTRACT_ADDRESS = {
   astroUstPair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
 };
 
-const BOMBAY_CONTRACT_ADDRESS = {
+export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
   bLunaHub: 'terra1fflas6wv4snv8lsda9knvq2w0cyt493r8puh2e',
   bLunaToken: 'terra1u0t35drzyy0mujj8rkdyzhe264uls4ug3wdp3x',
   bLunaReward: 'terra1ac24j6pdxh53czqyrkr6ygphdeftg7u3958tl2',
@@ -143,77 +180,15 @@ const BOMBAY_CONTRACT_ADDRESS = {
   astroUstPair: 'terra1ec0fnjk2u6mms05xyyrte44jfdgdaqnx0upesr',
 };
 
-export const ANCHOR_CONTRACT_ADDRESS = (
-  network: NetworkInfo,
-): AnchorContractAddress => {
-  const addressMap = network.chainID.startsWith('bombay')
-    ? BOMBAY_CONTRACT_ADDRESS
-    : COLUMBUS_CONTRACT_ADDRESS;
-
-  return {
-    bluna: {
-      reward: addressMap.bLunaReward as HumanAddr,
-      hub: addressMap.bLunaHub as HumanAddr,
-      airdropRegistry: addressMap.airdrop as HumanAddr,
-      validatorsRegistry: addressMap.bLunaValidatorsRegistry as HumanAddr,
-      custody: addressMap.mmCustody as HumanAddr,
-    },
-    moneyMarket: {
-      market: addressMap.mmMarket as HumanAddr,
-      //collaterals: {
-      //  [CollateralType.bLuna]: bLunaCollateral,
-      //  [CollateralType.bEth]: bEthCollateral,
-      //},
-      //collateralsArray: [bLunaCollateral, bEthCollateral],
-      overseer: addressMap.mmOverseer as HumanAddr,
-      oracle: addressMap.mmOracle as HumanAddr,
-      interestModel: addressMap.mmInterestModel as HumanAddr,
-      distributionModel: addressMap.mmDistributionModel as HumanAddr,
-    },
-    liquidation: {
-      liquidationContract: addressMap.mmLiquidation as HumanAddr,
-      liquidationQueueContract: addressMap.mmLiquidationQueue as HumanAddr,
-    },
-    anchorToken: {
-      gov: addressMap.gov as HumanAddr,
-      staking: addressMap.staking as HumanAddr,
-      community: addressMap.community as HumanAddr,
-      distributor: addressMap.distributor as HumanAddr,
-      investorLock: addressMap.investor_vesting as HumanAddr,
-      teamLock: addressMap.team_vesting as HumanAddr,
-      collector: addressMap.collector as HumanAddr,
-      vesting: addressMap.vesting as HumanAddr,
-    },
-    terraswap: {
-      factory: addressMap.terraswapFactory as HumanAddr,
-      blunaLunaPair: addressMap.bLunaLunaPair as HumanAddr,
-    },
-    astroport: {
-      generator: addressMap.astroportGenerator as HumanAddr,
-      astroUstPair: addressMap.astroUstPair as HumanAddr,
-      ancUstPair: addressMap.ancUstPair as HumanAddr,
-    },
-    cw20: {
-      bLuna: addressMap.bLunaToken as CW20Addr,
-      //bEth: addressMap.bEthToken as CW20Addr,
-      aUST: addressMap.aTerra as CW20Addr,
-      ANC: addressMap.ANC as CW20Addr,
-      AncUstLP: addressMap.ancUstLPToken as CW20Addr,
-      bLunaLunaLP: addressMap.bLunaLunaLPToken as CW20Addr,
-    },
-    crossAnchor: {
-      core: '' as HumanAddr,
-    },
-  };
+const anchorIndexerEndpointRecord: Record<NetworkMoniker, string> = {
+  // LocalAnchor doesn't support indexer yet
+  [NetworkMoniker.Local]: 'https://api.anchorprotocol.com/api',
+  [NetworkMoniker.Mainnet]: 'https://api.anchorprotocol.com/api',
+  [NetworkMoniker.Testnet]: 'https://api-testnet.anchorprotocol.com/api',
 };
 
-export const ANCHOR_INDEXER_API_ENDPOINTS = (network: NetworkInfo): string => {
-  if (network.chainID.startsWith('bombay')) {
-    return 'https://api-testnet.anchorprotocol.com/api';
-  } else {
-    return 'https://api.anchorprotocol.com/api';
-  }
-};
+export const ANCHOR_INDEXER_API_ENDPOINTS = (network: NetworkMoniker): string =>
+  anchorIndexerEndpointRecord[network];
 
 // ---------------------------------------------
 // query refetch

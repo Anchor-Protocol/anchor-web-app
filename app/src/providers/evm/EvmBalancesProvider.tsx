@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import { UIElementProps } from '@libs/ui';
 import { BalancesContext } from 'contexts/balances';
 import { AnchorBalances } from '@anchor-protocol/app-fns';
-import { useEvmNativeBalance } from '../../@libs/app-provider/queries/evm/nativeBalances';
 import { useERC20Balance } from '../../@libs/app-provider/queries/erc20/balanceOf';
 import {
   u,
@@ -16,10 +15,13 @@ import { useEvmCrossAnchorSdk } from 'crossanchor';
 import Big from 'big.js';
 import { WhitelistCollateral } from 'queries';
 import { useAccount } from 'contexts/account';
+import { useEvmNativeBalanceQuery } from 'queries/evm/useEvmNativeBalanceQuery';
 
-const EvmBalancesProvider = ({ children }: UIElementProps) => {
+const EvmBalancesProvider = (props: UIElementProps) => {
+  const { children } = props;
+
   const { nativeWalletAddress: walletAddress } = useAccount();
-  const native = useEvmNativeBalance();
+  const { data: native } = useEvmNativeBalanceQuery(walletAddress);
   const evmSdk = useEvmCrossAnchorSdk();
 
   const ust = useERC20Balance<UST>(evmSdk.config.token.UST);
@@ -40,7 +42,7 @@ const EvmBalancesProvider = ({ children }: UIElementProps) => {
 
   const balances = useMemo<AnchorBalances>(() => {
     return {
-      uNative: native.toString() as u<Native>,
+      uNative: (native || 0).toString() as u<Native>,
       uUST: ust,
       uaUST: aUST,
       uANC: ANC,

@@ -16,6 +16,7 @@ export function useTerraswapPoolQuery<T extends Token>(
     [TERRA_QUERY_KEY.TERRASWAP_POOL, terraswapPairAddr, queryClient],
     queryFn as any,
     {
+      enabled: !!terraswapPairAddr,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

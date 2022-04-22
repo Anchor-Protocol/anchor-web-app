@@ -4,6 +4,7 @@ import {
 } from '@anchor-protocol/crossanchor-sdk';
 import { TxReceiptLike, TxResultRendering } from '@libs/app-fns';
 import { ConnectType } from '@libs/evm-wallet';
+import { truncateEvm } from '@libs/formatter';
 import { ContractReceipt } from 'ethers';
 import { Subject } from 'rxjs';
 import { TxProgressWriter } from './TxProgressWriter';
@@ -55,15 +56,35 @@ export class EvmTxProgressWriter<
     map: Map<CrossChainEventKind, string>,
     event?: CrossChainEvent<ContractReceipt>,
   ): TxReceiptLike[] {
+    const value = event?.kind ? map.get(event.kind) ?? 'Pending' : 'Pending';
+
+    return this.merge(source, 'Status', value);
+  }
+
+  private mergeTxHash(
+    source: TxReceiptLike[],
+    event?: CrossChainEvent<ContractReceipt>,
+  ): TxReceiptLike[] {
+    if (event?.kind === CrossChainEventKind.IncomingTxSubmitted) {
+      return this.merge(source, 'Tx Hash', truncateEvm(event.payload.txHash));
+    }
+    return source;
+  }
+
+  private merge(
+    source: TxReceiptLike[],
+    name: string,
+    value: string,
+  ): TxReceiptLike[] {
     const receipts = [...source];
 
     const index = receipts.findIndex(
-      (receipt) => receipt && 'name' in receipt && receipt.name === 'Status',
+      (receipt) => receipt && 'name' in receipt && receipt.name === name,
     );
 
     receipts[index < 0 ? receipts.length : index] = {
-      name: 'Status',
-      value: event?.kind ? map.get(event.kind) ?? 'Pending' : 'Pending',
+      name,
+      value,
     };
 
     return receipts;
@@ -80,7 +101,11 @@ export class EvmTxProgressWriter<
         ...current,
         message: 'Depositing your UST',
         description: this._description,
-        receipts: this.mergeEventKind(current.receipts, map, event),
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
       };
     });
   }
@@ -96,7 +121,11 @@ export class EvmTxProgressWriter<
         ...current,
         message: 'Withdrawing your UST',
         description: this._description,
-        receipts: this.mergeEventKind(current.receipts, map, event),
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
       };
     });
   }
@@ -119,7 +148,11 @@ export class EvmTxProgressWriter<
         ...current,
         message: 'Borrowing UST',
         description: this._description,
-        receipts: this.mergeEventKind(current.receipts, map, event),
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
       };
     });
   }
@@ -135,7 +168,11 @@ export class EvmTxProgressWriter<
         ...current,
         message: 'Repaying your loan',
         description: this._description,
-        receipts: this.mergeEventKind(current.receipts, map, event),
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
       };
     });
   }
@@ -154,7 +191,11 @@ export class EvmTxProgressWriter<
         ...current,
         message: `Providing your ${symbol}`,
         description: this._description,
-        receipts: this.mergeEventKind(current.receipts, map, event),
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
       };
     });
   }
@@ -170,7 +211,11 @@ export class EvmTxProgressWriter<
         ...current,
         message: `Claiming rewards`,
         description: this._description,
-        receipts: this.mergeEventKind(current.receipts, map, event),
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
       };
     });
   }
@@ -186,7 +231,11 @@ export class EvmTxProgressWriter<
         ...current,
         message: 'Restoring transaction',
         description: this._description,
-        receipts: this.mergeEventKind(current.receipts, map, event),
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
       };
     });
   }
@@ -205,7 +254,11 @@ export class EvmTxProgressWriter<
         ...current,
         message: `Withdrawing your ${symbol}`,
         description: this._description,
-        receipts: this.mergeEventKind(current.receipts, map, event),
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
       };
     });
   }

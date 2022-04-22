@@ -73,7 +73,7 @@ const ContentBase = (props: ContentProps) => {
       walletAddress={walletAddress}
       connectionName={connection.name}
       connectionIcon={connection.icon}
-      readonly={false}
+      readonly={connectionType === ConnectType.ReadOnly}
       onDisconnectWallet={onDisconnectWallet}
     >
       <TokenList

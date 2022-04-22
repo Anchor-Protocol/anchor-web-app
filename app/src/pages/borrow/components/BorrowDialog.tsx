@@ -295,24 +295,39 @@ function BorrowDialogBase(props: BorrowDialogProps) {
           </EstimatedLiquidationPrice>
         )}
 
-        {isNative === false ||
-          (false && (
-            <>
-              <PageDivider />
-              <BorrowCollateralInput
-                collateral={states.collateral}
-                onCollateralChange={onCollateralChanged}
-                maxCollateralAmount={states.maxCollateralAmount}
-                warningMessage={states.invalidCollateralAmount}
-                amount={states.collateralAmount}
-                onAmountChange={(collateralAmount) => {
-                  input({
-                    collateralAmount,
-                  });
-                }}
-              />
-            </>
-          ))}
+        {isNative === false && (
+          <>
+            <PageDivider />
+            <BorrowCollateralInput
+              collateral={states.collateral}
+              onCollateralChange={onCollateralChanged}
+              maxCollateralAmount={states.maxCollateralAmount}
+              warningMessage={states.invalidCollateralAmount}
+              amount={states.collateralAmount}
+              onAmountChange={(collateralAmount) => {
+                input({
+                  collateralAmount,
+                });
+              }}
+            />
+          </>
+        )}
+
+        {states.txFee &&
+          states.txFee.gt(0) &&
+          states.receiveAmount &&
+          states.receiveAmount.gt(0) && (
+            <TxFeeList className="receipt">
+              {big(states.txFee).gt(0) && (
+                <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+                  {formatUST(demicrofy(states.txFee))} UST
+                </TxFeeListItem>
+              )}
+              <TxFeeListItem label="Receive Amount">
+                {formatUST(demicrofy(states.receiveAmount))} UST
+              </TxFeeListItem>
+            </TxFeeList>
+          )}
 
         {states.txFee &&
           states.txFee.gt(0) &&

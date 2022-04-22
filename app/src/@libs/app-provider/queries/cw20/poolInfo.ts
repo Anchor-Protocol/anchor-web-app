@@ -24,6 +24,7 @@ export function useCW20PoolInfoQuery<T extends Token>(
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,
+      enabled: !!contractAddress.terraswap.factory,
     },
   );
 

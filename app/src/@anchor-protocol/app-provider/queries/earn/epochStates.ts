@@ -25,6 +25,10 @@ export function useEarnEpochStatesQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      enabled: !!(
+        contractAddress.moneyMarket.market &&
+        contractAddress.moneyMarket.overseer
+      ),
       refetchInterval: 1000 * 60,
       keepPreviousData: true,
       onError: queryErrorReporter,

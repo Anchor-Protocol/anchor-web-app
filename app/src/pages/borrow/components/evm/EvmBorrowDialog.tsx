@@ -20,7 +20,7 @@ export const EvmBorrowDialog = (
   const { ust } = useFormatters();
 
   const borrowUstTx = useBorrowUstTx();
-  const { isTxMinimizable, minimize } = borrowUstTx?.utils ?? {};
+  const { minimizable, minimize } = borrowUstTx ?? {};
   const [postBorrowUstTx, borrowUstTxResult] = borrowUstTx?.stream ?? [
     null,
     null,
@@ -60,7 +60,7 @@ export const EvmBorrowDialog = (
         <TxResultRenderer
           onExit={closeDialog}
           resultRendering={txResult.value}
-          minimizable={isTxMinimizable}
+          minimizable={minimizable}
           onMinimize={minimize}
         />
       )}

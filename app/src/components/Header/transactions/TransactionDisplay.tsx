@@ -25,7 +25,7 @@ const txStepCount = (tx: Transaction) => {
     case TxKind.BorrowUst:
     case TxKind.DepositUst:
     case TxKind.RedeemCollateral:
-    case TxKind.WithdrawAssets:
+    case TxKind.WithdrawAsset:
     case TxKind.WithdrawUst:
       return TWO_WAY_TX_STEPS;
     default:

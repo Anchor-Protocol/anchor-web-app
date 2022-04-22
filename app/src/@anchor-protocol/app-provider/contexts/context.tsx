@@ -1,5 +1,5 @@
+import { NetworkMoniker } from '@anchor-protocol/types';
 import { App, useApp } from '@libs/app-provider';
-import { NetworkInfo } from '@terra-money/use-wallet';
 import React, {
   Context,
   createContext,
@@ -8,11 +8,11 @@ import React, {
   useMemo,
 } from 'react';
 import { useNetwork } from '..';
-import { AnchorConstants, AnchorContractAddress } from '../types';
+import { AnchorConstants } from '../types';
 
 export interface AnchorWebappProviderProps {
   children: ReactNode;
-  indexerApiEndpoints: (network: NetworkInfo) => string;
+  indexerApiEndpoints: (network: NetworkMoniker) => string;
 }
 
 export interface AnchorWebapp {
@@ -28,16 +28,16 @@ export function AnchorWebappProvider({
   children,
   indexerApiEndpoints,
 }: AnchorWebappProviderProps) {
-  const { network } = useNetwork();
+  const { moniker } = useNetwork();
 
   //const { contractAddress } = useApp<AnchorContractAddress>();
 
   const states = useMemo<AnchorWebapp>(() => {
     return {
-      indexerApiEndpoint: indexerApiEndpoints(network),
+      indexerApiEndpoint: indexerApiEndpoints(moniker),
       //bAssetsVector: [contractAddress.cw20.bEth, contractAddress.cw20.bLuna],
     };
-  }, [indexerApiEndpoints, network]);
+  }, [indexerApiEndpoints, moniker]);
 
   return (
     <AnchorWebappContext.Provider value={states}>
@@ -46,9 +46,8 @@ export function AnchorWebappProvider({
   );
 }
 
-export function useAnchorWebapp(): App<AnchorContractAddress, AnchorConstants> &
-  AnchorWebapp {
-  const app = useApp<AnchorContractAddress, AnchorConstants>();
+export function useAnchorWebapp(): App<AnchorConstants> & AnchorWebapp {
+  const app = useApp<AnchorConstants>();
   const anchorApp = useContext(AnchorWebappContext);
 
   return useMemo(() => {

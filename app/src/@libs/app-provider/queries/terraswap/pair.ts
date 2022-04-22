@@ -21,6 +21,7 @@ export function useTerraswapPairQuery(
     ],
     queryFn,
     {
+      enabled: !!contractAddress.terraswap.factory,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

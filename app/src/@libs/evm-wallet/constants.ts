@@ -1,4 +1,5 @@
 import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
+import { Chain } from '@anchor-protocol/types/Chain';
 import { Connection, ConnectType } from './types';
 
 export const AvailableConnections: Connection[] = [
@@ -11,6 +12,11 @@ export const AvailableConnections: Connection[] = [
     name: 'WalletConnect',
     type: ConnectType.WalletConnect,
     icon: 'https://assets.terra.money/icon/wallet-provider/walletconnect.svg',
+  },
+  {
+    name: 'View an address',
+    icon: 'https://assets.terra.money/icon/wallet-provider/readonly.svg',
+    type: ConnectType.ReadOnly,
   },
 ];
 
@@ -29,3 +35,17 @@ export const SupportedChainRpcs: Record<EvmChainId, string> = {
   [EvmChainId.AVALANCHE_FUJI_TESTNET]:
     'https://api.avax-test.network/ext/bc/C/rpc',
 };
+
+export const SupportedChainName: Record<EvmChainId, string> = {
+  [EvmChainId.ETHEREUM]: 'Ehtereum Mainnet',
+  [EvmChainId.ETHEREUM_ROPSTEN]: 'Ropsten Testnet',
+  [EvmChainId.AVALANCHE]: 'Avalanche Mainnet',
+  [EvmChainId.AVALANCHE_FUJI_TESTNET]: 'Fuji Testnet',
+} as const;
+
+export const SupportedChainIdsByChain = {
+  [Chain.Ethereum]: [EvmChainId.ETHEREUM, EvmChainId.ETHEREUM_ROPSTEN],
+  [Chain.Avalanche]: [EvmChainId.AVALANCHE, EvmChainId.AVALANCHE_FUJI_TESTNET],
+} as const;
+
+export type SupportedEvmChain = keyof typeof SupportedChainIdsByChain;

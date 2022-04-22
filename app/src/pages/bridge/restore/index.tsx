@@ -14,7 +14,8 @@ function RestoreBase(props: UIElementProps) {
   const { className } = props;
 
   const [input, state] = useRestoreTxForm();
-  const [restoreTx, txResult] = useRestoreTx();
+  const restoreTxResult = useRestoreTx();
+  const [restoreTx, txResult] = restoreTxResult?.stream ?? [null, null];
 
   const submit = useCallback(() => {
     if (restoreTx) {

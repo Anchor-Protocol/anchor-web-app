@@ -1,81 +1,64 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
-import {
-  EVM_ANCHOR_TX_REFETCH_MAP,
-  refetchQueryByTxKind,
-  TxKind,
-  TX_GAS_LIMIT,
-} from './utils';
+import { TxKind } from './utils';
 import { Subject } from 'rxjs';
-import { useCallback } from 'react';
-import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { useCallback, useRef } from 'react';
+import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
-import { TxEvent } from './useTx';
-import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
-
-type RepayUstTxResult = OneWayTxResponse<ContractReceipt> | null;
-type RepayUstTxRender = TxResultRendering<RepayUstTxResult>;
 
 export interface RepayUstTxParams {
   amount: string;
 }
 
 export function useRepayUstTx():
-  | BackgroundTxResult<RepayUstTxParams, RepayUstTxResult>
+  | BackgroundTxResult<RepayUstTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
   const xAnchor = useEvmCrossAnchorSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
   } = useFormatters();
-  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
+  const renderTxResultsRef =
+    useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
 
   const repayTx = useCallback(
     async (
       txParams: RepayUstTxParams,
-      renderTxResults: Subject<RepayUstTxRender>,
-      txEvents: Subject<TxEvent<RepayUstTxParams>>,
+      handleEvent: CrossChainEventHandler<ContractReceipt>,
     ) => {
       const amount = microfy(formatInput(txParams.amount)).toString();
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
+      const writer = new EvmTxProgressWriter(
+        renderTxResultsRef.current!,
+        connectionType,
+      );
       writer.approveUST();
       writer.timer.start();
 
       try {
-        await xAnchor.approveLimit(
-          { token: 'UST' },
-          amount,
-          address!,
-          TX_GAS_LIMIT,
-        );
+        await xAnchor.approveLimit({ token: 'UST' }, amount, address!);
 
         writer.repayUST();
         writer.timer.reset();
 
-        const result = await xAnchor.repayStable(
-          amount,
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
+        const result = await xAnchor.repayStable(amount, address!, {
+          handleEvent: (event) => {
             writer.repayUST(event);
-            txEvents.next({ event, txParams });
+            handleEvent(event);
           },
-        );
-
-        refetchQueries(refetchQueryByTxKind(TxKind.RepayUst));
+        });
 
         return result;
       } finally {
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectionType, formatInput, microfy, refetchQueries],
+    [xAnchor, address, connectionType, formatInput, microfy],
   );
 
   const displayTx = useCallback(
@@ -87,14 +70,12 @@ export function useRepayUstTx():
     [formatOutput],
   );
 
-  const persistedTxResult = useBackgroundTx<RepayUstTxParams, RepayUstTxResult>(
+  const backgroundTxResult = useBackgroundTx<RepayUstTxParams>(
     repayTx,
-    parseTx,
-    null,
     displayTx,
   );
 
-  return address ? persistedTxResult : undefined;
-}
+  renderTxResultsRef.current = backgroundTxResult?.renderTxResults;
 
-const parseTx = (resp: NonNullable<RepayUstTxResult>) => resp.tx;
+  return address ? backgroundTxResult : undefined;
+}

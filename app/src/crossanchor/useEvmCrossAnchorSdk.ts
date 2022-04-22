@@ -5,14 +5,20 @@ import {
 } from '@anchor-protocol/crossanchor-sdk';
 import { useMemo } from 'react';
 import { useEvmWallet } from '@libs/evm-wallet';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 
 export const useEvmCrossAnchorSdk = () => {
   const { lcdClient } = useNetwork();
   const { provider, chainId = EvmChainId.ETHEREUM_ROPSTEN } = useEvmWallet();
 
   return useMemo(() => {
-    return new EvmCrossAnchorSdk({ chainId }, lcdClient, provider, {
-      unlimitedAllowance: true,
-    });
+    return new EvmCrossAnchorSdk(
+      { chainId },
+      lcdClient,
+      provider instanceof StaticJsonRpcProvider ? undefined : provider,
+      {
+        unlimitedAllowance: true,
+      },
+    );
   }, [chainId, provider, lcdClient]);
 };

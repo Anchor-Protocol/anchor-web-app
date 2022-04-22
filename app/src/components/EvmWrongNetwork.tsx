@@ -4,9 +4,9 @@ import { Modal } from '@material-ui/core';
 import { useEvmWallet, useWeb3React } from '@libs/evm-wallet';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import { UIElementProps } from '@libs/ui';
-import { Chain } from '@anchor-protocol/app-provider';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { ChainLogo } from './ChainLogo';
+import { Chain } from '@anchor-protocol/types';
 
 interface EvmWrongNetworkProps extends UIElementProps {
   chain: Chain;
