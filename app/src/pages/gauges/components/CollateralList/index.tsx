@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
 import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
@@ -26,8 +27,8 @@ export const CollateralList = () => {
         <thead>
           <tr>
             <th>COLLATERAL LIST</th>
-            <th>Total votes</th>
-            <th>Voted</th>
+            <th>Total votes ({VEANC_SYMBOL})</th>
+            <th>Your votes ({VEANC_SYMBOL})</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -49,16 +50,14 @@ export const CollateralList = () => {
                   </td>
                   <td>
                     <div className="value">
-                      {formatUTokenIntegerWithoutPostfixUnits(votes)} veANC
+                      {formatUTokenIntegerWithoutPostfixUnits(votes)}
                     </div>
                     <p className="volatility">{(share * 100).toFixed(2)}%</p>
                   </td>
                   <td>
                     <div className="value">
                       {myVotes
-                        ? `${formatUTokenIntegerWithoutPostfixUnits(
-                            myVotes,
-                          )} veANC`
+                        ? `${formatUTokenIntegerWithoutPostfixUnits(myVotes)}`
                         : '-'}
                     </div>
                   </td>

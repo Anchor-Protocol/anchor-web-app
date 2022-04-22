@@ -9,6 +9,7 @@ import { HStack, VStack } from '@libs/ui/Stack';
 import { CollateralInfo } from './CollateralInfo';
 import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
 import { useTheme } from 'styled-components';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 
 export const CollateralDistribution = () => {
   const {
@@ -35,7 +36,7 @@ export const CollateralDistribution = () => {
           <AnimateNumber format={formatUTokenIntegerWithoutPostfixUnits}>
             {(totalVotes || 0) as u<Token<BigSource>>}
           </AnimateNumber>
-          <Denomination>veANC</Denomination>
+          <Denomination>{VEANC_SYMBOL}</Denomination>
         </Amount>
       </div>
       <HStack alignItems="center" gap={40}>

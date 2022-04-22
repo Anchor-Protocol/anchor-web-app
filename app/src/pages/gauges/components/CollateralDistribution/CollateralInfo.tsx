@@ -5,6 +5,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { AnimateNumber } from '@libs/ui';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 
 interface CollateralInfoProps {
   color: string;
@@ -31,7 +32,7 @@ export const CollateralInfo = ({
         <AnimateNumber format={formatUTokenIntegerWithoutPostfixUnits}>
           {(amount || 0) as u<Token<BigSource>>}
         </AnimateNumber>
-        <Denomination>veANC</Denomination>
+        <Denomination>{VEANC_SYMBOL}</Denomination>
       </Amount>
     </VStack>
   );
