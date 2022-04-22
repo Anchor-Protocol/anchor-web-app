@@ -100,10 +100,12 @@ export const useCollateralGaugesQuery = () => {
     () => {
       const totalVotes = sum(...rawCollateral.map((c) => c.votes));
 
-      const collateral = rawCollateral.map((collateral) => ({
-        ...collateral,
-        share: Big(collateral.votes).div(totalVotes).toNumber(),
-      }));
+      const collateral = rawCollateral
+        .map((collateral) => ({
+          ...collateral,
+          share: Big(collateral.votes).div(totalVotes).toNumber(),
+        }))
+        .sort((a, b) => b.share - a.share);
 
       return {
         collateral,

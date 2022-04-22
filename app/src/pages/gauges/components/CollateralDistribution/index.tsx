@@ -83,7 +83,7 @@ export const CollateralDistribution = () => {
         <ChartWr>
           <DoughnutChart descriptors={descriptors} />
         </ChartWr>
-        <VStack wrap="wrap" gap={20}>
+        <DistributionList>
           {distribution.map(({ color, name, amount, share }) => (
             <CollateralInfo
               key={name}
@@ -93,11 +93,17 @@ export const CollateralDistribution = () => {
               share={share}
             />
           ))}
-        </VStack>
+        </DistributionList>
       </HStack>
     </VStack>
   );
 };
+
+const DistributionList = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 40px;
+`;
 
 const Amount = styled.p`
   font-size: 32px;
