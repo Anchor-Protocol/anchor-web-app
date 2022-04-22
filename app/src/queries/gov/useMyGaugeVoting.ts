@@ -1,17 +1,18 @@
 import { ANCHOR_QUERY_KEY } from '@anchor-protocol/app-provider';
 import { useAccount } from 'contexts/account';
 import { useQuery } from 'react-query';
-import { Token, u } from '@libs/types';
+import { u } from '@libs/types';
 import Big, { BigSource } from 'big.js';
+import { veANC } from '@anchor-protocol/types';
 
-type AccountGaugesVotes = Record<string, u<Token<BigSource>>>;
+type AccountGaugesVotes = Record<string, u<veANC<BigSource>>>;
 
 const accountGaugesVotes: AccountGaugesVotes = {
-  bLuna: Big('6789069442123') as u<Token<BigSource>>,
-  wasAVAX: Big('1789069442123') as u<Token<BigSource>>,
+  bLuna: Big('6789069442123') as u<veANC<BigSource>>,
+  wasAVAX: Big('1789069442123') as u<veANC<BigSource>>,
 };
 
-export const useCurrentAccountGaugesVotesQuery = () => {
+export const useMyGaugeVoting = () => {
   const { terraWalletAddress } = useAccount();
 
   return useQuery(

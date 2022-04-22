@@ -6,6 +6,7 @@ export type Native<T = string> = T & NominalType<'native'>;
 // well known tokens
 export type aUST<T = string> = T & NominalType<'aust'>;
 export type ANC<T = string> = T & NominalType<'anc'>;
+export type veANC<T = string> = T & NominalType<'veanc'>;
 
 // generic for all other assets
 export type CollateralAmount<T = string> = T & NominalType<'collateral_amount'>;

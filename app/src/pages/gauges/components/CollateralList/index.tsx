@@ -5,15 +5,14 @@ import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
 import React from 'react';
 import styled from 'styled-components';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
-import { useCurrentAccountGaugesVotesQuery } from 'queries/gov/useCurrentAccountGaugeVotesQuery';
+import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
     useCollateralGaugesQuery();
 
-  const { data: currentAccountGaugeVotes = {} } =
-    useCurrentAccountGaugesVotesQuery();
+  const { data: currentAccountGaugeVotes = {} } = useMyGaugeVoting();
 
   return (
     <Container>
