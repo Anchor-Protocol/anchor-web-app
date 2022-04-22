@@ -1,4 +1,4 @@
-import { CW20Addr } from '@libs/types';
+import { CW20Addr, u } from '@libs/types';
 import { DialogProps } from '@libs/use-dialog';
 import { Modal } from '@material-ui/core';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
@@ -16,7 +16,7 @@ import {
   formatVeAnc,
   formatVeAncInput,
 } from '@anchor-protocol/notation';
-import big from 'big.js';
+import big, { BigSource } from 'big.js';
 import { InputAdornment } from '@material-ui/core';
 import { UST_SYMBOL, VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { demicrofy, microfy } from '@libs/formatter';
@@ -27,6 +27,7 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { formatOutput } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useMutation } from 'react-query';
+import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
@@ -42,25 +43,37 @@ export const CollateralVoteDialog = ({
   const fixedFee = useFixedFee();
   const invalidTxFee = validateTxFee(uUST, fixedFee);
 
-  const [amount, setAmount] = useState<veANC>('' as veANC);
+  const { data: userCollateralRecord = {} } = useMyGaugeVoting();
+  const currentAmount =
+    userCollateralRecord[tokenAddress] || (0 as u<veANC<BigSource>>);
 
-  const { data: userAmount } = useVotingPowerQuery();
+  const [amount, setAmount] = useState<veANC>(
+    () => demicrofy(currentAmount).toString() as veANC,
+  );
+
+  const { data: availableExtraAmount = 0 } = useVotingPowerQuery();
+  const maxAmount = big(availableExtraAmount).add(currentAmount) as u<
+    veANC<BigSource>
+  >;
 
   const invalidAmount =
-    amount.length === 0 || !userAmount
+    amount.length === 0 || !maxAmount
       ? undefined
-      : big(microfy(amount)).gt(userAmount)
+      : big(microfy(amount)).gt(maxAmount)
       ? 'Not enough assets'
       : undefined;
 
-  const { mutate: requestVote } = useMutation(
+  const { mutate: updateVote } = useMutation(
     async () => {
-      console.log(`Making a vote ${tokenAddress}`);
+      console.log(`Update a vote of ${tokenAddress} with ${amount}`);
     },
     {
       onSettled: closeDialog,
     },
   );
+
+  const isSubmitDisabled =
+    invalidTxFee || invalidAmount || big(currentAmount).eq(microfy(amount));
 
   return (
     <Modal open onClose={() => closeDialog()}>
@@ -91,7 +104,7 @@ export const CollateralVoteDialog = ({
             Max:{' '}
             <span
               style={
-                userAmount
+                maxAmount
                   ? {
                       textDecoration: 'underline',
                       cursor: 'pointer',
@@ -99,19 +112,18 @@ export const CollateralVoteDialog = ({
                   : undefined
               }
               onClick={() =>
-                userAmount && setAmount(formatVeAncInput(demicrofy(userAmount)))
+                maxAmount && setAmount(formatVeAncInput(demicrofy(maxAmount)))
               }
             >
-              {userAmount ? formatVeAnc(demicrofy(userAmount)) : 0}{' '}
-              {VEANC_SYMBOL}
+              {maxAmount ? formatVeAnc(demicrofy(maxAmount)) : 0} {VEANC_SYMBOL}
             </span>
           </span>
         </div>
 
-        {userAmount && (
+        {maxAmount && (
           <figure className="graph">
             <AmountSlider
-              max={Number(demicrofy(userAmount))}
+              max={Number(demicrofy(maxAmount))}
               value={Number(amount)}
               onChange={(value) => {
                 setAmount(formatVeAncInput(value.toString() as veANC));
@@ -130,10 +142,10 @@ export const CollateralVoteDialog = ({
 
         <ActionButton
           className="submit"
-          disabled={invalidTxFee || invalidAmount}
-          onClick={requestVote}
+          disabled={isSubmitDisabled}
+          onClick={updateVote}
         >
-          Vote
+          {currentAmount ? 'Update vote' : 'Vote'}
         </ActionButton>
       </Container>
     </Modal>

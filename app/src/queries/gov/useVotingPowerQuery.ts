@@ -9,7 +9,7 @@ export const useVotingPowerQuery = (): UseQueryResult<u<veANC<BigSource>>> => {
     [ANCHOR_QUERY_KEY.ANC_VOTING_POWER],
     () => {
       // TODO
-      return Big('90442123');
+      return Big('1789069442123');
     },
     {
       refetchOnMount: false,

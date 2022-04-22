@@ -108,9 +108,18 @@ export const useCollateralGaugesQuery = () => {
         }))
         .sort((a, b) => b.share - a.share);
 
+      const collateralRecord = collateral.reduce(
+        (acc, collateral) => ({
+          ...acc,
+          [collateral.tokenAddress]: collateral,
+        }),
+        {} as Record<CW20Addr, GaugeCollateral>,
+      );
+
       return {
         collateral,
         totalVotes,
+        collateralRecord,
       };
     },
     {
