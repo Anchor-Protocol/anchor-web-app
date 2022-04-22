@@ -8,6 +8,7 @@ import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notatio
 import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { CancelVote } from './CancelVote';
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
@@ -71,12 +72,10 @@ export const CollateralList = () => {
                     <BorderButton onClick={() => console.log('Vote!')}>
                       Vote
                     </BorderButton>
-                    <BorderButton
+                    <CancelVote
                       disabled={myVotes === undefined}
-                      onClick={() => console.log('Cancel!')}
-                    >
-                      Cancel
-                    </BorderButton>
+                      tokenAddress={tokenAddress}
+                    />
                   </td>
                 </tr>
               );

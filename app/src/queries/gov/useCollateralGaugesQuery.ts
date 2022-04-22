@@ -100,9 +100,10 @@ export const useCollateralGaugesQuery = () => {
     () => {
       const totalVotes = sum(...rawCollateral.map((c) => c.votes));
 
-      const collateral = rawCollateral
+      const collateral: GaugeCollateral[] = rawCollateral
         .map((collateral) => ({
           ...collateral,
+          tokenAddress: collateral.tokenAddress as CW20Addr,
           share: Big(collateral.votes).div(totalVotes).toNumber(),
         }))
         .sort((a, b) => b.share - a.share);
