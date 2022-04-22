@@ -6,15 +6,20 @@ import React from 'react';
 import styled from 'styled-components';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
 import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
-import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { CancelVote } from './CancelVote';
+import { useVotingPowerQuery } from 'queries';
+import { Vote } from './Vote';
+import { useAccount } from 'contexts/account';
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
     useCollateralGaugesQuery();
 
   const { data: myGaugeVoting = {} } = useMyGaugeVoting();
+  const { data: votingPower } = useVotingPowerQuery();
+  const { connected, availablePost } = useAccount();
+  const isInteractive = connected && availablePost;
 
   return (
     <Container>
@@ -69,11 +74,12 @@ export const CollateralList = () => {
                     </div>
                   </td>
                   <td>
-                    <BorderButton onClick={() => console.log('Vote!')}>
-                      Vote
-                    </BorderButton>
+                    <Vote
+                      tokenAddress={tokenAddress}
+                      disabled={!isInteractive || !votingPower}
+                    />
                     <CancelVote
-                      disabled={myVotes === undefined}
+                      disabled={!isInteractive || myVotes === undefined}
                       tokenAddress={tokenAddress}
                     />
                   </td>
