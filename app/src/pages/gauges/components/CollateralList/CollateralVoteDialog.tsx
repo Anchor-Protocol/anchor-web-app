@@ -18,10 +18,15 @@ import {
 } from '@anchor-protocol/notation';
 import big from 'big.js';
 import { InputAdornment } from '@material-ui/core';
-import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { UST_SYMBOL, VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { demicrofy, microfy } from '@libs/formatter';
 import styled from 'styled-components';
 import { AmountSlider } from 'pages/earn/components/AmountSlider';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { formatOutput } from '@anchor-protocol/formatter';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
+import { useMutation } from 'react-query';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
@@ -47,6 +52,15 @@ export const CollateralVoteDialog = ({
       : big(microfy(amount)).gt(userAmount)
       ? 'Not enough assets'
       : undefined;
+
+  const { mutate: requestVote } = useMutation(
+    async () => {
+      console.log(`Making a vote ${tokenAddress}`);
+    },
+    {
+      onSettled: closeDialog,
+    },
+  );
 
   return (
     <Modal open onClose={() => closeDialog()}>
@@ -105,6 +119,22 @@ export const CollateralVoteDialog = ({
             />
           </figure>
         )}
+
+        <TxFeeList className="receipt">
+          {big(fixedFee).gt(0) && (
+            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+              {`${formatOutput(demicrofy(fixedFee))} ${UST_SYMBOL}`}
+            </TxFeeListItem>
+          )}
+        </TxFeeList>
+
+        <ActionButton
+          className="submit"
+          disabled={invalidTxFee || invalidAmount}
+          onClick={requestVote}
+        >
+          Vote
+        </ActionButton>
       </Container>
     </Modal>
   );
@@ -152,7 +182,7 @@ export const Container = styled(Dialog)`
     margin-top: 30px;
   }
 
-  .button {
+  .submit {
     margin-top: 45px;
 
     width: 100%;
