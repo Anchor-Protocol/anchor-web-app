@@ -21,6 +21,7 @@ import { InputAdornment } from '@material-ui/core';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { demicrofy, microfy } from '@libs/formatter';
 import styled from 'styled-components';
+import { AmountSlider } from 'pages/earn/components/AmountSlider';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
@@ -46,8 +47,6 @@ export const CollateralVoteDialog = ({
       : big(microfy(amount)).gt(userAmount)
       ? 'Not enough assets'
       : undefined;
-
-  userAmount && demicrofy(userAmount);
 
   return (
     <Modal open onClose={() => closeDialog()}>
@@ -94,6 +93,18 @@ export const CollateralVoteDialog = ({
             </span>
           </span>
         </div>
+
+        {userAmount && (
+          <figure className="graph">
+            <AmountSlider
+              max={Number(demicrofy(userAmount))}
+              value={Number(amount)}
+              onChange={(value) => {
+                setAmount(formatVeAncInput(value.toString() as veANC));
+              }}
+            />
+          </figure>
+        )}
       </Container>
     </Modal>
   );
@@ -132,20 +143,18 @@ export const Container = styled(Dialog)`
     }
   }
 
-  .limit {
-    width: 100%;
-    margin-bottom: 60px;
-  }
-
   .graph {
+    margin-top: 80px;
     margin-bottom: 40px;
   }
 
   .receipt {
-    margin-bottom: 30px;
+    margin-top: 30px;
   }
 
-  .proceed {
+  .button {
+    margin-top: 45px;
+
     width: 100%;
     height: 60px;
     border-radius: 30px;
