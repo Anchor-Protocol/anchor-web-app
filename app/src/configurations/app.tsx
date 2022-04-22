@@ -1,6 +1,5 @@
 import {
   AnchorConstants,
-  AnchorContractAddress,
   AnchorWebappProvider,
 } from '@anchor-protocol/app-provider';
 import { AppProvider } from '@libs/app-provider';
@@ -14,7 +13,6 @@ import { SnackbarContainer } from 'components/SnackbarContainer';
 import { NotificationProvider } from 'contexts/notification';
 import {
   ANCHOR_CONSTANTS,
-  ANCHOR_CONTRACT_ADDRESS,
   ANCHOR_INDEXER_API_ENDPOINTS,
   ANCHOR_QUERY_CLIENT,
   ANCHOR_TX_REFETCH_MAP,
@@ -29,9 +27,9 @@ const errorReporter =
 function Providers({ children }: { children: ReactNode }) {
   return (
     <Router>
-      <AppProvider<AnchorContractAddress, AnchorConstants>
+      <GlobalStyle />
+      <AppProvider<AnchorConstants>
         defaultQueryClient={ANCHOR_QUERY_CLIENT}
-        contractAddress={ANCHOR_CONTRACT_ADDRESS}
         constants={ANCHOR_CONSTANTS}
         refetchMap={ANCHOR_TX_REFETCH_MAP}
         txErrorReporter={errorReporter}
@@ -72,7 +70,6 @@ export function AppProviders({
   return (
     <Providers>
       <RouterScrollRestoration />
-      <GlobalStyle />
       {children}
       <SnackbarContainer />
       {dialogs}

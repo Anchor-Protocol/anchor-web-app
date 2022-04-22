@@ -1,37 +1,27 @@
 import { useEvmCrossAnchorSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { TxResultRendering } from '@libs/app-fns';
-import {
-  EVM_ANCHOR_TX_REFETCH_MAP,
-  refetchQueryByTxKind,
-  TxKind,
-  TX_GAS_LIMIT,
-} from './utils';
+import { TxKind } from './utils';
 import { Subject } from 'rxjs';
-import { useCallback } from 'react';
-import { ContractReceipt } from 'ethers';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
+import { useCallback, useRef } from 'react';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { aUST } from '@anchor-protocol/types';
-import { TxEvent } from './useTx';
-import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
-
-type WithdrawUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
-type WithdrawUstTxRender = TxResultRendering<WithdrawUstTxResult>;
+import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
+import { ContractReceipt } from 'ethers';
+import { TxResultRendering } from '@libs/app-fns';
 
 export interface WithdrawUstTxParams {
   withdrawAmount: string;
 }
 
 export function useWithdrawUstTx():
-  | BackgroundTxResult<WithdrawUstTxParams, WithdrawUstTxResult>
+  | BackgroundTxResult<WithdrawUstTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
-
   const xAnchor = useEvmCrossAnchorSdk();
-  const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
+  const renderTxResultsRef =
+    useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
 
   const {
     aUST: { formatInput, microfy, formatOutput },
@@ -40,46 +30,38 @@ export function useWithdrawUstTx():
   const withdrawTx = useCallback(
     async (
       txParams: WithdrawUstTxParams,
-      renderTxResults: Subject<WithdrawUstTxRender>,
-      txEvents: Subject<TxEvent<WithdrawUstTxParams>>,
+      handleEvent: CrossChainEventHandler<ContractReceipt>,
     ) => {
       const withdrawAmount = microfy(
         formatInput(txParams.withdrawAmount),
       ).toString();
 
-      const writer = new EvmTxProgressWriter(renderTxResults, connectionType);
+      const writer = new EvmTxProgressWriter(
+        renderTxResultsRef.current!,
+        connectionType,
+      );
       writer.approveUST();
       writer.timer.start();
 
       try {
-        await xAnchor.approveLimit(
-          { token: 'aUST' },
-          withdrawAmount,
-          address!,
-          TX_GAS_LIMIT,
-        );
+        await xAnchor.approveLimit({ token: 'aUST' }, withdrawAmount, address!);
 
         writer.withdrawUST();
         writer.timer.reset();
 
-        const result = await xAnchor.redeemStable(
-          withdrawAmount,
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
+        const result = await xAnchor.redeemStable(withdrawAmount, address!, {
+          handleEvent: (event) => {
             writer.withdrawUST(event);
-            txEvents.next({ event, txParams });
+            handleEvent(event);
           },
-        );
-
-        refetchQueries(refetchQueryByTxKind(TxKind.WithdrawUst));
+        });
 
         return result;
       } finally {
         writer.timer.stop();
       }
     },
-    [xAnchor, address, connectionType, formatInput, microfy, refetchQueries],
+    [xAnchor, address, connectionType, formatInput, microfy],
   );
 
   const displayTx = useCallback(
@@ -91,12 +73,12 @@ export function useWithdrawUstTx():
     [formatOutput],
   );
 
-  const persistedTxResult = useBackgroundTx<
-    WithdrawUstTxParams,
-    WithdrawUstTxResult
-  >(withdrawTx, parseTx, null, displayTx);
+  const backgroundTxResult = useBackgroundTx<WithdrawUstTxParams>(
+    withdrawTx,
+    displayTx,
+  );
 
-  return address ? persistedTxResult : undefined;
+  renderTxResultsRef.current = backgroundTxResult?.renderTxResults;
+
+  return address ? backgroundTxResult : undefined;
 }
-
-const parseTx = (resp: NonNullable<WithdrawUstTxResult>) => resp.tx;

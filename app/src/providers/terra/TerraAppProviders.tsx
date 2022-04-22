@@ -1,13 +1,10 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { UIElementProps } from '@libs/ui';
 import { RouterWalletStatusRecheck } from '@libs/use-router-wallet-status-recheck';
 import {
-  NetworkInfo,
-  ReadonlyWalletSession,
   WalletControllerChainOptions,
   WalletProvider,
 } from '@terra-money/wallet-provider';
-import { useReadonlyWalletDialog } from 'components/dialogs/useReadonlyWalletDialog';
 import { AppProviders } from 'configurations/app';
 import { TerraAccountProvider } from './TerraAccountProvider';
 import { TerraBalancesProvider } from './TerraBalancesProvider';
@@ -15,30 +12,22 @@ import { TerraNetworkProvider } from './TerraNetworkProvider';
 import { ThemeProvider } from 'contexts/theme';
 import { lightTheme, darkTheme } from 'themes/terra';
 import { QueryProvider } from 'providers/QueryProvider';
+import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/terra/useCreateReadOnlyWallet';
 
 export function TerraAppProviders({
   children,
   walletConnectChainIds,
   defaultNetwork,
 }: UIElementProps & WalletControllerChainOptions) {
-  const [openReadonlyWalletSelector, readonlyWalletSelectorElement] =
-    useReadonlyWalletDialog();
-
-  const createReadonlyWalletSession = useCallback(
-    (networks: NetworkInfo[]): Promise<ReadonlyWalletSession | null> => {
-      return openReadonlyWalletSelector({
-        networks,
-      });
-    },
-    [openReadonlyWalletSelector],
-  );
+  const [createReadOnlyWalletSession, createReadonlyWalletDialog] =
+    useCreateReadOnlyWallet();
 
   return (
     <WalletProvider
       defaultNetwork={defaultNetwork}
       walletConnectChainIds={walletConnectChainIds}
       connectorOpts={{ bridge: 'https://walletconnect.terra.dev/' }}
-      createReadonlyWalletSession={createReadonlyWalletSession}
+      createReadonlyWalletSession={createReadOnlyWalletSession}
     >
       <TerraNetworkProvider>
         <QueryProvider>
@@ -48,7 +37,7 @@ export function TerraAppProviders({
               lightTheme={lightTheme}
               darkTheme={darkTheme}
             >
-              <AppProviders dialogs={readonlyWalletSelectorElement}>
+              <AppProviders dialogs={createReadonlyWalletDialog}>
                 <TerraBalancesProvider>
                   <RouterWalletStatusRecheck />
                   {children}

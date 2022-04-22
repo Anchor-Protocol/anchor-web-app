@@ -29,7 +29,7 @@ export function useBLunaClaimableRewards(): UseQueryResult<
     queryFn,
     {
       refetchInterval: connected && 1000 * 60 * 5,
-      enabled: connected,
+      enabled: connected && !!contractAddress.bluna.reward,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

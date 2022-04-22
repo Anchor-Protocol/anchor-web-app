@@ -24,6 +24,7 @@ export function useBLunaExchangeRateQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      enabled: !!contractAddress.bluna.hub,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

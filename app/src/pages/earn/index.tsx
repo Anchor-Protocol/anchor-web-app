@@ -4,23 +4,32 @@ import { links, screen } from 'env';
 import { fixHMR } from 'fix-hmr';
 import React from 'react';
 import styled from 'styled-components';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { BuyUstButton } from './components/BuyUstButton';
 import { ExpectedInterestSection } from './components/ExpectedInterestSection';
 import { InsuranceCoverageButton } from './components/InsuranceCoverageButton';
 import { InterestSection } from './components/InterestSection';
 import { TotalDepositSection } from './components/TotalDepositSection';
+import { EarnOnNonUstStablecoinsButton } from './components/evm/EarnOnNonUstStablecoinsButton/EarnOnNonUstStablecoinsButton';
 
 export interface EarnProps {
   className?: string;
 }
 
 function Component({ className }: EarnProps) {
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
+
   return (
     <PaddedLayout className={className}>
       <FlexTitleContainer>
         <PageTitle title="EARN" docs={links.docs.earn} />
         <Buttons>
-          <InsuranceCoverageButton />
+          {isNative === false && <EarnOnNonUstStablecoinsButton />}
+          <InsuranceCoverageButton
+            useManualWidthOnMobile={isNative === false}
+          />
           <BuyUstButton />
         </Buttons>
       </FlexTitleContainer>

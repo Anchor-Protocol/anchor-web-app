@@ -13,3 +13,4 @@ export * from './useAnchorQuery';
 export * from './astroport/useAssetPriceInUstQuery';
 export * from './gov/useStakedAncQuery';
 export * from './gov/useVotingPowerQuery';
+export * from './useLocalAnchorContractAddressQuery';

@@ -26,6 +26,7 @@ export function useAstroportDepositQuery<T extends Token>(
     ],
     queryFn as any,
     {
+      enabled: !!contractAddress.astroport.generator,
       refetchInterval: connected && 1000 * 60 * 5,
       keepPreviousData: true,
       onError: queryErrorReporter,

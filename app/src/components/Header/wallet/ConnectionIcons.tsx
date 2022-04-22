@@ -14,9 +14,12 @@ function ConnectionIconsBase(props: ConnectionIconsProps) {
   return (
     <div className={className}>
       {readonly ? (
-        <Icon>
-          <Wallet />
-        </Icon>
+        <div className="read-only">
+          <Icon>
+            <Wallet />
+          </Icon>
+          <p>read-only</p>
+        </div>
       ) : (
         <>
           <Description>{name}</Description>
@@ -39,6 +42,12 @@ export const ConnectionIcons = styled(ConnectionIconsBase)`
   align-items: center;
 
   position: relative;
+
+  .read-only {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
   img {
     width: 16px;

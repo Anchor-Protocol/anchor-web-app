@@ -28,7 +28,7 @@ export function useAirdropCheckQuery(): UseQueryResult<Airdrop | undefined> {
     ],
     queryFn,
     {
-      enabled: connected,
+      enabled: connected && !!contractAddress.bluna.airdropRegistry,
       keepPreviousData: false,
       onError: queryErrorReporter,
     },

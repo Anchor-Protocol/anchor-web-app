@@ -4,9 +4,9 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useAccount } from 'contexts/account';
 import { DepositDialog } from '../DepositDialog';
 import { DialogProps } from '@libs/use-dialog';
-import { useDepositUstTx } from 'tx/evm';
 import { Container } from 'components/primitives/Container';
 import { EvmTxResultRenderer } from 'components/tx/EvmTxResultRenderer';
+import { useDepositUstTx } from 'tx/evm/useDepositUstTx';
 
 export function EvmDepositDialog(props: DialogProps<{}, void>) {
   const account = useAccount();
@@ -17,7 +17,7 @@ export function EvmDepositDialog(props: DialogProps<{}, void>) {
 
   const depositUstTx = useDepositUstTx();
   const [deposit, depositTxResult] = depositUstTx?.stream ?? [null, null];
-  const { isTxMinimizable, minimize } = depositUstTx?.utils ?? {};
+  const { minimizable, minimize } = depositUstTx ?? {};
 
   return (
     <DepositDialog
@@ -28,7 +28,7 @@ export function EvmDepositDialog(props: DialogProps<{}, void>) {
         <EvmTxResultRenderer
           onExit={props.closeDialog}
           txStreamResult={depositTxResult}
-          minimizable={isTxMinimizable}
+          minimizable={minimizable}
           onMinimize={minimize}
         />
       }

@@ -1,42 +1,50 @@
-import { Modal } from '@material-ui/core';
-import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
-import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
-import { NativeSelect } from '@libs/neumorphism-ui/components/NativeSelect';
-import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
-import { ReadonlyWalletSession } from '@terra-money/wallet-provider';
-import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
-import { NetworkInfo } from '@terra-money/use-wallet';
-import { AccAddress } from '@terra-money/terra.js';
 import React, {
+  useState,
   ChangeEvent,
   KeyboardEvent,
-  ReactNode,
-  useCallback,
   useMemo,
-  useState,
+  useCallback,
 } from 'react';
 import styled from 'styled-components';
+import { Modal } from '@material-ui/core';
+import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
+import { DialogProps } from '@libs/use-dialog';
+import { NativeSelect } from '@libs/neumorphism-ui/components/NativeSelect';
+import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 
-interface FormParams {
+export interface NetworkInfo {
+  name: string;
+  chainId: string;
+}
+
+export interface CreateReadOnlyWalletFormParams {
   className?: string;
   networks: NetworkInfo[];
+  defaultChainId?: string;
+  validateAddress: (address: string) => boolean;
 }
 
-type FormReturn = ReadonlyWalletSession | null;
+export type CreateReadOnlyWalletFormReturn = {
+  chainId: string;
+  address: string;
+} | null;
 
-export function useReadonlyWalletDialog(): [
-  OpenDialog<FormParams, FormReturn>,
-  ReactNode,
-] {
-  return useDialog(Component);
-}
+type CreateReadOnlyWalletDialogProps = DialogProps<
+  CreateReadOnlyWalletFormParams,
+  CreateReadOnlyWalletFormReturn
+>;
 
-function ComponentBase({
+const CreateReadOnlyWalletDialogBase = ({
   className,
-  networks,
   closeDialog,
-}: DialogProps<FormParams, FormReturn>) {
-  const [chainID, setChainID] = useState<string>(() => networks[1].chainID);
+  networks,
+  validateAddress,
+  defaultChainId,
+}: CreateReadOnlyWalletDialogProps) => {
+  const [chainId, setchainId] = useState<string>(
+    () => defaultChainId || networks[0].chainId,
+  );
   const [address, setAddress] = useState<string>('');
 
   const invalidAddress = useMemo(() => {
@@ -44,21 +52,19 @@ function ComponentBase({
       return undefined;
     }
 
-    return !AccAddress.validate(address) ? 'Invalid address' : undefined;
-  }, [address]);
+    return !validateAddress(address) ? 'Invalid address' : undefined;
+  }, [address, validateAddress]);
 
   const submit = useCallback(
-    (terraAddress: string, networkChainID: string) => {
-      if (AccAddress.validate(terraAddress)) {
+    (address: string, chainId: string) => {
+      if (validateAddress(address)) {
         closeDialog({
-          terraAddress,
-          network:
-            networks.find(({ chainID }) => chainID === networkChainID) ??
-            networks[0],
+          address,
+          chainId,
         });
       }
     },
-    [closeDialog, networks],
+    [closeDialog, validateAddress],
   );
 
   return (
@@ -66,30 +72,26 @@ function ComponentBase({
       <Dialog className={className} onClose={() => closeDialog(null)}>
         <h1>View an Address</h1>
 
-        {/* Network */}
         <div className="network-description">
           <p>Network</p>
-          <p />
         </div>
 
         <NativeSelect
           fullWidth
-          value={chainID}
+          value={chainId}
           onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
-            setChainID(target.value)
+            setchainId(target.value)
           }
         >
-          {networks.map(({ chainID, name }) => (
-            <option key={chainID} value={chainID}>
-              {name} ({chainID})
+          {networks.map(({ chainId, name }) => (
+            <option key={chainId} value={chainId}>
+              {name} ({chainId})
             </option>
           ))}
         </NativeSelect>
 
-        {/* Address */}
         <div className="address-description">
           <p>Wallet Address</p>
-          <p />
         </div>
 
         <TextInput
@@ -104,7 +106,7 @@ function ComponentBase({
           }
           onKeyPress={({ key }: KeyboardEvent<HTMLInputElement>) => {
             if (key === 'Enter') {
-              submit(address, chainID);
+              submit(address, chainId);
             }
           }}
         />
@@ -112,16 +114,18 @@ function ComponentBase({
         <ActionButton
           className="connect"
           disabled={address.length === 0 || !!invalidAddress}
-          onClick={() => submit(address, chainID)}
+          onClick={() => submit(address, chainId)}
         >
           View
         </ActionButton>
       </Dialog>
     </Modal>
   );
-}
+};
 
-const Component = styled(ComponentBase)`
+export const CreateReadOnlyWalletDialog = styled(
+  CreateReadOnlyWalletDialogBase,
+)`
   width: 720px;
 
   h1 {

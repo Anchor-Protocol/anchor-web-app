@@ -29,6 +29,7 @@ export function useAncVestingAccountQuery(): UseQueryResult<
     queryFn,
     {
       refetchOnMount: false,
+      enabled: !!contractAddress.anchorToken.vesting,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

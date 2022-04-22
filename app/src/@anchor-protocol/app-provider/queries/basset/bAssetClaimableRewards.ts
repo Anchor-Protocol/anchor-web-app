@@ -29,7 +29,7 @@ export function useBAssetClaimableRewardsQuery(
     queryFn,
     {
       refetchInterval: connected && 1000 * 60 * 5,
-      enabled: connected,
+      enabled: connected && !!rewardAddr,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

@@ -1,6 +1,8 @@
+import { NetworkMoniker } from '@anchor-protocol/types';
 import { LCDClient } from '@terra-money/terra.js';
 import { NetworkInfo } from '@terra-money/use-wallet';
 import { createContext, useContext } from 'react';
+import { getNetworkMoniker } from 'utils/getNetworkMoniker';
 
 export const TESTNET: NetworkInfo = {
   name: 'testnet',
@@ -14,14 +16,19 @@ export const MAINNET: NetworkInfo = {
   lcd: 'https://lcd.terra.dev',
 };
 
-const LCDClients: Record<string, LCDClient> = {
-  testnet: new LCDClient({
+const LCDClients: Record<NetworkMoniker, LCDClient> = {
+  [NetworkMoniker.Testnet]: new LCDClient({
     chainID: TESTNET.chainID,
     URL: TESTNET.lcd,
   }),
-  mainnet: new LCDClient({
+  [NetworkMoniker.Mainnet]: new LCDClient({
     chainID: MAINNET.chainID,
     URL: MAINNET.lcd,
+  }),
+  [NetworkMoniker.Local]: new LCDClient({
+    chainID: 'localterra',
+    // HTTPS: http://localhost:1338
+    URL: 'http://localhost:1337',
   }),
 };
 
@@ -30,6 +37,7 @@ export const NetworkContext = createContext<NetworkInfo>(MAINNET);
 type UseNetworkReturn = {
   network: NetworkInfo;
   lcdClient: LCDClient;
+  moniker: NetworkMoniker;
 };
 
 const useNetwork = (): UseNetworkReturn => {
@@ -37,9 +45,13 @@ const useNetwork = (): UseNetworkReturn => {
   if (context === undefined) {
     throw new Error('The NetworkContext has not been defined.');
   }
+
+  const moniker = getNetworkMoniker(context.chainID);
+
   return {
     network: context,
-    lcdClient: LCDClients[context.name ?? 'mainnet'],
+    lcdClient: LCDClients[moniker],
+    moniker,
   };
 };
 

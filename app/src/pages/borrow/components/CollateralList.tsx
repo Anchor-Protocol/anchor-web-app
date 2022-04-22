@@ -15,6 +15,7 @@ import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/Horizonta
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
+import { UIElementProps } from '@libs/ui';
 import { Launch } from '@material-ui/icons';
 import big, { Big, BigSource } from 'big.js';
 import { BuyLink } from 'components/BuyButton';
@@ -25,9 +26,28 @@ import { microfyPrice } from 'utils/microfyPrice';
 import { useProvideCollateralDialog } from './useProvideCollateralDialog';
 import { useRedeemCollateralDialog } from './useRedeemCollateralDialog';
 
-export interface CollateralListProps {
-  className?: string;
-}
+const renderBuyLink = (collateral: WhitelistCollateral) => {
+  // TODO: think of a sustainable way to do this
+  const href =
+    collateral.symbol === 'bETH'
+      ? 'https://anchor.lido.fi/'
+      : collateral.symbol === 'bATOM'
+      ? 'https://app.pstake.finance/anchor'
+      : null;
+
+  return (
+    href && (
+      <BuyLink
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        style={{ transform: 'translateY(-5px)' }}
+      >
+        GET <Launch />
+      </BuyLink>
+    )
+  );
+};
 
 interface CollateralInfo {
   collateral: WhitelistCollateral;
@@ -37,7 +57,9 @@ interface CollateralInfo {
   lockedAmountInUST: u<UST<BigSource>>;
 }
 
-export function CollateralList({ className }: CollateralListProps) {
+export function CollateralList(props: UIElementProps) {
+  const { className } = props;
+
   const { connected } = useAccount();
 
   const { data: borrowMarket } = useBorrowMarketQuery();
@@ -159,17 +181,7 @@ export function CollateralList({ className }: CollateralListProps) {
                   </i>
                   <div>
                     <div className="coin">
-                      {collateral.symbol}{' '}
-                      {collateral.symbol === 'bETH' && (
-                        <BuyLink
-                          href="https://anchor.lido.fi/"
-                          target="_blank"
-                          rel="noreferrer"
-                          style={{ transform: 'translateY(-5px)' }}
-                        >
-                          GET <Launch />
-                        </BuyLink>
-                      )}
+                      {collateral.symbol} {renderBuyLink(collateral)}
                     </div>
                     <p className="name">{collateral.name}</p>
                   </div>

@@ -11,8 +11,6 @@ import { StreamReturn } from '@rx-stream/react';
 import { ANCHOR_TX_REFETCH_MAP } from 'env';
 import { ContractReceipt } from 'ethers';
 
-export const TX_GAS_LIMIT = 255000;
-
 export type UseTxReturn<T, V> =
   | StreamReturn<T, TxResultRendering<V>>
   | [null, null];
@@ -106,7 +104,7 @@ export enum TxKind {
   DepositUst,
   ClaimRewards,
   BorrowUst,
-  WithdrawAssets,
+  WithdrawAsset,
   ProvideAndBorrow,
 }
 
@@ -126,7 +124,7 @@ export const formatTxKind = (txKind: TxKind) => {
       return 'Claim Rewards';
     case TxKind.BorrowUst:
       return 'Borrow';
-    case TxKind.WithdrawAssets:
+    case TxKind.WithdrawAsset:
       return 'Withdraw';
     case TxKind.ProvideAndBorrow:
       return 'Borrow';
@@ -149,7 +147,7 @@ export const refetchQueryByTxKind = (txKind: TxKind): ANCHOR_TX_KEY => {
       return ANCHOR_TX_KEY.REWARDS_ALL_CLAIM;
     case TxKind.BorrowUst:
       return ANCHOR_TX_KEY.BORROW_BORROW;
-    case TxKind.WithdrawAssets:
+    case TxKind.WithdrawAsset:
       return ANCHOR_TX_KEY.EARN_WITHDRAW;
     case TxKind.ProvideAndBorrow:
       return ANCHOR_TX_KEY.BORROW_PROVIDE_COLLATERAL;

@@ -1,4 +1,7 @@
-import { useNetwork } from '@anchor-protocol/app-provider';
+import {
+  AnchorContractAddress,
+  useNetwork,
+} from '@anchor-protocol/app-provider';
 import { GasPrice, lastSyncedHeightQuery } from '@libs/app-fns';
 import {
   HiveQueryClient,
@@ -6,6 +9,7 @@ import {
   QueryClient,
 } from '@libs/query-client';
 import { NetworkInfo } from '@terra-money/use-wallet';
+import { useLocalAnchorContractAddressQuery } from 'queries';
 import React, {
   Consumer,
   Context,
@@ -21,27 +25,27 @@ import {
   DEFAULT_LCD_WASM_CLIENT,
 } from '../env';
 import { useGasPriceQuery } from '../queries/gasPrice';
-import { AppConstants, AppContractAddress, TxRefetchMap } from '../types';
+import { AppConstants, TxRefetchMap } from '../types';
+import { LoadingScreen } from 'components/LoadingScreen';
+import { NetworkMoniker } from '@anchor-protocol/types';
+import { BOMBAY_CONTRACT_ADDRESS, COLUMBUS_CONTRACT_ADDRESS } from 'env';
+import { getAnchorContractAddress } from '@anchor-protocol/app-provider/utils/getAnchorContractAddress';
 
-export interface AppProviderProps<
-  ContractAddress extends AppContractAddress,
-  Constants extends AppConstants,
-> {
+export interface AppProviderProps<Constants extends AppConstants> {
   children: ReactNode;
 
-  contractAddress: (network: NetworkInfo) => ContractAddress;
-  constants: (network: NetworkInfo) => Constants;
+  constants: Constants;
 
   defaultQueryClient?:
     | 'lcd'
     | 'hive'
-    | ((network: NetworkInfo) => 'lcd' | 'hive');
+    | ((network: NetworkMoniker) => 'lcd' | 'hive');
   lcdQueryClient?: (network: NetworkInfo) => LcdQueryClient;
-  hiveQueryClient?: (network: NetworkInfo) => HiveQueryClient;
+  hiveQueryClient?: (network: NetworkMoniker) => HiveQueryClient;
 
   // gas
   gasPriceEndpoint?: (network: NetworkInfo) => string;
-  fallbackGasPrice?: (network: NetworkInfo) => GasPrice;
+  fallbackGasPrice?: (network: NetworkMoniker) => GasPrice;
 
   // refetch map
   refetchMap: TxRefetchMap;
@@ -53,12 +57,10 @@ export interface AppProviderProps<
   queryErrorReporter?: (error: unknown) => void;
 }
 
-export interface App<
-  ContractAddress extends AppContractAddress,
-  Constants extends AppConstants,
-> {
-  contractAddress: ContractAddress;
+export interface App<Constants extends AppConstants> {
   constants: Constants;
+
+  contractAddress: AnchorContractAddress;
 
   // functions
   lastSyncedHeight: () => Promise<number>;
@@ -82,14 +84,10 @@ export interface App<
 }
 
 //@ts-ignore
-const AppContext: Context<App<any, any>> = createContext<App<any, any>>();
+const AppContext: Context<App<any>> = createContext<App<any>>();
 
-export function AppProvider<
-  ContractAddress extends AppContractAddress,
-  Constants extends AppConstants,
->({
+export function AppProvider<Constants extends AppConstants>({
   children,
-  contractAddress,
   constants,
   defaultQueryClient = 'hive',
   lcdQueryClient: _lcdQueryClient = DEFAULT_LCD_WASM_CLIENT,
@@ -99,81 +97,88 @@ export function AppProvider<
   queryErrorReporter,
   txErrorReporter,
   refetchMap,
-}: AppProviderProps<ContractAddress, Constants>) {
-  const { network } = useNetwork();
+}: AppProviderProps<Constants>) {
+  const { network, moniker: networkMoniker } = useNetwork();
+  const isLocalAnchor = networkMoniker === NetworkMoniker.Local;
 
-  const networkBoundStates = useMemo<
-    Pick<
-      App<any, any>,
-      | 'contractAddress'
-      | 'constants'
-      | 'queryClient'
-      | 'lcdQueryClient'
-      | 'hiveQueryClient'
-    >
-  >(() => {
-    const lcdQueryClient = _lcdQueryClient(network);
-    const hiveQueryClient = _hiveQueryClient(network);
-    const queryClientType =
+  const { data: localAnchorContractAddress } =
+    useLocalAnchorContractAddressQuery({
+      enabled: isLocalAnchor,
+    });
+
+  const contractAddress = useMemo(() => {
+    if (isLocalAnchor) {
+      return localAnchorContractAddress;
+    }
+
+    const addressMap =
+      networkMoniker === NetworkMoniker.Mainnet
+        ? COLUMBUS_CONTRACT_ADDRESS
+        : BOMBAY_CONTRACT_ADDRESS;
+
+    return getAnchorContractAddress(addressMap);
+  }, [networkMoniker, isLocalAnchor, localAnchorContractAddress]);
+
+  const lcdQueryClient = useMemo(
+    () => _lcdQueryClient(network),
+    [_lcdQueryClient, network],
+  );
+  const hiveQueryClient = useMemo(
+    () => _hiveQueryClient(networkMoniker),
+    [_hiveQueryClient, networkMoniker],
+  );
+  const queryClientType = useMemo(
+    () =>
       typeof defaultQueryClient === 'function'
-        ? defaultQueryClient(network)
-        : defaultQueryClient;
-    const queryClient =
-      queryClientType === 'lcd' ? lcdQueryClient : hiveQueryClient;
-
-    return {
-      contractAddress: contractAddress(network),
-      constants: constants(network),
-      queryClient,
-      lcdQueryClient,
-      hiveQueryClient,
-    };
-  }, [
-    _hiveQueryClient,
-    _lcdQueryClient,
-    constants,
-    contractAddress,
-    defaultQueryClient,
-    network,
-  ]);
-
-  const lastSyncedHeight = useMemo(() => {
-    return () => lastSyncedHeightQuery(networkBoundStates.queryClient);
-  }, [networkBoundStates.queryClient]);
-
-  const {
-    data: gasPrice = fallbackGasPrice(network) ?? fallbackGasPrice(network),
-  } = useGasPriceQuery(
-    gasPriceEndpoint(network) ?? gasPriceEndpoint(network),
-    queryErrorReporter,
+        ? defaultQueryClient(networkMoniker)
+        : defaultQueryClient,
+    [defaultQueryClient, networkMoniker],
+  );
+  const queryClient = useMemo(
+    () => (queryClientType === 'lcd' ? lcdQueryClient : hiveQueryClient),
+    [hiveQueryClient, lcdQueryClient, queryClientType],
   );
 
-  const states = useMemo<App<any, any>>(() => {
-    return {
-      ...networkBoundStates,
-      lastSyncedHeight,
-      txErrorReporter,
-      queryErrorReporter,
-      gasPrice,
-      refetchMap,
-    };
-  }, [
-    gasPrice,
-    lastSyncedHeight,
-    networkBoundStates,
-    queryErrorReporter,
-    refetchMap,
-    txErrorReporter,
-  ]);
+  const lastSyncedHeight = useMemo(() => {
+    return () => lastSyncedHeightQuery(queryClient);
+  }, [queryClient]);
 
-  return <AppContext.Provider value={states}>{children}</AppContext.Provider>;
+  const { data: gasPrice = fallbackGasPrice(networkMoniker) } =
+    useGasPriceQuery(
+      gasPriceEndpoint(network) ?? gasPriceEndpoint(network),
+      queryErrorReporter,
+    );
+
+  if (contractAddress === undefined) {
+    return isLocalAnchor ? (
+      <LoadingScreen text="Loading contract addresses" />
+    ) : null;
+  }
+
+  return (
+    <AppContext.Provider
+      value={{
+        contractAddress,
+        lcdQueryClient,
+        hiveQueryClient,
+        queryClient,
+        lastSyncedHeight,
+        txErrorReporter,
+        queryErrorReporter,
+        gasPrice,
+        refetchMap,
+        constants,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
 }
 
 export function useApp<
-  ContractAddress extends AppContractAddress = AppContractAddress,
   Constants extends AppConstants = AppConstants,
->(): App<ContractAddress, Constants> {
+>(): App<Constants> {
   return useContext(AppContext);
 }
 
-export const AppConsumer: Consumer<App<any, any>> = AppContext.Consumer;
+export const AppConsumer: Consumer<App<any>> = AppContext.Consumer;
