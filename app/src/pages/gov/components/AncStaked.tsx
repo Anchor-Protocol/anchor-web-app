@@ -1,15 +1,19 @@
-//import { useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { formatUTokenDecimal2 } from '@anchor-protocol/notation';
 import { Rate, Token, u, UST } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { AnimateNumber, UIElementProps } from '@libs/ui';
 import { BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
+import { ROUTES } from 'pages/trade/env';
 import React from 'react';
 import styled from 'styled-components';
-import { OverviewCard } from './OverviewCard';
+import { Card } from './Card';
+import { Link } from 'react-router-dom';
 
 const Headline = () => {
   return (
@@ -45,12 +49,12 @@ const Subline = () => {
 const AncStakedBase = (props: UIElementProps) => {
   const { className } = props;
 
-  // const {
-  //   target: { isNative },
-  // } = useDeploymentTarget();
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
 
   return (
-    <OverviewCard className={className}>
+    <Card className={className}>
       <h2>
         <IconSpan>
           TOTAL STAKED{' '}
@@ -64,7 +68,7 @@ const AncStakedBase = (props: UIElementProps) => {
 
       <h2>
         <IconSpan>
-          MY STAKED{' '}
+          MY STAKED AMOUNT{' '}
           <InfoTooltip>
             Total quantity of your ANC tokens staked to the governance contract
           </InfoTooltip>
@@ -73,22 +77,30 @@ const AncStakedBase = (props: UIElementProps) => {
       <Headline />
       <Subline />
 
-      {/* {isNative && (
-          <div className="staking-buttons">
-           <Tooltip
-              title="Stake ANC to participate in governance voting or to obtain governance rewards"
-              placement="top"
+      {isNative && (
+        <div className="buttons">
+          <Tooltip
+            title="Stake ANC to enable vote locking or to obtain governance rewards"
+            placement="top"
+          >
+            <BorderButton
+              component={Link}
+              to={`/${ROUTES.ANC_GOVERNANCE}/stake`}
             >
-              <BorderButton
-                component={Link}
-                to={`/${ROUTES.ANC_GOVERNANCE}/stake`}
-              >
-                Gov Stake
-              </BorderButton>
-            </Tooltip>
-          </div>
-        )} */}
-    </OverviewCard>
+              Stake
+            </BorderButton>
+          </Tooltip>
+          <Tooltip title="Partially or fully unstake your ANC" placement="top">
+            <BorderButton
+              component={Link}
+              to={`/${ROUTES.ANC_GOVERNANCE}/unstake`}
+            >
+              Unstake
+            </BorderButton>
+          </Tooltip>
+        </div>
+      )}
+    </Card>
   );
 };
 
@@ -115,5 +127,12 @@ export const AncStaked = styled(AncStakedBase)`
     font-size: 13px;
     font-weight: normal;
     color: ${({ theme }) => theme.dimTextColor};
+  }
+
+  .buttons {
+    margin-top: 84px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
   }
 `;

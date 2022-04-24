@@ -1,14 +1,19 @@
 import { formatUTokenDecimal2 } from '@anchor-protocol/notation';
 import { Rate, Token, u, UST } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { AnimateNumber, UIElementProps } from '@libs/ui';
 import { BigSource } from 'big.js';
 import { Sub } from 'components/Sub';
 import React from 'react';
 import styled from 'styled-components';
-import { OverviewCard } from './OverviewCard';
+import { Card } from './Card';
+import { Link } from 'react-router-dom';
+import { useDeploymentTarget } from '@anchor-protocol/app-provider';
+import { ROUTES } from 'pages/trade/env';
 
 const Headline = () => {
   return (
@@ -44,8 +49,12 @@ const Subline = () => {
 const AncLockedBase = (props: UIElementProps) => {
   const { className } = props;
 
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
+
   return (
-    <OverviewCard className={className}>
+    <Card className={className}>
       <h2>
         <IconSpan>
           TOTAL LOCKED{' '}
@@ -68,7 +77,34 @@ const AncLockedBase = (props: UIElementProps) => {
       </h2>
       <Headline />
       <Subline />
-    </OverviewCard>
+
+      {isNative && (
+        <div className="buttons">
+          <Tooltip
+            title="Lock ANC to obtain veANC to participate in governance or gauge weight voting"
+            placement="top"
+          >
+            <BorderButton
+              component={Link}
+              to={`/${ROUTES.ANC_GOVERNANCE}/lock`}
+            >
+              Lock
+            </BorderButton>
+          </Tooltip>
+          <Tooltip
+            title="Partially or fully unstake your veANC"
+            placement="top"
+          >
+            <BorderButton
+              component={Link}
+              to={`/${ROUTES.ANC_GOVERNANCE}/unlock`}
+            >
+              Unlock
+            </BorderButton>
+          </Tooltip>
+        </div>
+      )}
+    </Card>
   );
 };
 
@@ -95,5 +131,12 @@ export const AncLocked = styled(AncLockedBase)`
     font-size: 13px;
     font-weight: normal;
     color: ${({ theme }) => theme.dimTextColor};
+  }
+
+  .buttons {
+    margin-top: 84px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
   }
 `;

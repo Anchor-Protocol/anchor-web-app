@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { AncStaked } from './AncStaked';
 import { AncLocked } from './AncLocked';
-import { OverviewCard } from './OverviewCard';
+import { AncTrade } from './AncTrade';
 
 export interface OverviewProps {
   className?: string;
@@ -14,12 +14,8 @@ function OverviewBase({ className }: OverviewProps) {
     <div className={className}>
       <AncStaked className="anc-staked" />
       <AncLocked className="anc-locked" />
-      <OverviewCard className="anc-trade">
-        <div> </div>
-      </OverviewCard>
-      <OverviewCard className="anc-ust-lp">
-        <div> </div>
-      </OverviewCard>
+      <AncTrade className="anc-trade" />
+      <AncTrade className="anc-ust-lp" />
     </div>
   );
 }
@@ -38,23 +34,23 @@ export const Overview2 = styled(OverviewBase)`
 
     .anc-staked {
       grid-column: 1;
-      grid-row: 1;
+      grid-row: 1 / 3;
     }
 
     .anc-locked {
       grid-column: 2;
+      grid-row: 1 / 3;
+    }
+
+    .anc-trade {
+      grid-column: 3;
       grid-row: 1;
     }
 
-    // .anc-trade {
-    //   grid-column: 2;
-    //   grid-row: 1;
-    // }
-
-    // .anc-ust-lp {
-    //   grid-column: 1/2;
-    //   grid-row: 2;
-    // }
+    .anc-ust-lp {
+      grid-column: 3;
+      grid-row: 2;
+    }
   }
 
   @media (min-width: ${screen.monitor.min}px) {
@@ -65,23 +61,28 @@ export const Overview2 = styled(OverviewBase)`
     display: grid;
 
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
     grid-gap: 40px;
 
     .anc-staked {
       grid-column: 1;
+      grid-row: 1 / 3;
     }
 
     .anc-locked {
       grid-column: 2;
+      grid-row: 1 / 3;
     }
 
-    // .anc-trade {
-    //   grid-column: 2;
-    // }
+    .anc-trade {
+      grid-column: 3;
+      grid-row: 1;
+    }
 
-    // .anc-ust-lp {
-    //   grid-column: 3;
-    // }
+    .anc-ust-lp {
+      grid-column: 3;
+      grid-row: 2;
+    }
   }
 
   // tablet

@@ -80,7 +80,7 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
 
             <Route path={`/anc/vesting/claim`} element={<AncVestingClaim />} />
 
-            <Route path={`/gov/`} element={<GovernanceMain />} />
+            <Route path={`/gov/*`} element={<GovernanceMain />} />
 
             <Route path={`/poll/create`} element={<PollCreate />} />
             <Route
