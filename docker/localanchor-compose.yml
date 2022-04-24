@@ -3,10 +3,10 @@ version: "2.4"
 services:
 
   web-app:
-    image: ghcr.io/anchor-protocol/web-app
+    #image: ghcr.io/anchor-protocol/web-app
     build:
-      context: ./modules/web-app
-      dockerfile: docker/Dockerfile
+      context: ./modules/web-app/app/build
+      dockerfile: ../../docker/Dockerfile
       args:
         BUILD_ENV: ci
     restart: unless-stopped

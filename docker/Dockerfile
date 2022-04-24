@@ -23,6 +23,7 @@ FROM build-${BUILD_ENV} AS build
 # release
 FROM --platform=${BUILDPLATFORM} nginx:stable-alpine AS release
 LABEL org.opencontainers.image.source=https://github.com/anchor-protocol/anchor-web-app
+WORKDIR /usr/share/nginx/html
 
 COPY --from=build /src/app/build /usr/share/nginx/html
 EXPOSE 80
