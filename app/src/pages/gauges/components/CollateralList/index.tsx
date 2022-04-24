@@ -5,15 +5,21 @@ import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
 import React from 'react';
 import styled from 'styled-components';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
-import { useCurrentAccountGaugesVotesQuery } from 'queries/gov/useCurrentAccountGaugeVotesQuery';
-import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
+import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { CancelVote } from './CancelVote';
+import { useVotingPowerQuery } from 'queries';
+import { Vote } from './Vote';
+import { useAccount } from 'contexts/account';
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
     useCollateralGaugesQuery();
 
-  const { data: currentAccountGaugeVotes = {} } =
-    useCurrentAccountGaugesVotesQuery();
+  const { data: myGaugeVoting = {} } = useMyGaugeVoting();
+  const { data: votingPower } = useVotingPowerQuery();
+  const { connected, availablePost } = useAccount();
+  const isInteractive = connected && availablePost;
 
   return (
     <Container>
@@ -27,55 +33,62 @@ export const CollateralList = () => {
         <thead>
           <tr>
             <th>COLLATERAL LIST</th>
-            <th>Total votes</th>
-            <th>Voted</th>
+            <th>
+              <p>Total votes</p>
+              <p>{VEANC_SYMBOL}</p>
+            </th>
+            <th>
+              <p>Total votes</p>
+              <p>{VEANC_SYMBOL}</p>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {collateral.map(({ symbol, icon, name, votes, share }) => {
-            const currentAccountVotes = currentAccountGaugeVotes[symbol];
+          {collateral.map(
+            ({ symbol, icon, name, votes, share, tokenAddress }) => {
+              const myVotes = myGaugeVoting[tokenAddress];
 
-            return (
-              <tr key={symbol}>
-                <td>
-                  <i>
-                    <TokenIcon symbol={symbol} path={icon} />
-                  </i>
-                  <div>
-                    <div className="coin">{symbol}</div>
-                    <p className="name">{name}</p>
-                  </div>
-                </td>
-                <td>
-                  <div className="value">
-                    {formatUTokenIntegerWithoutPostfixUnits(votes)} veANC
-                  </div>
-                  <p className="volatility">{(share * 100).toFixed(2)}%</p>
-                </td>
-                <td>
-                  <div className="value">
-                    {currentAccountVotes
-                      ? `${formatUTokenIntegerWithoutPostfixUnits(
-                          currentAccountVotes,
-                        )} veANC`
-                      : '-'}
-                  </div>
-                </td>
-                <td>
-                  <BorderButton onClick={() => console.log('Vote!')}>
-                    Vote
-                  </BorderButton>
-                  <BorderButton
-                    disabled={currentAccountVotes === undefined}
-                    onClick={() => console.log('Cancel!')}
-                  >
-                    Cancel
-                  </BorderButton>
-                </td>
-              </tr>
-            );
-          })}
+              return (
+                <tr key={symbol}>
+                  <td>
+                    <i>
+                      <TokenIcon symbol={symbol} path={icon} />
+                    </i>
+                    <div>
+                      <div className="coin">{symbol}</div>
+                      <p className="name">{name}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="value">
+                      {formatUTokenIntegerWithoutPostfixUnits(votes)}
+                    </div>
+                    <p className="volatility">{(share * 100).toFixed(2)}%</p>
+                  </td>
+                  <td>
+                    <div className="value">
+                      {myVotes
+                        ? `${formatUTokenIntegerWithoutPostfixUnits(
+                            myVotes.amount,
+                          )}`
+                        : '-'}
+                    </div>
+                  </td>
+                  <td>
+                    <Vote
+                      tokenAddress={tokenAddress}
+                      disabled={!isInteractive || !votingPower}
+                    />
+                    <CancelVote
+                      disabled={!isInteractive || myVotes === undefined}
+                      tokenAddress={tokenAddress}
+                    />
+                  </td>
+                </tr>
+              );
+            },
+          )}
         </tbody>
       </HorizontalScrollTable>
     </Container>
@@ -88,6 +101,7 @@ const Container = styled(Section)`
     thead {
       th {
         text-align: right;
+        vertical-align: top;
 
         &:first-child {
           font-size: 12px;

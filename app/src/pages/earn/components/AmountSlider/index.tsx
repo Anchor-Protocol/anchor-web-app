@@ -62,7 +62,7 @@ export interface AmountSliderProps {
   max: number;
   onChange: (value: number) => void;
   disabled?: boolean;
-  txFee: number;
+  txFee?: number;
 }
 
 export const AmountSlider = ({
@@ -70,7 +70,7 @@ export const AmountSlider = ({
   max,
   onChange,
   disabled,
-  txFee,
+  txFee = 0,
 }: AmountSliderProps) => {
   const theme = useTheme();
   const valueRatio = Math.min(1, value / max);

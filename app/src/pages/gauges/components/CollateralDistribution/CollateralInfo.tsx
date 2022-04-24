@@ -31,7 +31,6 @@ export const CollateralInfo = ({
         <AnimateNumber format={formatUTokenIntegerWithoutPostfixUnits}>
           {(amount || 0) as u<Token<BigSource>>}
         </AnimateNumber>
-        <Denomination>veANC</Denomination>
       </Amount>
     </VStack>
   );
@@ -53,11 +52,6 @@ const Amount = styled.p`
   font-size: 18px;
   font-weight: 400;
   color: ${({ theme }) => theme.dimTextColor};
-`;
-
-const Denomination = styled.span`
-  margin-left: 4px;
-  font-size: 0.56em;
 `;
 
 const Share = styled.span`
