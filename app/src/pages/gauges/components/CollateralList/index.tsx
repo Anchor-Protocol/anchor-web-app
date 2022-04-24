@@ -69,7 +69,9 @@ export const CollateralList = () => {
                   <td>
                     <div className="value">
                       {myVotes
-                        ? `${formatUTokenIntegerWithoutPostfixUnits(myVotes)}`
+                        ? `${formatUTokenIntegerWithoutPostfixUnits(
+                            myVotes.amount,
+                          )}`
                         : '-'}
                     </div>
                   </td>

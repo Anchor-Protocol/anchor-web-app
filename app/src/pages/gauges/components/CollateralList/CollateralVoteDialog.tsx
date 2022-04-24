@@ -45,7 +45,7 @@ export const CollateralVoteDialog = ({
 
   const { data: userCollateralRecord = {} } = useMyGaugeVoting();
   const currentAmount =
-    userCollateralRecord[tokenAddress] || (0 as u<veANC<BigSource>>);
+    userCollateralRecord[tokenAddress]?.amount || (0 as u<veANC<BigSource>>);
 
   const [amount, setAmount] = useState<veANC>(
     () => demicrofy(currentAmount).toString() as veANC,
