@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { AncStaked } from './AncStaked';
 import { AncLocked } from './AncLocked';
 import { AncTrade } from './AncTrade';
+import { AncUstLp } from './AncUstLp';
 
 export interface OverviewProps {
   className?: string;
@@ -15,12 +16,12 @@ function OverviewBase({ className }: OverviewProps) {
       <AncStaked className="anc-staked" />
       <AncLocked className="anc-locked" />
       <AncTrade className="anc-trade" />
-      <AncTrade className="anc-ust-lp" />
+      <AncUstLp className="anc-ust-lp" />
     </div>
   );
 }
 
-export const Overview2 = styled(OverviewBase)`
+export const Overview = styled(OverviewBase)`
   @media (min-width: 1000px) and (max-width: ${screen.pc.max}px) {
     .NeuSection-root {
       margin-bottom: 0;

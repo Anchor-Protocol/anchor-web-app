@@ -4,7 +4,7 @@ import { links } from 'env';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { Tab } from '@libs/neumorphism-ui/components/Tab';
-import { Overview2 } from './components/Overview2';
+import { Overview } from './components/Overview';
 import { Polls } from './components/Polls';
 import {
   Navigate,
@@ -72,11 +72,9 @@ function GovernanceMainBase({ className }: GovernanceMainProps) {
         borderRadius={30}
         fontSize={12}
       />
-      {/* <Overview2 className="outlet" /> */}
-      {/* <Polls className="outlet" /> */}
       <div className="outlet">
         <Routes>
-          <Route index={true} element={<Overview2 />} />
+          <Route index={true} element={<Overview />} />
           <Route path="/polls" element={<Polls />} />
           <Route path="*" element={<Navigate to={`/gov`} />} />
         </Routes>

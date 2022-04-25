@@ -55,25 +55,27 @@ const AncStakedBase = (props: UIElementProps) => {
 
   return (
     <Card className={className}>
-      <h2>
+      <h2>STAKING</h2>
+
+      <h3>
         <IconSpan>
           TOTAL STAKED{' '}
           <InfoTooltip>
             Total quantity of ANC tokens staked to the governance contract
           </InfoTooltip>
         </IconSpan>
-      </h2>
+      </h3>
       <Headline />
       <Subline />
 
-      <h2>
+      <h3>
         <IconSpan>
           MY STAKED AMOUNT{' '}
           <InfoTooltip>
             Total quantity of your ANC tokens staked to the governance contract
           </InfoTooltip>
         </IconSpan>
-      </h2>
+      </h3>
       <Headline />
       <Subline />
 
@@ -87,7 +89,7 @@ const AncStakedBase = (props: UIElementProps) => {
               component={Link}
               to={`/${ROUTES.ANC_GOVERNANCE}/stake`}
             >
-              Stake
+              Staking
             </BorderButton>
           </Tooltip>
           <Tooltip title="Partially or fully unstake your ANC" placement="top">
@@ -105,7 +107,27 @@ const AncStakedBase = (props: UIElementProps) => {
 };
 
 export const AncStaked = styled(AncStakedBase)`
-  h2:not(:first-of-type) {
+  height: 100%;
+
+  .NeuSectionContent {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 40px;
+  }
+
+  h3 {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  h3:not(:first-of-type) {
     margin-top: 40px;
   }
 
@@ -130,7 +152,8 @@ export const AncStaked = styled(AncStakedBase)`
   }
 
   .buttons {
-    margin-top: 84px;
+    flex-grow: 1;
+    align-content: flex-end;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 20px;
