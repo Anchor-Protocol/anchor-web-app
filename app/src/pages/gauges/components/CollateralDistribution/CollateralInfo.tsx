@@ -4,7 +4,7 @@ import { BigSource } from 'big.js';
 import React from 'react';
 import styled from 'styled-components';
 import { AnimateNumber } from '@libs/ui';
-import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
+import { formatUTokenDecimal2 } from '@anchor-protocol/notation';
 
 interface CollateralInfoProps {
   color: string;
@@ -28,7 +28,7 @@ export const CollateralInfo = ({
         </Name>
       </HStack>
       <Amount>
-        <AnimateNumber format={formatUTokenIntegerWithoutPostfixUnits}>
+        <AnimateNumber format={formatUTokenDecimal2}>
           {(amount || 0) as u<Token<BigSource>>}
         </AnimateNumber>
       </Amount>

@@ -1,4 +1,4 @@
-import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
+import { formatUTokenDecimal2 } from '@anchor-protocol/notation';
 import { AnimateNumber } from '@libs/ui';
 import React from 'react';
 import styled from 'styled-components';
@@ -16,9 +16,7 @@ export const AmountTitle = ({ amount, symbol, title }: Props) => {
     <div>
       <h2>{title}</h2>
       <Amount>
-        <AnimateNumber format={formatUTokenIntegerWithoutPostfixUnits}>
-          {amount}
-        </AnimateNumber>
+        <AnimateNumber format={formatUTokenDecimal2}>{amount}</AnimateNumber>
         <Denomination>{symbol}</Denomination>
       </Amount>
     </div>
