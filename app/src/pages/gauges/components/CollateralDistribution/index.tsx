@@ -1,6 +1,4 @@
-import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
 import { Token, u } from '@libs/types';
-import { AnimateNumber } from '@libs/ui';
 import Big, { BigSource } from 'big.js';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -11,6 +9,7 @@ import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
 import { useTheme } from 'styled-components';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { sum } from '@libs/big-math';
+import { AmountTitle } from '../AmountTitle';
 
 const MAX_DISTRIBUTION_ITEMS = 10;
 
@@ -70,16 +69,12 @@ export const CollateralDistribution = () => {
 
   return (
     <VStack gap={40}>
-      <div>
-        <h2>TOTAL VOTES</h2>
-        <Amount>
-          <AnimateNumber format={formatUTokenIntegerWithoutPostfixUnits}>
-            {(totalVotes || 0) as u<Token<BigSource>>}
-          </AnimateNumber>
-          <Denomination>{VEANC_SYMBOL}</Denomination>
-        </Amount>
-      </div>
-      <HStack alignItems="center" gap={40}>
+      <AmountTitle
+        title="TOTAL VOTES"
+        amount={(totalVotes || 0) as u<Token<BigSource>>}
+        symbol={VEANC_SYMBOL}
+      />
+      <HStack gap={40}>
         <ChartWr>
           <DoughnutChart descriptors={descriptors} />
         </ChartWr>
@@ -98,23 +93,14 @@ export const CollateralDistribution = () => {
     </VStack>
   );
 };
-
 const DistributionList = styled.div`
+  flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 20px 40px;
 `;
 
-const Amount = styled.p`
-  font-size: 32px;
-  font-weight: 500;
-`;
-
-const Denomination = styled.span`
-  margin-left: 8px;
-  font-size: 0.56em;
-`;
-
 const ChartWr = styled.div`
-  width: 200px;
+  height: 240px;
+  width: 240px;
 `;
