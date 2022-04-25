@@ -41,7 +41,11 @@ export const MyVotingPower = () => {
           amount={usedVotingPower as u<Token<BigSource>>}
           title="USED VOTING POWER"
           symbol={VEANC_SYMBOL}
-          rate={Big(usedVotingPower).div(totalVotingPower) as Rate<BigSource>}
+          rate={
+            hasAvailableVotingPower
+              ? (Big(usedVotingPower).div(totalVotingPower) as Rate<BigSource>)
+              : undefined
+          }
         />
       )}
     </VStack>

@@ -6,7 +6,7 @@ import {
   Rate,
   u,
 } from '@libs/types';
-import { ANC, AncUstLP } from '../currencies';
+import { ANC, AncUstLP, veANC } from '../currencies';
 import { moneyMarket } from './moneyMarket';
 
 export namespace anchorToken {
@@ -319,6 +319,18 @@ export namespace anchorToken {
       address: HumanAddr;
       info: VestingInfo;
       accrued_anc: u<ANC>;
+    }
+  }
+
+  export namespace votingEscrow {
+    export interface UserVotingPower {
+      user_voting_power: {
+        user: HumanAddr;
+      };
+    }
+
+    export interface UserVotingPowerResponse {
+      voting_power: u<veANC>;
     }
   }
 }

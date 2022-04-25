@@ -104,7 +104,9 @@ type ContractAddressMapKey =
   | 'terraswapFactory'
   | 'astroportGenerator'
   | 'anchorVesting'
-  | 'astroUstPair';
+  | 'astroUstPair'
+  | 'anchorVotingEscrow'
+  | 'anchorGaugeController';
 
 export type ContractAddressMap = Partial<Record<ContractAddressMapKey, string>>;
 

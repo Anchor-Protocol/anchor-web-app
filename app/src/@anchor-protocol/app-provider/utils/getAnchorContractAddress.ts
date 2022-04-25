@@ -1,7 +1,10 @@
 import { CW20Addr, HumanAddr } from '@libs/types';
 import { ContractAddressMap } from 'env';
+import { AnchorContractAddress } from '..';
 
-export const getAnchorContractAddress = (addressMap: ContractAddressMap) => ({
+export const getAnchorContractAddress = (
+  addressMap: ContractAddressMap,
+): AnchorContractAddress => ({
   bluna: {
     reward: addressMap.bLunaReward as HumanAddr,
     hub: addressMap.bLunaHub as HumanAddr,
@@ -29,6 +32,8 @@ export const getAnchorContractAddress = (addressMap: ContractAddressMap) => ({
     teamLock: addressMap.team_vesting as HumanAddr,
     collector: addressMap.collector as HumanAddr,
     vesting: addressMap.vesting as HumanAddr,
+    votingEscrow: addressMap.anchorVotingEscrow as HumanAddr,
+    gaugeController: addressMap.anchorGaugeController as HumanAddr,
   },
   terraswap: {
     factory: addressMap.terraswapFactory as HumanAddr,

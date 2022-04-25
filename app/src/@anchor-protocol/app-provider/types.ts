@@ -33,6 +33,8 @@ export interface AnchorContractAddress extends AppContractAddress {
     teamLock: HumanAddr;
     collector: HumanAddr;
     vesting: HumanAddr;
+    votingEscrow: HumanAddr;
+    gaugeController: HumanAddr;
   };
   terraswap: {
     factory: HumanAddr;
