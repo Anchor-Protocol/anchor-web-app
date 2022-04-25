@@ -63,7 +63,6 @@ const AncTradeBase = (props: UIElementProps) => {
             <AnimateNumber format={formatUSTWithPostfixUnits}>
               {ancPrice || ('0' as UST)}
             </AnimateNumber>
-            {' UST'}
           </Value>
           <Value
             label="APR"
