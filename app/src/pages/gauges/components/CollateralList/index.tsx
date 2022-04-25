@@ -70,7 +70,7 @@ export const CollateralList = () => {
                       <TokenIcon symbol={symbol} path={icon} />
                     </i>
                     <div>
-                      <div className="coin">{symbol}</div>
+                      <div className="symbol">{symbol}</div>
                       <p className="name">{name}</p>
                     </div>
                   </td>
@@ -78,7 +78,7 @@ export const CollateralList = () => {
                     <div className="value">
                       {formatUTokenIntegerWithoutPostfixUnits(votes)}
                     </div>
-                    <p className="volatility">{(share * 100).toFixed(2)}%</p>
+                    <p className="description">{(share * 100).toFixed(2)}%</p>
                   </td>
                   <td>
                     <div className="value">
@@ -88,7 +88,7 @@ export const CollateralList = () => {
                           )}`
                         : '-'}
                       {isLocked && (
-                        <p className="volatility">
+                        <p className="description">
                           <IconSpan>
                             locked{' '}
                             <InfoTooltip>
@@ -122,7 +122,6 @@ export const CollateralList = () => {
 };
 
 const Container = styled(Section)`
-  // copied from app/src/pages/borrow
   table {
     thead {
       th {
@@ -143,11 +142,11 @@ const Container = styled(Section)`
         text-align: right;
 
         .value,
-        .coin {
+        .symbol {
           font-size: 16px;
         }
 
-        .volatility,
+        .description,
         .name {
           font-size: 12px;
           color: ${({ theme }) => theme.dimTextColor};
