@@ -1,56 +1,111 @@
 import { PaddedLayout } from 'components/layouts/PaddedLayout';
 import { PageTitle, TitleContainer } from 'components/primitives/PageTitle';
 import { links } from 'env';
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
+import { Tab } from '@libs/neumorphism-ui/components/Tab';
 import { Overview2 } from './components/Overview2';
 import { Polls } from './components/Polls';
+import {
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useMatch,
+  useNavigate,
+} from 'react-router-dom';
 
-export interface GovernanceMainProps {
+interface Item {
+  label: string;
+  value: string;
+}
+
+const TAB_ITEMS: Item[] = [
+  { label: 'OVERVIEW', value: 'overview' },
+  { label: 'POLLS', value: 'polls' },
+  { label: 'GAUGES', value: 'gauges' },
+];
+
+type TabReturn = [Item, (next: Item) => void];
+
+const useTab = (): TabReturn => {
+  const navigate = useNavigate();
+
+  const pageMatch = useMatch(`/gov/:view`);
+
+  const tabChange = useCallback(
+    (nextTab: Item) => {
+      navigate(nextTab.value === 'overview' ? `/gov` : `/gov/polls`);
+    },
+    [navigate],
+  );
+
+  switch (pageMatch?.params.view) {
+    case 'polls':
+      return [TAB_ITEMS[1], tabChange];
+    case 'gauges':
+      return [TAB_ITEMS[2], tabChange];
+  }
+  return [TAB_ITEMS[0], tabChange];
+};
+
+interface GovernanceMainProps {
   className?: string;
 }
 
 function GovernanceMainBase({ className }: GovernanceMainProps) {
+  const [tab, onTabChange] = useTab();
+
   return (
     <PaddedLayout className={className}>
-      <TitleContainer>
+      <TitleContainer className="title">
         <PageTitle title="GOVERNANCE" docs={links.docs.gov} />
       </TitleContainer>
-      <Overview2 className="overview" />
-      <Polls className="polls" />
+      <Tab
+        className="tabs"
+        items={TAB_ITEMS}
+        selectedItem={tab}
+        onChange={onTabChange}
+        labelFunction={({ label }) => label}
+        keyFunction={({ value }) => value}
+        height={46}
+        borderRadius={30}
+        fontSize={12}
+      />
+      {/* <Overview2 className="outlet" /> */}
+      {/* <Polls className="outlet" /> */}
+      <div className="outlet">
+        <Routes>
+          <Route index={true} element={<Overview2 />} />
+          <Route path="/polls" element={<Polls />} />
+          <Route path="*" element={<Navigate to={`/gov`} />} />
+        </Routes>
+        <Outlet />
+      </div>
     </PaddedLayout>
   );
 }
 
 export const GovernanceMain = styled(GovernanceMainBase)`
-  // ---------------------------------------------
-  // style
-  // ---------------------------------------------
-  header {
-    display: flex;
-    align-items: center;
+  .content-layout {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
 
-    margin: 80px 0 30px 0;
-
-    div:empty {
-      flex: 1;
+    .title {
+      grid-row: 1;
+      grid-column: 1;
     }
 
-    h2 {
-      font-size: 18px;
-      font-weight: 700;
+    .tabs {
+      min-width: 500px;
+      grid-row: 1;
+      grid-column: 2;
     }
 
-    select {
-      height: 40px;
-    }
-
-    button,
-    a {
-      width: 180px;
-      height: 48px;
-      border-radius: 26px;
-      margin-left: 10px;
+    .outlet {
+      grid-row: 2;
+      grid-column: 1 / span 2;
     }
   }
 `;

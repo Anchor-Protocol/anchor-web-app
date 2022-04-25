@@ -1,8 +1,9 @@
 import { screen } from 'env';
 import React from 'react';
 import styled from 'styled-components';
-import { AncStakingCard } from './AncStakingCard';
-import { OverviewCard } from './OverviewCard';
+import { AncStaked } from './AncStaked';
+import { AncLocked } from './AncLocked';
+import { AncTrade } from './AncTrade';
 
 export interface OverviewProps {
   className?: string;
@@ -11,13 +12,10 @@ export interface OverviewProps {
 function OverviewBase({ className }: OverviewProps) {
   return (
     <div className={className}>
-      <AncStakingCard className="staking" />
-      <OverviewCard className="anc-trade">
-        <div> </div>
-      </OverviewCard>
-      <OverviewCard className="anc-ust-lp">
-        <div> </div>
-      </OverviewCard>
+      <AncStaked className="anc-staked" />
+      <AncLocked className="anc-locked" />
+      <AncTrade className="anc-trade" />
+      <AncTrade className="anc-ust-lp" />
     </div>
   );
 }
@@ -34,18 +32,23 @@ export const Overview2 = styled(OverviewBase)`
     grid-template-rows: auto auto;
     grid-gap: 40px;
 
-    .staking {
+    .anc-staked {
       grid-column: 1;
-      grid-row: 1;
+      grid-row: 1 / 3;
+    }
+
+    .anc-locked {
+      grid-column: 2;
+      grid-row: 1 / 3;
     }
 
     .anc-trade {
-      grid-column: 2;
+      grid-column: 3;
       grid-row: 1;
     }
 
     .anc-ust-lp {
-      grid-column: 1/2;
+      grid-column: 3;
       grid-row: 2;
     }
   }
@@ -58,18 +61,27 @@ export const Overview2 = styled(OverviewBase)`
     display: grid;
 
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
     grid-gap: 40px;
 
-    .staking {
+    .anc-staked {
       grid-column: 1;
+      grid-row: 1 / 3;
+    }
+
+    .anc-locked {
+      grid-column: 2;
+      grid-row: 1 / 3;
     }
 
     .anc-trade {
-      grid-column: 2;
+      grid-column: 3;
+      grid-row: 1;
     }
 
     .anc-ust-lp {
       grid-column: 3;
+      grid-row: 2;
     }
   }
 
@@ -93,26 +105,26 @@ export const Overview2 = styled(OverviewBase)`
       }
     }
 
-    .anc-price,
-    .total-staked {
-      div {
-        font-size: 30px;
+    // .anc-price,
+    // .total-staked {
+    //   div {
+    //     font-size: 30px;
 
-        sub {
-          font-size: 14px;
-        }
-      }
-    }
+    //     sub {
+    //       font-size: 14px;
+    //     }
+    //   }
+    // }
 
-    .staking,
-    .lp {
-      .staking-buttons {
-        margin-top: 44px;
-      }
+    // .staked,
+    // .lp {
+    //   .staking-buttons {
+    //     margin-top: 44px;
+    //   }
 
-      .lp-labels {
-        margin-top: 44px;
-      }
-    }
+    //   .lp-labels {
+    //     margin-top: 44px;
+    //   }
+    // }
   }
 `;
