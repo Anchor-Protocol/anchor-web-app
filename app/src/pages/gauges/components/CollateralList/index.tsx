@@ -11,6 +11,16 @@ import { CancelVote } from './CancelVote';
 import { useVotingPowerQuery } from 'queries';
 import { Vote } from './Vote';
 import { useAccount } from 'contexts/account';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import format from 'date-fns/format';
+
+const formatDate = (date: Date): string =>
+  `${date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  })} ${date.toLocaleTimeString('en-US')} ${format(date, 'z')}`;
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
@@ -49,6 +59,10 @@ export const CollateralList = () => {
             ({ symbol, icon, name, votes, share, tokenAddress }) => {
               const myVotes = myGaugeVoting[tokenAddress];
 
+              const isLocked = myVotes?.lockPeriodEndsAt > Date.now();
+              const isVoteEnabled = isInteractive && votingPower && !isLocked;
+              const isCancelVoteEnabled = isInteractive && myVotes && !isLocked;
+
               return (
                 <tr key={symbol}>
                   <td>
@@ -73,15 +87,27 @@ export const CollateralList = () => {
                             myVotes.amount,
                           )}`
                         : '-'}
+                      {isLocked && (
+                        <p className="volatility">
+                          <IconSpan>
+                            locked{' '}
+                            <InfoTooltip>
+                              The vote is locked until
+                              <br />
+                              {formatDate(new Date(myVotes.lockPeriodEndsAt))}
+                            </InfoTooltip>
+                          </IconSpan>
+                        </p>
+                      )}
                     </div>
                   </td>
                   <td>
                     <Vote
                       tokenAddress={tokenAddress}
-                      disabled={!isInteractive || !votingPower}
+                      disabled={!isVoteEnabled}
                     />
                     <CancelVote
-                      disabled={!isInteractive || myVotes === undefined}
+                      disabled={!isCancelVoteEnabled}
                       tokenAddress={tokenAddress}
                     />
                   </td>

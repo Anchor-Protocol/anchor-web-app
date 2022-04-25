@@ -22,11 +22,11 @@ export const useMyGaugeVoting = () => {
       const accountGaugesVotes: AccountGaugesVotes = {
         terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp: {
           amount: Big('6789069442123') as u<veANC<BigSource>>,
-          lockPeriodEndsAt: now - 10000,
+          lockPeriodEndsAt: now - 100000,
         },
         terra1z3e2e4jpk4n0xzzwlkgcfvc95pc5ldq0xcny58: {
           amount: Big('1789069442123') as u<veANC<BigSource>>,
-          lockPeriodEndsAt: now + 10000,
+          lockPeriodEndsAt: now + 100000,
         },
       };
 
