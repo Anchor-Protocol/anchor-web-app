@@ -1,27 +1,34 @@
-import { Rate } from '@anchor-protocol/types';
+import { Rate, UST } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { AnimateNumber, UIElementProps } from '@libs/ui';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import { ButtonCard } from './ButtonCard';
 import { Circles } from 'components/primitives/Circles';
 import { anc160gif, GifIcon } from '@anchor-protocol/token-icons';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
+import {
+  useBorrowAPYQuery,
+  useDeploymentTarget,
+} from '@anchor-protocol/app-provider';
+import { useNavigate } from 'react-router-dom';
+import { useAssetPriceInUstQuery } from 'queries';
+import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 
 interface ValueProps {
   label: string;
+  tooltip: string;
+  children: ReactNode;
 }
 
 const Value = (props: ValueProps) => {
-  const { label } = props;
+  const { label, tooltip, children } = props;
   return (
     <div className="value">
-      <TooltipLabel title="Lorem ipsum neset dolor" placement="top">
+      <TooltipLabel title={tooltip} placement="top">
         {label}
       </TooltipLabel>
-      <p>
-        <AnimateNumber format={formatRate}>{0 as Rate<number>}</AnimateNumber> %
-      </p>
+      <p>{children}</p>
     </div>
   );
 };
@@ -29,8 +36,20 @@ const Value = (props: ValueProps) => {
 const AncTradeBase = (props: UIElementProps) => {
   const { className } = props;
 
+  const { data: ancPrice } = useAssetPriceInUstQuery('anc');
+
+  const { data: { govRewards } = {} } = useBorrowAPYQuery();
+
+  const navigate = useNavigate();
+
+  const {
+    target: { isNative },
+  } = useDeploymentTarget();
+
+  const onClick = isNative ? () => navigate(`/trade/buy`) : undefined;
+
   return (
-    <ButtonCard>
+    <ButtonCard onClick={onClick}>
       <div className={className}>
         <Circles className="icon" backgroundColors={['#2C2C2C']} radius={24}>
           <GifIcon
@@ -40,8 +59,22 @@ const AncTradeBase = (props: UIElementProps) => {
         </Circles>
         <h2>Anchor (ANC)</h2>
         <div className="values">
-          <Value label="Price" />
-          <Value label="APR" />
+          <Value label="Price" tooltip="The current price of ANC.">
+            <AnimateNumber format={formatUSTWithPostfixUnits}>
+              {ancPrice || ('0' as UST)}
+            </AnimateNumber>
+          </Value>
+          <Value
+            label="APR"
+            tooltip="Annualized ANC staking return based on the ANC distribution and staking ratio"
+          >
+            <AnimateNumber format={formatRate}>
+              {govRewards && govRewards.length > 0
+                ? govRewards[0].CurrentAPY
+                : (0 as Rate<number>)}
+            </AnimateNumber>
+            {' %'}
+          </Value>
         </div>
       </div>
     </ButtonCard>
@@ -54,8 +87,6 @@ export const AncTrade = styled(AncTradeBase)`
   justify-content: center;
 
   h2 {
-    // grid-column: 2;
-    // grid-row: 1;
     font-size: 18px;
     font-weight: 700;
     margin-top: 10px;

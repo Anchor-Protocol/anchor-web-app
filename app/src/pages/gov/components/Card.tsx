@@ -1,20 +1,26 @@
 import { Section, SectionProps } from '@libs/neumorphism-ui/components/Section';
 import { UIElementProps } from '@libs/ui';
-import React from 'react';
+import React, { DOMAttributes } from 'react';
 import styled from 'styled-components';
 
 interface CardProps
   extends UIElementProps,
-    Pick<SectionProps, 'sectionContentProps'> {}
+    Pick<SectionProps, 'sectionContentProps'>,
+    Pick<DOMAttributes<HTMLButtonElement>, 'onClick'> {}
 
 const CardBase = (props: CardProps) => {
   const {
     className,
     children,
+    onClick,
     sectionContentProps = { margin: 'small' },
   } = props;
   return (
-    <Section className={className} sectionContentProps={sectionContentProps}>
+    <Section
+      className={className}
+      sectionContentProps={sectionContentProps}
+      onClick={onClick}
+    >
       {children}
     </Section>
   );
