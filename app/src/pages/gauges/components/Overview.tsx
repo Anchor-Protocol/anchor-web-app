@@ -23,4 +23,8 @@ export const Overview = styled(OverviewBase)`
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 40px;
+
+  @media (max-width: 1160px) {
+    grid-template-columns: 1fr;
+  }
 `;
