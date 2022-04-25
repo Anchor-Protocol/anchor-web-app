@@ -5,7 +5,7 @@ import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
 import React from 'react';
 import styled from 'styled-components';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
-import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
+import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { CancelVote } from './CancelVote';
 import { useVotingPowerQuery } from 'queries';
@@ -26,7 +26,7 @@ export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
     useCollateralGaugesQuery();
 
-  const { data: myGaugeVoting = {} } = useMyGaugeVoting();
+  const { data: myGaugeVoting = {} } = useMyGaugeVotingQuery();
   const { data: votingPower } = useVotingPowerQuery();
   const { connected, availablePost } = useAccount();
   const isInteractive = connected && availablePost;

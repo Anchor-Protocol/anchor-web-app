@@ -5,12 +5,12 @@ import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { Token, u } from '@libs/types';
 import { BigSource } from 'big.js';
 import { VStack } from '@libs/ui/Stack';
-import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
+import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
 import { sum } from '@libs/big-math';
 
 export const MyVotingPower = () => {
   const { data: availableVotingPower = 0 } = useVotingPowerQuery();
-  const { data: myVotes = {} } = useMyGaugeVoting();
+  const { data: myVotes = {} } = useMyGaugeVotingQuery();
 
   const usedVotingPower = useMemo(
     () => sum(...Object.values(myVotes).map((vote) => vote.amount)),

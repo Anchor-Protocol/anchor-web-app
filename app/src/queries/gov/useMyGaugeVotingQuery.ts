@@ -12,7 +12,7 @@ interface GaugeVote {
 
 type AccountGaugesVotes = Record<string, GaugeVote>;
 
-export const useMyGaugeVoting = () => {
+export const useMyGaugeVotingQuery = () => {
   const { terraWalletAddress } = useAccount();
 
   return useQuery(

@@ -27,7 +27,7 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { formatOutput } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useMutation } from 'react-query';
-import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
+import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
@@ -43,7 +43,7 @@ export const CollateralVoteDialog = ({
   const fixedFee = useFixedFee();
   const invalidTxFee = validateTxFee(uUST, fixedFee);
 
-  const { data: userCollateralRecord = {} } = useMyGaugeVoting();
+  const { data: userCollateralRecord = {} } = useMyGaugeVotingQuery();
   const currentAmount =
     userCollateralRecord[tokenAddress]?.amount || (0 as u<veANC<BigSource>>);
 
