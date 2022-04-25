@@ -1,6 +1,6 @@
 import { CW20Addr, u } from '@libs/types';
 import { DialogProps } from '@libs/use-dialog';
-import { Modal } from '@material-ui/core';
+import { DialogTitle, Modal } from '@material-ui/core';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import React, { ChangeEvent, useState } from 'react';
 import { useBalances } from 'contexts/balances';
@@ -27,7 +27,7 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { formatOutput } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useMutation } from 'react-query';
-import { useMyGaugeVoting } from 'queries/gov/useMyGaugeVoting';
+import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
@@ -43,7 +43,7 @@ export const CollateralVoteDialog = ({
   const fixedFee = useFixedFee();
   const invalidTxFee = validateTxFee(uUST, fixedFee);
 
-  const { data: userCollateralRecord = {} } = useMyGaugeVoting();
+  const { data: userCollateralRecord = {} } = useMyGaugeVotingQuery();
   const currentAmount =
     userCollateralRecord[tokenAddress]?.amount || (0 as u<veANC<BigSource>>);
 
@@ -78,7 +78,7 @@ export const CollateralVoteDialog = ({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Container onClose={() => closeDialog()}>
-        <h1>Vote</h1>
+        <DialogTitle>Vote</DialogTitle>
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <NumberInput
@@ -157,10 +157,6 @@ export const Container = styled(Dialog)`
   touch-action: none;
 
   h1 {
-    font-size: 27px;
-    text-align: center;
-    font-weight: 300;
-
     margin-bottom: 50px;
   }
 

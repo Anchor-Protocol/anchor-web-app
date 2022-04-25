@@ -14,6 +14,7 @@ export const OverviewCard = styled(OverviewCardBase)`
 
   .NeuSection-content {
     padding: 40px;
+    height: 100%;
   }
 
   h2 {
