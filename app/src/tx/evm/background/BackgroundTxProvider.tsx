@@ -11,7 +11,7 @@ import {
 } from '../utils';
 import { useRefetchQueries } from '@libs/app-provider';
 import { createTx } from '../createTx';
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { BackgroundTxManager } from '.';
 
 type BackgroundTxContextValue = {
@@ -39,7 +39,7 @@ export const BackgroundTxProvider = ({ children }: UIElementProps) => {
     transactions,
   } = useTransactions();
 
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
 
   const createRestoreTx = useRefCallback(() => {
     return createTx((txHash: string, handleEvent) =>

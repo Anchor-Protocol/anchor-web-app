@@ -1,4 +1,4 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { Subject } from 'rxjs';
@@ -19,7 +19,7 @@ export function useDepositUstTx():
   | BackgroundTxResult<DepositUstTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
   } = useFormatters();

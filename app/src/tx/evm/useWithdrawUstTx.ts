@@ -1,4 +1,4 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxKind } from './utils';
 import { Subject } from 'rxjs';
@@ -19,7 +19,7 @@ export function useWithdrawUstTx():
   | BackgroundTxResult<WithdrawUstTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const renderTxResultsRef =
     useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
 

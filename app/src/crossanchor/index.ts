@@ -1,1 +1,1 @@
-export * from './useEvmCrossAnchorSdk';
+export * from './useEvmSdk';

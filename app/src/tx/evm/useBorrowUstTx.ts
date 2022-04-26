@@ -1,4 +1,4 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
@@ -30,7 +30,7 @@ export function useBorrowUstTx():
   | BackgroundTxResult<BorrowUstTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
-  const sdk = useEvmCrossAnchorSdk();
+  const sdk = useEvmSdk();
   const renderTxResultsRef =
     useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
 
