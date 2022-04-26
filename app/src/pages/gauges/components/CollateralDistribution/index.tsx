@@ -1,8 +1,7 @@
 import { Token, u } from '@libs/types';
 import Big, { BigSource } from 'big.js';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { DoughnutChart } from 'pages/dashboard/components/DoughnutChart';
 import { HStack, VStack } from '@libs/ui/Stack';
 import { CollateralInfo } from './CollateralInfo';
 import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
@@ -10,6 +9,7 @@ import { useTheme } from 'styled-components';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { sum } from '@libs/big-math';
 import { AmountTitle } from '../AmountTitle';
+import { DoughnutChart } from 'pages/mypage/components/graphics/DoughnutGraph';
 
 const MAX_DISTRIBUTION_ITEMS = 10;
 
@@ -57,7 +57,7 @@ export const CollateralDistribution = () => {
     return distributionItems;
   }, [collateral, theme.chart]);
 
-  const descriptors = useMemo(
+  const data = useMemo(
     () =>
       distribution.map(({ amount, name, color }) => ({
         label: name,
@@ -66,6 +66,8 @@ export const CollateralDistribution = () => {
       })),
     [distribution],
   );
+
+  const [focusedIndex, setFocusedIndex] = useState<number | undefined>();
 
   return (
     <VStack gap={40}>
@@ -76,16 +78,17 @@ export const CollateralDistribution = () => {
       />
       <HStack gap={40}>
         <ChartWr>
-          <DoughnutChart descriptors={descriptors} />
+          <DoughnutChart onFocus={setFocusedIndex} data={data} />
         </ChartWr>
         <DistributionList>
-          {distribution.map(({ color, name, amount, share }) => (
+          {distribution.map(({ color, name, amount, share }, index) => (
             <CollateralInfo
               key={name}
               color={color}
               name={name}
               amount={amount}
               share={share}
+              isFocused={index === focusedIndex}
             />
           ))}
         </DistributionList>
@@ -98,6 +101,7 @@ const DistributionList = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 20px 40px;
+  align-items: start;
 `;
 
 const ChartWr = styled.div`
