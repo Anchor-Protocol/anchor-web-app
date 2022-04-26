@@ -55,6 +55,7 @@ export const usePersistedTx = <TxParams, TxResult>(
   const onTxEvent = useRefCallback(
     (txEvent: TxEvent<TxParams>) => {
       const { event, txParams } = txEvent;
+
       // first event with tx in it
       if (event.kind === CrossChainEventKind.IncomingTxSubmitted) {
         const payload = event.payload;

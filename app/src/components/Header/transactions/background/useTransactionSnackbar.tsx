@@ -1,15 +1,14 @@
 import { truncateEvm } from '@libs/formatter';
 import { SnackbarContent } from '@libs/neumorphism-ui/components/Snackbar';
 import { Snackbar, useSnackbar } from '@libs/snackbar';
-import { useInterval } from '@libs/use-interval';
-import { LinearProgress } from '@material-ui/core';
-import { Done as DoneIcon } from '@material-ui/icons';
+import { CircularProgress } from '@material-ui/core';
+import { ReactComponent as CompleteIcon } from '../../../assets/Complete.svg';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Transaction, useTransactions } from 'tx/evm/storage/useTransactions';
 import { formatTxKind } from 'tx/evm/utils';
-import { useCounter } from 'usehooks-ts';
+import { pressed } from '@libs/styled-neumorphism';
 
 export const useTransactionSnackbar = () => {
   const { addSnackbar } = useSnackbar();
@@ -57,14 +56,6 @@ const TxSnackbarBase = ({
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { setCount, count } = useCounter(100);
-
-  useInterval(() => {
-    if (count > 0) {
-      setCount((count) => count - 5);
-    }
-  }, 125);
-
   if (hidden) {
     return null;
   }
@@ -72,11 +63,6 @@ const TxSnackbarBase = ({
   return (
     <Snackbar className={className}>
       <div className="tx-snackbar-container">
-        <LinearProgress
-          className="tx-progress"
-          variant="determinate"
-          value={count}
-        />
         <SnackbarContent
           classes={{
             root: 'snackbar-root',
@@ -89,28 +75,17 @@ const TxSnackbarBase = ({
   );
 };
 
-export const TxSnackbar = styled(TxSnackbarBase)`
+const TxSnackbar = styled(TxSnackbarBase)`
   .tx-snackbar-container {
     display: flex;
     flex-direction: column;
   }
 
-  .tx-progress {
-    width: 100%;
-    margin: auto;
-    transform: translateY(3px);
-    border-radius: 20px;
-    background-color: inherit;
-
-    .MuiLinearProgress-barColorPrimary {
-      background-color: ${({ theme }) => theme.colors.positive};
-    }
-  }
-
   .snackbar-root {
-    background: #f6f6f7;
-    box-shadow: -1px -1px 0px #ffffff, 1px 1px 1px #dbdbdb;
-    border-radius: 5px;
+    background: #f7f7f7;
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 16px;
+    padding: 26px 30px;
   }
 
   .snackbar-message {
@@ -118,71 +93,92 @@ export const TxSnackbar = styled(TxSnackbarBase)`
   }
 `;
 
-const TxMessageBase = ({
-  className,
-  tx,
-}: {
+interface TxMessageProps {
   className?: string;
   tx: Transaction;
-}) => {
+}
+
+const TxMessageBase = (props: TxMessageProps) => {
+  const { className, tx } = props;
+
+  const [countdown, setCountdown] = useState(100);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((v) => Math.max(0, v - 4));
+    }, 100);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [setCountdown]);
+
   return (
     <div className={className}>
-      <div className="tx-notification">
+      <header>
         <figure className="icon">
-          <DoneIcon />
+          <CompleteIcon width={49} height={49} />
         </figure>
+        <CircularProgress
+          className="progress"
+          size={61}
+          variant="determinate"
+          value={-countdown}
+        />
         <h2>Complete!</h2>
-      </div>
-      <div className="tx-display">
-        <TxFeeList showRuler={false}>
-          <TxFeeListItem label={formatTxKind(tx.display.txKind)}>
-            {tx.display.amount}
-          </TxFeeListItem>
-          <TxFeeListItem label={'Tx Hash'}>
-            {truncateEvm(tx.txHash)}
-          </TxFeeListItem>
-        </TxFeeList>
-      </div>
+      </header>
+      <hr />
+      <TxFeeList showRuler={false} gutters="compact">
+        <TxFeeListItem label={formatTxKind(tx.display.txKind)}>
+          {tx.display.amount}
+        </TxFeeListItem>
+        <TxFeeListItem label={'Tx Hash'}>
+          {truncateEvm(tx.txHash)}
+        </TxFeeListItem>
+      </TxFeeList>
     </div>
   );
 };
 
 const TxMessage = styled(TxMessageBase)`
-  display: flex;
-  flex-direction: row;
-  xcolor: ${({ theme }) => theme.dimTextColor};
-  width: 100%;
-  align-items: center;
+  header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-  .icon {
-    color: ${({ theme }) => theme.colors.positive};
+    .icon {
+      color: ${({ theme }) => theme.colors.positive};
+    }
 
-    margin: 0 auto;
-    width: 3em;
-    height: 3em;
-    border-radius: 50%;
-    border: 3px solid currentColor;
-    display: grid;
-    place-content: center;
+    h2 {
+      color: ${({ theme }) => theme.textColor};
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      text-align: center;
+      margin-top: 10px;
+    }
 
-    svg {
-      font-size: 1.5em;
+    .progress {
+      color: ${({ theme }) => theme.colors.positive};
+      position: absolute;
+      top: -6px;
+      z-index: 1;
     }
   }
 
-  .tx-notification {
-    margin-right: 20px;
-  }
+  hr {
+    margin: 20px 0;
+    padding: 0;
+    border: 0;
+    height: 5px;
+    border-radius: 3px;
 
-  .tx-display {
-    width: 220px;
-  }
-
-  h2 {
-    color: ${({ theme }) => theme.textColor};
-    width: 100%;
-    font-weight: 500;
-    font-size: 14px;
-    text-align: center;
+    ${({ theme }) =>
+      pressed({
+        color: theme.sectionBackgroundColor,
+        distance: 1,
+        intensity: theme.intensity,
+      })};
   }
 `;
