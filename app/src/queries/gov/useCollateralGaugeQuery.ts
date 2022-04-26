@@ -1,9 +1,14 @@
-import { ANCHOR_QUERY_KEY } from '@anchor-protocol/app-provider';
+import {
+  ANCHOR_QUERY_KEY,
+  useAnchorWebapp,
+} from '@anchor-protocol/app-provider';
 import { CW20Addr, u } from '@libs/types';
 import Big, { BigSource } from 'big.js';
 import { useQuery } from 'react-query';
 import { sum } from '@libs/big-math';
-import { veANC } from '@anchor-protocol/types';
+import { createQueryFn } from '@libs/react-query-utils';
+import { wasmFetch, WasmQuery, QueryClient } from '@libs/query-client';
+import { veANC, anchorToken } from '@anchor-protocol/types';
 
 const rawCollateral = [
   {
@@ -94,38 +99,76 @@ export interface GaugeCollateral {
   share: number;
 }
 
-export const useCollateralGaugesQuery = () => {
-  return useQuery(
-    [ANCHOR_QUERY_KEY.GAUGES],
-    () => {
-      const totalVotes = sum(...rawCollateral.map((c) => c.votes));
+interface AllGaugeAddrWasmQuery {
+  allGaugeAddr: WasmQuery<
+    anchorToken.gaugeController.AllGaugeAddr,
+    anchorToken.gaugeController.AllGaugeAddrResponse
+  >;
+}
 
-      const collateral: GaugeCollateral[] = rawCollateral
-        .map((collateral) => ({
-          ...collateral,
-          tokenAddress: collateral.tokenAddress as CW20Addr,
-          share: Big(collateral.votes).div(totalVotes).toNumber(),
-        }))
-        .sort((a, b) => b.share - a.share);
-
-      const collateralRecord = collateral.reduce(
-        (acc, collateral) => ({
-          ...acc,
-          [collateral.tokenAddress]: collateral,
-        }),
-        {} as Record<CW20Addr, GaugeCollateral>,
-      );
-
-      return {
-        collateral,
-        totalVotes,
-        collateralRecord,
-      };
+const collateralGaugeQuery = async (
+  gaugeControllerContract: string,
+  queryClient: QueryClient,
+) => {
+  const {
+    allGaugeAddr: { all_gauge_addr },
+  } = await wasmFetch<AllGaugeAddrWasmQuery>({
+    ...queryClient,
+    id: 'all-gauge-addr',
+    wasmQuery: {
+      allGaugeAddr: {
+        contractAddress: gaugeControllerContract,
+        query: {
+          all_gauge_addr: {},
+        },
+      },
     },
+  });
+
+  console.log(all_gauge_addr);
+
+  const totalVotes = sum(...rawCollateral.map((c) => c.votes));
+
+  const collateral: GaugeCollateral[] = rawCollateral
+    .map((collateral) => ({
+      ...collateral,
+      tokenAddress: collateral.tokenAddress as CW20Addr,
+      share: Big(collateral.votes).div(totalVotes).toNumber(),
+    }))
+    .sort((a, b) => b.share - a.share);
+
+  const collateralRecord = collateral.reduce(
+    (acc, collateral) => ({
+      ...acc,
+      [collateral.tokenAddress]: collateral,
+    }),
+    {} as Record<CW20Addr, GaugeCollateral>,
+  );
+
+  return {
+    collateral,
+    totalVotes,
+    collateralRecord,
+  };
+};
+
+const collateralGaugeQueryFn = createQueryFn(collateralGaugeQuery);
+
+export const useCollateralGaugeQuery = () => {
+  const { queryClient, contractAddress, queryErrorReporter } =
+    useAnchorWebapp();
+
+  const gaugeControllerContract = contractAddress.anchorToken.gaugeController;
+
+  return useQuery(
+    [ANCHOR_QUERY_KEY.GAUGES, gaugeControllerContract, queryClient],
+    collateralGaugeQueryFn,
     {
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
+      enabled: !!gaugeControllerContract,
+      onError: queryErrorReporter,
     },
   );
 };

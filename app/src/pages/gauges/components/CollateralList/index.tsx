@@ -1,7 +1,7 @@
 import { TokenIcon } from '@anchor-protocol/token-icons';
 import { HorizontalScrollTable } from '@libs/neumorphism-ui/components/HorizontalScrollTable';
 import { Section } from '@libs/neumorphism-ui/components/Section';
-import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
+import { useCollateralGaugeQuery } from 'queries/gov/useCollateralGaugeQuery';
 import React from 'react';
 import styled from 'styled-components';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
@@ -24,7 +24,7 @@ const formatDate = (date: Date): string =>
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
-    useCollateralGaugesQuery();
+    useCollateralGaugeQuery();
 
   const { data: myGaugeVoting = {} } = useMyGaugeVotingQuery();
   const { data: votingPower } = useVotingPowerQuery();

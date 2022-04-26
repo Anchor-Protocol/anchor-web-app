@@ -333,4 +333,12 @@ export namespace anchorToken {
       voting_power: u<veANC>;
     }
   }
+
+  export namespace gaugeController {
+    export interface AllGaugeAddr {}
+
+    export interface AllGaugeAddrResponse {
+      all_gauge_addr: HumanAddr[];
+    }
+  }
 }

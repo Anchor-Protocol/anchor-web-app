@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { HStack, VStack } from '@libs/ui/Stack';
 import { CollateralInfo } from './CollateralInfo';
-import { useCollateralGaugesQuery } from 'queries/gov/useCollateralGaugesQuery';
+import { useCollateralGaugeQuery } from 'queries/gov/useCollateralGaugeQuery';
 import { useTheme } from 'styled-components';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { sum } from '@libs/big-math';
@@ -23,7 +23,7 @@ interface DistributionItem {
 export const CollateralDistribution = () => {
   const {
     data: { collateral, totalVotes } = { collateral: [], totalVotes: 0 },
-  } = useCollateralGaugesQuery();
+  } = useCollateralGaugeQuery();
 
   const theme = useTheme();
 
