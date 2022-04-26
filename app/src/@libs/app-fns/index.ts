@@ -23,7 +23,6 @@ export * from './queries/cw20/tokenDisplayInfos';
 export * from './queries/cw20/tokenInfo';
 export * from './queries/gasPrice';
 export * from './queries/lastSyncedHeight';
-export * from './queries/lp/minter';
 export * from './queries/terra/balances';
 export * from './queries/terra/balancesWithTokenInfo';
 export * from './queries/terra/nativeBalances';

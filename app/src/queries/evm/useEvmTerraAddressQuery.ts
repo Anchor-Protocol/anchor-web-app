@@ -2,12 +2,12 @@ import {
   ANCHOR_QUERY_KEY,
   useAnchorWebapp,
 } from '@anchor-protocol/app-provider';
-import { EvmCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk';
+import { EvmSdk } from '@anchor-protocol/crossanchor-sdk';
 import { useEvmSdk } from 'crossanchor';
 import { useQuery, UseQueryResult } from 'react-query';
 
 const evmTerraAddressQuery = async (
-  sdk: EvmCrossAnchorSdk,
+  sdk: EvmSdk,
   evmAddr: string | undefined,
 ): Promise<string | undefined> => {
   if (evmAddr === undefined) {
