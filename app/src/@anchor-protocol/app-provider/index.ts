@@ -62,7 +62,6 @@ export * from './tx/anc/ancUstLpStake';
 export * from './tx/anc/ancUstLpUnstake';
 export * from './tx/anc/ancUstLpWithdraw';
 export * from './tx/anc/buy';
-export * from './tx/anc/governanceStake';
 export * from './tx/anc/governanceUnstake';
 export * from './tx/anc/sell';
 export * from './tx/basset/claim';
