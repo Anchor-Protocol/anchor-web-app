@@ -1,7 +1,7 @@
 import { horizontalRuler } from '@libs/styled-neumorphism';
 import styled from 'styled-components';
 
-export const PageDivider = styled.hr`
+export const Divider = styled.hr`
   ${({ theme }) =>
     horizontalRuler({
       color: theme.sectionBackgroundColor,
@@ -9,6 +9,6 @@ export const PageDivider = styled.hr`
     })};
 
   height: 5px;
-
+  border-radius: 3px;
   margin: 10px 0;
 `;

@@ -2,6 +2,7 @@ import { useNetwork } from '@anchor-protocol/app-provider';
 import { truncate as _truncate } from '@libs/formatter';
 import React from 'react';
 import styled from 'styled-components';
+import { getAccountUrl } from 'utils/terrascope';
 
 export interface AccountLinkProps {
   address: string;
@@ -16,7 +17,7 @@ function AccountLinkBase({ address, truncate, className }: AccountLinkProps) {
   return (
     <a
       className={className}
-      href={`https://finder.terra.money/${network.chainID}/account/${address}`}
+      href={getAccountUrl(network.chainID, address)}
       target="_blank"
       rel="noreferrer"
     >

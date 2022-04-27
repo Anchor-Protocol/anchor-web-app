@@ -46,9 +46,9 @@ import { BorrowCollateralInput } from './BorrowCollateralInput';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
-import { PageDivider } from './PageDivider';
 import { WhitelistCollateral } from 'queries';
 import { useBalances } from 'contexts/balances';
+import { Divider } from 'components/primitives/Divider';
 
 export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   txResult: StreamResult<TxResultRendering> | null;
@@ -297,7 +297,7 @@ function BorrowDialogBase(props: BorrowDialogProps) {
 
         {isNative === false && (
           <>
-            <PageDivider />
+            <Divider />
             <BorrowCollateralInput
               collateral={states.collateral}
               onCollateralChange={onCollateralChanged}

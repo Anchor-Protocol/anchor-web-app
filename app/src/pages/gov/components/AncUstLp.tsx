@@ -10,6 +10,7 @@ import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { useDeploymentTarget } from '@anchor-protocol/app-provider';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from 'pages/trade/env';
+import { CardHeading } from './Card';
 
 interface ValueProps {
   label: string;
@@ -56,7 +57,7 @@ const AncUstLpBase = (props: UIElementProps) => {
             style={{ fontSize: '2em', borderRadius: '50%' }}
           />
         </Circles>
-        <h2>ANC-UST LP</h2>
+        <CardHeading className="heading" title="ANC-UST LP" />
         <div className="values">
           <Value label="APR" />
           <Value label="Total Staked" />
@@ -72,10 +73,8 @@ export const AncUstLp = styled(AncUstLpBase)`
   flex-direction: column;
   justify-content: center;
 
-  h2 {
-    font-size: 18px;
-    font-weight: 700;
-    margin-top: 10px;
+  .heading {
+    margin: 10px 0;
     text-align: center;
   }
 
