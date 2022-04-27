@@ -48,7 +48,7 @@ export const SubHeader = styled(SubHeaderBase)`
   justify-content: space-between;
   align-items: center;
 
-  margin: 80px 0 30px 0;
+  margin: 0px 0 30px 0;
 
   > div {
     display: flex;

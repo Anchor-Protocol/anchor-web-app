@@ -169,7 +169,6 @@ export const Polls = styled(PollsBase)`
     outline: none;
     border: 0;
     background-color: transparent;
-    //background-color: rgba(0, 0, 0, 0.1);
     cursor: pointer;
 
     border-radius: 0;

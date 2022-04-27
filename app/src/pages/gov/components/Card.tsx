@@ -1,3 +1,5 @@
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section, SectionProps } from '@libs/neumorphism-ui/components/Section';
 import { UIElementProps } from '@libs/ui';
 import React, { DOMAttributes } from 'react';
@@ -13,7 +15,7 @@ const CardBase = (props: CardProps) => {
     className,
     children,
     onClick,
-    sectionContentProps = { margin: 'small' },
+    sectionContentProps = { margin: 'large' },
   } = props;
   return (
     <Section
@@ -28,11 +30,45 @@ const CardBase = (props: CardProps) => {
 
 export const Card = styled(CardBase)`
   position: relative;
+`;
 
-  h2 {
-    font-size: 12px;
-    font-weight: 500;
+export interface CardHeadingProps extends UIElementProps {
+  title: string;
+}
 
-    margin-bottom: 10px;
+const CardHeadingBase = (props: CardHeadingProps) => {
+  const { className, title } = props;
+  return <h2 className={className}>{title}</h2>;
+};
+
+export const CardHeading = styled(CardHeadingBase)`
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 30px;
+`;
+
+export interface CardSubHeadingProps extends CardHeadingProps {
+  tooltip?: string;
+}
+
+const CardSubHeadingBase = (props: CardSubHeadingProps) => {
+  const { className, title, tooltip } = props;
+
+  if (tooltip) {
+    return (
+      <h2 className={className}>
+        <IconSpan>
+          {title} <InfoTooltip>{tooltip}</InfoTooltip>
+        </IconSpan>
+      </h2>
+    );
   }
+
+  return <h3 className={className}>{title}</h3>;
+};
+
+export const CardSubHeading = styled(CardSubHeadingBase)`
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
 `;

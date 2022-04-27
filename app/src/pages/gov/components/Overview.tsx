@@ -1,10 +1,10 @@
 import { screen } from 'env';
 import React from 'react';
 import styled from 'styled-components';
-import { AncStaked } from './AncStaked';
-import { AncLocked } from './AncLocked';
 import { AncTrade } from './AncTrade';
 import { AncUstLp } from './AncUstLp';
+import { AncTokenOverview } from './AncTokenOverview';
+import { MyAncTokenOverview } from './MyAncTokenOverview';
 
 export interface OverviewProps {
   className?: string;
@@ -13,8 +13,8 @@ export interface OverviewProps {
 function OverviewBase({ className }: OverviewProps) {
   return (
     <div className={className}>
-      <AncStaked className="anc-staked" />
-      <AncLocked className="anc-locked" />
+      <AncTokenOverview className="anc-token" />
+      <MyAncTokenOverview className="my-anc" />
       <AncTrade className="anc-trade" />
       <AncUstLp className="anc-ust-lp" />
     </div>
@@ -33,12 +33,12 @@ export const Overview = styled(OverviewBase)`
     grid-template-rows: auto auto;
     grid-gap: 40px;
 
-    .anc-staked {
+    .anc-token {
       grid-column: 1;
       grid-row: 1 / 3;
     }
 
-    .anc-locked {
+    .my-anc {
       grid-column: 2;
       grid-row: 1 / 3;
     }
@@ -65,12 +65,12 @@ export const Overview = styled(OverviewBase)`
     grid-template-rows: auto auto;
     grid-gap: 40px;
 
-    .anc-staked {
+    .anc-token {
       grid-column: 1;
       grid-row: 1 / 3;
     }
 
-    .anc-locked {
+    .my-anc {
       grid-column: 2;
       grid-row: 1 / 3;
     }
@@ -105,27 +105,5 @@ export const Overview = styled(OverviewBase)`
         padding: 20px;
       }
     }
-
-    // .anc-price,
-    // .total-staked {
-    //   div {
-    //     font-size: 30px;
-
-    //     sub {
-    //       font-size: 14px;
-    //     }
-    //   }
-    // }
-
-    // .staked,
-    // .lp {
-    //   .staking-buttons {
-    //     margin-top: 44px;
-    //   }
-
-    //   .lp-labels {
-    //     margin-top: 44px;
-    //   }
-    // }
   }
 `;
