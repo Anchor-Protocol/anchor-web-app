@@ -342,6 +342,16 @@ export namespace anchorToken {
       period_duration: Second;
       boost_coefficient: number;
     }
+
+    export interface UserUnlockPeriod {
+      user_unlock_period: {
+        user: HumanAddr;
+      };
+    }
+
+    export interface UserUnlockPeriodResponse {
+      unlock_period: Second;
+    }
   }
 
   export namespace gaugeController {
