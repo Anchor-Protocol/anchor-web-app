@@ -45,8 +45,10 @@ export function useLockAncTx() {
 
   const refetchQueries = useRefetchQueries();
 
+  const govContract = contractAddress.anchorToken.gov;
+
   const stream = useCallback(
-    ({ amount, period, onTxSucceed }: LockAncTxParams) => {
+    ({ amount, period = 31556952, onTxSucceed }: LockAncTxParams) => {
       if (
         !availablePost ||
         !connected ||
@@ -64,15 +66,20 @@ export function useLockAncTx() {
       return pipe(
         _createTxOptions({
           msgs: [
+            new MsgExecuteContract(terraWalletAddress, govContract, {
+              extend_lock_time: {
+                time: period,
+              },
+            }),
             new MsgExecuteContract(
               terraWalletAddress,
               contractAddress.cw20.ANC,
               {
                 send: {
-                  contract: contractAddress.anchorToken.gov,
+                  contract: govContract,
                   amount: formatTokenInput(amount),
                   msg: createHookMsg({
-                    stake_voting_tokens: {},
+                    extend_lock_amount: {},
                   }),
                 },
               } as cw20.Send<ANC>,
@@ -135,7 +142,7 @@ export function useLockAncTx() {
       terraWalletAddress,
       constants.gasAdjustment,
       constants.gasWanted,
-      contractAddress.anchorToken.gov,
+      govContract,
       contractAddress.cw20.ANC,
       fixedFee,
       queryClient,
