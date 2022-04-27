@@ -332,6 +332,15 @@ export namespace anchorToken {
     export interface UserVotingPowerResponse {
       voting_power: u<veANC>;
     }
+
+    export interface Config {}
+
+    export interface ConfigResponse {
+      min_lock_time: number;
+      max_lock_time: number;
+      period_duration: number;
+      boost_coefficient: number;
+    }
   }
 
   export namespace gaugeController {
