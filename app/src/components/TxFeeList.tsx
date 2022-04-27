@@ -2,6 +2,7 @@ import { HorizontalDashedRuler } from '@libs/neumorphism-ui/components/Horizonta
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { SwapHoriz } from '@material-ui/icons';
 import big, { BigSource } from 'big.js';
+import classNames from 'classnames';
 import React, {
   DetailedHTMLProps,
   HTMLAttributes,
@@ -22,15 +23,22 @@ export interface TxFeeListProps
     HTMLUListElement
   > {
   showRuler?: boolean;
+  gutters?: 'none' | 'compact' | 'large';
 }
 
 function TxFeeListBase({
   className,
   showRuler = true,
+  gutters = 'large',
   ...ulProps
 }: TxFeeListProps) {
   return (
-    <figure className={className}>
+    <figure
+      className={classNames(className, {
+        'gutters-compact': gutters === 'compact',
+        'gutters-large': gutters === 'large',
+      })}
+    >
       {showRuler && <HorizontalDashedRuler />}
       <ul {...ulProps} />
       {showRuler && <HorizontalDashedRuler />}
@@ -92,6 +100,38 @@ export function SwapListItem({
 export const TxFeeList = styled(TxFeeListBase)`
   font-size: 12px;
 
+  &.gutters-large {
+    ul {
+      li {
+        margin-top: 15px;
+        margin-bottom: 15px;
+      }
+    }
+  }
+
+  &.gutters-compact {
+    ul {
+      li {
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  &.gutters-large,
+  &.gutters-compact {
+    ul {
+      li {
+        &:first-child {
+          margin-top: 0;
+        }
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
   ul {
     list-style: none;
     padding: 0;
@@ -101,7 +141,7 @@ export const TxFeeList = styled(TxFeeListBase)`
     }
 
     li {
-      margin: 15px 0;
+      margin: 0;
 
       display: flex;
       justify-content: space-between;
