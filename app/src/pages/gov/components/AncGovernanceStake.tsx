@@ -23,6 +23,7 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { useLockAncTx } from 'tx/gov/useLockAncTx';
+import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfig';
 
 export function AncGovernanceStake() {
   const { availablePost, connected } = useAccount();
@@ -32,6 +33,9 @@ export function AncGovernanceStake() {
   const [lock, lockResult] = useLockAncTx();
 
   const [amount, setAmount] = useState<ANC>('' as ANC);
+
+  const { data: lockConfig } = useVotingEscrowConfigQuery();
+  console.log(lockConfig);
 
   const { uUST } = useBalances();
 
