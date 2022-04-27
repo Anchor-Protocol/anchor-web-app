@@ -5,7 +5,7 @@ import {
   formatANCInput,
   formatUST,
 } from '@anchor-protocol/notation';
-import { ANC } from '@anchor-protocol/types';
+import { ANC, Second } from '@anchor-protocol/types';
 import { useRewardsAncGovernanceRewardsQuery } from '@anchor-protocol/app-provider';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
@@ -20,10 +20,11 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { useLockAncTx } from 'tx/gov/useLockAncTx';
 import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfig';
+import { DurationSlider } from 'components/sliders/DurationSlider';
 
 export function AncGovernanceStake() {
   const { availablePost, connected } = useAccount();
@@ -35,7 +36,12 @@ export function AncGovernanceStake() {
   const [amount, setAmount] = useState<ANC>('' as ANC);
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
-  console.log(lockConfig);
+  const [period, setPeriod] = useState<Second | undefined>();
+  useEffect(() => {
+    if (lockConfig && period === undefined) {
+      setPeriod(lockConfig.minLockTime);
+    }
+  }, [period, lockConfig]);
 
   const { uUST } = useBalances();
 
@@ -52,17 +58,18 @@ export function AncGovernanceStake() {
       : undefined;
 
   const proceed = useCallback(() => {
-    if (!connected || !lock) {
+    if (!connected || !lock || period === undefined) {
       return;
     }
 
     lock({
       amount,
+      period,
       onTxSucceed: () => {
         setAmount('' as ANC);
       },
     });
-  }, [amount, connected, lock]);
+  }, [amount, connected, lock, period]);
 
   if (
     lockResult?.status === StreamStatus.IN_PROGRESS ||
@@ -126,6 +133,15 @@ export function AncGovernanceStake() {
         </span>
       </div>
 
+      {period !== undefined && lockConfig !== undefined && (
+        <DurationSlider
+          value={period}
+          min={lockConfig.minLockTime}
+          max={lockConfig.maxLockTime}
+          onChange={setPeriod}
+        />
+      )}
+
       {amount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
@@ -141,6 +157,7 @@ export function AncGovernanceStake() {
             !availablePost ||
             !connected ||
             !lock ||
+            period === undefined ||
             amount.length === 0 ||
             big(amount).lte(0) ||
             !!invalidTxFee ||

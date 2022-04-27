@@ -5,6 +5,7 @@ import {
   Num,
   Rate,
   u,
+  Second,
 } from '@libs/types';
 import { ANC, AncUstLP, veANC } from '../currencies';
 import { moneyMarket } from './moneyMarket';
@@ -336,9 +337,9 @@ export namespace anchorToken {
     export interface Config {}
 
     export interface ConfigResponse {
-      min_lock_time: number;
-      max_lock_time: number;
-      period_duration: number;
+      min_lock_time: Second;
+      max_lock_time: Second;
+      period_duration: Second;
       boost_coefficient: number;
     }
   }
