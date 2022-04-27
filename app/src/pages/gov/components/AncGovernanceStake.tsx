@@ -24,7 +24,12 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { useLockAncTx } from 'tx/gov/useLockAncTx';
 import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfig';
-import { DurationSlider } from 'components/sliders/DurationSlider';
+import {
+  DurationSlider,
+  DurationSliderPlaceholder,
+} from 'components/sliders/DurationSlider';
+import styled from 'styled-components';
+import { VStack } from '@libs/ui/Stack';
 
 export function AncGovernanceStake() {
   const { availablePost, connected } = useAccount();
@@ -113,34 +118,43 @@ export function AncGovernanceStake() {
         }}
       />
 
-      <div className="wallet" aria-invalid={!!invalidANCAmount}>
-        <span>{invalidANCAmount}</span>
-        <span>
-          Balance:{' '}
-          <span
-            style={{
-              textDecoration: 'underline',
-              cursor: 'pointer',
-            }}
-            onClick={() =>
-              userANCBalance &&
-              setAmount(formatANCInput(demicrofy(userANCBalance.balance)))
-            }
-          >
-            {userANCBalance ? formatANC(demicrofy(userANCBalance.balance)) : 0}{' '}
-            ANC
+      <VStack fullWidth gap={20}>
+        <div className="wallet" aria-invalid={!!invalidANCAmount}>
+          <span>{invalidANCAmount}</span>
+          <span>
+            Balance:{' '}
+            <span
+              style={{
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              }}
+              onClick={() =>
+                userANCBalance &&
+                setAmount(formatANCInput(demicrofy(userANCBalance.balance)))
+              }
+            >
+              {userANCBalance
+                ? formatANC(demicrofy(userANCBalance.balance))
+                : 0}{' '}
+              ANC
+            </span>
           </span>
-        </span>
-      </div>
+        </div>
 
-      {period !== undefined && lockConfig !== undefined && (
-        <DurationSlider
-          value={period}
-          min={lockConfig.minLockTime}
-          max={lockConfig.maxLockTime}
-          onChange={setPeriod}
-        />
-      )}
+        <VStack gap={8}>
+          <Label>Lock Period</Label>
+          {period !== undefined && lockConfig !== undefined ? (
+            <DurationSlider
+              value={period}
+              min={lockConfig.minLockTime}
+              max={lockConfig.maxLockTime}
+              onChange={setPeriod}
+            />
+          ) : (
+            <DurationSliderPlaceholder />
+          )}
+        </VStack>
+      </VStack>
 
       {amount.length > 0 && (
         <TxFeeList className="receipt">
@@ -171,3 +185,8 @@ export function AncGovernanceStake() {
     </>
   );
 }
+
+const Label = styled.p`
+  font-size: 16px;
+  color: ${({ theme }) => theme.dimTextColor};
+`;
