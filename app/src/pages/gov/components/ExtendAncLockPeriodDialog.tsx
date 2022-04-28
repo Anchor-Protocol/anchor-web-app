@@ -20,10 +20,7 @@ import { useExtendAncLockPeriodTx } from 'tx/gov/useExtendAncLockPeriodTx';
 import { useAccount } from 'contexts/account';
 import { StreamStatus } from '@rx-stream/react';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
-import {
-  DurationSlider,
-  DurationSliderPlaceholder,
-} from 'components/sliders/DurationSlider';
+import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import { useMyVotingLockPeriod } from 'queries/gov/useMyVotingLockPeriod';
 
 type ExtendAncLockPeriodDialogProps = DialogProps<{}>;
@@ -53,12 +50,18 @@ export const ExtendAncLockPeriodDialog = ({
   const [extendPeriod, extendPeriodResult] = useExtendAncLockPeriodTx();
 
   const proceed = useCallback(() => {
-    if (!connected || !extendPeriod || !period || isSubmitDisabled) {
+    if (
+      !connected ||
+      !extendPeriod ||
+      !period ||
+      isSubmitDisabled ||
+      !currentPeriod
+    ) {
       return;
     }
 
     extendPeriod({
-      period: period - currentPeriod,
+      period: (period - currentPeriod) as Second,
       onTxSucceed: () => {
         closeDialog();
       },
@@ -115,7 +118,7 @@ export const ExtendAncLockPeriodDialog = ({
             onChange={setPeriod}
           />
         ) : (
-          <DurationSliderPlaceholder />
+          <SliderPlaceholder />
         )}
 
         <TxFeeList className="receipt">
