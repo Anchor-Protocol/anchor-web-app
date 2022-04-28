@@ -11,6 +11,7 @@ import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { ROUTES } from 'pages/trade/env';
 import { Link } from 'react-router-dom';
+import { ExtendAncLockPeriod } from './ExtendAncLockPeriod';
 
 interface LabelWithValueProps extends CardSubHeadingProps {}
 
@@ -90,14 +91,7 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
           <Sub>ANC</Sub>
         </LabelWithValue>
         <div className="buttons">
-          <Tooltip title="Partially or fully unstake your ANC" placement="top">
-            <BorderButton
-              component={Link}
-              to={`/${ROUTES.ANC_GOVERNANCE}/unstake`}
-            >
-              Extend
-            </BorderButton>
-          </Tooltip>
+          <ExtendAncLockPeriod />
         </div>
       </section>
     </Card>
