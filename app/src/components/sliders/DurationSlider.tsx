@@ -59,6 +59,7 @@ export interface DurationSliderProps {
   value: Second;
   min: Second;
   max: Second;
+  step: Second;
   onChange: (value: Second) => void;
 }
 
@@ -66,24 +67,41 @@ export const DurationSlider = ({
   value,
   min,
   max,
+  step,
   onChange,
 }: DurationSliderProps) => {
   const theme = useTheme();
 
+  const adjustValue = useCallback(
+    (value: Second) => {
+      const stepsCount = Math.round((value - min) / step);
+      const stepAdjustedValue = min + stepsCount * step;
+      return Math.max(Math.min(stepAdjustedValue, max), min);
+    },
+    [max, min, step],
+  );
+
+  const handleValueChange = useCallback(
+    (value: number) => {
+      onChange(adjustValue(value as Second) as Second);
+    },
+    [adjustValue, onChange],
+  );
+
   const durationSliderLabelRenderer = useCallback(
     (data: Data, rect: Rect, i: number) => {
       return labelRenderer(data, rect, i, () => {
-        onChange((data.value * max) as Second);
+        handleValueChange(data.value * max);
       });
     },
-    [max, onChange],
+    [handleValueChange, max],
   );
 
   const data: Data[] = useMemo(() => {
     const labelsNumber = Math.floor(max / min);
     const labels: Data[] = [...Array(labelsNumber).keys()].map(
       (index: number) => {
-        const seconds = min + index * min;
+        const seconds = adjustValue((min + index * min) as Second);
         const value = (seconds / max) as Second;
         const label = `${getDurationString(seconds as Second)}${
           index === 0 ? ` (minimum)` : ''
@@ -105,7 +123,7 @@ export const DurationSlider = ({
         value: value / max,
       },
     ];
-  }, [max, min, theme.colors.positive, value]);
+  }, [adjustValue, max, min, theme.colors.positive, value]);
 
   return (
     <Container>
@@ -125,9 +143,7 @@ export const DurationSlider = ({
             start={0}
             end={max}
             value={value}
-            onChange={(value) => {
-              onChange(Math.max(Math.round(value), min) as Second);
-            }}
+            onChange={handleValueChange}
             label={getDurationString(value)}
           />
         )}

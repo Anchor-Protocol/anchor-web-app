@@ -23,7 +23,7 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { useLockAncTx } from 'tx/gov/useLockAncTx';
-import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfig';
+import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQuery';
 import {
   DurationSlider,
   DurationSliderPlaceholder,
@@ -148,6 +148,7 @@ export function AncGovernanceStake() {
               value={period}
               min={lockConfig.minLockTime}
               max={lockConfig.maxLockTime}
+              step={lockConfig.periodDuration}
               onChange={setPeriod}
             />
           ) : (

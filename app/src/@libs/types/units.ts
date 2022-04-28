@@ -13,3 +13,5 @@ export type DateTime = number & NominalType<'datetime'>;
 export type ISODateFormat = string & NominalType<'isodateformat'>;
 
 export type Second = number & NominalType<'second'>;
+
+export type MillisTimestamp = number & NominalType<'millistimestamp'>;

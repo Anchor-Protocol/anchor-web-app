@@ -2,36 +2,32 @@ import {
   ANCHOR_QUERY_KEY,
   useAnchorWebapp,
 } from '@anchor-protocol/app-provider';
-import { veANC, u, anchorToken, HumanAddr } from '@anchor-protocol/types';
+import { anchorToken, HumanAddr } from '@anchor-protocol/types';
 import { wasmFetch, WasmQuery, QueryClient } from '@libs/query-client';
-import { BigSource } from 'big.js';
 import { useAccount } from 'contexts/account';
 import { useAnchorQuery } from 'queries/useAnchorQuery';
-import { UseQueryResult } from 'react-query';
 import { createQueryFn } from '@libs/react-query-utils';
 
-interface UserUnlockPeriodWasmQuery {
-  userUnlockPeriod: WasmQuery<
-    anchorToken.votingEscrow.UserUnlockPeriod,
-    anchorToken.votingEscrow.UserUnlockPeriodResponse
+interface UserLockInfoWasmQuery {
+  lockInfo: WasmQuery<
+    anchorToken.votingEscrow.LockInfo,
+    anchorToken.votingEscrow.LockInfoResponse
   >;
 }
 
-const userUnlockPeriodQuery = async (
+const userLockInfoQuery = async (
   votingEscrowContract: string,
   user: HumanAddr,
   queryClient: QueryClient,
 ) => {
-  const {
-    userUnlockPeriod: { unlock_period },
-  } = await wasmFetch<UserUnlockPeriodWasmQuery>({
+  const { lockInfo } = await wasmFetch<UserLockInfoWasmQuery>({
     ...queryClient,
-    id: 'user-voting-power',
+    id: 'user-lock-info',
     wasmQuery: {
-      userUnlockPeriod: {
+      lockInfo: {
         contractAddress: votingEscrowContract,
         query: {
-          user_unlock_period: {
+          lock_info: {
             user,
           },
         },
@@ -39,12 +35,12 @@ const userUnlockPeriodQuery = async (
     },
   });
 
-  return unlock_period;
+  return lockInfo;
 };
 
-const userUnlockPeriodQueryFn = createQueryFn(userUnlockPeriodQuery);
+const userLockInfoQueryFn = createQueryFn(userLockInfoQuery);
 
-export const useMyUnlockPeriod = (): UseQueryResult<u<veANC<BigSource>>> => {
+export const useMyLockInfoQuery = () => {
   const { queryClient, contractAddress, queryErrorReporter } =
     useAnchorWebapp();
 
@@ -56,12 +52,12 @@ export const useMyUnlockPeriod = (): UseQueryResult<u<veANC<BigSource>>> => {
 
   return useAnchorQuery(
     [
-      ANCHOR_QUERY_KEY.UNLOCK_PERIOD,
+      ANCHOR_QUERY_KEY.LOCK_INFO,
       votingEscrowContract,
       terraWalletAddress as HumanAddr,
       queryClient,
     ],
-    userUnlockPeriodQueryFn,
+    userLockInfoQueryFn,
     {
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,

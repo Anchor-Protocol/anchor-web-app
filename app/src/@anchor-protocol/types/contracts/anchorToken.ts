@@ -352,6 +352,19 @@ export namespace anchorToken {
     export interface UserUnlockPeriodResponse {
       unlock_period: Second;
     }
+
+    export interface LockInfo {
+      lock_info: {
+        user: HumanAddr;
+      };
+    }
+
+    export interface LockInfoResponse {
+      start: number;
+      end: number;
+      coefficient: string;
+      amount: string;
+    }
   }
 
   export namespace gaugeController {
