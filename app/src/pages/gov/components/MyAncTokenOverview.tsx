@@ -12,9 +12,9 @@ import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { ROUTES } from 'pages/trade/env';
 import { Link } from 'react-router-dom';
 
-interface ValueProps extends CardSubHeadingProps {}
+interface LabelWithValueProps extends CardSubHeadingProps {}
 
-const Value = (props: ValueProps) => {
+const LabelWithValue = (props: LabelWithValueProps) => {
   const { title, tooltip, children } = props;
 
   return (
@@ -34,11 +34,14 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
     <Card className={className}>
       <CardHeading title="My ANC" />
       <section>
-        <Value title="Balance" tooltip="The amount of ANC held in your Wallet">
+        <LabelWithValue
+          title="Balance"
+          tooltip="The amount of ANC held in your Wallet"
+        >
           <AnimateNumber format={formatUTokenDecimal2}>{uANC}</AnimateNumber>{' '}
           <Sub>ANC</Sub>
-        </Value>
-        <Value
+        </LabelWithValue>
+        <LabelWithValue
           title="Staking"
           tooltip="The amount of ANC that you are currently Staking in the Governance contract"
         >
@@ -46,7 +49,7 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
             {123456789 as u<Token<number>>}
           </AnimateNumber>{' '}
           <Sub>ANC</Sub>
-        </Value>
+        </LabelWithValue>
         <div className="buttons">
           <Tooltip
             title="Stake ANC to enable vote locking or to obtain governance rewards"
@@ -71,13 +74,13 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
       </section>
       <Divider />
       <section>
-        <Value
+        <LabelWithValue
           title="Unlock time"
           tooltip="The amount of ANC held in your Wallet"
         >
           23/May/2022 14:33
-        </Value>
-        <Value
+        </LabelWithValue>
+        <LabelWithValue
           title="Voting Power"
           tooltip="The amount of ANC that you are currently Staking in the Governance contract"
         >
@@ -85,7 +88,7 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
             {123456789 as u<Token<number>>}
           </AnimateNumber>{' '}
           <Sub>ANC</Sub>
-        </Value>
+        </LabelWithValue>
         <div className="buttons">
           <Tooltip title="Partially or fully unstake your ANC" placement="top">
             <BorderButton
