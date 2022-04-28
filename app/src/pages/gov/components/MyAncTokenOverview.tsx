@@ -4,7 +4,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Card, CardHeading, CardSubHeading, CardSubHeadingProps } from './Card';
 import { formatUTokenDecimal2 } from '@anchor-protocol/notation';
-import { Token, u } from '@anchor-protocol/types';
+import { Token, u, MillisTimestamp } from '@anchor-protocol/types';
 import { Sub } from 'components/Sub';
 import { useBalances } from 'contexts/balances';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
@@ -12,6 +12,10 @@ import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { ROUTES } from 'pages/trade/env';
 import { Link } from 'react-router-dom';
 import { ExtendAncLockPeriod } from './ExtendAncLockPeriod';
+import { useMyLockPeriodEndsAtQuery } from 'queries/gov/useMyLockPeriodEndsAtQuery';
+import { formatTimestamp } from '@libs/formatter';
+import { useVotingPowerQuery } from 'queries';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 
 interface LabelWithValueProps extends CardSubHeadingProps {}
 
@@ -30,6 +34,9 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
   const { className } = props;
 
   const { uANC } = useBalances();
+
+  const { data: lockPeriodEndsAt } = useMyLockPeriodEndsAtQuery();
+  const { data: votingPower = 0 } = useVotingPowerQuery();
 
   return (
     <Card className={className}>
@@ -79,16 +86,17 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
           title="Unlock time"
           tooltip="The amount of ANC held in your Wallet"
         >
-          23/May/2022 14:33
+          {lockPeriodEndsAt &&
+            formatTimestamp(lockPeriodEndsAt as MillisTimestamp)}
         </LabelWithValue>
         <LabelWithValue
           title="Voting Power"
           tooltip="The amount of ANC that you are currently Staking in the Governance contract"
         >
           <AnimateNumber format={formatUTokenDecimal2}>
-            {123456789 as u<Token<number>>}
+            {votingPower as u<Token<number>>}
           </AnimateNumber>{' '}
-          <Sub>ANC</Sub>
+          <Sub>{VEANC_SYMBOL}</Sub>
         </LabelWithValue>
         <div className="buttons">
           <ExtendAncLockPeriod />
