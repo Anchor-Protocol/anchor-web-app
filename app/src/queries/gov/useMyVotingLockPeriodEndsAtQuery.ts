@@ -62,11 +62,10 @@ const lockPeriodEndsAtQuery = async (
 
 const lockPeriodEndsAtQueryFn = createQueryFn(lockPeriodEndsAtQuery);
 
-export const useMyLockPeriodEndsAtQuery = (): UseQueryResult<
+export const useMyVotingLockPeriodEndsAtQuery = (): UseQueryResult<
   u<veANC<BigSource>>
 > => {
-  const { queryClient, contractAddress, queryErrorReporter } =
-    useAnchorWebapp();
+  const { queryClient, contractAddress } = useAnchorWebapp();
 
   const { terraWalletAddress } = useAccount();
 
@@ -86,7 +85,6 @@ export const useMyLockPeriodEndsAtQuery = (): UseQueryResult<
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
-      onError: queryErrorReporter,
       enabled,
     },
   );

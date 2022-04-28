@@ -8,7 +8,7 @@ import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notatio
 import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { CancelVote } from './CancelVote';
-import { useVotingPowerQuery } from 'queries';
+import { useMyVotingPowerQuery } from 'queries';
 import { Vote } from './Vote';
 import { useAccount } from 'contexts/account';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -27,7 +27,7 @@ export const CollateralList = () => {
     useCollateralGaugeQuery();
 
   const { data: myGaugeVoting = {} } = useMyGaugeVotingQuery();
-  const { data: votingPower } = useVotingPowerQuery();
+  const { data: votingPower } = useMyVotingPowerQuery();
   const { connected, availablePost } = useAccount();
   const isInteractive = connected && availablePost;
 

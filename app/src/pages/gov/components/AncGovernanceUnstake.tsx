@@ -29,14 +29,14 @@ import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useBalances } from 'contexts/balances';
-import { useMyLockPeriodEndsAtQuery } from 'queries/gov/useMyLockPeriodEndsAtQuery';
+import { useMyVotingLockPeriodEndsAtQuery } from 'queries';
 
 export function AncGovernanceUnstake() {
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
-  const { data: myLockPeriodEndsAt = 0 } = useMyLockPeriodEndsAtQuery();
+  const { data: myLockPeriodEndsAt = 0 } = useMyVotingLockPeriodEndsAtQuery();
   const now = Date.now();
   const isLockPeriodOver = myLockPeriodEndsAt < now;
 

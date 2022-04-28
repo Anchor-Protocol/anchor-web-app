@@ -47,8 +47,7 @@ const VotingEscrowConfigQuery = async (
 const VotingEscrowConfigQueryFn = createQueryFn(VotingEscrowConfigQuery);
 
 export const useVotingEscrowConfigQuery = () => {
-  const { queryClient, contractAddress, queryErrorReporter } =
-    useAnchorWebapp();
+  const { queryClient, contractAddress } = useAnchorWebapp();
 
   const votingEscrowContract = contractAddress.anchorToken.votingEscrow;
 
@@ -59,7 +58,6 @@ export const useVotingEscrowConfigQuery = () => {
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
-      onError: queryErrorReporter,
       enabled: !!votingEscrowContract,
     },
   );
