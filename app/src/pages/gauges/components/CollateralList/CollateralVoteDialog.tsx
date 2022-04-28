@@ -1,6 +1,6 @@
 import { CW20Addr, u } from '@libs/types';
 import { DialogProps } from '@libs/use-dialog';
-import { DialogTitle, Modal } from '@material-ui/core';
+import { Modal } from '@material-ui/core';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
 import React, { ChangeEvent, useState } from 'react';
 import { useBalances } from 'contexts/balances';
@@ -28,6 +28,7 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useMutation } from 'react-query';
 import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
 import { AmountSlider } from 'components/sliders';
+import { DialogTitle } from '@libs/ui/text/DialogTitle';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
