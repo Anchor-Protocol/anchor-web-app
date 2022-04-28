@@ -2,7 +2,7 @@ import { Second } from '@libs/types';
 import { DialogProps } from '@libs/use-dialog';
 import { Modal } from '@material-ui/core';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import { useFixedFee } from '@libs/app-provider';
@@ -16,7 +16,6 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { formatOutput } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQuery';
-import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfo';
 import { useExtendAncLockPeriodTx } from 'tx/gov/useExtendAncLockPeriodTx';
 import { useAccount } from 'contexts/account';
 import { StreamStatus } from '@rx-stream/react';
@@ -25,6 +24,7 @@ import {
   DurationSlider,
   DurationSliderPlaceholder,
 } from 'components/sliders/DurationSlider';
+import { useMyVotingLockPeriod } from 'queries/gov/useMyVotingLockPeriod';
 
 type ExtendAncLockPeriodDialogProps = DialogProps<{}>;
 
@@ -39,14 +39,8 @@ export const ExtendAncLockPeriodDialog = ({
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
   const [period, setPeriod] = useState<Second | undefined>();
-  const { data: lockInfo } = useMyLockInfoQuery();
-  const currentPeriod = useMemo(
-    () =>
-      lockInfo &&
-      lockConfig &&
-      (((lockInfo.end - lockInfo.start) * lockConfig.periodDuration) as Second),
-    [lockConfig, lockInfo],
-  );
+  const currentPeriod = useMyVotingLockPeriod();
+
   useEffect(() => {
     if (currentPeriod !== undefined && period === undefined) {
       setPeriod(currentPeriod);
@@ -64,12 +58,19 @@ export const ExtendAncLockPeriodDialog = ({
     }
 
     extendPeriod({
-      period,
+      period: period - currentPeriod,
       onTxSucceed: () => {
         closeDialog();
       },
     });
-  }, [closeDialog, connected, extendPeriod, isSubmitDisabled, period]);
+  }, [
+    closeDialog,
+    connected,
+    currentPeriod,
+    extendPeriod,
+    isSubmitDisabled,
+    period,
+  ]);
 
   if (
     extendPeriodResult?.status === StreamStatus.IN_PROGRESS ||

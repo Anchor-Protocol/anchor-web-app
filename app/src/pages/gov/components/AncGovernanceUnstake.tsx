@@ -38,7 +38,8 @@ export function AncGovernanceUnstake() {
 
   const { data: myLockPeriodEndsAt = 0 } = useMyVotingLockPeriodEndsAtQuery();
   const now = Date.now();
-  const isLockPeriodOver = myLockPeriodEndsAt < now;
+  const isLockPeriodOver =
+    myLockPeriodEndsAt === undefined ? true : myLockPeriodEndsAt < now;
 
   const { contractAddress } = useAnchorWebapp();
 
@@ -124,7 +125,7 @@ export function AncGovernanceUnstake() {
       return <MessageBox>{invalidTxFee}</MessageBox>;
     }
 
-    if (!isLockPeriodOver) {
+    if (!isLockPeriodOver && myLockPeriodEndsAt) {
       return (
         <MessageBox>
           Your ANC is locked until {formatTimestamp(myLockPeriodEndsAt)}

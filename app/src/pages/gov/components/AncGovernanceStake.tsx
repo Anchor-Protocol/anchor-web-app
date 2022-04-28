@@ -30,6 +30,7 @@ import {
 } from 'components/sliders/DurationSlider';
 import styled from 'styled-components';
 import { VStack } from '@libs/ui/Stack';
+import { useMyVotingLockPeriod } from 'queries/gov/useMyVotingLockPeriod';
 
 export function AncGovernanceStake() {
   const { availablePost, connected } = useAccount();
@@ -39,6 +40,8 @@ export function AncGovernanceStake() {
   const [lock, lockResult] = useLockAncTx();
 
   const [amount, setAmount] = useState<ANC>('' as ANC);
+
+  const currentLockPeriod = useMyVotingLockPeriod();
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
   const [period, setPeriod] = useState<Second | undefined>();
@@ -141,20 +144,22 @@ export function AncGovernanceStake() {
           </span>
         </div>
 
-        <VStack gap={8}>
-          <Label>Lock Period</Label>
-          {period !== undefined && lockConfig !== undefined ? (
-            <DurationSlider
-              value={period}
-              min={lockConfig.minLockTime}
-              max={lockConfig.maxLockTime}
-              step={lockConfig.periodDuration}
-              onChange={setPeriod}
-            />
-          ) : (
-            <DurationSliderPlaceholder />
-          )}
-        </VStack>
+        {currentLockPeriod === undefined && (
+          <VStack gap={8}>
+            <Label>Lock Period</Label>
+            {period !== undefined && lockConfig !== undefined ? (
+              <DurationSlider
+                value={period}
+                min={lockConfig.minLockTime}
+                max={lockConfig.maxLockTime}
+                step={lockConfig.periodDuration}
+                onChange={setPeriod}
+              />
+            ) : (
+              <DurationSliderPlaceholder />
+            )}
+          </VStack>
+        )}
       </VStack>
 
       {amount.length > 0 && (

@@ -18,6 +18,7 @@ import {
 } from 'queries';
 import { BigSource } from 'big.js';
 import { ExtendAncLockPeriod } from './ExtendAncLockPeriod';
+import { formatTimestamp } from '@libs/formatter';
 
 interface LabelWithValueProps extends CardSubHeadingProps {}
 
@@ -87,12 +88,14 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
       </section>
       <Divider />
       <section>
-        <LabelWithValue
-          title="Unlock time"
-          tooltip="The amount of ANC held in your Wallet"
-        >
-          {unlockAt}
-        </LabelWithValue>
+        {unlockAt && (
+          <LabelWithValue
+            title="Unlock time"
+            tooltip="The amount of ANC held in your Wallet"
+          >
+            {formatTimestamp(unlockAt)}
+          </LabelWithValue>
+        )}
         <LabelWithValue
           title="Voting Power"
           tooltip="The amount of ANC that you are currently Staking in the Governance contract"
@@ -102,9 +105,7 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
           </AnimateNumber>{' '}
           <Sub>veANC</Sub>
         </LabelWithValue>
-        <div className="buttons">
-          <ExtendAncLockPeriod />
-        </div>
+        <div className="buttons">{unlockAt && <ExtendAncLockPeriod />}</div>
       </section>
     </Card>
   );

@@ -28,7 +28,7 @@ import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
 
 export interface LockAncTxParams {
   amount: ANC;
-  period: Second;
+  period?: Second;
 
   onTxSucceed?: () => void;
 }
@@ -63,28 +63,34 @@ export function useLockAncTx() {
         txFee: fixedFee,
       });
 
-      return pipe(
-        _createTxOptions({
-          msgs: [
+      const extendLockAmountMsg = new MsgExecuteContract(
+        terraWalletAddress,
+        contractAddress.cw20.ANC,
+        {
+          send: {
+            contract: govContract,
+            amount: formatTokenInput(amount),
+            msg: createHookMsg({
+              extend_lock_amount: {},
+            }),
+          },
+        } as cw20.Send<ANC>,
+      );
+
+      const msgs = period
+        ? [
             new MsgExecuteContract(terraWalletAddress, govContract, {
               extend_lock_time: {
                 time: period,
               },
             }),
-            new MsgExecuteContract(
-              terraWalletAddress,
-              contractAddress.cw20.ANC,
-              {
-                send: {
-                  contract: govContract,
-                  amount: formatTokenInput(amount),
-                  msg: createHookMsg({
-                    extend_lock_amount: {},
-                  }),
-                },
-              } as cw20.Send<ANC>,
-            ),
-          ],
+            extendLockAmountMsg,
+          ]
+        : [extendLockAmountMsg];
+
+      return pipe(
+        _createTxOptions({
+          msgs,
           fee: new Fee(constants.gasWanted, floor(fixedFee) + 'uusd'),
           gasAdjustment: constants.gasAdjustment,
         }),

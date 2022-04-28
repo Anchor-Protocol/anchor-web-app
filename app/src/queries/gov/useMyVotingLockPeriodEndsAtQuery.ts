@@ -3,17 +3,13 @@ import {
   useAnchorWebapp,
 } from '@anchor-protocol/app-provider';
 import {
-  veANC,
-  u,
   anchorToken,
   HumanAddr,
   MillisTimestamp,
 } from '@anchor-protocol/types';
 import { wasmFetch, WasmQuery, QueryClient } from '@libs/query-client';
-import { BigSource } from 'big.js';
 import { useAccount } from 'contexts/account';
 import { useAnchorQuery } from 'queries/useAnchorQuery';
-import { UseQueryResult } from 'react-query';
 import { createQueryFn } from '@libs/react-query-utils';
 import { millisecondsInSecond } from 'date-fns';
 
@@ -32,7 +28,7 @@ const lockPeriodEndsAtQuery = async (
   votingEscrowContract: string,
   user: HumanAddr,
   queryClient: QueryClient,
-) => {
+): Promise<MillisTimestamp | undefined> => {
   const {
     userUnlockPeriod: { unlock_period },
     config: { period_duration },
@@ -55,6 +51,10 @@ const lockPeriodEndsAtQuery = async (
     },
   });
 
+  if (!unlock_period) {
+    return;
+  }
+
   return (unlock_period *
     period_duration *
     millisecondsInSecond) as MillisTimestamp;
@@ -62,9 +62,7 @@ const lockPeriodEndsAtQuery = async (
 
 const lockPeriodEndsAtQueryFn = createQueryFn(lockPeriodEndsAtQuery);
 
-export const useMyVotingLockPeriodEndsAtQuery = (): UseQueryResult<
-  u<veANC<BigSource>>
-> => {
+export const useMyVotingLockPeriodEndsAtQuery = () => {
   const { queryClient, contractAddress } = useAnchorWebapp();
 
   const { terraWalletAddress } = useAccount();
