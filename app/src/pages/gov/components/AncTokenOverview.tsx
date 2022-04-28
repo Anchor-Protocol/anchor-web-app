@@ -1,16 +1,27 @@
-import { Rate } from '@anchor-protocol/types';
+import { ANC, Rate, u } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { AnimateNumber, UIElementProps } from '@libs/ui';
+import Big from 'big.js';
 import { Divider } from 'components/primitives/Divider';
-import { useAncStakingApr } from 'hooks';
+import { AncTokenomics, useAncTokenomics } from 'hooks';
+import { useAncStakingAPRQuery } from 'queries';
 import React from 'react';
 import styled from 'styled-components';
 import { Card, CardHeading, CardSubHeading } from './Card';
 
+const EMPTY_ANC_TOKENOMICS: AncTokenomics = {
+  totalSupply: Big(0) as u<ANC<Big>>,
+  circulatingSupply: Big(0) as u<ANC<Big>>,
+  totalStaked: Big(0) as u<ANC<Big>>,
+};
+
 const AncTokenOverviewBase = (props: UIElementProps) => {
   const { className } = props;
 
-  const stakingApr = useAncStakingApr();
+  const ancTokenomics = useAncTokenomics() ?? EMPTY_ANC_TOKENOMICS;
+  console.log(ancTokenomics);
+
+  const { data: stakingAPR } = useAncStakingAPRQuery();
 
   return (
     <Card className={className}>
@@ -25,7 +36,7 @@ const AncTokenOverviewBase = (props: UIElementProps) => {
         />
         <p className="amount">
           <AnimateNumber format={formatRate}>
-            {stakingApr ?? (0 as Rate<number>)}
+            {stakingAPR ?? (0 as Rate<number>)}
           </AnimateNumber>
           <span>%</span>
         </p>
