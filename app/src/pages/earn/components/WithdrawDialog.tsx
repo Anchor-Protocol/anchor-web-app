@@ -21,12 +21,13 @@ import { useAccount } from 'contexts/account';
 import React, { ChangeEvent, useMemo } from 'react';
 import styled from 'styled-components';
 import { useBalances } from 'contexts/balances';
-import { AmountSlider } from './AmountSlider';
 import { TxResultRendering } from '@libs/app-fns';
 import { UIElementProps } from '@libs/ui';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { BroadcastTxStreamResult } from './types';
 import big from 'big.js';
+import { AmountSlider } from 'components/sliders/AmountSlider';
+import { UST_SYMBOL } from '@anchor-protocol/token-symbols';
 
 interface WithdrawDialogParams extends UIElementProps, EarnWithdrawFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
@@ -149,6 +150,7 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
             onChange={(value) => {
               updateWithdrawAmount(formatInput(value.toString() as UST));
             }}
+            symbol={UST_SYMBOL}
           />
         </figure>
 

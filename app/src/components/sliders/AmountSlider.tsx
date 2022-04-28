@@ -63,6 +63,7 @@ export interface AmountSliderProps {
   onChange: (value: number) => void;
   disabled?: boolean;
   txFee?: number;
+  symbol: string;
 }
 
 export const AmountSlider = ({
@@ -71,6 +72,7 @@ export const AmountSlider = ({
   onChange,
   disabled,
   txFee = 0,
+  symbol,
 }: AmountSliderProps) => {
   const theme = useTheme();
   const valueRatio = Math.min(1, value / max);
@@ -85,10 +87,10 @@ export const AmountSlider = ({
     [max, onChange],
   );
 
-  const quarterValueUST = (0.25 * max).toFixed(2);
-  const halfValueUST = (0.5 * max).toFixed(2);
-  const threeFourthsValueUST = (0.75 * max).toFixed(2);
-  const maxValueUST = max.toFixed(2);
+  const quarterValue = (0.25 * max).toFixed(2);
+  const halfValue = (0.5 * max).toFixed(2);
+  const threeFourthsValue = (0.75 * max).toFixed(2);
+  const maxValue = max.toFixed(2);
 
   return (
     <HorizontalGraphBar<Data>
@@ -100,28 +102,28 @@ export const AmountSlider = ({
           label: '25%',
           color: 'rgba(0, 0, 0, 0)',
           value: 0.25,
-          tooltip: `${quarterValueUST} UST`,
+          tooltip: `${quarterValue} ${symbol}`,
         },
         {
           variant: 'label',
           label: '50%',
           color: 'rgba(0, 0, 0, 0)',
           value: 0.5,
-          tooltip: `${halfValueUST} UST`,
+          tooltip: `${halfValue} ${symbol}`,
         },
         {
           variant: 'label',
           label: '75%',
           color: 'rgba(0, 0, 0, 0)',
           value: 0.75,
-          tooltip: `${threeFourthsValueUST} UST`,
+          tooltip: `${threeFourthsValue} ${symbol}`,
         },
         {
           variant: 'label',
           label: `Max`,
           color: 'rgba(0, 0, 0, 0)',
           value: 1,
-          tooltip: `${maxValueUST} UST`,
+          tooltip: `${maxValue} ${symbol}`,
         },
         {
           variant: 'value',

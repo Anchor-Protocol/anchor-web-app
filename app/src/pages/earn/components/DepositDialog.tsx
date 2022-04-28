@@ -16,12 +16,13 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import React, { ChangeEvent, useMemo } from 'react';
 import styled from 'styled-components';
 import { useAccount } from 'contexts/account';
-import { AmountSlider } from './AmountSlider';
 import { UIElementProps } from '@libs/ui';
 import { TxResultRendering } from '@libs/app-fns';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { BroadcastTxStreamResult } from './types';
 import big from 'big.js';
+import { UST_SYMBOL } from '@anchor-protocol/token-symbols';
+import { AmountSlider } from 'components/sliders/AmountSlider';
 
 interface DepositDialogParams extends UIElementProps, EarnDepositFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
@@ -136,6 +137,7 @@ function DepositDialogBase(props: DepositDialogProps) {
             onChange={(value) => {
               updateDepositAmount(formatInput(value.toString() as UST));
             }}
+            symbol={UST_SYMBOL}
           />
         </figure>
 

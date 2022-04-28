@@ -21,13 +21,13 @@ import { InputAdornment } from '@material-ui/core';
 import { UST_SYMBOL, VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { demicrofy, microfy } from '@libs/formatter';
 import styled from 'styled-components';
-import { AmountSlider } from 'pages/earn/components/AmountSlider';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { formatOutput } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useMutation } from 'react-query';
 import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
+import { AmountSlider } from 'components/sliders/AmountSlider';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
@@ -128,6 +128,7 @@ export const CollateralVoteDialog = ({
               onChange={(value) => {
                 setAmount(formatVeAncInput(value.toString() as veANC));
               }}
+              symbol={VEANC_SYMBOL}
             />
           </figure>
         )}
