@@ -105,9 +105,7 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
           </AnimateNumber>{' '}
           <Sub>veANC</Sub>
         </LabelWithValue>
-        <div className="buttons">
-          <ExtendAncLockPeriod />
-        </div>
+        <div className="buttons">{unlockAt && <ExtendAncLockPeriod />}</div>
       </section>
     </Card>
   );
