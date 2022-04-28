@@ -10,28 +10,28 @@ import { useAnchorQuery } from 'queries/useAnchorQuery';
 import { UseQueryResult } from 'react-query';
 import { createQueryFn } from '@libs/react-query-utils';
 
-interface UserVotingPowerWasmQuery {
-  userVotingPower: WasmQuery<
-    anchorToken.votingEscrow.UserVotingPower,
-    anchorToken.votingEscrow.UserVotingPowerResponse
+interface UserUnlockPeriodWasmQuery {
+  userUnlockPeriod: WasmQuery<
+    anchorToken.votingEscrow.UserUnlockPeriod,
+    anchorToken.votingEscrow.UserUnlockPeriodResponse
   >;
 }
 
-const userVotingPowerQuery = async (
+const userUnlockPeriodQuery = async (
   votingEscrowContract: string,
   user: HumanAddr,
   queryClient: QueryClient,
 ) => {
   const {
-    userVotingPower: { voting_power },
-  } = await wasmFetch<UserVotingPowerWasmQuery>({
+    userUnlockPeriod: { unlock_period },
+  } = await wasmFetch<UserUnlockPeriodWasmQuery>({
     ...queryClient,
     id: 'user-voting-power',
     wasmQuery: {
-      userVotingPower: {
+      userUnlockPeriod: {
         contractAddress: votingEscrowContract,
         query: {
-          user_voting_power: {
+          user_unlock_period: {
             user,
           },
         },
@@ -39,12 +39,12 @@ const userVotingPowerQuery = async (
     },
   });
 
-  return voting_power;
+  return unlock_period;
 };
 
-const userVotingPowerQueryFn = createQueryFn(userVotingPowerQuery);
+const userUnlockPeriodQueryFn = createQueryFn(userUnlockPeriodQuery);
 
-export const useVotingPowerQuery = (): UseQueryResult<u<veANC<BigSource>>> => {
+export const useMyUnlockPeriod = (): UseQueryResult<u<veANC<BigSource>>> => {
   const { queryClient, contractAddress, queryErrorReporter } =
     useAnchorWebapp();
 
@@ -56,12 +56,12 @@ export const useVotingPowerQuery = (): UseQueryResult<u<veANC<BigSource>>> => {
 
   return useAnchorQuery(
     [
-      ANCHOR_QUERY_KEY.ANC_VOTING_POWER,
+      ANCHOR_QUERY_KEY.UNLOCK_PERIOD,
       votingEscrowContract,
       terraWalletAddress as HumanAddr,
       queryClient,
     ],
-    userVotingPowerQueryFn,
+    userUnlockPeriodQueryFn,
     {
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,

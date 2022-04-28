@@ -22,13 +22,13 @@ import {
   pickRawLog,
 } from '@libs/app-fns';
 import { formatTokenInput, demicrofy } from '@libs/formatter';
-import { ANC, cw20, u } from '@anchor-protocol/types';
+import { ANC, cw20, u, Second } from '@anchor-protocol/types';
 import { floor } from '@libs/big-math';
 import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
 
 export interface LockAncTxParams {
   amount: ANC;
-  period?: number;
+  period: Second;
 
   onTxSucceed?: () => void;
 }
@@ -48,7 +48,7 @@ export function useLockAncTx() {
   const govContract = contractAddress.anchorToken.gov;
 
   const stream = useCallback(
-    ({ amount, period = 31556952, onTxSucceed }: LockAncTxParams) => {
+    ({ amount, period, onTxSucceed }: LockAncTxParams) => {
       if (
         !availablePost ||
         !connected ||
