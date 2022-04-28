@@ -62,9 +62,8 @@ const lockPeriodEndsAtQuery = async (
 
 const lockPeriodEndsAtQueryFn = createQueryFn(lockPeriodEndsAtQuery);
 
-export const useMyLockPeriodEndsAtQuery = () => {
-  const { queryClient, contractAddress, queryErrorReporter } =
-    useAnchorWebapp();
+export const useMyVotingLockPeriodEndsAtQuery = () => {
+  const { queryClient, contractAddress } = useAnchorWebapp();
 
   const { terraWalletAddress } = useAccount();
 
@@ -84,7 +83,6 @@ export const useMyLockPeriodEndsAtQuery = () => {
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
-      onError: queryErrorReporter,
       enabled,
     },
   );

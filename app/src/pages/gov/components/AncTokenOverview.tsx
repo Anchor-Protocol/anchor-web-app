@@ -40,7 +40,6 @@ const AncTokenOverviewBase = (props: UIElementProps) => {
   const formatter = (value: u<ANC<Big>>) => formatOutput(demicrofy(value));
 
   const ancTokenomics = useAncTokenomics() ?? EMPTY_ANC_TOKENOMICS;
-  console.log(ancTokenomics);
 
   const { data: stakingAPR } = useAncStakingAPRQuery();
 

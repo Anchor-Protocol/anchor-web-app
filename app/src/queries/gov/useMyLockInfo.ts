@@ -41,8 +41,7 @@ const userLockInfoQuery = async (
 const userLockInfoQueryFn = createQueryFn(userLockInfoQuery);
 
 export const useMyLockInfoQuery = () => {
-  const { queryClient, contractAddress, queryErrorReporter } =
-    useAnchorWebapp();
+  const { queryClient, contractAddress } = useAnchorWebapp();
 
   const { terraWalletAddress } = useAccount();
 
@@ -62,7 +61,6 @@ export const useMyLockInfoQuery = () => {
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
-      onError: queryErrorReporter,
       enabled,
     },
   );

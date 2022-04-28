@@ -15,7 +15,7 @@ export function useGovMyPollsQuery(): UseQueryResult<MyPoll[]> {
 
   const result = useQuery(
     [
-      ANCHOR_QUERY_KEY.GOV_MYPOLLS,
+      ANCHOR_QUERY_KEY.GOV_MY_POLLS,
       terraWalletAddress,
       contractAddress.anchorToken.gov,
       queryClient,

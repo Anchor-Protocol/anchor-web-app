@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useVotingPowerQuery } from 'queries';
+import { useMyVotingPowerQuery } from 'queries';
 import { AmountTitle } from './AmountTitle';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { Rate, Token, u } from '@libs/types';
@@ -9,7 +9,7 @@ import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
 import { sum } from '@libs/big-math';
 
 export const MyVotingPower = () => {
-  const { data: availableVotingPower = 0 } = useVotingPowerQuery();
+  const { data: availableVotingPower = 0 } = useMyVotingPowerQuery();
   const { data: myVotes = {} } = useMyGaugeVotingQuery();
 
   const usedVotingPower = useMemo(

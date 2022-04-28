@@ -4,18 +4,21 @@ import React from 'react';
 import styled from 'styled-components';
 import { Card, CardHeading, CardSubHeading, CardSubHeadingProps } from './Card';
 import { formatUTokenDecimal2 } from '@anchor-protocol/notation';
-import { Token, u, MillisTimestamp } from '@anchor-protocol/types';
+import { ANC, u, veANC } from '@anchor-protocol/types';
 import { Sub } from 'components/Sub';
 import { useBalances } from 'contexts/balances';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { ROUTES } from 'pages/trade/env';
 import { Link } from 'react-router-dom';
+import {
+  useMyAncStakedQuery,
+  useMyVotingLockPeriodEndsAtQuery,
+  useMyVotingPowerQuery,
+} from 'queries';
+import { BigSource } from 'big.js';
 import { ExtendAncLockPeriod } from './ExtendAncLockPeriod';
-import { useMyLockPeriodEndsAtQuery } from 'queries/gov/useMyLockPeriodEndsAtQuery';
 import { formatTimestamp } from '@libs/formatter';
-import { useVotingPowerQuery } from 'queries';
-import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 
 interface LabelWithValueProps extends CardSubHeadingProps {}
 
@@ -35,8 +38,11 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
 
   const { uANC } = useBalances();
 
-  const { data: lockPeriodEndsAt } = useMyLockPeriodEndsAtQuery();
-  const { data: votingPower = 0 } = useVotingPowerQuery();
+  const { data: staked } = useMyAncStakedQuery();
+
+  const { data: votingPower } = useMyVotingPowerQuery();
+
+  const { data: unlockAt } = useMyVotingLockPeriodEndsAtQuery();
 
   return (
     <Card className={className}>
@@ -54,7 +60,7 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
           tooltip="The amount of ANC that you are currently Staking in the Governance contract"
         >
           <AnimateNumber format={formatUTokenDecimal2}>
-            {123456789 as u<Token<number>>}
+            {staked ? staked : (0 as u<ANC<BigSource>>)}
           </AnimateNumber>{' '}
           <Sub>ANC</Sub>
         </LabelWithValue>
@@ -82,21 +88,22 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
       </section>
       <Divider />
       <section>
-        <LabelWithValue
-          title="Unlock time"
-          tooltip="The amount of ANC held in your Wallet"
-        >
-          {lockPeriodEndsAt &&
-            formatTimestamp(lockPeriodEndsAt as MillisTimestamp)}
-        </LabelWithValue>
+        {unlockAt && (
+          <LabelWithValue
+            title="Unlock time"
+            tooltip="The amount of ANC held in your Wallet"
+          >
+            {formatTimestamp(unlockAt)}
+          </LabelWithValue>
+        )}
         <LabelWithValue
           title="Voting Power"
           tooltip="The amount of ANC that you are currently Staking in the Governance contract"
         >
           <AnimateNumber format={formatUTokenDecimal2}>
-            {votingPower as u<Token<number>>}
+            {votingPower ? votingPower : (0 as u<veANC<BigSource>>)}
           </AnimateNumber>{' '}
-          <Sub>{VEANC_SYMBOL}</Sub>
+          <Sub>veANC</Sub>
         </LabelWithValue>
         <div className="buttons">
           <ExtendAncLockPeriod />

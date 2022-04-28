@@ -8,7 +8,7 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import { useFixedFee } from '@libs/app-provider';
 import { MessageBox } from 'components/MessageBox';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
-import { useVotingPowerQuery } from 'queries';
+import { useMyVotingPowerQuery } from 'queries';
 import { veANC } from '@anchor-protocol/types';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -51,7 +51,7 @@ export const CollateralVoteDialog = ({
     () => demicrofy(currentAmount).toString() as veANC,
   );
 
-  const { data: availableExtraAmount = 0 } = useVotingPowerQuery();
+  const { data: availableExtraAmount = 0 } = useMyVotingPowerQuery();
   const maxAmount = big(availableExtraAmount).add(currentAmount) as u<
     veANC<BigSource>
   >;

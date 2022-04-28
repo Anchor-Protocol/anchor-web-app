@@ -44,9 +44,10 @@ const userVotingPowerQuery = async (
 
 const userVotingPowerQueryFn = createQueryFn(userVotingPowerQuery);
 
-export const useVotingPowerQuery = (): UseQueryResult<u<veANC<BigSource>>> => {
-  const { queryClient, contractAddress, queryErrorReporter } =
-    useAnchorWebapp();
+export const useMyVotingPowerQuery = (): UseQueryResult<
+  u<veANC<BigSource>>
+> => {
+  const { queryClient, contractAddress } = useAnchorWebapp();
 
   const { terraWalletAddress } = useAccount();
 
@@ -56,7 +57,7 @@ export const useVotingPowerQuery = (): UseQueryResult<u<veANC<BigSource>>> => {
 
   return useAnchorQuery(
     [
-      ANCHOR_QUERY_KEY.ANC_VOTING_POWER,
+      ANCHOR_QUERY_KEY.ANC_MY_VOTING_POWER,
       votingEscrowContract,
       terraWalletAddress as HumanAddr,
       queryClient,
@@ -66,7 +67,6 @@ export const useVotingPowerQuery = (): UseQueryResult<u<veANC<BigSource>>> => {
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
-      onError: queryErrorReporter,
       enabled,
     },
   );
