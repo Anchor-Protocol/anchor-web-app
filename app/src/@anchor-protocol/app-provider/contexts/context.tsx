@@ -1,3 +1,4 @@
+import { AnchorApiClient } from '@anchor-protocol/api';
 import { NetworkMoniker } from '@anchor-protocol/types';
 import { App, useApp } from '@libs/app-provider';
 import React, {
@@ -16,8 +17,8 @@ export interface AnchorWebappProviderProps {
 }
 
 export interface AnchorWebapp {
-  //bAssetsVector: CW20Addr[];
   indexerApiEndpoint: string;
+  apiClient: AnchorApiClient;
 }
 
 const AnchorWebappContext: Context<AnchorWebapp> =
@@ -30,12 +31,11 @@ export function AnchorWebappProvider({
 }: AnchorWebappProviderProps) {
   const { moniker } = useNetwork();
 
-  //const { contractAddress } = useApp<AnchorContractAddress>();
-
   const states = useMemo<AnchorWebapp>(() => {
+    const endpoint = indexerApiEndpoints(moniker);
     return {
-      indexerApiEndpoint: indexerApiEndpoints(moniker),
-      //bAssetsVector: [contractAddress.cw20.bEth, contractAddress.cw20.bLuna],
+      indexerApiEndpoint: endpoint,
+      apiClient: new AnchorApiClient(endpoint),
     };
   }, [indexerApiEndpoints, moniker]);
 

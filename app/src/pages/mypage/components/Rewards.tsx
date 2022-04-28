@@ -26,7 +26,7 @@ export interface RewardsProps {
 export function RewardsBase({ className }: RewardsProps) {
   const {
     ancUstLp,
-    govRewards,
+    stakingAPR,
     lpRewards,
     govGorvernance,
     ustBorrow,
@@ -85,12 +85,7 @@ export function RewardsBase({ className }: RewardsProps) {
           <tbody>
             <tr>
               <td>ANC Governance</td>
-              <td>
-                {govRewards && govRewards.length > 0
-                  ? formatRate(govRewards[0].CurrentAPY)
-                  : 0}{' '}
-                %
-              </td>
+              <td>{stakingAPR ? formatRate(stakingAPR) : 0} %</td>
               <td>
                 <p>
                   {govGorvernance?.staked

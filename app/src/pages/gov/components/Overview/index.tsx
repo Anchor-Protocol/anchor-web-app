@@ -47,7 +47,7 @@ function OverviewBase({ className }: OverviewProps) {
 
   const { data: ancPrice } = useAssetPriceInUstQuery('anc');
 
-  const { data: { govRewards, lpRewards } = {} } = useBorrowAPYQuery();
+  const { data: { lpRewards } = {} } = useBorrowAPYQuery();
 
   const { data: ancUstLpRewards } = useRewardsAncUstLpRewardsQuery();
 
@@ -205,9 +205,7 @@ function OverviewBase({ className }: OverviewProps) {
           </TooltipLabel>
           <span style={{ display: 'inline-block', minWidth: 80 }}>
             <AnimateNumber format={formatRate}>
-              {govRewards && govRewards.length > 0
-                ? govRewards[0].CurrentAPY
-                : (0 as Rate<number>)}
+              {0 as Rate<number>}
             </AnimateNumber>{' '}
             %
           </span>

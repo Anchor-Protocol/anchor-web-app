@@ -8,7 +8,7 @@ import {
 } from '@anchor-protocol/app-provider';
 import { ANC, u, UST, Token } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
-import { useAssetPriceInUstQuery } from 'queries';
+import { useAncStakingAPRQuery, useAssetPriceInUstQuery } from 'queries';
 import { useMemo } from 'react';
 import { sum } from '@libs/big-math';
 
@@ -39,8 +39,10 @@ export function useRewards() {
   const { data: { borrowerInfo, marketState } = {} } =
     useRewardsClaimableUstBorrowRewardsQuery();
 
-  const { data: { govRewards, lpRewards, borrowerDistributionAPYs } = {} } =
+  const { data: { lpRewards, borrowerDistributionAPYs } = {} } =
     useBorrowAPYQuery();
+
+  const { data: stakingAPR } = useAncStakingAPRQuery();
 
   // ---------------------------------------------
   // logics
@@ -190,7 +192,7 @@ export function useRewards() {
 
   return {
     ancPrice,
-    govRewards,
+    stakingAPR,
     govGorvernance,
     ancUstLp,
     lpRewards,
