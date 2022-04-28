@@ -148,6 +148,7 @@ export function AncGovernanceStake() {
               value={period}
               min={lockConfig.minLockTime}
               max={lockConfig.maxLockTime}
+              step={lockConfig.periodDuration}
               onChange={setPeriod}
             />
           ) : (
