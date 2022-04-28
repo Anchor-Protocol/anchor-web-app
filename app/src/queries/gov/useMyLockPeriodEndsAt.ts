@@ -15,18 +15,23 @@ interface UserUnlockPeriodWasmQuery {
     anchorToken.votingEscrow.UserUnlockPeriod,
     anchorToken.votingEscrow.UserUnlockPeriodResponse
   >;
+  config: WasmQuery<
+    anchorToken.votingEscrow.Config,
+    anchorToken.votingEscrow.ConfigResponse
+  >;
 }
 
-const userUnlockPeriodQuery = async (
+const lockPeriodEndsAtQuery = async (
   votingEscrowContract: string,
   user: HumanAddr,
   queryClient: QueryClient,
 ) => {
   const {
     userUnlockPeriod: { unlock_period },
+    config: { period_duration },
   } = await wasmFetch<UserUnlockPeriodWasmQuery>({
     ...queryClient,
-    id: 'user-voting-power',
+    id: 'lock-period-ends-at',
     wasmQuery: {
       userUnlockPeriod: {
         contractAddress: votingEscrowContract,
@@ -36,15 +41,21 @@ const userUnlockPeriodQuery = async (
           },
         },
       },
+      config: {
+        contractAddress: votingEscrowContract,
+        query: { config: {} },
+      },
     },
   });
 
-  return unlock_period;
+  return unlock_period * period_duration;
 };
 
-const userUnlockPeriodQueryFn = createQueryFn(userUnlockPeriodQuery);
+const lockPeriodEndsAtQueryFn = createQueryFn(lockPeriodEndsAtQuery);
 
-export const useMyUnlockPeriod = (): UseQueryResult<u<veANC<BigSource>>> => {
+export const useMyLockPeriodEndsAt = (): UseQueryResult<
+  u<veANC<BigSource>>
+> => {
   const { queryClient, contractAddress, queryErrorReporter } =
     useAnchorWebapp();
 
@@ -61,7 +72,7 @@ export const useMyUnlockPeriod = (): UseQueryResult<u<veANC<BigSource>>> => {
       terraWalletAddress as HumanAddr,
       queryClient,
     ],
-    userUnlockPeriodQueryFn,
+    lockPeriodEndsAtQueryFn,
     {
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,

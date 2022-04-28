@@ -29,15 +29,15 @@ import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useBalances } from 'contexts/balances';
-import { useMyUnlockPeriod } from 'queries/gov/useMyUnlockPeriod';
+import { useMyLockPeriodEndsAt } from 'queries/gov/useMyLockPeriodEndsAt';
 
 export function AncGovernanceUnstake() {
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
-  const { data: unlockPeriod } = useMyUnlockPeriod();
-  console.log(unlockPeriod);
+  const { data: myLockPeriodEndsAt } = useMyLockPeriodEndsAt();
+  console.log(myLockPeriodEndsAt);
 
   const { contractAddress } = useAnchorWebapp();
 
