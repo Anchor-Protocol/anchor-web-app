@@ -26,7 +26,7 @@ import { UIElementProps } from '@libs/ui';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { BroadcastTxStreamResult } from './types';
 import big from 'big.js';
-import { AmountSlider } from 'components/sliders/AmountSlider';
+import { AmountSlider, SliderPlaceholder } from 'components/sliders';
 import { UST_SYMBOL } from '@anchor-protocol/token-symbols';
 
 interface WithdrawDialogParams extends UIElementProps, EarnWithdrawFormReturn {
@@ -142,16 +142,19 @@ function WithdrawDialogBase(props: WithdrawDialogProps) {
         </div>
 
         <figure className="graph">
-          <AmountSlider
-            disabled={!connected}
-            max={Number(demicrofy(totalDeposit))}
-            txFee={Number(demicrofy(txFee ?? ('0' as UST)))}
-            value={Number(withdrawAmount)}
-            onChange={(value) => {
-              updateWithdrawAmount(formatInput(value.toString() as UST));
-            }}
-            symbol={UST_SYMBOL}
-          />
+          {connected ? (
+            <AmountSlider
+              max={Number(demicrofy(totalDeposit))}
+              txFee={Number(demicrofy(txFee ?? ('0' as UST)))}
+              value={Number(withdrawAmount)}
+              onChange={(value) => {
+                updateWithdrawAmount(formatInput(value.toString() as UST));
+              }}
+              symbol={UST_SYMBOL}
+            />
+          ) : (
+            <SliderPlaceholder />
+          )}
         </figure>
 
         {txFee && receiveAmount && (
@@ -208,7 +211,7 @@ export const WithdrawDialog = styled(WithdrawDialogBase)`
   }
 
   .graph {
-    margin-top: 80px;
+    margin-top: 20px;
     margin-bottom: 40px;
   }
 

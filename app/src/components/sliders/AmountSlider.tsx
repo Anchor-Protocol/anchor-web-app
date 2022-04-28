@@ -11,6 +11,7 @@ import { InfoOutlined } from '@material-ui/icons';
 import React, { useCallback } from 'react';
 import { useTheme } from 'styled-components';
 import { Marker } from './Marker';
+import { SliderContainer } from './SliderContainer';
 
 export interface Data {
   variant: 'label' | 'value';
@@ -61,7 +62,6 @@ export interface AmountSliderProps {
   value: number;
   max: number;
   onChange: (value: number) => void;
-  disabled?: boolean;
   txFee?: number;
   symbol: string;
 }
@@ -70,7 +70,6 @@ export const AmountSlider = ({
   value,
   max,
   onChange,
-  disabled,
   txFee = 0,
   symbol,
 }: AmountSliderProps) => {
@@ -93,66 +92,64 @@ export const AmountSlider = ({
   const maxValue = max.toFixed(2);
 
   return (
-    <HorizontalGraphBar<Data>
-      min={0}
-      max={1}
-      data={[
-        {
-          variant: 'label',
-          label: '25%',
-          color: 'rgba(0, 0, 0, 0)',
-          value: 0.25,
-          tooltip: `${quarterValue} ${symbol}`,
-        },
-        {
-          variant: 'label',
-          label: '50%',
-          color: 'rgba(0, 0, 0, 0)',
-          value: 0.5,
-          tooltip: `${halfValue} ${symbol}`,
-        },
-        {
-          variant: 'label',
-          label: '75%',
-          color: 'rgba(0, 0, 0, 0)',
-          value: 0.75,
-          tooltip: `${threeFourthsValue} ${symbol}`,
-        },
-        {
-          variant: 'label',
-          label: `Max`,
-          color: 'rgba(0, 0, 0, 0)',
-          value: 1,
-          tooltip: `${maxValue} ${symbol}`,
-        },
-        {
-          variant: 'value',
-          label: `${formatRate(valueRatio.toFixed(2) as Rate)}%`,
-          color:
-            value > allowed ? theme.colors.negative : theme.colors.positive,
-          value: Math.min(value, max) / max,
-        },
-      ]}
-      colorFunction={colorFunction}
-      valueFunction={valueFunction}
-      labelRenderer={amountSliderLabelRenderer}
-    >
-      {(coordinateSpace) => (
-        <>
-          {disabled === true ? null : (
-            <HorizontalGraphSlider
-              coordinateSpace={coordinateSpace}
-              min={0}
-              max={max}
-              start={0}
-              end={max}
-              value={value}
-              onChange={onChange}
-              label={`${valueRatio < 1 ? formatter(valueRatio * 100) : '100'}%`}
-            />
-          )}
-        </>
-      )}
-    </HorizontalGraphBar>
+    <SliderContainer>
+      <HorizontalGraphBar<Data>
+        min={0}
+        max={1}
+        data={[
+          {
+            variant: 'label',
+            label: '25%',
+            color: 'rgba(0, 0, 0, 0)',
+            value: 0.25,
+            tooltip: `${quarterValue} ${symbol}`,
+          },
+          {
+            variant: 'label',
+            label: '50%',
+            color: 'rgba(0, 0, 0, 0)',
+            value: 0.5,
+            tooltip: `${halfValue} ${symbol}`,
+          },
+          {
+            variant: 'label',
+            label: '75%',
+            color: 'rgba(0, 0, 0, 0)',
+            value: 0.75,
+            tooltip: `${threeFourthsValue} ${symbol}`,
+          },
+          {
+            variant: 'label',
+            label: `Max`,
+            color: 'rgba(0, 0, 0, 0)',
+            value: 1,
+            tooltip: `${maxValue} ${symbol}`,
+          },
+          {
+            variant: 'value',
+            label: `${formatRate(valueRatio.toFixed(2) as Rate)}%`,
+            color:
+              value > allowed ? theme.colors.negative : theme.colors.positive,
+            value: Math.min(value, max) / max,
+          },
+        ]}
+        colorFunction={colorFunction}
+        valueFunction={valueFunction}
+        labelRenderer={amountSliderLabelRenderer}
+      >
+        {(coordinateSpace) => (
+          <HorizontalGraphSlider
+            coordinateSpace={coordinateSpace}
+            min={0}
+            max={max}
+            start={0}
+            end={max}
+            value={value}
+            onChange={onChange}
+            label={`${valueRatio < 1 ? formatter(valueRatio * 100) : '100'}%`}
+          />
+        )}
+      </HorizontalGraphBar>
+    </SliderContainer>
   );
 };

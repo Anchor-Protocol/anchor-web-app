@@ -27,7 +27,7 @@ import { formatOutput } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useMutation } from 'react-query';
 import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
-import { AmountSlider } from 'components/sliders/AmountSlider';
+import { AmountSlider } from 'components/sliders';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
@@ -183,7 +183,7 @@ export const Container = styled(Dialog)`
   }
 
   .graph {
-    margin-top: 80px;
+    margin-top: 20px;
     margin-bottom: 40px;
   }
 
