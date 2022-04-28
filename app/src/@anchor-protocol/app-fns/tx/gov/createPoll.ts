@@ -1,11 +1,11 @@
 import {
-  ANC,
   CW20Addr,
   Gas,
   HumanAddr,
   Rate,
   u,
   UST,
+  veANC,
 } from '@anchor-protocol/types';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import {
@@ -39,7 +39,7 @@ export function govCreatePollTx($: {
   ancTokenAddr: CW20Addr;
   govAddr: HumanAddr;
 
-  amount: ANC;
+  amount: veANC;
   title: string;
   description: string;
   link: string | undefined;
