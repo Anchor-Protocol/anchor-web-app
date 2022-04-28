@@ -7,9 +7,7 @@ import { BigSource } from 'big.js';
 import { useAnchorQuery } from 'queries/useAnchorQuery';
 import { UseQueryResult } from 'react-query';
 
-export const useAncStakingAPRQuery = (
-  defaultRate?: Rate<BigSource>,
-): UseQueryResult<Rate<BigSource> | undefined> => {
+export const useAncStakingAPRQuery = (): UseQueryResult<Rate<BigSource>> => {
   const { apiClient } = useAnchorWebapp();
 
   return useAnchorQuery(
