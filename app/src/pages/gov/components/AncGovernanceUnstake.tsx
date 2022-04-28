@@ -15,7 +15,7 @@ import {
 } from '@anchor-protocol/app-provider';
 import { useFixedFee } from '@libs/app-provider';
 import { max } from '@libs/big-math';
-import { demicrofy, microfy } from '@libs/formatter';
+import { demicrofy, formatTimestamp, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { InputAdornment } from '@material-ui/core';
@@ -29,15 +29,16 @@ import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useBalances } from 'contexts/balances';
-import { useMyLockPeriodEndsAt } from 'queries/gov/useMyLockPeriodEndsAt';
+import { useMyLockPeriodEndsAtQuery } from 'queries/gov/useMyLockPeriodEndsAtQuery';
 
 export function AncGovernanceUnstake() {
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
-  const { data: myLockPeriodEndsAt } = useMyLockPeriodEndsAt();
-  console.log(myLockPeriodEndsAt);
+  const { data: myLockPeriodEndsAt = 0 } = useMyLockPeriodEndsAtQuery();
+  const now = Date.now();
+  const isLockPeriodOver = myLockPeriodEndsAt < now;
 
   const { contractAddress } = useAnchorWebapp();
 
@@ -118,9 +119,25 @@ export function AncGovernanceUnstake() {
     );
   }
 
+  const renderMessage = () => {
+    if (!!invalidTxFee) {
+      return <MessageBox>{invalidTxFee}</MessageBox>;
+    }
+
+    if (!isLockPeriodOver) {
+      return (
+        <MessageBox>
+          Your ANC is locked until {formatTimestamp(myLockPeriodEndsAt)}
+        </MessageBox>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <>
-      {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
+      {renderMessage()}
 
       <NumberInput
         className="amount"
@@ -175,6 +192,7 @@ export function AncGovernanceUnstake() {
             ancAmount.length === 0 ||
             big(ancAmount).lte(0) ||
             !!invalidTxFee ||
+            !isLockPeriodOver ||
             !!invalidANCAmount
           }
           onClick={() => proceed(ancAmount)}

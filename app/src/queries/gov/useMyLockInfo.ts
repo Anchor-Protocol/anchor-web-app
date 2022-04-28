@@ -40,7 +40,7 @@ const userLockInfoQuery = async (
 
 const userLockInfoQueryFn = createQueryFn(userLockInfoQuery);
 
-export const useMyLockInfo = () => {
+export const useMyLockInfoQuery = () => {
   const { queryClient, contractAddress, queryErrorReporter } =
     useAnchorWebapp();
 

@@ -362,8 +362,8 @@ export namespace anchorToken {
     export interface LockInfoResponse {
       start: number;
       end: number;
-      coefficient: number;
-      amount: number;
+      coefficient: string;
+      amount: string;
     }
   }
 

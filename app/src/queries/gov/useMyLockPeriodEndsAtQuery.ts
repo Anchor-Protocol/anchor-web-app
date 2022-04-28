@@ -2,13 +2,20 @@ import {
   ANCHOR_QUERY_KEY,
   useAnchorWebapp,
 } from '@anchor-protocol/app-provider';
-import { veANC, u, anchorToken, HumanAddr } from '@anchor-protocol/types';
+import {
+  veANC,
+  u,
+  anchorToken,
+  HumanAddr,
+  MillisTimestamp,
+} from '@anchor-protocol/types';
 import { wasmFetch, WasmQuery, QueryClient } from '@libs/query-client';
 import { BigSource } from 'big.js';
 import { useAccount } from 'contexts/account';
 import { useAnchorQuery } from 'queries/useAnchorQuery';
 import { UseQueryResult } from 'react-query';
 import { createQueryFn } from '@libs/react-query-utils';
+import { millisecondsInSecond } from 'date-fns';
 
 interface UserUnlockPeriodWasmQuery {
   userUnlockPeriod: WasmQuery<
@@ -48,12 +55,14 @@ const lockPeriodEndsAtQuery = async (
     },
   });
 
-  return unlock_period * period_duration;
+  return (unlock_period *
+    period_duration *
+    millisecondsInSecond) as MillisTimestamp;
 };
 
 const lockPeriodEndsAtQueryFn = createQueryFn(lockPeriodEndsAtQuery);
 
-export const useMyLockPeriodEndsAt = (): UseQueryResult<
+export const useMyLockPeriodEndsAtQuery = (): UseQueryResult<
   u<veANC<BigSource>>
 > => {
   const { queryClient, contractAddress, queryErrorReporter } =
