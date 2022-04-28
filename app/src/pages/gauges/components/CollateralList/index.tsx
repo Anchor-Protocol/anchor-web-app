@@ -13,14 +13,7 @@ import { Vote } from './Vote';
 import { useAccount } from 'contexts/account';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import format from 'date-fns/format';
-
-const formatDate = (date: Date): string =>
-  `${date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-  })} ${date.toLocaleTimeString('en-US')} ${format(date, 'z')}`;
+import { formatTimestamp } from '@libs/formatter';
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
@@ -94,7 +87,7 @@ export const CollateralList = () => {
                             <InfoTooltip>
                               The vote is locked until
                               <br />
-                              {formatDate(new Date(myVotes.lockPeriodEndsAt))}
+                              {formatTimestamp(myVotes.lockPeriodEndsAt)}
                             </InfoTooltip>
                           </IconSpan>
                         </p>

@@ -13,7 +13,7 @@ export const formatTimestamp = (timestamp: MillisTimestamp) => {
   const date = new Date(timestamp);
   return `${date.toLocaleDateString('en-US', {
     year: 'numeric',
-    month: 'numeric',
+    month: 'short',
     day: 'numeric',
   })} ${date.toLocaleTimeString('en-US')} ${format(date, 'z')}`;
 };
