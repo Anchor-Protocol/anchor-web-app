@@ -1,5 +1,6 @@
 import { truncate } from '@libs/formatter';
 import React from 'react';
+import { getAccountUrl } from 'utils/terrascope';
 
 export interface FinderAddressLinkProps {
   chainID: string;
@@ -13,11 +14,7 @@ export function FinderAddressLink({
   shortenAddress,
 }: FinderAddressLinkProps) {
   return (
-    <a
-      href={`https://finder.terra.money/${chainID}/address/${address}`}
-      target="_blank"
-      rel="noreferrer"
-    >
+    <a href={getAccountUrl(chainID, address)} target="_blank" rel="noreferrer">
       {shortenAddress ? truncate(address) : address}
     </a>
   );

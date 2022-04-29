@@ -42,7 +42,6 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
     [allRewards],
   );
 
-  const hasANCReward = useMemo(() => hasReward(rewards, 'ANC'), [rewards]);
   const hasAstroReward = useMemo(() => hasReward(rewards, 'ASTRO'), [rewards]);
 
   return (
@@ -82,17 +81,15 @@ function TotalClaimableRewardsBase({ className }: TotalClaimableRewardsProps) {
         </p>
       </header>
 
-      {hasANCReward && (
-        <div className="anc-price">
-          <h5>ANC PRICE</h5>
-          <p>
-            <AnimateNumber format={formatUST}>
-              {ancPrice ? ancPrice : (0 as UST<number>)}
-            </AnimateNumber>
-            <Sub> UST</Sub>
-          </p>
-        </div>
-      )}
+      <div className="anc-price">
+        <h5>ANC PRICE</h5>
+        <p>
+          <AnimateNumber format={formatUST}>
+            {ancPrice ? ancPrice : (0 as UST<number>)}
+          </AnimateNumber>
+          <Sub> UST</Sub>
+        </p>
+      </div>
 
       {hasAstroReward && (
         <div className="anc-price">

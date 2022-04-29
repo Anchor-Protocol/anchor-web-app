@@ -1,6 +1,7 @@
 import { useNetwork } from '@anchor-protocol/app-provider';
 import { truncate } from '@libs/formatter';
 import React from 'react';
+import { getTransactionDetailUrl } from 'utils/terrascope';
 
 export interface TxHashProps {
   txHash: string;
@@ -11,7 +12,7 @@ export function TxHashLink({ txHash }: TxHashProps) {
 
   return (
     <a
-      href={`https://finder.terra.money/${network.chainID}/tx/${txHash}`}
+      href={getTransactionDetailUrl(network.chainID, txHash)}
       target="_blank"
       rel="noreferrer"
     >
