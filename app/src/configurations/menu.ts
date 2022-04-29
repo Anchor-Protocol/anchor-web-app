@@ -36,11 +36,6 @@ const govern: RouteMenu = {
   title: 'GOVERN',
 };
 
-const gauges: RouteMenu = {
-  to: `/gauges`,
-  title: 'GAUGES',
-};
-
 const useMenus = (): RouteMenu[] => {
   const {
     target: { isEVM },
@@ -49,7 +44,7 @@ const useMenus = (): RouteMenu[] => {
     if (isEVM) {
       return [dashboard, myPage, earn, borrow, govern];
     }
-    return [dashboard, myPage, earn, borrow, bAsset, govern, gauges];
+    return [dashboard, myPage, earn, borrow, bAsset, govern];
   }, [isEVM]);
 };
 
