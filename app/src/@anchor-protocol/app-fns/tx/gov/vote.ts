@@ -1,4 +1,4 @@
-import { ANC, Gas, HumanAddr, Rate, u, UST } from '@anchor-protocol/types';
+import { Gas, HumanAddr, Rate, u, UST, veANC } from '@anchor-protocol/types';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import {
   _catchTxError,
@@ -22,7 +22,7 @@ import { Observable } from 'rxjs';
 export function govVoteTx($: {
   walletAddr: HumanAddr;
   govAddr: HumanAddr;
-  amount: ANC;
+  amount: veANC;
   voteFor: 'yes' | 'no';
   pollId: number;
 

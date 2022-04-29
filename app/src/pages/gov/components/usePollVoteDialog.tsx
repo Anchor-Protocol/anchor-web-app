@@ -1,15 +1,14 @@
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
-  formatANC,
-  formatANCInput,
   formatUST,
+  formatVeAnc,
+  formatVeAncInput,
 } from '@anchor-protocol/notation';
-import { ANC, u } from '@anchor-protocol/types';
+import { veANC } from '@anchor-protocol/types';
 import {
   useGovVoteAvailableQuery,
   useGovVoteTx,
-  useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
@@ -23,7 +22,7 @@ import { DialogProps, OpenDialog, useDialog } from '@libs/use-dialog';
 import { InputAdornment, Modal } from '@material-ui/core';
 import { ThumbDownOutlined, ThumbUpOutlined } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
-import big, { Big } from 'big.js';
+import big from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
@@ -37,6 +36,10 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { useMyVotingPowerQuery } from 'queries';
+import { VStack } from '@libs/ui/Stack';
+import { AmountSlider, SliderPlaceholder } from 'components/sliders';
 
 interface FormParams {
   className?: string;
@@ -65,21 +68,12 @@ function ComponentBase({
 
   const bank = useAnchorBank();
 
-  const { data: { userGovStakingInfo } = {} } =
-    useRewardsAncGovernanceRewardsQuery();
+  const { data: votingPower } = useMyVotingPowerQuery();
 
   const canIVote = useGovVoteAvailableQuery(pollId);
 
   const [voteFor, setVoteFor] = useState<null | 'yes' | 'no'>(null);
-  const [amount, setAmount] = useState<ANC>('' as ANC);
-
-  const maxVote = useMemo(() => {
-    if (!userGovStakingInfo) {
-      return undefined;
-    }
-
-    return big(userGovStakingInfo.balance) as u<ANC<Big>>;
-  }, [userGovStakingInfo]);
+  const [amount, setAmount] = useState<veANC>('' as veANC);
 
   const invalidTxFee = useMemo(
     () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
@@ -89,15 +83,17 @@ function ComponentBase({
   const invalidAmount = useMemo(() => {
     if (amount.length === 0 || !connected) return undefined;
 
-    const uanc = microfy(amount);
+    const uVeAnc = microfy(amount);
 
-    return maxVote && uanc.gt(maxVote) ? 'Not enough assets' : undefined;
-  }, [amount, maxVote, connected]);
+    return votingPower && uVeAnc.gt(votingPower)
+      ? 'Not enough assets'
+      : undefined;
+  }, [amount, connected, votingPower]);
 
   const txFee = fixedFee;
 
   const submit = useCallback(
-    (voteFor: 'yes' | 'no', amount: ANC) => {
+    (voteFor: 'yes' | 'no', amount: veANC) => {
       if (!connected || !vote) {
         return;
       }
@@ -136,8 +132,9 @@ function ComponentBase({
           level="info"
           hide={{ id: 'vote', period: 1000 * 60 * 60 * 24 * 7 }}
         >
-          Vote cannot be changed after submission. Staked ANC used to vote in
-          polls are locked and cannot be withdrawn until the poll finishes.
+          Vote cannot be changed after submission. Staked {VEANC_SYMBOL} used to
+          vote in polls are locked and cannot be withdrawn until the poll
+          finishes.
         </MessageBox>
 
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
@@ -165,45 +162,63 @@ function ComponentBase({
           </li>
         </ul>
 
-        <NumberInput
-          className="amount"
-          value={amount}
-          maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
-          maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
-          label="AMOUNT"
-          onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
-            setAmount(target.value as ANC)
-          }
-          InputProps={{
-            endAdornment: <InputAdornment position="end">ANC</InputAdornment>,
-          }}
-        />
-
-        <div className="wallet" aria-invalid={!!invalidAmount}>
-          <span>{invalidAmount}</span>
-          <span>
-            Balance:{' '}
-            <span
-              style={{
-                textDecoration: 'underline',
-                cursor: 'pointer',
-              }}
-              onClick={() =>
-                maxVote && setAmount(formatANCInput(demicrofy(maxVote)))
+        <VStack fullWidth gap={40}>
+          <VStack fullWidth gap={4}>
+            <NumberInput
+              className="amount"
+              value={amount}
+              maxIntegerPoinsts={ANC_INPUT_MAXIMUM_INTEGER_POINTS}
+              maxDecimalPoints={ANC_INPUT_MAXIMUM_DECIMAL_POINTS}
+              label="AMOUNT"
+              onChange={({ target }: ChangeEvent<HTMLInputElement>) =>
+                setAmount(target.value as veANC)
               }
-            >
-              {maxVote ? formatANC(demicrofy(maxVote)) : 0} ANC
-            </span>
-          </span>
-        </div>
-
-        {txFee && (
-          <TxFeeList className="receipt">
-            <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {formatUST(demicrofy(txFee))} UST
-            </TxFeeListItem>
-          </TxFeeList>
-        )}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">{VEANC_SYMBOL}</InputAdornment>
+                ),
+              }}
+            />
+            <div className="wallet" aria-invalid={!!invalidAmount}>
+              <span>{invalidAmount}</span>
+              <span>
+                Balance:{' '}
+                <span
+                  style={{
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() =>
+                    votingPower &&
+                    setAmount(formatVeAncInput(demicrofy(votingPower)))
+                  }
+                >
+                  {votingPower ? formatVeAnc(demicrofy(votingPower)) : 0}{' '}
+                  {VEANC_SYMBOL}
+                </span>
+              </span>
+            </div>
+          </VStack>
+          {connected && votingPower ? (
+            <AmountSlider
+              max={Number(demicrofy(votingPower))}
+              value={Number(amount)}
+              onChange={(value) => {
+                setAmount(formatVeAncInput(value.toString() as veANC));
+              }}
+              symbol={VEANC_SYMBOL}
+            />
+          ) : (
+            <SliderPlaceholder />
+          )}
+          {txFee && (
+            <TxFeeList className="receipt">
+              <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
+                {formatUST(demicrofy(txFee))} UST
+              </TxFeeListItem>
+            </TxFeeList>
+          )}
+        </VStack>
 
         <ActionButton
           className="submit"
@@ -290,7 +305,6 @@ const Component = styled(ComponentBase)`
 
   .amount {
     width: 100%;
-    margin-bottom: 5px;
 
     .MuiTypography-colorTextSecondary {
       color: currentColor;
@@ -307,8 +321,6 @@ const Component = styled(ComponentBase)`
     &[aria-invalid='true'] {
       color: ${({ theme }) => theme.colors.negative};
     }
-
-    margin-bottom: 45px;
   }
 
   .receipt {

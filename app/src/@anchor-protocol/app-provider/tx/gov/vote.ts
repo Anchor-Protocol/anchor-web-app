@@ -1,5 +1,5 @@
 import { govVoteTx } from '@anchor-protocol/app-fns';
-import { ANC } from '@anchor-protocol/types';
+import { veANC } from '@anchor-protocol/types';
 import { useFixedFee, useRefetchQueries } from '@libs/app-provider';
 import { useStream } from '@rx-stream/react';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
@@ -9,7 +9,7 @@ import { useAnchorWebapp } from '../../contexts/context';
 import { ANCHOR_TX_KEY } from '../../env';
 
 export interface GovVoteTxParams {
-  amount: ANC;
+  amount: veANC;
   voteFor: 'yes' | 'no';
   pollId: number;
 
