@@ -29,7 +29,7 @@ import styled from 'styled-components';
 import { VStack } from '@libs/ui/Stack';
 import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
 
-export function AncGovernanceStake() {
+export function AncStake() {
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();

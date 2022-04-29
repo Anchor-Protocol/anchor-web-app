@@ -31,7 +31,7 @@ import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { useMyVotingLockPeriodEndsAtQuery } from 'queries';
 
-export function AncGovernanceUnstake() {
+export function AncUnstake() {
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();

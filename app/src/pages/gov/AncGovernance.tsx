@@ -15,12 +15,9 @@ import {
   Outlet,
 } from 'react-router-dom';
 import styled from 'styled-components';
-import { AncGovernanceStake } from 'pages/gov/components/AncGovernanceStake';
-import { AncGovernanceUnstake } from 'pages/gov/components/AncGovernanceUnstake';
-import { AncGovernanceLock } from './components/AncGovernanceLock';
-import { AncGovernanceUnlock } from './components/AncGovernanceUnlock';
+import { AncStake } from 'pages/gov/components/AncStake';
+import { AncUnstake } from 'pages/gov/components/AncUnstake';
 import { UIElementProps } from '@libs/ui';
-import { Tab } from '@libs/neumorphism-ui/components/Tab';
 
 interface Item {
   label: string;
@@ -29,18 +26,8 @@ interface Item {
 }
 
 const TAB_ITEMS: Item[] = [
-  { label: 'STAKE', value: 'stake' },
-  { label: 'LOCK', value: 'lock' },
-];
-
-const STAKE_ITEMS: Item[] = [
-  { label: 'Stake', value: 'stake', tooltip: '' },
-  { label: 'Unstake', value: 'unstake', tooltip: '' },
-];
-
-const LOCK_ITEMS: Item[] = [
-  { label: 'Lock', value: 'lock', tooltip: '' },
-  { label: 'Unlock', value: 'unlock', tooltip: '' },
+  { label: 'Stake', value: 'stake' },
+  { label: 'Unstake', value: 'unstake' },
 ];
 
 type TabReturn = [Item, (next: Item) => void];
@@ -55,7 +42,7 @@ const useTab = (): TabReturn => {
       navigate(
         nextTab.value === 'stake'
           ? `/${ROUTES.ANC_GOVERNANCE}/stake`
-          : `/${ROUTES.ANC_GOVERNANCE}/lock`,
+          : `/${ROUTES.ANC_GOVERNANCE}/unstake`,
       );
     },
     [navigate],
@@ -63,49 +50,17 @@ const useTab = (): TabReturn => {
 
   switch (pageMatch?.params.view) {
     case 'stake':
-    case 'unstake':
       return [TAB_ITEMS[0], tabChange];
-    case 'lock':
-    case 'unlock':
+    case 'unstake':
       return [TAB_ITEMS[1], tabChange];
   }
   return [TAB_ITEMS[0], tabChange];
-};
-
-type SubTabReturn = [Item, Item[], (next: Item) => void];
-
-const useSubTab = (): SubTabReturn => {
-  const navigate = useNavigate();
-
-  const pageMatch = useMatch(`/${ROUTES.ANC_GOVERNANCE}/:view`);
-
-  const tabChange = useCallback(
-    (nextTab: Item) => {
-      navigate(`/${ROUTES.ANC_GOVERNANCE}/${nextTab.value}`);
-    },
-    [navigate],
-  );
-
-  switch (pageMatch?.params.view) {
-    case 'stake':
-      return [STAKE_ITEMS[0], STAKE_ITEMS, tabChange];
-    case 'unstake':
-      return [STAKE_ITEMS[1], STAKE_ITEMS, tabChange];
-    case 'lock':
-      return [LOCK_ITEMS[0], LOCK_ITEMS, tabChange];
-    case 'unlock':
-      return [LOCK_ITEMS[1], LOCK_ITEMS, tabChange];
-  }
-
-  return [STAKE_ITEMS[0], STAKE_ITEMS, tabChange];
 };
 
 const AncGovernanceBase = (props: UIElementProps) => {
   const { className } = props;
 
   const [tab, tabChange] = useTab();
-
-  const [subTab, subTabItems, subTabChange] = useSubTab();
 
   return (
     <CenteredLayout className={className}>
@@ -119,24 +74,14 @@ const AncGovernanceBase = (props: UIElementProps) => {
           </Circles>
           ANC Governance
         </h1>
-        <Tab
-          items={TAB_ITEMS}
-          selectedItem={tab}
-          onChange={tabChange}
-          labelFunction={({ label }) => label}
-          keyFunction={({ value }) => value}
-          height={46}
-          borderRadius={30}
-          fontSize={12}
-        />
       </header>
 
       <Section>
         <RulerTab
           className="subtab"
-          items={subTabItems}
-          selectedItem={subTab}
-          onChange={subTabChange}
+          items={TAB_ITEMS}
+          selectedItem={tab}
+          onChange={tabChange}
           labelFunction={({ label }) => label}
           keyFunction={({ value }) => value}
           tooltipFunction={({ tooltip }) => tooltip}
@@ -144,10 +89,8 @@ const AncGovernanceBase = (props: UIElementProps) => {
 
         <div className="form">
           <Routes>
-            <Route path="/stake" element={<AncGovernanceStake />} />
-            <Route path="/unstake" element={<AncGovernanceUnstake />} />
-            <Route path="/lock" element={<AncGovernanceLock />} />
-            <Route path="/unlock" element={<AncGovernanceUnlock />} />
+            <Route path="/stake" element={<AncStake />} />
+            <Route path="/unstake" element={<AncUnstake />} />
             <Route
               path="*"
               element={<Navigate to={`/${ROUTES.ANC_GOVERNANCE}/stake`} />}
