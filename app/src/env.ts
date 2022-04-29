@@ -143,6 +143,8 @@ export const COLUMBUS_CONTRACT_ADDRESS: ContractAddressMap = {
   astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
   vesting: 'terra13v4ln23tmfs2zk4nh5dw5mzufckekp4fpafpcy',
   astroUstPair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
+  anchorVotingEscrow: 'terra13gh87ue2v04u7wcjfs9mg6kgm9d87l30j04rd3',
+  anchorGaugeController: 'terra17z55ul9r5edhsejs8fukj9089s403larl76unc',
 };
 
 export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
@@ -359,7 +361,7 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     ANCHOR_QUERY_KEY.ANC_BALANCE,
     ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
     ANCHOR_QUERY_KEY.ANC_MY_VOTING_POWER,
-    ANCHOR_QUERY_KEY.LOCK_INFO,
+    ANCHOR_QUERY_KEY.MY_LOCK_INFO,
     ANCHOR_QUERY_KEY.UNLOCK_PERIOD,
   ],
   [ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD]: [
@@ -370,7 +372,7 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     ANCHOR_QUERY_KEY.ANC_BALANCE,
     ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
     ANCHOR_QUERY_KEY.ANC_MY_VOTING_POWER,
-    ANCHOR_QUERY_KEY.LOCK_INFO,
+    ANCHOR_QUERY_KEY.MY_LOCK_INFO,
     ANCHOR_QUERY_KEY.UNLOCK_PERIOD,
   ],
   [ANCHOR_TX_KEY.ANC_GOVERNANCE_UNSTAKE]: [
