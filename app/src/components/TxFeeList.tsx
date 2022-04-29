@@ -39,9 +39,9 @@ function TxFeeListBase({
         'gutters-large': gutters === 'large',
       })}
     >
-      {showRuler && <HorizontalDashedRuler />}
+      {showRuler && <HorizontalDashedRuler className="ruler" />}
       <ul {...ulProps} />
-      {showRuler && <HorizontalDashedRuler />}
+      {showRuler && <HorizontalDashedRuler className="ruler" />}
     </figure>
   );
 }
@@ -129,6 +129,15 @@ export const TxFeeList = styled(TxFeeListBase)`
           margin-bottom: 0;
         }
       }
+    }
+  }
+
+  .ruler {
+    &:first-child {
+      margin-bottom: 15px;
+    }
+    &:last-child {
+      margin-top: 15px;
     }
   }
 
