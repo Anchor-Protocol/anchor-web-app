@@ -54,8 +54,8 @@ __metadata:
     "@storybook/react": ^6.3.4
     "@storybook/theming": ^6.3.4
     "@terra-money/terra.js": ^3.0.7
-    "@terra-money/use-wallet": ^3.8.0
-    "@terra-money/wallet-provider": ^3.8.0
+    "@terra-money/use-wallet": ^3.8.1
+    "@terra-money/wallet-provider": ^3.8.1
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
     "@testing-library/react-hooks": ^7.0.1
@@ -5918,24 +5918,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/use-wallet@npm:^3.8.0":
-  version: 3.8.0
-  resolution: "@terra-money/use-wallet@npm:3.8.0"
+"@terra-money/use-wallet@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/use-wallet@npm:3.8.1"
   dependencies:
-    "@terra-money/wallet-types": ^3.8.0
+    "@terra-money/wallet-types": ^3.8.1
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
     react: ">=17.0.0"
-  checksum: b44102d92b69c5fb6050c641bc5a071b76caef8419f43f4dbb732a6602188587b91158350bdecd9d2b85f311cbb95a0f4624518f4a2bc90a21c8338a090c66cd
+  checksum: 6785e27dd75b58f9ff8ad3bffb3572b92712194ca333d7cbe4adc7e0cc982c4c43db4d24838ea2fd7f92cb3473924676cd8c423032d99ca49435766bf4e1aa3b
   languageName: node
   linkType: hard
 
-"@terra-money/wallet-controller@npm:^3.8.0":
-  version: 3.8.0
-  resolution: "@terra-money/wallet-controller@npm:3.8.0"
+"@terra-money/wallet-controller@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/wallet-controller@npm:3.8.1"
   dependencies:
-    "@terra-money/wallet-types": ^3.8.0
-    "@terra-money/web-extension-interface": ^3.8.0
+    "@terra-money/wallet-types": ^3.8.1
+    "@terra-money/web-extension-interface": ^3.8.1
     "@walletconnect/core": ^1.6.6
     "@walletconnect/iso-crypto": ^1.6.6
     "@walletconnect/types": ^1.6.6
@@ -5950,40 +5950,40 @@ __metadata:
     ws: ^7.5.5
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
-  checksum: e8c9de549ee98365c5ef98395622cc28e823517b754f6f9396da41768bc8203ac8aa1df807b39c547c47f95eadd42662b1a0623cd2c232cc9214224f8d2dd54d
+  checksum: 7f408cba75ed1b7cbf0d3ffc3015fad310218ffa79bed904fddfd167b946cf31cd87ef30fdb1326dd27f38cc8091fb3b73a83af1cecc32790589e44ef2b5da0e
   languageName: node
   linkType: hard
 
-"@terra-money/wallet-provider@npm:^3.8.0":
-  version: 3.8.0
-  resolution: "@terra-money/wallet-provider@npm:3.8.0"
+"@terra-money/wallet-provider@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/wallet-provider@npm:3.8.1"
   dependencies:
-    "@terra-money/use-wallet": ^3.8.0
-    "@terra-money/wallet-controller": ^3.8.0
-    "@terra-money/web-extension-interface": ^3.8.0
+    "@terra-money/use-wallet": ^3.8.1
+    "@terra-money/wallet-controller": ^3.8.1
+    "@terra-money/web-extension-interface": ^3.8.1
   peerDependencies:
     react: ">=17.0.0"
-  checksum: 900e51bc967bed8ffb8378ad76aef318dd308c4afd9905be63f31b6422ad921e9e84583926a39722bc670f244366777735c21a569b3bf360ce7020a284aad3dc
+  checksum: 96d081146becfdb41d62beb024fd763eb1c301a6a5a2effd05257cb6c15518b33ddeaa7639999e7298f8828a9805f27f3d134b0823f459f2d58e363182d52c4a
   languageName: node
   linkType: hard
 
-"@terra-money/wallet-types@npm:^3.8.0":
-  version: 3.8.0
-  resolution: "@terra-money/wallet-types@npm:3.8.0"
+"@terra-money/wallet-types@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/wallet-types@npm:3.8.1"
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
-  checksum: 77d191ee22efa0f899f6d86621553cd151376395dcbe96a678c56391504b69a17fde1b1060c466bf9ea179e5174233b2ced8ad1c4709012b5fa94ebbe00d01e8
+  checksum: dbba122544467ab470a32ab25e5215fe482819fca73c0def06f349e69cf6c2c17f03ac54d8d019f28b2be029b7da90aabafd29ebc9b29231327280d8413a9194
   languageName: node
   linkType: hard
 
-"@terra-money/web-extension-interface@npm:^3.8.0":
-  version: 3.8.0
-  resolution: "@terra-money/web-extension-interface@npm:3.8.0"
+"@terra-money/web-extension-interface@npm:^3.8.1":
+  version: 3.8.1
+  resolution: "@terra-money/web-extension-interface@npm:3.8.1"
   dependencies:
     rxjs: ^7.0.0
   peerDependencies:
     "@terra-money/terra.js": ^3.0.0
-  checksum: 4de212e182118e5b3b76e8d42b8c15566b499663923b079bb282e09c712bd2e4d45d6124282dcceeacacea0249468e9f7e83be56cf11eb3865e638ff7f3cc78b
+  checksum: 3b46adc4ab39f99ffd699cbb4f350dd71ca265d114f6e964bdaee3706c057653e1b3ed9ef34542ad1213daa0100527d2d92e6f15850a514a5266b45230bfb5ad
   languageName: node
   linkType: hard
 

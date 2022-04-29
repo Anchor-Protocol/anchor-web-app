@@ -4,6 +4,7 @@ import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import { BigSource } from 'big.js';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '../../models/tx';
+import { getTransactionDetailUrl } from 'utils/terrascope';
 
 export class TxHelper {
   private _savedTx?: CreateTxOptions;
@@ -44,7 +45,7 @@ export class TxHelper {
     const txhash = this.txHash();
     const html = `<a href="https://finder.terra.money/${chainID}/tx/${txhash}" target="_blank" rel="noreferrer">${truncate(
       txhash,
-    )}</a>`;
+    )}" target="_blank" rel="noreferrer">${truncate(txhash)}</a>`;
 
     return {
       name: 'Tx Hash',
