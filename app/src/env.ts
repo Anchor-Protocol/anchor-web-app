@@ -143,8 +143,6 @@ export const COLUMBUS_CONTRACT_ADDRESS: ContractAddressMap = {
   astroportGenerator: 'terra1zgrx9jjqrfye8swykfgmd6hpde60j0nszzupp9',
   vesting: 'terra13v4ln23tmfs2zk4nh5dw5mzufckekp4fpafpcy',
   astroUstPair: 'terra1l7xu2rl3c7qmtx3r5sd2tz25glf6jh8ul7aag7',
-  anchorVotingEscrow: 'terra13gh87ue2v04u7wcjfs9mg6kgm9d87l30j04rd3',
-  anchorGaugeController: 'terra17z55ul9r5edhsejs8fukj9089s403larl76unc',
 };
 
 export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
@@ -182,6 +180,8 @@ export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
   astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
   vesting: 'terra15rq8j7auyyd6ydcfkktm3kdagcg56228uclkzy',
   astroUstPair: 'terra1ec0fnjk2u6mms05xyyrte44jfdgdaqnx0upesr',
+  anchorVotingEscrow: 'terra13gh87ue2v04u7wcjfs9mg6kgm9d87l30j04rd3',
+  anchorGaugeController: 'terra17z55ul9r5edhsejs8fukj9089s403larl76unc',
 };
 
 const anchorIndexerEndpointRecord: Record<NetworkMoniker, string> = {
