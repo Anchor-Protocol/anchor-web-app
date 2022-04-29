@@ -12,6 +12,8 @@ import { secondsInHour } from 'date-fns';
 import { SliderContainer } from './SliderContainer';
 
 const secondsInDay = secondsInHour * 24;
+const daysInYear = 365;
+const labelsNumber = 4;
 
 interface Data {
   variant: 'label' | 'value';
@@ -25,9 +27,13 @@ const pluralize = (unit: string, value: number) =>
   `${value} ${unit}${value % 10 === 1 ? '' : 's'}`;
 
 const getDurationString = (seconds: Second) => {
-  const days = Math.round(seconds / secondsInDay);
+  const totalDays = Math.round(seconds / secondsInDay);
+  const years = Math.floor(totalDays / daysInYear);
+  const days = totalDays - years * daysInYear;
 
-  return pluralize('day', days);
+  return `${years > 0 ? pluralize('year', years) : ''} ${
+    days > 0 ? pluralize('day', days) : ''
+  }`;
 };
 
 const colorFunction = ({ color }: Data) => color;
@@ -99,14 +105,12 @@ export const DurationSlider = ({
   );
 
   const data: Data[] = useMemo(() => {
-    const labelsNumber = Math.floor(max / min);
+    const labelStep = max / labelsNumber;
     const labels: Data[] = [...Array(labelsNumber).keys()].map(
       (index: number) => {
-        const seconds = adjustValue((min + index * min) as Second);
-        const value = (seconds / max) as Second;
-        const label = `${getDurationString(seconds as Second)}${
-          index === 0 ? ` (minimum)` : ''
-        }`;
+        const seconds = (labelStep * (index + 1)) as Second;
+        const value = seconds / max;
+        const label = getDurationString(seconds);
         return {
           variant: 'label',
           label,
@@ -124,7 +128,7 @@ export const DurationSlider = ({
         value: value / max,
       },
     ];
-  }, [adjustValue, max, min, theme.colors.positive, value]);
+  }, [max, theme.colors.positive, value]);
 
   return (
     <SliderContainer>
