@@ -14,6 +14,7 @@ import {
   useMatch,
   useNavigate,
 } from 'react-router-dom';
+import { Gauges } from 'pages/gauges';
 
 interface Item {
   label: string;
@@ -35,7 +36,13 @@ const useTab = (): TabReturn => {
 
   const tabChange = useCallback(
     (nextTab: Item) => {
-      navigate(nextTab.value === 'overview' ? `/gov` : `/gov/polls`);
+      navigate(
+        nextTab.value === 'overview'
+          ? `/gov`
+          : nextTab.value === 'polls'
+          ? `/gov/polls`
+          : `/gov/gauges`,
+      );
     },
     [navigate],
   );
@@ -76,7 +83,7 @@ function GovernanceMainBase({ className }: GovernanceMainProps) {
         <Routes>
           <Route index={true} element={<Overview />} />
           <Route path="/polls" element={<Polls />} />
-          <Route path="/gauges" element={<Polls />} />
+          <Route path="/gauges" element={<Gauges />} />
           <Route path="*" element={<Navigate to={`/gov`} />} />
         </Routes>
         <Outlet />

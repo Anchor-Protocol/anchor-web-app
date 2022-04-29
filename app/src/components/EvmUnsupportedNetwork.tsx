@@ -49,7 +49,7 @@ function EvmUnsupportedNetworkBase({ className }: UIElementProps) {
   return (
     <Modal open disableBackdropClick disableEnforceFocus>
       <Dialog className={className}>
-        <h3>You're connected an unsupported network.</h3>
+        <h3>You're connected to an unsupported network.</h3>
         <ButtonList title="Switch network">
           {DEPLOYMENT_TARGETS.map((target) => (
             <FlatButton

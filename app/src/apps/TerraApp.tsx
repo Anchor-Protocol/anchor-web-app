@@ -31,7 +31,6 @@ import { ClaimUstBorrow } from 'pages/trade/claim.ust-borrow';
 import { ROUTES } from 'pages/trade/env';
 import { RewardsAncUstLp } from 'pages/trade/rewards.anc-ust-lp';
 import { Trade } from 'pages/trade/trade';
-import { GaugesMain } from 'pages/gauges/main';
 import { TerraAppProviders } from 'providers/terra/TerraAppProviders';
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
@@ -134,8 +133,6 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
               path={`/claim/${ROUTES.UST_BORROW}`}
               element={<ClaimUstBorrow />}
             />
-
-            <Route path={`/gauges/`} element={<GaugesMain />} />
 
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/terms" element={<TermsOfService />} />
