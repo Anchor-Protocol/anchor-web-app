@@ -27,7 +27,7 @@ import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQue
 import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import styled from 'styled-components';
 import { VStack } from '@libs/ui/Stack';
-import { useMyVotingLockPeriod } from 'queries/gov/useMyVotingLockPeriod';
+import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
 
 export function AncGovernanceStake() {
   const { availablePost, connected } = useAccount();
@@ -38,15 +38,19 @@ export function AncGovernanceStake() {
 
   const [amount, setAmount] = useState<ANC>('' as ANC);
 
-  const currentLockPeriod = useMyVotingLockPeriod();
+  const { data: lockInfo, isFetched: isLockInfoFetched } = useMyLockInfoQuery();
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
   const [period, setPeriod] = useState<Second | undefined>();
   useEffect(() => {
-    if (lockConfig && period === undefined) {
-      setPeriod(lockConfig.minLockTime);
+    if (period === undefined && lockConfig) {
+      setPeriod(
+        isLockInfoFetched && lockInfo?.period
+          ? lockInfo.period
+          : lockConfig.minLockTime,
+      );
     }
-  }, [period, lockConfig]);
+  }, [period, lockConfig, lockInfo, isLockInfoFetched]);
 
   const { uUST } = useBalances();
 
@@ -141,7 +145,7 @@ export function AncGovernanceStake() {
           </span>
         </div>
 
-        {currentLockPeriod === undefined && (
+        {lockInfo?.period === undefined && (
           <VStack gap={8}>
             <Label>Lock Period</Label>
             {period !== undefined && lockConfig !== undefined ? (

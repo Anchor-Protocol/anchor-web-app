@@ -21,8 +21,8 @@ import { useAccount } from 'contexts/account';
 import { StreamStatus } from '@rx-stream/react';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { DurationSlider, SliderPlaceholder } from 'components/sliders';
-import { useMyVotingLockPeriod } from 'queries/gov/useMyVotingLockPeriod';
 import { DialogTitle } from '@libs/ui/text/DialogTitle';
+import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
 
 type ExtendAncLockPeriodDialogProps = DialogProps<{}>;
 
@@ -37,16 +37,16 @@ export const ExtendAncLockPeriodDialog = ({
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
   const [period, setPeriod] = useState<Second | undefined>();
-  const currentPeriod = useMyVotingLockPeriod();
+  const { data: lockInfo } = useMyLockInfoQuery();
 
   useEffect(() => {
-    if (currentPeriod !== undefined && period === undefined) {
-      setPeriod(currentPeriod);
+    if (lockInfo !== undefined && period === undefined) {
+      setPeriod(lockInfo.period);
     }
-  }, [currentPeriod, period]);
+  }, [lockInfo, period]);
 
   const isSubmitDisabled =
-    !availablePost || invalidTxFee || currentPeriod === period;
+    !availablePost || invalidTxFee || lockInfo?.period === period;
 
   const [extendPeriod, extendPeriodResult] = useExtendAncLockPeriodTx();
 
@@ -56,13 +56,13 @@ export const ExtendAncLockPeriodDialog = ({
       !extendPeriod ||
       !period ||
       isSubmitDisabled ||
-      !currentPeriod
+      !lockInfo?.period
     ) {
       return;
     }
 
     extendPeriod({
-      period: (period - currentPeriod) as Second,
+      period: (period - lockInfo?.period) as Second,
       onTxSucceed: () => {
         closeDialog();
       },
@@ -70,7 +70,7 @@ export const ExtendAncLockPeriodDialog = ({
   }, [
     closeDialog,
     connected,
-    currentPeriod,
+    lockInfo?.period,
     extendPeriod,
     isSubmitDisabled,
     period,
@@ -109,11 +109,11 @@ export const ExtendAncLockPeriodDialog = ({
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         {period !== undefined &&
-        currentPeriod !== undefined &&
+        lockInfo?.period !== undefined &&
         lockConfig !== undefined ? (
           <DurationSlider
             value={period}
-            min={currentPeriod}
+            min={lockInfo?.period}
             max={lockConfig.maxLockTime}
             step={lockConfig.periodDuration}
             onChange={setPeriod}
