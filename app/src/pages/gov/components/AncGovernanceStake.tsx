@@ -73,12 +73,12 @@ export function AncGovernanceStake() {
 
     lock({
       amount,
-      period,
+      period: lockInfo?.period ? undefined : period,
       onTxSucceed: () => {
         setAmount('' as ANC);
       },
     });
-  }, [amount, connected, lock, period]);
+  }, [amount, connected, lock, lockInfo?.period, period]);
 
   if (
     lockResult?.status === StreamStatus.IN_PROGRESS ||
