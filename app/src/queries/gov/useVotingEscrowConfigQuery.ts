@@ -52,7 +52,7 @@ export const useVotingEscrowConfigQuery = () => {
   const votingEscrowContract = contractAddress.anchorToken.votingEscrow;
 
   return useAnchorQuery(
-    [ANCHOR_QUERY_KEY.ANC_VOTING_POWER, votingEscrowContract, queryClient],
+    [ANCHOR_QUERY_KEY.ANC_MY_VOTING_POWER, votingEscrowContract, queryClient],
     VotingEscrowConfigQueryFn,
     {
       refetchOnMount: false,
