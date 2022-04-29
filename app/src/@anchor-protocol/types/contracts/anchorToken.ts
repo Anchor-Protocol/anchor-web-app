@@ -97,7 +97,7 @@ export namespace anchorToken {
       voting_period: number;
       timelock_period: number;
       expiration_period: number;
-      proposal_deposit: u<ANC>;
+      proposal_deposit: u<veANC>;
       snapshot_period: number;
     }
 

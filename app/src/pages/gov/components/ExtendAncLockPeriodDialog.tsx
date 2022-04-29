@@ -20,11 +20,9 @@ import { useExtendAncLockPeriodTx } from 'tx/gov/useExtendAncLockPeriodTx';
 import { useAccount } from 'contexts/account';
 import { StreamStatus } from '@rx-stream/react';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
-import {
-  DurationSlider,
-  DurationSliderPlaceholder,
-} from 'components/sliders/DurationSlider';
+import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import { useMyVotingLockPeriod } from 'queries/gov/useMyVotingLockPeriod';
+import { DialogTitle } from '@libs/ui/text/DialogTitle';
 
 type ExtendAncLockPeriodDialogProps = DialogProps<{}>;
 
@@ -53,12 +51,18 @@ export const ExtendAncLockPeriodDialog = ({
   const [extendPeriod, extendPeriodResult] = useExtendAncLockPeriodTx();
 
   const proceed = useCallback(() => {
-    if (!connected || !extendPeriod || !period || isSubmitDisabled) {
+    if (
+      !connected ||
+      !extendPeriod ||
+      !period ||
+      isSubmitDisabled ||
+      !currentPeriod
+    ) {
       return;
     }
 
     extendPeriod({
-      period: period - currentPeriod,
+      period: (period - currentPeriod) as Second,
       onTxSucceed: () => {
         closeDialog();
       },
@@ -101,7 +105,7 @@ export const ExtendAncLockPeriodDialog = ({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Container onClose={() => closeDialog()}>
-        <h1>Extend lock period</h1>
+        <DialogTitle>Extend lock period</DialogTitle>
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         {period !== undefined &&
@@ -115,7 +119,7 @@ export const ExtendAncLockPeriodDialog = ({
             onChange={setPeriod}
           />
         ) : (
-          <DurationSliderPlaceholder />
+          <SliderPlaceholder />
         )}
 
         <TxFeeList className="receipt">
@@ -143,10 +147,6 @@ export const Container = styled(Dialog)`
   touch-action: none;
 
   h1 {
-    font-size: 27px;
-    text-align: center;
-    font-weight: 300;
-
     margin-bottom: 50px;
   }
 

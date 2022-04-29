@@ -24,10 +24,7 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { useLockAncTx } from 'tx/gov/useLockAncTx';
 import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQuery';
-import {
-  DurationSlider,
-  DurationSliderPlaceholder,
-} from 'components/sliders/DurationSlider';
+import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import styled from 'styled-components';
 import { VStack } from '@libs/ui/Stack';
 import { useMyVotingLockPeriod } from 'queries/gov/useMyVotingLockPeriod';
@@ -156,7 +153,7 @@ export function AncGovernanceStake() {
                 onChange={setPeriod}
               />
             ) : (
-              <DurationSliderPlaceholder />
+              <SliderPlaceholder />
             )}
           </VStack>
         )}

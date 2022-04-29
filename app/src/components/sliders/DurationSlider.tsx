@@ -6,13 +6,14 @@ import {
 import { HorizontalGraphSlider } from '@libs/neumorphism-ui/components/HorizontalGraphSlider';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import React, { useCallback, useMemo } from 'react';
-import styled, { useTheme } from 'styled-components';
+import { useTheme } from 'styled-components';
 import { Marker } from './Marker';
 import { secondsInHour } from 'date-fns';
+import { SliderContainer } from './SliderContainer';
 
 const secondsInDay = secondsInHour * 24;
 
-export interface Data {
+interface Data {
   variant: 'label' | 'value';
   label?: string;
   value: number;
@@ -126,7 +127,7 @@ export const DurationSlider = ({
   }, [adjustValue, max, min, theme.colors.positive, value]);
 
   return (
-    <Container>
+    <SliderContainer>
       <HorizontalGraphBar<Data>
         min={0}
         max={1}
@@ -148,15 +149,6 @@ export const DurationSlider = ({
           />
         )}
       </HorizontalGraphBar>
-    </Container>
+    </SliderContainer>
   );
 };
-
-const Container = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: end;
-  height: 60px;
-`;
-
-export const DurationSliderPlaceholder = Container;

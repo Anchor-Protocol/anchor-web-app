@@ -1,9 +1,8 @@
 import { ExecuteMsg } from '@anchor-protocol/app-fns';
 import {
-  formatANC,
   formatUSTWithPostfixUnits,
+  formatVeAnc,
 } from '@anchor-protocol/notation';
-import { ANC } from '@anchor-protocol/types';
 import {
   useGovConfigQuery,
   useGovCreatePollTx,
@@ -39,6 +38,9 @@ import React, {
 import { useNavigate } from 'react-router-dom';
 import { validateLinkAddress } from '../logics/validateLinkAddress';
 import { FormLayout } from './FormLayout';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { VStack } from '@libs/ui/Stack';
+import { veANC } from '@anchor-protocol/types';
 
 export interface PollCreateBaseProps {
   pollTitle: ReactNode;
@@ -98,13 +100,13 @@ export function PollCreateBase({
 
   const invalidLinkProtocol = useMemo(() => validateLinkAddress(link), [link]);
 
-  const invalidUserANCBalance = useMemo(() => {
+  const invalidUserBalance = useMemo(() => {
     if (!pollConfig || !connected) {
       return undefined;
     }
 
     return big(bank.tokenBalances.uANC).lt(pollConfig.proposal_deposit)
-      ? `Not enough ANC`
+      ? `Not enough ${VEANC_SYMBOL}`
       : undefined;
   }, [bank.tokenBalances.uANC, pollConfig, connected]);
 
@@ -121,7 +123,7 @@ export function PollCreateBase({
       title: string,
       description: string,
       link: string,
-      amount: ANC,
+      amount: veANC,
     ) => {
       if (!connected || !createPoll) {
         return;
@@ -251,18 +253,24 @@ export function PollCreateBase({
           <p />
         </div>
 
-        <TextInput
-          placeholder="0.000"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">ANC</InputAdornment>,
-            readOnly: true,
-          }}
-          value={
-            pollConfig ? formatANC(demicrofy(pollConfig.proposal_deposit)) : '0'
-          }
-          error={!!invalidUserANCBalance}
-          helperText={invalidUserANCBalance}
-        />
+        <VStack gap={20}>
+          <TextInput
+            placeholder="0.000"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">{VEANC_SYMBOL}</InputAdornment>
+              ),
+              readOnly: true,
+            }}
+            value={
+              pollConfig
+                ? formatVeAnc(demicrofy(pollConfig.proposal_deposit))
+                : '0'
+            }
+            error={!!invalidUserBalance}
+            helperText={invalidUserBalance}
+          />
+        </VStack>
 
         <TxFeeList className="receipt">
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
@@ -280,7 +288,7 @@ export function PollCreateBase({
               !createPoll ||
               title.length === 0 ||
               description.length === 0 ||
-              !!invalidUserANCBalance ||
+              !!invalidUserBalance ||
               !!invalidTxFee ||
               !!invalidTitleBytes ||
               !!invalidDescriptionBytes ||
@@ -293,7 +301,7 @@ export function PollCreateBase({
                 title,
                 description,
                 link,
-                demicrofy(pollConfig.proposal_deposit).toString() as ANC,
+                demicrofy(pollConfig.proposal_deposit).toString() as veANC,
               )
             }
           >
