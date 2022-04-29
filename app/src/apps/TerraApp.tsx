@@ -25,6 +25,7 @@ import { PollDetail } from 'pages/gov/poll.detail';
 import { Mypage } from 'pages/mypage';
 import { TermsOfService } from 'pages/terms';
 import { ClaimAll } from 'pages/trade/claim.all';
+import { ClaimAncUstLp } from 'pages/trade/claim.anc-ust-lp';
 import { ClaimUstBorrow } from 'pages/trade/claim.ust-borrow';
 import {
   ancGovernancePathname,
@@ -124,6 +125,10 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
               element={<RewardsAncGovernance />}
             />
             <Route path={`/claim/all`} element={<ClaimAll />} />
+            <Route
+              path={`/claim/${ancUstLpPathname}`}
+              element={<ClaimAncUstLp />}
+            />
             <Route
               path={`/claim/${ustBorrowPathname}`}
               element={<ClaimUstBorrow />}
