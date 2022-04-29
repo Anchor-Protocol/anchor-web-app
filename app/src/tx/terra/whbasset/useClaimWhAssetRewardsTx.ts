@@ -18,7 +18,7 @@ import { RewardBreakdown } from 'pages/basset/hooks/useRewardsBreakdown';
 import { useCallback } from 'react';
 import { useRenderedTx } from '../useRenderedTx';
 
-export interface ClaimWhbAssetRewardsTxParams {
+export interface ClaimWhAssetRewardsTxParams {
   rewardBreakdowns: RewardBreakdown[];
 }
 
@@ -28,15 +28,15 @@ type RewardLogWithDisplay = {
   symbol: string;
 };
 
-export function useClaimWhbAssetRewardsTx(onSuccess?: RefCallback<() => void>) {
+export function useClaimWhAssetRewardsTx(onSuccess?: RefCallback<() => void>) {
   const connectedWallet = useConnectedWallet();
   const { txErrorReporter } = useAnchorWebapp();
   const refetchQueries = useRefetchQueries();
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: ClaimWhbAssetRewardsTxParams, helper: TxHelper) => {
-      const result = await terraSdk.whbAsset.claimRewards(
+    async (txParams: ClaimWhAssetRewardsTxParams, helper: TxHelper) => {
+      const result = await terraSdk.whAsset.claimRewards(
         connectedWallet!.walletAddress,
         txParams.rewardBreakdowns.map((r) => r.rewardAddr),
         {
@@ -59,7 +59,7 @@ export function useClaimWhbAssetRewardsTx(onSuccess?: RefCallback<() => void>) {
     async (
       txInfo: TxInfo,
       helper: TxHelper,
-      txParams: ClaimWhbAssetRewardsTxParams,
+      txParams: ClaimWhAssetRewardsTxParams,
     ) => {
       const rawLogs = txInfo.logs ?? [];
 

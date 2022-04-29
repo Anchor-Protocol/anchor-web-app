@@ -31,7 +31,7 @@ import { fixHMR } from 'fix-hmr';
 import { useRefCallback } from 'hooks';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { useExportWhbAssetTx } from 'tx/terra';
+import { useExportWhAssetTx } from 'tx/terra';
 import { ConvertSymbols, ConvertSymbolsContainer } from './ConvertSymbols';
 
 export interface WhExportProps {
@@ -86,7 +86,7 @@ function Component({ className, bAssetInfo }: WhExportProps) {
     init();
   }, [init]);
 
-  const [convert, convertResult] = useExportWhbAssetTx(
+  const [convert, convertResult] = useExportWhAssetTx(
     bAssetInfo.bAsset.collateral_token,
     onExportSuccess,
   );

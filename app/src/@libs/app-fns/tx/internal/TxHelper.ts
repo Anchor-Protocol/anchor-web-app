@@ -43,8 +43,9 @@ export class TxHelper {
 
     const chainID = this.$.network.chainID;
     const txhash = this.txHash();
-    const html = `<a href="https://finder.terra.money/${chainID}/tx/${txhash}" target="_blank" rel="noreferrer">${truncate(
-      txhash,
+    const html = `<a href="${getTransactionDetailUrl(
+      chainID,
+      txhash!,
     )}" target="_blank" rel="noreferrer">${truncate(txhash)}</a>`;
 
     return {

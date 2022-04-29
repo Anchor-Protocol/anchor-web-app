@@ -19,7 +19,7 @@ import { fixHMR } from 'fix-hmr';
 import React, { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useClaimWhbAssetRewardsTx } from 'tx/terra';
+import { useClaimWhAssetRewardsTx } from 'tx/terra';
 import { useClaimableRewardsBreakdown } from './hooks/useRewardsBreakdown';
 
 export interface BAssetClaimProps {
@@ -35,7 +35,7 @@ function Component({ className }: BAssetClaimProps) {
 
   const fixedFee = useFixedFee();
 
-  const [claim, claimResult] = useClaimWhbAssetRewardsTx();
+  const [claim, claimResult] = useClaimWhAssetRewardsTx();
 
   // ---------------------------------------------
   // queries

@@ -1,3 +1,3 @@
-export * from './useImportWhbAssetTx';
-export * from './useExportWhbAssetTx';
-export * from './useClaimWhbAssetRewardsTx';
+export * from './useImportWhAssetTx';
+export * from './useExportWhAssetTx';
+export * from './useClaimWhAssetRewardsTx';

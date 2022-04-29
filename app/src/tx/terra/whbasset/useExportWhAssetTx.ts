@@ -21,11 +21,11 @@ import { RefCallback } from 'hooks';
 import { useCallback } from 'react';
 import { useRenderedTx } from '../useRenderedTx';
 
-export interface ImportWhbAssetTxParams {
+export interface ExportWhAssetTxParams {
   amount: bAsset;
 }
 
-export function useImportWhbAssetTx(
+export function useExportWhAssetTx(
   tokenAddr?: CW20Addr,
   onSuccess?: RefCallback<() => void>,
 ) {
@@ -37,10 +37,10 @@ export function useImportWhbAssetTx(
   const { data: bAssetInfo } = useBAssetInfoByTokenAddrQuery(tokenAddr);
 
   const sendTx = useCallback(
-    async (txParams: ImportWhbAssetTxParams, helper: TxHelper) => {
-      const result = await terraSdk.whbAsset.import(
+    async (txParams: ExportWhAssetTxParams, helper: TxHelper) => {
+      const result = await terraSdk.whAsset.export(
         connectedWallet!.walletAddress,
-        bAssetInfo!.converterConfig.wormhole_token_address!,
+        bAssetInfo!.converterConfig.anchor_token_address!,
         formatTokenInput(txParams.amount),
         bAssetInfo!.minter.minter,
         {
@@ -52,7 +52,7 @@ export function useImportWhbAssetTx(
 
       onSuccess?.();
 
-      refetchQueries(ANCHOR_TX_KEY.BASSET_IMPORT);
+      refetchQueries(ANCHOR_TX_KEY.BASSET_EXPORT);
 
       return result;
     },
@@ -74,31 +74,31 @@ export function useImportWhbAssetTx(
       }
 
       try {
-        const amount = pickAttributeValue<u<bAsset>>(fromContract, 4);
-        const mintedAmount = pickAttributeValue<u<bAsset>>(fromContract, 8);
+        const returnAmount = pickAttributeValue<u<bAsset>>(fromContract, 16);
+        const burnAmount = pickAttributeValue<u<bAsset>>(fromContract, 17);
 
         return {
           value: null,
           phase: TxStreamPhase.SUCCEED,
           receipts: [
-            amount && {
+            burnAmount && {
               name: 'Provided amount',
               value:
+                formatNumeric(burnAmount as u<any>) +
+                ` ${bAssetInfo!.tokenDisplay.anchor.symbol}`,
+            },
+            returnAmount && {
+              name: 'Converted amount',
+              value:
                 formatNumeric(
-                  amount,
+                  returnAmount as u<any>,
                   bAssetInfo!.tokenDisplay.wormhole.decimals,
                 ) + ` ${bAssetInfo!.tokenDisplay.wormhole.symbol}`,
             },
-            mintedAmount && {
-              name: 'Converted amount',
-              value:
-                formatNumeric(mintedAmount) +
-                ` ${bAssetInfo!.tokenDisplay.anchor.symbol}`,
-            },
             {
               name: 'Exchange rate',
-              value: `1 ${bAssetInfo!.tokenDisplay.wormhole.symbol} per ${
-                bAssetInfo!.tokenDisplay.anchor.symbol
+              value: `1 ${bAssetInfo!.tokenDisplay.anchor.symbol} per ${
+                bAssetInfo!.tokenDisplay.wormhole.symbol
               }`,
             },
             helper.txHashReceipt(),
