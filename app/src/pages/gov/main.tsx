@@ -76,6 +76,7 @@ function GovernanceMainBase({ className }: GovernanceMainProps) {
         <Routes>
           <Route index={true} element={<Overview />} />
           <Route path="/polls" element={<Polls />} />
+          <Route path="/gauges" element={<Polls />} />
           <Route path="*" element={<Navigate to={`/gov`} />} />
         </Routes>
         <Outlet />
