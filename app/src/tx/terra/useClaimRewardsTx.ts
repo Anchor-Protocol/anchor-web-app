@@ -17,7 +17,9 @@ import { useTerraSdk } from 'crossanchor';
 import { useCallback } from 'react';
 import { useRenderedTx } from './useRenderedTx';
 
-export interface ClaimRewardsTxParams {}
+export interface ClaimRewardsTxParams {
+  includeLp?: boolean;
+}
 
 export function useClaimRewardsTx() {
   const connectedWallet = useConnectedWallet();
@@ -33,6 +35,7 @@ export function useClaimRewardsTx() {
           handleEvent: (event) => {
             helper.setTxHash(event.payload.txHash);
           },
+          includeLp: txParams.includeLp,
         },
       );
 

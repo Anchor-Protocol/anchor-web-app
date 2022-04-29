@@ -71,7 +71,7 @@ export const TerraClaimAll = () => {
       return;
     }
 
-    claim({});
+    claim({ includeLp: true });
   }, [claim, connected]);
 
   const astroRewards = userLPPendingToken?.pending;
