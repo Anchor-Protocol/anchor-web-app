@@ -44,6 +44,8 @@ const userLockInfoQuery = async (
     },
   });
 
+  console.log(lockInfo, config);
+
   return {
     ...lockInfo,
     period: ((lockInfo.end - lockInfo.start) *

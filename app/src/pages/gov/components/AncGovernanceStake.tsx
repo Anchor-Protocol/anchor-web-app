@@ -38,15 +38,19 @@ export function AncGovernanceStake() {
 
   const [amount, setAmount] = useState<ANC>('' as ANC);
 
-  const { data: lockInfo } = useMyLockInfoQuery();
+  const { data: lockInfo, isFetched: isLockInfoFetched } = useMyLockInfoQuery();
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
   const [period, setPeriod] = useState<Second | undefined>();
   useEffect(() => {
-    if (lockConfig && lockInfo && period === undefined) {
-      setPeriod(lockInfo.period || lockConfig.minLockTime);
+    if (period === undefined && lockConfig) {
+      setPeriod(
+        isLockInfoFetched && lockInfo?.period
+          ? lockInfo.period
+          : lockConfig.minLockTime,
+      );
     }
-  }, [period, lockConfig, lockInfo]);
+  }, [period, lockConfig, lockInfo, isLockInfoFetched]);
 
   const { uUST } = useBalances();
 
