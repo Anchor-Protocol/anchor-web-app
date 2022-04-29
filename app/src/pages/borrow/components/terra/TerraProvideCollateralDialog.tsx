@@ -1,5 +1,4 @@
 import React from 'react';
-import { useBorrowProvideCollateralTx } from '@anchor-protocol/app-provider';
 import { bAsset } from '@anchor-protocol/types';
 import { useCW20Balance } from '@libs/app-provider';
 import type { DialogProps } from '@libs/use-dialog';
@@ -8,6 +7,7 @@ import { useCallback } from 'react';
 import { ProvideCollateralDialog } from '../ProvideCollateralDialog';
 import { ProvideCollateralFormParams } from '../types';
 import { normalize } from '@anchor-protocol/formatter';
+import { useProvideCollateralTx } from 'tx/terra';
 
 export const TerraProvideCollateralDialog = (
   props: DialogProps<ProvideCollateralFormParams>,
@@ -23,13 +23,13 @@ export const TerraProvideCollateralDialog = (
 
   const uTokenBalance = normalize(cw20Balance, 6, collateral.decimals);
 
-  const [postTx, txResult] = useBorrowProvideCollateralTx(collateral);
+  const [postTx, txResult] = useProvideCollateralTx(collateral);
 
   const proceed = useCallback(
     (depositAmount: bAsset) => {
       if (connected && postTx) {
         postTx({
-          depositAmount,
+          amount: depositAmount,
         });
       }
     },

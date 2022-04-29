@@ -1,7 +1,6 @@
 import { WalletControllerChainOptions } from '@terra-money/wallet-provider';
 import { AstroportGuideBanner } from 'components/AstroportGuideBanner';
 import { Header } from 'components/Header';
-import { Airdrop } from 'pages/airdrop';
 import { Claim as AncVestingClaim } from 'pages/anc/vesting';
 import { BlunaConvert, BLunaMint, BLunaBurn } from 'pages/basset/bluna.convert';
 import { BlunaWithdraw } from 'pages/basset/bluna.withdraw';
@@ -26,7 +25,6 @@ import { PollDetail } from 'pages/gov/poll.detail';
 import { Mypage } from 'pages/mypage';
 import { TermsOfService } from 'pages/terms';
 import { ClaimAll } from 'pages/trade/claim.all';
-import { ClaimAncUstLp } from 'pages/trade/claim.anc-ust-lp';
 import { ClaimUstBorrow } from 'pages/trade/claim.ust-borrow';
 import {
   ancGovernancePathname,
@@ -79,8 +77,6 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
               <Route path="*" element={<Navigate to="to-basset" />} />
             </Route>
 
-            <Route path="/airdrop" element={<Airdrop />} />
-
             <Route path={`/anc/vesting/claim`} element={<AncVestingClaim />} />
 
             <Route path={`/gov/`} element={<GovernanceMain />} />
@@ -128,10 +124,6 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
               element={<RewardsAncGovernance />}
             />
             <Route path={`/claim/all`} element={<ClaimAll />} />
-            <Route
-              path={`/claim/${ancUstLpPathname}`}
-              element={<ClaimAncUstLp />}
-            />
             <Route
               path={`/claim/${ustBorrowPathname}`}
               element={<ClaimUstBorrow />}

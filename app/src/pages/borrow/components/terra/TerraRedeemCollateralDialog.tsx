@@ -1,5 +1,4 @@
 import React from 'react';
-import { useBorrowRedeemCollateralTx } from '@anchor-protocol/app-provider';
 import { bAsset } from '@anchor-protocol/types';
 import { useCW20Balance } from '@libs/app-provider';
 import type { DialogProps } from '@libs/use-dialog';
@@ -8,6 +7,7 @@ import { useCallback } from 'react';
 import { RedeemCollateralDialog } from '../RedeemCollateralDialog';
 import { RedeemCollateralFormParams } from '../types';
 import { normalize } from '@anchor-protocol/formatter';
+import { useRedeemCollateralTx } from 'tx/terra';
 
 export const TerraRedeemCollateralDialog = (
   props: DialogProps<RedeemCollateralFormParams>,
@@ -23,12 +23,12 @@ export const TerraRedeemCollateralDialog = (
 
   const uTokenBalance = normalize(cw20Balance, 6, collateral.decimals);
 
-  const [postTx, txResult] = useBorrowRedeemCollateralTx(collateral);
+  const [postTx, txResult] = useRedeemCollateralTx(collateral);
 
   const proceed = useCallback(
     (redeemAmount: bAsset) => {
       if (connected && postTx) {
-        postTx({ redeemAmount });
+        postTx({ amount: redeemAmount });
       }
     },
     [connected, postTx],

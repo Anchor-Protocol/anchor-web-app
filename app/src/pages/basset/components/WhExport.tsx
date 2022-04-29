@@ -2,7 +2,6 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   BAssetInfoWithDisplay,
   useAnchorBank,
-  useBAssetExportTx,
 } from '@anchor-protocol/app-provider';
 import {
   formatUST,
@@ -29,8 +28,10 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { fixHMR } from 'fix-hmr';
+import { useRefCallback } from 'hooks';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { useExportWhbAssetTx } from 'tx/terra';
 import { ConvertSymbols, ConvertSymbolsContainer } from './ConvertSymbols';
 
 export interface WhExportProps {
@@ -40,10 +41,6 @@ export interface WhExportProps {
 
 function Component({ className, bAssetInfo }: WhExportProps) {
   const connectedWallet = useConnectedWallet();
-
-  const [convert, convertResult] = useBAssetExportTx(
-    bAssetInfo.bAsset.collateral_token,
-  );
 
   const fixedFee = useFixedFee();
 
@@ -85,6 +82,15 @@ function Component({ className, bAssetInfo }: WhExportProps) {
     setAmount('' as bAsset);
   }, []);
 
+  const onExportSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [convert, convertResult] = useExportWhbAssetTx(
+    bAssetInfo.bAsset.collateral_token,
+    onExportSuccess,
+  );
+
   const proceed = useCallback(
     (amount: bAsset) => {
       if (!connectedWallet || !convert) {
@@ -93,12 +99,9 @@ function Component({ className, bAssetInfo }: WhExportProps) {
 
       convert({
         amount,
-        onTxSucceed: () => {
-          init();
-        },
       });
     },
-    [connectedWallet, convert, init],
+    [connectedWallet, convert],
   );
 
   // ---------------------------------------------

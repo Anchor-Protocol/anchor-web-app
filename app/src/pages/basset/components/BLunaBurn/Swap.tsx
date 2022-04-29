@@ -1,9 +1,5 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import {
-  useAnchorBank,
-  useAnchorWebapp,
-  useBondSwapTx,
-} from '@anchor-protocol/app-provider';
+import { useAnchorBank, useAnchorWebapp } from '@anchor-protocol/app-provider';
 import {
   formatLuna,
   formatLunaInput,
@@ -57,6 +53,8 @@ import { ConvertSymbols, ConvertSymbolsContainer } from '../ConvertSymbols';
 import { BurnComponent } from './types';
 import styled from 'styled-components';
 import { fixHMR } from 'fix-hmr';
+import { useRefCallback } from 'hooks';
+import { useSwapbLunaTx } from 'tx/terra/bluna';
 
 export interface SwapProps extends BurnComponent {
   className?: string;
@@ -81,8 +79,6 @@ export function Component({
   const { availablePost, connected } = useAccount();
 
   const { queryClient, contractAddress: address } = useAnchorWebapp();
-
-  const [swap, swapResult] = useBondSwapTx();
 
   // ---------------------------------------------
   // states
@@ -249,6 +245,12 @@ export function Component({
     setBurnAmount('' as bLuna);
   }, [setGetAmount, setBurnAmount]);
 
+  const onSwapSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [swap, swapResult] = useSwapbLunaTx(onSwapSuccess);
+
   const proceed = useCallback(
     (burnAmount: bLuna, beliefPrice: Rate, maxSpread: number) => {
       if (!connected || !swap) {
@@ -259,12 +261,9 @@ export function Component({
         burnAmount,
         beliefPrice: formatExecuteMsgNumber(big(1).div(beliefPrice)) as Rate,
         maxSpread,
-        onTxSucceed: () => {
-          init();
-        },
       });
     },
-    [connected, swap, init],
+    [connected, swap],
   );
 
   // ---------------------------------------------

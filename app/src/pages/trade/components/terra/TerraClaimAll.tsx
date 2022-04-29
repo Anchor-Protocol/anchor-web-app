@@ -1,6 +1,5 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
-  useRewardsAllClaimTx,
   useRewardsAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/app-provider';
@@ -19,6 +18,7 @@ import { useAccount } from 'contexts/account';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import { useCheckTerraswapLpRewards } from 'queries/checkTerraswapLpBalance';
 import React, { useCallback, useMemo } from 'react';
+import { useClaimRewardsTx } from 'tx/terra';
 import { ClaimAll } from '../ClaimAll';
 
 export const TerraClaimAll = () => {
@@ -26,7 +26,7 @@ export const TerraClaimAll = () => {
 
   const fixedFee = useFixedFee();
 
-  const [claim, claimResult] = useRewardsAllClaimTx();
+  const [claim, claimResult] = useClaimRewardsTx();
 
   const bank = useAnchorBank();
 
@@ -66,19 +66,13 @@ export const TerraClaimAll = () => {
     [bank, fixedFee, connected],
   );
 
-  const proceed = useCallback(
-    (claimMoneyMarketRewards: boolean, cliamLpStakingRewards: boolean) => {
-      if (!connected || !claim) {
-        return;
-      }
+  const proceed = useCallback(() => {
+    if (!connected || !claim) {
+      return;
+    }
 
-      claim({
-        claimAncUstLp: cliamLpStakingRewards,
-        claimUstBorrow: claimMoneyMarketRewards,
-      });
-    },
-    [claim, connected],
-  );
+    claim({});
+  }, [claim, connected]);
 
   const astroRewards = userLPPendingToken?.pending;
 
@@ -147,10 +141,7 @@ export const TerraClaimAll = () => {
             onClick={() =>
               claimingBorrowerInfoPendingRewards &&
               claimingLpStakingInfoPendingRewards &&
-              proceed(
-                claimingBorrowerInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
-                claimingLpStakingInfoPendingRewards.gte(MINIMUM_CLAIM_BALANCE),
-              )
+              proceed()
             }
           >
             Claim

@@ -6,10 +6,7 @@ import {
   formatUST,
 } from '@anchor-protocol/notation';
 import { ANC } from '@anchor-protocol/types';
-import {
-  useAncGovernanceStakeTx,
-  useRewardsAncGovernanceRewardsQuery,
-} from '@anchor-protocol/app-provider';
+import { useRewardsAncGovernanceRewardsQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
@@ -25,6 +22,8 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { useStakeAncTx } from 'tx/terra';
+import { useRefCallback } from 'hooks';
 
 export function AncGovernanceStake() {
   // ---------------------------------------------
@@ -33,8 +32,6 @@ export function AncGovernanceStake() {
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
-
-  const [stake, stakeResult] = useAncGovernanceStakeTx();
 
   // ---------------------------------------------
   // states
@@ -69,6 +66,12 @@ export function AncGovernanceStake() {
     setANCAmount('' as ANC);
   }, []);
 
+  const onStakeSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [stake, stakeResult] = useStakeAncTx(onStakeSuccess);
+
   const proceed = useCallback(
     (ancAmount: ANC) => {
       if (!connected || !stake) {
@@ -76,13 +79,10 @@ export function AncGovernanceStake() {
       }
 
       stake({
-        ancAmount,
-        onTxSucceed: () => {
-          init();
-        },
+        amount: ancAmount,
       });
     },
-    [connected, init, stake],
+    [connected, stake],
   );
 
   // ---------------------------------------------

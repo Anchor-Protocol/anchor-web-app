@@ -8,7 +8,6 @@ import {
 } from '@anchor-protocol/notation';
 import { ANC, AncUstLP, UST } from '@anchor-protocol/types';
 import {
-  useAncAncUstLpWithdrawTx,
   useAncPriceQuery,
   useRewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/app-provider';
@@ -33,6 +32,8 @@ import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpLpSimulation } from 'pages/trade/logics/ancUstLpLpSimulation';
 import { AncUstLpSimulation } from 'pages/trade/models/ancUstLpSimulation';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { useRefCallback } from 'hooks';
+import { useWithdrawAncLpTx } from 'tx/terra';
 
 export function AncUstLpWithdraw() {
   // ---------------------------------------------
@@ -41,8 +42,6 @@ export function AncUstLpWithdraw() {
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
-
-  const [withdraw, withdrawResult] = useAncAncUstLpWithdrawTx();
 
   // ---------------------------------------------
   // states
@@ -109,6 +108,12 @@ export function AncUstLpWithdraw() {
     setSimulation(null);
   }, []);
 
+  const onWithdrawSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [withdraw, withdrawResult] = useWithdrawAncLpTx(onWithdrawSuccess);
+
   const proceed = useCallback(
     (lpAmount: AncUstLP) => {
       if (!connected || !withdraw) {
@@ -117,12 +122,9 @@ export function AncUstLpWithdraw() {
 
       withdraw({
         lpAmount,
-        onTxSucceed: () => {
-          init();
-        },
       });
     },
-    [connected, init, withdraw],
+    [connected, withdraw],
   );
 
   // ---------------------------------------------

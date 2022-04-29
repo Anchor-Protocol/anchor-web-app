@@ -6,8 +6,9 @@ import { BigSource } from 'big.js';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '../../models/tx';
 
 export class TxHelper {
-  private _savedTx: CreateTxOptions | null = null;
-  private _savedTxResult: TxResult | null = null;
+  private _savedTx?: CreateTxOptions;
+  private _savedTxResult?: TxResult;
+  private _txHash?: string;
 
   constructor(private $: { txFee: u<UST>; network: NetworkInfo }) {}
 
@@ -18,6 +19,10 @@ export class TxHelper {
     return this._savedTx;
   }
 
+  setTxHash = (txHash: string) => {
+    this._txHash = txHash;
+  };
+
   saveTx = (tx: CreateTxOptions) => {
     this._savedTx = tx;
   };
@@ -26,13 +31,17 @@ export class TxHelper {
     this._savedTxResult = txResult;
   };
 
+  txHash = () => {
+    return this._savedTxResult?.result.txhash ?? this._txHash;
+  };
+
   txHashReceipt = (): TxReceipt | null => {
-    if (!this._savedTxResult) {
+    if (!this.txHash()) {
       return null;
     }
 
     const chainID = this.$.network.chainID;
-    const txhash = this._savedTxResult.result.txhash;
+    const txhash = this.txHash();
     const html = `<a href="https://finder.terra.money/${chainID}/tx/${txhash}" target="_blank" rel="noreferrer">${truncate(
       txhash,
     )}</a>`;

@@ -33,7 +33,4 @@ export * from './queries/terraswap/pair';
 export * from './queries/terraswap/pool';
 export * from './queries/terraswap/simulation';
 export * from './queries/txInfo';
-export * from './tx/cw20/buyToken';
-export * from './tx/cw20/sellToken';
-export * from './tx/send/send';
 export * from './tx/TxCommonParams';
