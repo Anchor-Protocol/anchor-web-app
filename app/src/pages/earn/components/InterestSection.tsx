@@ -2,7 +2,6 @@ import { computeApy } from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
   useEarnAPYHistoryQuery,
-  useEarnEpochStatesQuery,
 } from '@anchor-protocol/app-provider';
 import { Rate } from '@anchor-protocol/types';
 import {
@@ -15,7 +14,6 @@ import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { AnimateNumber } from '@libs/ui';
-import big from 'big.js';
 import { useDepositApy } from 'hooks/useDepositApy';
 import { useEarnApyProjectionQuery } from 'queries';
 import React, { useMemo } from 'react';
@@ -29,8 +27,6 @@ export function InterestSection({ className }: InterestSectionProps) {
   const { constants } = useAnchorWebapp();
 
   const { data: { apyHistory } = {} } = useEarnAPYHistoryQuery();
-
-  const { data: { overseerEpochState } = {} } = useEarnEpochStatesQuery();
 
   const apy = useDepositApy();
 
@@ -47,18 +43,18 @@ export function InterestSection({ className }: InterestSectionProps) {
       }))
       .reverse();
 
-    return history && overseerEpochState
+    console.log({ history, apyHistory });
+
+    return history
       ? [
           ...history,
           {
             date: new Date(),
-            value: big(overseerEpochState.deposit_rate)
-              .mul(constants.blocksPerYear)
-              .toNumber() as Rate<number>,
+            value: apy.toNumber() as Rate<number>,
           },
         ]
       : undefined;
-  }, [apyHistory, constants.blocksPerYear, overseerEpochState]);
+  }, [apyHistory, constants.blocksPerYear, apy]);
 
   return (
     <Section className={className}>
