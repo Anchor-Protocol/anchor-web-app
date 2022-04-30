@@ -43,8 +43,6 @@ export function InterestSection({ className }: InterestSectionProps) {
       }))
       .reverse();
 
-    console.log({ history, apyHistory });
-
     return history
       ? [
           ...history,
