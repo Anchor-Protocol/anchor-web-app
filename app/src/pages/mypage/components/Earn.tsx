@@ -1,13 +1,7 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { TokenIcon } from '@anchor-protocol/token-icons';
-import {
-  computeCurrentAPY,
-  computeTotalDeposit,
-} from '@anchor-protocol/app-fns';
-import {
-  useAnchorWebapp,
-  useEarnEpochStatesQuery,
-} from '@anchor-protocol/app-provider';
+import { computeTotalDeposit } from '@anchor-protocol/app-fns';
+import { useEarnEpochStatesQuery } from '@anchor-protocol/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
@@ -22,6 +16,7 @@ import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useBalances } from 'contexts/balances';
 import Big from 'big.js';
+import { useDepositApy } from 'hooks/useDepositApy';
 
 export interface EarnProps {
   className?: string;
@@ -33,16 +28,12 @@ function EarnBase({ className }: EarnProps) {
   // ---------------------------------------------
   const { connected } = useAccount();
 
-  const { constants } = useAnchorWebapp();
-
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
   const { uUST, uaUST } = useBalances();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
-
-  const { data: { overseerEpochState } = {} } = useEarnEpochStatesQuery();
 
   // ---------------------------------------------
   // computes
@@ -53,9 +44,7 @@ function EarnBase({ className }: EarnProps) {
     };
   }, [moneyMarketEpochState, uaUST]);
 
-  const apy = useMemo(() => {
-    return computeCurrentAPY(overseerEpochState, constants.blocksPerYear);
-  }, [constants.blocksPerYear, overseerEpochState]);
+  const apy = useDepositApy();
 
   // ---------------------------------------------
   // dialogs
