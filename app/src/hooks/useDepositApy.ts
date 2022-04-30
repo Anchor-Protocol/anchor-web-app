@@ -1,4 +1,4 @@
-import { computeApr, computeApy } from '@anchor-protocol/app-fns';
+import { computeApy } from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
   useEarnEpochStatesQuery,
@@ -10,15 +10,9 @@ export const useDepositApy = () => {
   const { data: { overseerEpochState } = {} } = useEarnEpochStatesQuery();
 
   return useMemo(() => {
-    const apy = computeApy(
+    return computeApy(
       overseerEpochState?.deposit_rate,
       constants.blocksPerYear,
     );
-
-    if (apy.toNumber() >= 0.19) {
-      return computeApr(overseerEpochState, constants.blocksPerYear);
-    }
-
-    return apy;
   }, [constants.blocksPerYear, overseerEpochState]);
 };

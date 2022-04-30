@@ -1,12 +1,9 @@
 import type { Rate } from '@anchor-protocol/types';
-import { moneyMarket } from '@anchor-protocol/types';
 import big, { Big } from 'big.js';
 
 export function computeApr(
-  overseerEpochState: moneyMarket.overseer.EpochStateResponse | undefined,
+  depositRate: Rate | undefined,
   blocksPerYear: number,
 ): Rate<Big> {
-  return big(overseerEpochState?.deposit_rate ?? '0').mul(
-    blocksPerYear,
-  ) as Rate<Big>;
+  return big(depositRate ?? '0').mul(blocksPerYear) as Rate<Big>;
 }
