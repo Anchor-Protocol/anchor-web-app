@@ -2,6 +2,7 @@ import { computeApy } from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
   useEarnAPYHistoryQuery,
+  useEarnEpochStatesQuery,
 } from '@anchor-protocol/app-provider';
 import { Rate } from '@anchor-protocol/types';
 import {
@@ -27,6 +28,7 @@ export function InterestSection({ className }: InterestSectionProps) {
   const { constants } = useAnchorWebapp();
 
   const { data: { apyHistory } = {} } = useEarnAPYHistoryQuery();
+  const { data: { overseerEpochState } = {} } = useEarnEpochStatesQuery();
 
   const apy = useDepositApy();
 
@@ -43,7 +45,7 @@ export function InterestSection({ className }: InterestSectionProps) {
       }))
       .reverse();
 
-    return history
+    return history && overseerEpochState
       ? [
           ...history,
           {
@@ -52,7 +54,7 @@ export function InterestSection({ className }: InterestSectionProps) {
           },
         ]
       : undefined;
-  }, [apyHistory, constants.blocksPerYear, apy]);
+  }, [apyHistory, constants.blocksPerYear, apy, overseerEpochState]);
 
   return (
     <Section className={className}>
