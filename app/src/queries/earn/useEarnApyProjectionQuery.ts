@@ -68,12 +68,16 @@ const computeNewRate = (
 
   const bound = (rate: Big) => {
     return max(
-      min(rate, computeApy(dyn_rate_max, blocksPerYear)),
-      computeApy(dyn_rate_min, blocksPerYear),
+      min(rate, computeApy(dyn_rate_max, blocksPerYear, config.epoch_period)),
+      computeApy(dyn_rate_min, blocksPerYear, config.epoch_period),
     );
   };
 
-  const currentRate = computeApy(threshold_deposit_rate, blocksPerYear);
+  const currentRate = computeApy(
+    threshold_deposit_rate,
+    blocksPerYear,
+    config.epoch_period,
+  );
 
   if (yr.isHigher) {
     return bound(currentRate.plus(yr.change));
