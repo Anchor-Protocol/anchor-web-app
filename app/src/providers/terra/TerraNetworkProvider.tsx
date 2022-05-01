@@ -5,6 +5,7 @@ import { NetworkContext } from '@anchor-protocol/app-provider/contexts/network';
 
 const TerraNetworkProvider = ({ children }: UIElementProps) => {
   const { network } = useWallet();
+
   return (
     <NetworkContext.Provider value={network}>
       {children}
