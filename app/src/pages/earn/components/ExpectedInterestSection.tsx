@@ -1,9 +1,6 @@
 import { formatUSTWithPostfixUnits } from '@anchor-protocol/notation';
 import { aUST, u, UST } from '@anchor-protocol/types';
-import {
-  useAnchorWebapp,
-  useEarnEpochStatesQuery,
-} from '@anchor-protocol/app-provider';
+import { useEarnEpochStatesQuery } from '@anchor-protocol/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
@@ -13,6 +10,7 @@ import { AnimateNumber } from '@libs/ui';
 import big, { Big } from 'big.js';
 import React, { useMemo, useState } from 'react';
 import { useBalances } from 'contexts/balances';
+import { useDepositApy } from 'hooks/useDepositApy';
 
 export interface ExpectedInterestSectionProps {
   className?: string;
@@ -47,8 +45,6 @@ const tabItems: Item[] = [
 export function ExpectedInterestSection({
   className,
 }: ExpectedInterestSectionProps) {
-  const { constants } = useAnchorWebapp();
-
   const [tab, setTab] = useState<Item>(() => tabItems[0]);
 
   const { uaUST = '0' as u<aUST> } = useBalances();
@@ -56,18 +52,17 @@ export function ExpectedInterestSection({
   const { data: { moneyMarketEpochState, overseerEpochState } = {} } =
     useEarnEpochStatesQuery();
 
+  const apy = useDepositApy();
+
   const expectedInterest = useMemo(() => {
     if (!moneyMarketEpochState || !overseerEpochState) {
       return undefined;
     }
 
     const ustBalance = big(uaUST).mul(moneyMarketEpochState.exchange_rate);
-    const annualizedInterestRate = big(overseerEpochState.deposit_rate).mul(
-      constants.blocksPerYear,
-    );
 
     return ustBalance
-      .mul(annualizedInterestRate)
+      .mul(apy)
       .div(
         tab.value === 'month'
           ? 12
@@ -77,13 +72,7 @@ export function ExpectedInterestSection({
           ? 365
           : 1,
       ) as u<UST<Big>>;
-  }, [
-    constants.blocksPerYear,
-    moneyMarketEpochState,
-    overseerEpochState,
-    tab.value,
-    uaUST,
-  ]);
+  }, [moneyMarketEpochState, overseerEpochState, tab.value, uaUST, apy]);
 
   return (
     <Section className={className}>

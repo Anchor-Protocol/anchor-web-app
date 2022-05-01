@@ -10,6 +10,7 @@ import { moneyMarket } from '@anchor-protocol/types';
 import { terraNativeBalancesQuery } from '@libs/app-fns';
 import { useAnchorQuery } from 'queries/useAnchorQuery';
 import { useNetwork } from '@anchor-protocol/app-provider';
+import { computeApy } from '@anchor-protocol/app-fns';
 
 interface ProjectedEarnApyWasmQuery {
   overseerDynRateState: WasmQuery<
@@ -65,25 +66,28 @@ const computeNewRate = (
 ) => {
   const { threshold_deposit_rate, dyn_rate_min, dyn_rate_max } = config;
 
-  function clamp(rate: Big) {
-    // convert from yearly rate to block rate
-    rate = rate.div(blocksPerYear);
+  const bound = (rate: Big) => {
+    return max(
+      min(rate, computeApy(dyn_rate_max, blocksPerYear, config.epoch_period)),
+      computeApy(dyn_rate_min, blocksPerYear, config.epoch_period),
+    );
+  };
 
-    // clamp new rate
-    return max(min(rate, dyn_rate_max), dyn_rate_min);
-  }
-
-  const currentRate = Big(threshold_deposit_rate).mul(blocksPerYear);
+  const currentRate = computeApy(
+    threshold_deposit_rate,
+    blocksPerYear,
+    config.epoch_period,
+  );
 
   if (yr.isHigher) {
-    return clamp(currentRate.plus(yr.change));
+    return bound(currentRate.plus(yr.change));
   }
 
   if (currentRate.gt(yr.change)) {
-    return clamp(currentRate.minus(yr.change));
+    return bound(currentRate.minus(yr.change));
   }
 
-  return clamp(big(0));
+  return bound(big(0));
 };
 
 const earnApyProjectionQuery = async (
@@ -123,10 +127,10 @@ const earnApyProjectionQuery = async (
     big(uUST),
   );
 
-  const newRate = computeNewRate(overseerConfig, change, blocksPerYear);
+  const rate = computeNewRate(overseerConfig, change, blocksPerYear);
 
   return {
-    rate: newRate.mul(blocksPerYear),
+    rate,
     height:
       overseerDynRateState.last_executed_height + overseerConfig.dyn_rate_epoch,
   };
