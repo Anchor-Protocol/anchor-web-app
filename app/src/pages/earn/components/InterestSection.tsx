@@ -28,7 +28,8 @@ export function InterestSection({ className }: InterestSectionProps) {
   const { constants } = useAnchorWebapp();
 
   const { data: { apyHistory } = {} } = useEarnAPYHistoryQuery();
-  const { data: { overseerEpochState } = {} } = useEarnEpochStatesQuery();
+  const { data: { overseerEpochState, overseerConfig } = {} } =
+    useEarnEpochStatesQuery();
 
   const apy = useDepositApy();
 
@@ -41,6 +42,7 @@ export function InterestSection({ className }: InterestSectionProps) {
         value: computeApy(
           DepositRate,
           constants.blocksPerYear,
+          overseerConfig?.epoch_period ?? 1,
         ).toNumber() as Rate<number>,
       }))
       .reverse();
@@ -54,7 +56,13 @@ export function InterestSection({ className }: InterestSectionProps) {
           },
         ]
       : undefined;
-  }, [apyHistory, constants.blocksPerYear, apy, overseerEpochState]);
+  }, [
+    apyHistory,
+    constants.blocksPerYear,
+    apy,
+    overseerEpochState,
+    overseerConfig,
+  ]);
 
   return (
     <Section className={className}>

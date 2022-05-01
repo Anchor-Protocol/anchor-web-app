@@ -5,14 +5,13 @@ import { computeApr } from './computeApr';
 export function computeApy(
   depositRate: Rate | undefined,
   blocksPerYear: number,
+  epochPeriod: number,
 ): Rate<Big> {
+  const compoundTimes = blocksPerYear / epochPeriod;
+  const perCompound = big(depositRate ?? '0').mul(epochPeriod);
+
   const apy = big(
-    Math.pow(
-      big(depositRate ?? '0')
-        .add(1)
-        .toNumber(),
-      blocksPerYear,
-    ) - 1,
+    Math.pow(perCompound.add(1).toNumber(), compoundTimes) - 1,
   ) as Rate<Big>;
 
   if (apy.toNumber() >= 0.19) {
