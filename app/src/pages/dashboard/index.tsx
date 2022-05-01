@@ -39,6 +39,7 @@ import { StablecoinChart } from './components/StablecoinChart';
 import { TotalValueLockedDoughnutChart } from './components/TotalValueLockedDoughnutChart';
 import { CollateralMarket } from './components/CollateralMarket';
 import { useAssetPriceInUstQuery } from 'queries';
+import { useDepositApy } from 'hooks/useDepositApy';
 
 export interface DashboardProps {
   className?: string;
@@ -70,20 +71,18 @@ function DashboardBase({ className }: DashboardProps) {
 
   const { data: { borrowRate, epochState } = {} } = useMarketStableCoinQuery();
 
+  const depositApy = useDepositApy();
+
   const stableCoinLegacy = useMemo(() => {
     if (!borrowRate || !epochState) {
       return undefined;
     }
 
-    const depositRate = big(epochState.deposit_rate).mul(
-      blocksPerYear,
-    ) as Rate<Big>;
-
     return {
-      depositRate,
+      depositRate: depositApy,
       borrowRate: big(borrowRate.rate).mul(blocksPerYear) as Rate<Big>,
     };
-  }, [blocksPerYear, borrowRate, epochState]);
+  }, [blocksPerYear, borrowRate, epochState, depositApy]);
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
   const { data: marketUST } = useMarketUstQuery();
@@ -170,8 +169,6 @@ function DashboardBase({ className }: DashboardProps) {
       totalBorrowDiff: big(
         big(last.total_borrowed).minus(last1DayBefore.total_borrowed),
       ).div(last1DayBefore.total_borrowed) as Rate<Big>,
-      depositAPR: big(marketUST.deposit_rate).mul(blocksPerYear) as Rate<Big>,
-      depositAPRDiff: 'TODO: API not ready...',
       borrowAPR: big(marketUST.borrow_rate).mul(blocksPerYear) as Rate<Big>,
       borrowAPRDiff: 'TODO: API not ready...',
     };

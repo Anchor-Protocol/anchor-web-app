@@ -15,6 +15,10 @@ interface EarnEpochStatesWasmQuery {
     moneyMarket.overseer.EpochState,
     moneyMarket.overseer.EpochStateResponse
   >;
+  overseerConfig: WasmQuery<
+    moneyMarket.overseer.Config,
+    moneyMarket.overseer.ConfigResponse
+  >;
 }
 
 export type EarnEpochStates = WasmQueryData<EarnEpochStatesWasmQuery>;
@@ -43,6 +47,12 @@ export async function earnEpochStatesQuery(
         contractAddress: overseerContract,
         query: {
           epoch_state: {},
+        },
+      },
+      overseerConfig: {
+        contractAddress: overseerContract,
+        query: {
+          config: {},
         },
       },
     },
