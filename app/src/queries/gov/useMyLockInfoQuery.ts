@@ -44,8 +44,6 @@ const userLockInfoQuery = async (
     },
   });
 
-  console.log(lockInfo, config);
-
   return {
     ...lockInfo,
     period: ((lockInfo.end - lockInfo.start) *
@@ -73,7 +71,7 @@ export const useMyLockInfoQuery = () => {
     ],
     userLockInfoQueryFn,
     {
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
       enabled,

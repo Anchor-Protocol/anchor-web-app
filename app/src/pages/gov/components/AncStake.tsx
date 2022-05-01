@@ -28,6 +28,7 @@ import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import styled from 'styled-components';
 import { VStack } from '@libs/ui/Stack';
 import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
+import { ExpectedVeAncToReceive } from './ExpectedVeAncToReceive';
 
 export function AncStake() {
   const { availablePost, connected } = useAccount();
@@ -158,6 +159,14 @@ export function AncStake() {
               />
             ) : (
               <SliderPlaceholder />
+            )}
+            {lockConfig && period && (
+              <ExpectedVeAncToReceive
+                amount={amount || ('0' as ANC)}
+                period={period}
+                boostCoefficient={lockConfig.boostCoefficient}
+                maxLockTime={lockConfig.maxLockTime}
+              />
             )}
           </VStack>
         )}

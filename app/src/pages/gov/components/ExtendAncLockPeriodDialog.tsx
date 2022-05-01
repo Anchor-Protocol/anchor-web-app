@@ -37,13 +37,12 @@ export const ExtendAncLockPeriodDialog = ({
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
   const [period, setPeriod] = useState<Second | undefined>();
-  const { data: lockInfo } = useMyLockInfoQuery();
 
+  const { data: lockInfo } = useMyLockInfoQuery();
+  const currentPeriod = lockInfo?.period;
   useEffect(() => {
-    if (lockInfo !== undefined && period === undefined) {
-      setPeriod(lockInfo.period);
-    }
-  }, [lockInfo, period]);
+    setPeriod(currentPeriod);
+  }, [currentPeriod]);
 
   const isSubmitDisabled =
     !availablePost || invalidTxFee || lockInfo?.period === period;
