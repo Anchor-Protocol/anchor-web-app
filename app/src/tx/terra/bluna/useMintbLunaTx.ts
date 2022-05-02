@@ -12,7 +12,7 @@ import {
   TxStreamPhase,
 } from '@libs/app-fns';
 import { pickLog } from '@libs/app-fns/queries/utils';
-import { TxHelper } from '@libs/app-fns/tx/internal';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
 import {
   demicrofy,
@@ -41,13 +41,13 @@ export function useMintbLunaTx(onSuccess?: RefCallback<() => void>) {
   const rate = exchangeRate?.exchange_rate ?? ('1' as Rate<string>);
 
   const sendTx = useCallback(
-    async (txParams: MintbLunaTxParams, helper: TxHelper) => {
+    async (txParams: MintbLunaTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.bLuna.mint(
         connectedWallet!.walletAddress,
         formatTokenInput(txParams.mintAmount),
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -62,17 +62,17 @@ export function useMintbLunaTx(onSuccess?: RefCallback<() => void>) {
   );
 
   const renderResults = useCallback(
-    async (txInfo: TxInfo, helper: TxHelper) => {
+    async (txInfo: TxInfo, writer: TerraTxProgressWriter) => {
       const rawLog = pickLog(txInfo, 0);
 
       if (!rawLog) {
-        return helper.failedToFindRawLog();
+        return writer.failedToFindRawLog();
       }
 
       const fromContract = pickEvent(rawLog, 'from_contract');
 
       if (!fromContract) {
-        return helper.failedToFindEvents('from_contract');
+        return writer.failedToFindEvents('from_contract');
       }
 
       try {
@@ -97,12 +97,12 @@ export function useMintbLunaTx(onSuccess?: RefCallback<() => void>) {
               name: 'Exchange Rate',
               value: `${formatFluidDecimalPoints(rate, 6)} bLUNA per LUNA`,
             },
-            helper.txHashReceipt(),
-            helper.txFeeReceipt(),
+            writer.txHashReceipt(),
+            writer.txFeeReceipt(),
           ],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [rate],

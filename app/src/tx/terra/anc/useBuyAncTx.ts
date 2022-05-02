@@ -16,7 +16,7 @@ import {
   TxStreamPhase,
 } from '@libs/app-fns';
 import { pickLog } from '@libs/app-fns/queries/utils';
-import { TxHelper } from '@libs/app-fns/tx/internal';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
 import { min } from '@libs/big-math';
 import {
@@ -47,7 +47,7 @@ export function useBuyAncTx(onSuccess?: RefCallback<() => void>) {
   const { data: { ancPrice } = {} } = useAncPriceQuery();
 
   const sendTx = useCallback(
-    async (txParams: BuyAncTxParams, helper: TxHelper) => {
+    async (txParams: BuyAncTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.anc.buy(
         connectedWallet!.walletAddress,
         formatTokenInput(txParams.amount),
@@ -57,7 +57,7 @@ export function useBuyAncTx(onSuccess?: RefCallback<() => void>) {
         txParams.maxSpread,
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -72,17 +72,17 @@ export function useBuyAncTx(onSuccess?: RefCallback<() => void>) {
   );
 
   const renderResults = useCallback(
-    async (txInfo: TxInfo, helper: TxHelper) => {
+    async (txInfo: TxInfo, writer: TerraTxProgressWriter) => {
       const rawLog = pickLog(txInfo, 0);
 
       if (!rawLog) {
-        return helper.failedToFindRawLog();
+        return writer.failedToFindRawLog();
       }
 
       const fromContract = pickEvent(rawLog, 'from_contract');
 
       if (!fromContract) {
-        return helper.failedToFindEvents('from_contract');
+        return writer.failedToFindEvents('from_contract');
       }
 
       try {
@@ -140,12 +140,12 @@ export function useBuyAncTx(onSuccess?: RefCallback<() => void>) {
               name: 'Trading Fee',
               value: formatANCWithPostfixUnits(demicrofy(tradingFee)) + ' ANC',
             },
-            helper.txHashReceipt(),
-            helper.txFeeReceipt(txFee),
+            writer.txHashReceipt(),
+            writer.txFeeReceipt(txFee),
           ],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [tax, terraSdk],

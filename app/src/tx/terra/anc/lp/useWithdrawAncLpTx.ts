@@ -12,7 +12,7 @@ import {
   TxStreamPhase,
 } from '@libs/app-fns';
 import { pickLog } from '@libs/app-fns/queries/utils';
-import { TxHelper } from '@libs/app-fns/tx/internal';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
 import { demicrofy, formatTokenInput, stripUUSD } from '@libs/formatter';
 import { TxInfo } from '@terra-money/terra.js';
@@ -33,13 +33,13 @@ export function useWithdrawAncLpTx(onSuccess?: RefCallback<() => void>) {
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: WithdrawAncLpTxParams, helper: TxHelper) => {
+    async (txParams: WithdrawAncLpTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.anc.lp.withdraw(
         connectedWallet!.walletAddress,
         formatTokenInput(txParams.lpAmount),
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -54,18 +54,18 @@ export function useWithdrawAncLpTx(onSuccess?: RefCallback<() => void>) {
   );
 
   const renderResults = useCallback(
-    async (txInfo: TxInfo, helper: TxHelper) => {
+    async (txInfo: TxInfo, writer: TerraTxProgressWriter) => {
       const rawLog = pickLog(txInfo, 0);
 
       if (!rawLog) {
-        return helper.failedToFindRawLog();
+        return writer.failedToFindRawLog();
       }
 
       const fromContract = pickEvent(rawLog, 'from_contract');
       const transfer = pickEvent(rawLog, 'transfer');
 
       if (!fromContract || !transfer) {
-        return helper.failedToFindEvents('from_contract', 'transfer');
+        return writer.failedToFindEvents('from_contract', 'transfer');
       }
 
       try {
@@ -113,12 +113,12 @@ export function useWithdrawAncLpTx(onSuccess?: RefCallback<() => void>) {
                   formatUSTWithPostfixUnits(demicrofy(receivedUst)) +
                   ' UST',
               },
-            helper.txHashReceipt(),
-            helper.txFeeReceipt(txFee ? txFee : undefined),
+            writer.txHashReceipt(),
+            writer.txFeeReceipt(txFee ? txFee : undefined),
           ],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [],

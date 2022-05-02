@@ -8,7 +8,7 @@ import {
   TxStreamPhase,
 } from '@libs/app-fns';
 import { pickLog } from '@libs/app-fns/queries/utils';
-import { TxHelper } from '@libs/app-fns/tx/internal';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
 import { demicrofy, formatTokenInput } from '@libs/formatter';
 import { TxInfo } from '@terra-money/terra.js';
@@ -29,13 +29,13 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: StakeAncTxParams, helper: TxHelper) => {
+    async (txParams: StakeAncTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.anc.staking.stake(
         connectedWallet!.walletAddress,
         formatTokenInput(txParams.amount),
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -50,17 +50,17 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
   );
 
   const renderResults = useCallback(
-    async (txInfo: TxInfo, helper: TxHelper) => {
+    async (txInfo: TxInfo, writer: TerraTxProgressWriter) => {
       const rawLog = pickLog(txInfo, 0);
 
       if (!rawLog) {
-        return helper.failedToFindRawLog();
+        return writer.failedToFindRawLog();
       }
 
       const fromContract = pickEvent(rawLog, 'from_contract');
 
       if (!fromContract) {
-        return helper.failedToFindEvents('from_contract');
+        return writer.failedToFindEvents('from_contract');
       }
 
       try {
@@ -75,12 +75,12 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
               name: 'Amount',
               value: formatANCWithPostfixUnits(demicrofy(amount)) + ' ANC',
             },
-            helper.txHashReceipt(),
-            helper.txFeeReceipt(),
+            writer.txHashReceipt(),
+            writer.txFeeReceipt(),
           ],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [],

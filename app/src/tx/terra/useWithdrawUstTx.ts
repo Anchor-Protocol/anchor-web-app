@@ -11,7 +11,7 @@ import {
   TxStreamPhase,
 } from '@libs/app-fns';
 import { pickLog } from '@libs/app-fns/queries/utils';
-import { TxHelper } from '@libs/app-fns/tx/internal';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
 import {
   demicrofy,
@@ -37,13 +37,13 @@ export function useWithdrawUstTx() {
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: WithdrawUstTxParams, helper: TxHelper) => {
+    async (txParams: WithdrawUstTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.redeemStable(
         formatTokenInput(txParams.withdrawAmount),
         connectedWallet!.walletAddress,
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -56,18 +56,18 @@ export function useWithdrawUstTx() {
   );
 
   const renderResults = useCallback(
-    async (txInfo: TxInfo, helper: TxHelper) => {
+    async (txInfo: TxInfo, writer: TerraTxProgressWriter) => {
       const rawLog = pickLog(txInfo, 0);
 
       if (!rawLog) {
-        return helper.failedToFindRawLog();
+        return writer.failedToFindRawLog();
       }
 
       const fromContract = pickEvent(rawLog, 'from_contract');
       const transfer = pickEvent(rawLog, 'transfer');
 
       if (!fromContract || !transfer) {
-        return helper.failedToFindEvents('from_contract', 'transfer');
+        return writer.failedToFindEvents('from_contract', 'transfer');
       }
 
       try {
@@ -110,12 +110,12 @@ export function useWithdrawUstTx() {
               name: 'Exchange Rate',
               value: formatFluidDecimalPoints(exchangeRate, 6),
             },
-            helper.txHashReceipt(),
-            helper.txFeeReceipt(),
+            writer.txHashReceipt(),
+            writer.txFeeReceipt(),
           ],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [],

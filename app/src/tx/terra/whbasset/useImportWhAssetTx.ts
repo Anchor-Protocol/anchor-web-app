@@ -11,7 +11,7 @@ import {
   TxStreamPhase,
 } from '@libs/app-fns';
 import { pickLog } from '@libs/app-fns/queries/utils';
-import { TxHelper } from '@libs/app-fns/tx/internal';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
 import { formatNumeric, formatTokenInput } from '@libs/formatter';
 import { TxInfo } from '@terra-money/terra.js';
@@ -37,7 +37,7 @@ export function useImportWhAssetTx(
   const { data: bAssetInfo } = useBAssetInfoByTokenAddrQuery(tokenAddr);
 
   const sendTx = useCallback(
-    async (txParams: ImportWhAssetTxParams, helper: TxHelper) => {
+    async (txParams: ImportWhAssetTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.whAsset.import(
         connectedWallet!.walletAddress,
         bAssetInfo!.converterConfig.wormhole_token_address!,
@@ -45,7 +45,7 @@ export function useImportWhAssetTx(
         bAssetInfo!.minter.minter,
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -60,17 +60,17 @@ export function useImportWhAssetTx(
   );
 
   const renderResults = useCallback(
-    async (txInfo: TxInfo, helper: TxHelper) => {
+    async (txInfo: TxInfo, writer: TerraTxProgressWriter) => {
       const rawLog = pickLog(txInfo, 0);
 
       if (!rawLog) {
-        return helper.failedToFindRawLog();
+        return writer.failedToFindRawLog();
       }
 
       const fromContract = pickEvent(rawLog, 'from_contract');
 
       if (!fromContract) {
-        return helper.failedToFindEvents('from_contract');
+        return writer.failedToFindEvents('from_contract');
       }
 
       try {
@@ -101,12 +101,12 @@ export function useImportWhAssetTx(
                 bAssetInfo!.tokenDisplay.anchor.symbol
               }`,
             },
-            helper.txHashReceipt(),
-            helper.txFeeReceipt(),
+            writer.txHashReceipt(),
+            writer.txFeeReceipt(),
           ],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [bAssetInfo],

@@ -1,7 +1,7 @@
 import { ANCHOR_TX_KEY, useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { ANC } from '@anchor-protocol/types';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
-import { TxHelper } from '@libs/app-fns/tx/internal';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
 import { formatTokenInput } from '@libs/formatter';
 import { TxInfo } from '@terra-money/terra.js';
@@ -32,7 +32,7 @@ export function useCreatePollTx(onSuccess?: RefCallback<() => void>) {
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: CreatePollTxParams, helper: TxHelper) => {
+    async (txParams: CreatePollTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.gov.createPoll(
         connectedWallet!.walletAddress,
         formatTokenInput(txParams.amount),
@@ -44,7 +44,7 @@ export function useCreatePollTx(onSuccess?: RefCallback<() => void>) {
         },
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -59,16 +59,16 @@ export function useCreatePollTx(onSuccess?: RefCallback<() => void>) {
   );
 
   const renderResults = useCallback(
-    async (txInfo: TxInfo, helper: TxHelper) => {
+    async (txInfo: TxInfo, writer: TerraTxProgressWriter) => {
       try {
         return {
           value: null,
 
           phase: TxStreamPhase.SUCCEED,
-          receipts: [helper.txHashReceipt()],
+          receipts: [writer.txHashReceipt()],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [],

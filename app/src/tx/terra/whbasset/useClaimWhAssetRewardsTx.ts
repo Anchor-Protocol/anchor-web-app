@@ -7,7 +7,7 @@ import {
   TxResultRendering,
   TxStreamPhase,
 } from '@libs/app-fns';
-import { TxHelper } from '@libs/app-fns/tx/internal';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
 import { Dec, TxInfo } from '@terra-money/terra.js';
@@ -35,13 +35,16 @@ export function useClaimWhAssetRewardsTx(onSuccess?: RefCallback<() => void>) {
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: ClaimWhAssetRewardsTxParams, helper: TxHelper) => {
+    async (
+      txParams: ClaimWhAssetRewardsTxParams,
+      writer: TerraTxProgressWriter,
+    ) => {
       const result = await terraSdk.whAsset.claimRewards(
         connectedWallet!.walletAddress,
         txParams.rewardBreakdowns.map((r) => r.rewardAddr),
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -116,12 +119,12 @@ export function useClaimWhAssetRewardsTx(onSuccess?: RefCallback<() => void>) {
                   demicrofy(total.toString() as u<UST>),
                 ) + ' UST',
             },
-            helper.txHashReceipt(),
-            helper.txFeeReceipt(),
+            writer.txHashReceipt(),
+            writer.txFeeReceipt(),
           ],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [],

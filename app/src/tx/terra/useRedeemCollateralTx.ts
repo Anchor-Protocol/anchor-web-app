@@ -18,7 +18,6 @@ import {
   TxStreamPhase,
 } from '@libs/app-fns';
 import { pickLog } from '@libs/app-fns/queries/utils';
-import { TxHelper } from '@libs/app-fns/tx/internal';
 import { useRefetchQueries } from '@libs/app-provider';
 import { demicrofy, formatRate } from '@libs/formatter';
 import { TxInfo } from '@terra-money/terra.js';
@@ -26,6 +25,7 @@ import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useTerraSdk } from 'crossanchor';
 import { WhitelistCollateral } from 'queries';
 import { useCallback } from 'react';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRenderedTx } from './useRenderedTx';
 
 export interface RedeemCollateralTxParams {
@@ -42,7 +42,10 @@ export function useRedeemCollateralTx(collateral: WhitelistCollateral) {
   const { refetch: borrowBorrowerQuery } = useBorrowBorrowerQuery();
 
   const sendTx = useCallback(
-    async (txParams: RedeemCollateralTxParams, helper: TxHelper) => {
+    async (
+      txParams: RedeemCollateralTxParams,
+      writer: TerraTxProgressWriter,
+    ) => {
       const result = await terraSdk.unlockCollateral(
         collateral.collateral_token,
         collateral.custody_contract,
@@ -53,7 +56,7 @@ export function useRedeemCollateralTx(collateral: WhitelistCollateral) {
         connectedWallet!.walletAddress,
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -66,12 +69,12 @@ export function useRedeemCollateralTx(collateral: WhitelistCollateral) {
   );
 
   const renderResults = useCallback(
-    async (txInfo: TxInfo, helper: TxHelper) => {
+    async (txInfo: TxInfo, writer: TerraTxProgressWriter) => {
       const { data: borrowMarket } = await borrowMarketQuery();
       const { data: borrowBorrower } = await borrowBorrowerQuery();
 
       if (!borrowMarket || !borrowBorrower) {
-        return helper.failedToCreateReceipt(
+        return writer.failedToCreateReceipt(
           new Error('Failed to load borrow data'),
         );
       }
@@ -79,13 +82,13 @@ export function useRedeemCollateralTx(collateral: WhitelistCollateral) {
       const rawLog = pickLog(txInfo, 1);
 
       if (!rawLog) {
-        return helper.failedToFindRawLog();
+        return writer.failedToFindRawLog();
       }
 
       const fromContract = pickEvent(rawLog, 'from_contract');
 
       if (!fromContract) {
-        return helper.failedToFindEvents('from_contract');
+        return writer.failedToFindEvents('from_contract');
       }
 
       try {
@@ -116,12 +119,12 @@ export function useRedeemCollateralTx(collateral: WhitelistCollateral) {
               name: 'New Borrow Usage',
               value: formatRate(ltv) + ' %',
             },
-            helper.txHashReceipt(),
-            helper.txFeeReceipt(),
+            writer.txHashReceipt(),
+            writer.txFeeReceipt(),
           ],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [borrowBorrowerQuery, borrowMarketQuery, collateral],

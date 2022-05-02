@@ -2,7 +2,7 @@ import { ANCHOR_TX_KEY, useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { HumanAddr, Token } from '@anchor-protocol/types';
 import { pickEvent, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { pickLog } from '@libs/app-fns/queries/utils';
-import { TxHelper } from '@libs/app-fns/tx/internal';
+import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
 import { formatTokenInput } from '@libs/formatter';
 import { TxInfo } from '@terra-money/terra.js';
@@ -27,7 +27,7 @@ export function useSendTx(onSuccess?: RefCallback<() => void>) {
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: SendTxParams, helper: TxHelper) => {
+    async (txParams: SendTxParams, writer: TerraTxProgressWriter) => {
       const { currency, amount, toWalletAddress, memo } = txParams;
 
       const result = await terraSdk.send(
@@ -42,7 +42,7 @@ export function useSendTx(onSuccess?: RefCallback<() => void>) {
         memo,
         {
           handleEvent: (event) => {
-            helper.setTxHash(event.payload.txHash);
+            writer.writeTxHash(event.payload.txHash);
           },
         },
       );
@@ -57,18 +57,18 @@ export function useSendTx(onSuccess?: RefCallback<() => void>) {
   );
 
   const renderResults = useCallback(
-    async (txInfo: TxInfo, helper: TxHelper) => {
+    async (txInfo: TxInfo, writer: TerraTxProgressWriter) => {
       const rawLog = pickLog(txInfo, 0);
 
       if (!rawLog) {
-        return helper.failedToFindRawLog();
+        return writer.failedToFindRawLog();
       }
 
       const fromContract = pickEvent(rawLog, 'from_contract');
       const transfer = pickEvent(rawLog, 'transfer');
 
       if (!fromContract || !transfer) {
-        return helper.failedToFindEvents('from_contract', 'transfer');
+        return writer.failedToFindEvents('from_contract', 'transfer');
       }
 
       try {
@@ -77,12 +77,12 @@ export function useSendTx(onSuccess?: RefCallback<() => void>) {
 
           phase: TxStreamPhase.SUCCEED,
           receipts: [
-            helper.txHashReceipt(),
-            //helper.txFeeReceipt(txFee),
+            writer.txHashReceipt(),
+            //writer.txFeeReceipt(txFee),
           ],
         } as TxResultRendering;
       } catch (error) {
-        return helper.failedToParseTxResult();
+        return writer.failedToParseTxResult();
       }
     },
     [],
