@@ -127,7 +127,7 @@ export const AncGovernance = styled(AncGovernanceBase)`
   }
 
   .subtab {
-    margin-bottom: 70px;
+    margin-bottom: 50px;
   }
 
   .form {

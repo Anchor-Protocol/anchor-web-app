@@ -4,6 +4,7 @@ import {
   formatANC,
   formatANCInput,
   formatUST,
+  formatVeAnc,
 } from '@anchor-protocol/notation';
 import { ANC, Second } from '@anchor-protocol/types';
 import { useRewardsAncGovernanceRewardsQuery } from '@anchor-protocol/app-provider';
@@ -28,9 +29,16 @@ import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import styled from 'styled-components';
 import { VStack } from '@libs/ui/Stack';
 import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
-import { ExpectedVeAncToReceive } from './ExpectedVeAncToReceive';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { computeEstimatedVeAnc } from '../logics/computeEstimatedVeAnc';
+import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
+import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
+import { UIElementProps } from '@libs/ui';
+import { Divider } from 'components/primitives/Divider';
 
-export function AncStake() {
+function AncStakeBase(props: UIElementProps) {
+  const { className } = props;
+
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
@@ -42,6 +50,7 @@ export function AncStake() {
   const { data: lockInfo, isFetched: isLockInfoFetched } = useMyLockInfoQuery();
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
+
   const [period, setPeriod] = useState<Second | undefined>();
   useEffect(() => {
     if (period === undefined && lockConfig) {
@@ -105,7 +114,7 @@ export function AncStake() {
   }
 
   return (
-    <>
+    <div className={className}>
       {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
       <NumberInput
@@ -146,29 +155,33 @@ export function AncStake() {
           </span>
         </div>
 
-        {lockInfo?.period === undefined && (
-          <VStack gap={8}>
-            <Label>Lock Period</Label>
-            {period !== undefined && lockConfig !== undefined ? (
-              <DurationSlider
-                value={period}
-                min={lockConfig.minLockTime}
-                max={lockConfig.maxLockTime}
-                step={lockConfig.periodDuration}
-                onChange={setPeriod}
-              />
-            ) : (
-              <SliderPlaceholder />
-            )}
-            {lockConfig && period && (
-              <ExpectedVeAncToReceive
-                amount={amount || ('0' as ANC)}
-                period={period}
-                boostCoefficient={lockConfig.boostCoefficient}
-                maxLockTime={lockConfig.maxLockTime}
-              />
-            )}
-          </VStack>
+        {amount.length > 0 && lockInfo?.period === undefined && (
+          <>
+            <Divider />
+            <VStack className="duration-slider" gap={8}>
+              <h3>
+                <IconSpan>
+                  LOCK PERIOD{' '}
+                  <InfoTooltip>
+                    The time that your ANC will be locked in the vesting
+                    contract.
+                  </InfoTooltip>
+                </IconSpan>
+              </h3>
+              {/* <Label>Lock Period</Label> */}
+              {period !== undefined && lockConfig !== undefined ? (
+                <DurationSlider
+                  value={period}
+                  min={lockConfig.minLockTime}
+                  max={lockConfig.maxLockTime}
+                  step={lockConfig.periodDuration}
+                  onChange={setPeriod}
+                />
+              ) : (
+                <SliderPlaceholder />
+              )}
+            </VStack>
+          </>
         )}
       </VStack>
 
@@ -177,6 +190,19 @@ export function AncStake() {
           <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
+          {lockConfig && period && (
+            <TxFeeListItem label={`Receive ${VEANC_SYMBOL}`}>
+              {formatVeAnc(
+                computeEstimatedVeAnc(
+                  lockConfig.boostCoefficient,
+                  period,
+                  lockConfig.maxLockTime,
+                  amount || ('0' as ANC),
+                ),
+              )}{' '}
+              {VEANC_SYMBOL}
+            </TxFeeListItem>
+          )}
         </TxFeeList>
       )}
 
@@ -198,11 +224,23 @@ export function AncStake() {
           Stake
         </ActionButton>
       </ViewAddressWarning>
-    </>
+    </div>
   );
 }
 
-const Label = styled.p`
-  font-size: 16px;
-  color: ${({ theme }) => theme.dimTextColor};
+export const AncStake = styled(AncStakeBase)`
+  .duration-slider {
+    xposition: relative;
+    h3 {
+      xposition: absolute;
+      xtop: 8px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
 `;
+
+// const Label = styled.p`
+//   font-size: 16px;
+//   color: ${({ theme }) => theme.dimTextColor};
+// `;

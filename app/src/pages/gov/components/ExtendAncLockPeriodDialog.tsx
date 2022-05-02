@@ -8,7 +8,7 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import { useFixedFee } from '@libs/app-provider';
 import { MessageBox } from 'components/MessageBox';
 import big from 'big.js';
-import { UST_SYMBOL } from '@anchor-protocol/token-symbols';
+import { UST_SYMBOL, VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { demicrofy } from '@libs/formatter';
 import styled from 'styled-components';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
@@ -24,9 +24,10 @@ import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import { DialogTitle } from '@libs/ui/text/DialogTitle';
 import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
 import { VStack } from '@libs/ui/Stack';
-import { ExpectedVeAncToReceive } from './ExpectedVeAncToReceive';
 import { useMyAncStakedQuery } from 'queries';
 import { ANC } from '@anchor-protocol/types';
+import { formatVeAnc } from '@anchor-protocol/notation';
+import { computeEstimatedVeAnc } from '../logics/computeEstimatedVeAnc';
 
 type ExtendAncLockPeriodDialogProps = DialogProps<{}>;
 
@@ -124,20 +125,25 @@ export const ExtendAncLockPeriodDialog = ({
           ) : (
             <SliderPlaceholder />
           )}
-          {lockConfig && extendForPeriod !== undefined && (
-            <ExpectedVeAncToReceive
-              amount={(staked ? demicrofy(staked) : '0') as ANC}
-              period={extendForPeriod}
-              boostCoefficient={lockConfig.boostCoefficient}
-              maxLockTime={lockConfig.maxLockTime}
-            />
-          )}
         </VStack>
 
         <TxFeeList className="receipt">
           {big(fixedFee).gt(0) && (
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
               {`${formatOutput(demicrofy(fixedFee))} ${UST_SYMBOL}`}
+            </TxFeeListItem>
+          )}
+          {lockConfig && extendForPeriod !== undefined && (
+            <TxFeeListItem label={`Receive ${VEANC_SYMBOL}`}>
+              {formatVeAnc(
+                computeEstimatedVeAnc(
+                  lockConfig.boostCoefficient,
+                  extendForPeriod,
+                  lockConfig.maxLockTime,
+                  (staked ? demicrofy(staked) : '0') as ANC,
+                ),
+              )}{' '}
+              {VEANC_SYMBOL}
             </TxFeeListItem>
           )}
         </TxFeeList>
