@@ -63,9 +63,9 @@ export const useAncTokenomics = (): AncTokenomics | undefined => {
       return undefined;
     }
 
-    const totalStaked = big(govANCBalance.balance).minus(
-      govState.total_deposit,
-    ) as u<ANC<Big>>;
+    const totalStaked = big(govANCBalance.balance)
+      .minus(govState.total_deposit)
+      .minus(govState.pending_voting_rewards) as u<ANC<Big>>;
 
     const circulatingSupply = big(ancTokenInfo.total_supply)
       .minus(communityANCBalance.balance)

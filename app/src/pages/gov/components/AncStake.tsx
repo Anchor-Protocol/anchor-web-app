@@ -4,7 +4,6 @@ import {
   formatANC,
   formatANCInput,
   formatUST,
-  formatVeAnc,
 } from '@anchor-protocol/notation';
 import { ANC, Second } from '@anchor-protocol/types';
 import { useRewardsAncGovernanceRewardsQuery } from '@anchor-protocol/app-provider';
@@ -29,12 +28,11 @@ import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import styled from 'styled-components';
 import { VStack } from '@libs/ui/Stack';
 import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
-import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
-import { computeEstimatedVeAnc } from '../logics/computeEstimatedVeAnc';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { UIElementProps } from '@libs/ui';
 import { Divider } from 'components/primitives/Divider';
+import { EstimatedVeAncAmount } from './EstimatedVeAncAmount';
 
 function AncStakeBase(props: UIElementProps) {
   const { className } = props;
@@ -190,19 +188,7 @@ function AncStakeBase(props: UIElementProps) {
           <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
-          {lockConfig && period && (
-            <TxFeeListItem label={`Receive ${VEANC_SYMBOL}`}>
-              {formatVeAnc(
-                computeEstimatedVeAnc(
-                  lockConfig.boostCoefficient,
-                  period,
-                  lockConfig.maxLockTime,
-                  amount || ('0' as ANC),
-                ),
-              )}{' '}
-              {VEANC_SYMBOL}
-            </TxFeeListItem>
-          )}
+          <EstimatedVeAncAmount period={period} amount={amount} />
         </TxFeeList>
       )}
 
