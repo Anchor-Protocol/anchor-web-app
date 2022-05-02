@@ -18,6 +18,7 @@ import { CardHeading } from './Card';
 import Big from 'big.js';
 import { demicrofy, formatRate, formatUTokenDecimal2 } from '@libs/formatter';
 import { formatOutput } from '@anchor-protocol/formatter';
+import { Sub } from 'components/Sub';
 
 interface LabelWithValueProps {
   label: string;
@@ -82,10 +83,16 @@ const AncUstLpBase = (props: UIElementProps) => {
           {hasRewards && (
             <LabelWithValue label="Rewards" tooltip="Your pending rewards">
               {hasAncRewards && (
-                <div>{formatOutput(demicrofy(ancRewards))} ANC</div>
+                <div className="stacked">
+                  <div>{formatOutput(demicrofy(ancRewards))}</div>
+                  <Sub>ANC</Sub>
+                </div>
               )}
               {hasAstroRewards && (
-                <div>{formatOutput(demicrofy(astroRewards))} ASTRO</div>
+                <div className="stacked">
+                  <div>{formatOutput(demicrofy(astroRewards))}</div>
+                  <Sub>ASTRO</Sub>
+                </div>
               )}
             </LabelWithValue>
           )}
@@ -98,7 +105,7 @@ const AncUstLpBase = (props: UIElementProps) => {
             %
           </LabelWithValue>
           <LabelWithValue
-            label="Total Staked"
+            label="Staked"
             tooltip="Total quantity of ANC-UST LP tokens staked"
           >
             <AnimateNumber format={formatUTokenDecimal2}>
@@ -126,8 +133,6 @@ export const AncUstLp = styled(AncUstLpBase)`
   .values {
     margin-top: 20px;
     display: flex;
-    flex-direction: row;
-    align-items: center;
     justify-content: center;
     gap: 10px;
 
@@ -137,6 +142,17 @@ export const AncUstLp = styled(AncUstLpBase)`
       align-items: center;
       p {
         margin-top: 5px;
+        display: flex;
+      }
+
+      .stacked {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      sub {
+        display: inline-block;
       }
     }
   }
