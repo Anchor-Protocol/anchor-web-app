@@ -31,7 +31,7 @@ export const EstimatedVeAncAmount = ({
     }
 
     if (!lockConfig || !govState || !ancTokenomics) {
-      return <SwishSpinner />;
+      return <SwishSpinner size={12} />;
     }
 
     const totalShare = demicrofy(govState.total_share);

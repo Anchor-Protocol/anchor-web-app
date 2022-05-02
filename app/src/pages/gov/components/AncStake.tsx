@@ -33,6 +33,7 @@ import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { UIElementProps } from '@libs/ui';
 import { Divider } from 'components/primitives/Divider';
 import { EstimatedVeAncAmount } from './EstimatedVeAncAmount';
+import { useMyVotingLockPeriodEndsAtQuery } from 'queries';
 
 function AncStakeBase(props: UIElementProps) {
   const { className } = props;
@@ -46,19 +47,36 @@ function AncStakeBase(props: UIElementProps) {
   const [amount, setAmount] = useState<ANC>('' as ANC);
 
   const { data: lockInfo, isFetched: isLockInfoFetched } = useMyLockInfoQuery();
+  const { data: lockPeriodEndsAt, isFetched: isLockPeriodEndsAtFetched } =
+    useMyVotingLockPeriodEndsAtQuery();
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
 
   const [period, setPeriod] = useState<Second | undefined>();
   useEffect(() => {
-    if (period === undefined && lockConfig) {
-      setPeriod(
-        isLockInfoFetched && lockInfo?.period
-          ? lockInfo.period
-          : lockConfig.minLockTime,
-      );
+    if (period) {
+      return;
     }
-  }, [period, lockConfig, lockInfo, isLockInfoFetched]);
+
+    if (!isLockInfoFetched || !isLockPeriodEndsAtFetched) {
+      return;
+    }
+
+    const now = Date.now();
+    if (lockPeriodEndsAt === undefined || lockPeriodEndsAt < now) {
+      setPeriod(lockConfig?.minLockTime);
+      return;
+    }
+
+    setPeriod(lockInfo?.period);
+  }, [
+    isLockInfoFetched,
+    isLockPeriodEndsAtFetched,
+    lockConfig?.minLockTime,
+    lockInfo?.period,
+    lockPeriodEndsAt,
+    period,
+  ]);
 
   const { uUST } = useBalances();
 
@@ -81,12 +99,12 @@ function AncStakeBase(props: UIElementProps) {
 
     lock({
       amount,
-      period: lockInfo?.period ? undefined : period,
+      period,
       onTxSucceed: () => {
         setAmount('' as ANC);
       },
     });
-  }, [amount, connected, lock, lockInfo?.period, period]);
+  }, [amount, connected, lock, period]);
 
   if (
     lockResult?.status === StreamStatus.IN_PROGRESS ||
@@ -153,7 +171,7 @@ function AncStakeBase(props: UIElementProps) {
           </span>
         </div>
 
-        {amount.length > 0 && lockInfo?.period === undefined && (
+        {amount.length > 0 && period !== undefined && (
           <>
             <Divider />
             <VStack className="duration-slider" gap={8}>
