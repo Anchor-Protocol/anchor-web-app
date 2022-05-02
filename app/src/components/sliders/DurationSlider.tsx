@@ -8,7 +8,7 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import React, { useCallback, useMemo } from 'react';
 import { useTheme } from 'styled-components';
 import { Marker } from './Marker';
-import { secondsInHour } from 'date-fns';
+import { secondsInHour, secondsInMinute } from 'date-fns';
 import { SliderContainer } from './SliderContainer';
 
 const secondsInDay = secondsInHour * 24;
@@ -27,13 +27,31 @@ const pluralize = (unit: string, value: number) =>
   `${value} ${unit}${value % 10 === 1 ? '' : 's'}`;
 
 const getDurationString = (seconds: Second) => {
-  const totalDays = Math.round(seconds / secondsInDay);
+  const totalDays = Math.floor(seconds / secondsInDay);
   const years = Math.floor(totalDays / daysInYear);
   const days = totalDays - years * daysInYear;
 
-  return `${years > 0 ? pluralize('year', years) : ''} ${
-    days > 0 ? pluralize('day', days) : ''
-  }`;
+  if (years > 0) {
+    return `${pluralize('year', years)} ${
+      days > 0 ? pluralize('day', days) : ''
+    }`;
+  }
+
+  const hours = Math.floor(
+    (seconds - totalDays * secondsInDay) / secondsInHour,
+  );
+  if (days > 0) {
+    return `${pluralize('day', days)} ${
+      hours > 0 ? pluralize('hour', hours) : ''
+    }`;
+  }
+
+  if (hours > 0) {
+    return pluralize('hour', hours);
+  }
+
+  const minutes = Math.round(seconds / secondsInMinute);
+  return pluralize('minute', minutes);
 };
 
 const colorFunction = ({ color }: Data) => color;

@@ -23,6 +23,10 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import { DialogTitle } from '@libs/ui/text/DialogTitle';
 import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
+import { VStack } from '@libs/ui/Stack';
+import { ExpectedVeAncToReceive } from './ExpectedVeAncToReceive';
+import { useMyAncStakedQuery } from 'queries';
+import { ANC } from '@anchor-protocol/types';
 
 type ExtendAncLockPeriodDialogProps = DialogProps<{}>;
 
@@ -49,31 +53,30 @@ export const ExtendAncLockPeriodDialog = ({
 
   const [extendPeriod, extendPeriodResult] = useExtendAncLockPeriodTx();
 
+  const { data: staked } = useMyAncStakedQuery();
+
+  const extendForPeriod =
+    period && lockInfo?.period
+      ? ((period - lockInfo?.period) as Second)
+      : undefined;
+
   const proceed = useCallback(() => {
     if (
       !connected ||
       !extendPeriod ||
-      !period ||
       isSubmitDisabled ||
-      !lockInfo?.period
+      extendForPeriod === undefined
     ) {
       return;
     }
 
     extendPeriod({
-      period: (period - lockInfo?.period) as Second,
+      period: extendForPeriod,
       onTxSucceed: () => {
         closeDialog();
       },
     });
-  }, [
-    closeDialog,
-    connected,
-    lockInfo?.period,
-    extendPeriod,
-    isSubmitDisabled,
-    period,
-  ]);
+  }, [closeDialog, connected, extendForPeriod, extendPeriod, isSubmitDisabled]);
 
   if (
     extendPeriodResult?.status === StreamStatus.IN_PROGRESS ||
@@ -107,19 +110,29 @@ export const ExtendAncLockPeriodDialog = ({
         <DialogTitle>Extend lock period</DialogTitle>
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
-        {period !== undefined &&
-        lockInfo?.period !== undefined &&
-        lockConfig !== undefined ? (
-          <DurationSlider
-            value={period}
-            min={lockInfo?.period}
-            max={lockConfig.maxLockTime}
-            step={lockConfig.periodDuration}
-            onChange={setPeriod}
-          />
-        ) : (
-          <SliderPlaceholder />
-        )}
+        <VStack gap={8} fullWidth>
+          {period !== undefined &&
+          lockInfo?.period !== undefined &&
+          lockConfig !== undefined ? (
+            <DurationSlider
+              value={period}
+              min={lockInfo?.period}
+              max={lockConfig.maxLockTime}
+              step={lockConfig.periodDuration}
+              onChange={setPeriod}
+            />
+          ) : (
+            <SliderPlaceholder />
+          )}
+          {lockConfig && extendForPeriod !== undefined && (
+            <ExpectedVeAncToReceive
+              amount={(staked ? demicrofy(staked) : '0') as ANC}
+              period={extendForPeriod}
+              boostCoefficient={lockConfig.boostCoefficient}
+              maxLockTime={lockConfig.maxLockTime}
+            />
+          )}
+        </VStack>
 
         <TxFeeList className="receipt">
           {big(fixedFee).gt(0) && (
