@@ -96,7 +96,7 @@ export const GovernanceMain = styled(GovernanceMainBase)`
   .content-layout {
     display: grid;
     grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
+    grid-template-rows: auto auto auto;
 
     .title {
       grid-row: 1;
@@ -111,6 +111,11 @@ export const GovernanceMain = styled(GovernanceMainBase)`
 
     .outlet {
       grid-row: 2;
+      grid-column: 1 / span 2;
+    }
+
+    footer {
+      grid-row: 3;
       grid-column: 1 / span 2;
     }
   }

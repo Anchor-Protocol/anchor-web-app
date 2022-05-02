@@ -79,6 +79,16 @@ const AncUstLpBase = (props: UIElementProps) => {
         </Circles>
         <CardHeading className="heading" title="ANC-UST LP" />
         <div className="values">
+          {hasRewards && (
+            <LabelWithValue label="Rewards" tooltip="Your pending rewards">
+              {hasAncRewards && (
+                <div>{formatOutput(demicrofy(ancRewards))} ANC</div>
+              )}
+              {hasAstroRewards && (
+                <div>{formatOutput(demicrofy(astroRewards))} ASTRO</div>
+              )}
+            </LabelWithValue>
+          )}
           <LabelWithValue label="APR" tooltip="APR">
             <AnimateNumber format={formatRate}>
               {lpRewards && lpRewards.length > 0
@@ -97,18 +107,6 @@ const AncUstLpBase = (props: UIElementProps) => {
                 : (0 as u<Token<number>>)}
             </AnimateNumber>
           </LabelWithValue>
-          {hasRewards && (
-            <div>
-              <LabelWithValue label="Rewards" tooltip="Your pending rewards">
-                {hasAncRewards && (
-                  <span>{formatOutput(demicrofy(ancRewards))} ANC</span>
-                )}
-                {hasAstroRewards && (
-                  <span>{formatOutput(demicrofy(astroRewards))} ASTRO</span>
-                )}
-              </LabelWithValue>
-            </div>
-          )}
         </div>
       </div>
     </ButtonCard>

@@ -15,6 +15,9 @@ function ButtonCardBase(props: ButtonCardProps) {
   return (
     <Card
       className={classNames(className, { enabled: Boolean(onClick) })}
+      sectionContentProps={{
+        margin: 'small',
+      }}
       onClick={onClick}
     >
       <div className="children">{children}</div>
@@ -25,6 +28,8 @@ function ButtonCardBase(props: ButtonCardProps) {
 
 export const ButtonCard = styled(ButtonCardBase)`
   cursor: pointer;
+  display: flex;
+  align-items: center;
 
   &.enabled {
     &:hover {
