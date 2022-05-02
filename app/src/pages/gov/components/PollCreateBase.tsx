@@ -3,10 +3,7 @@ import {
   formatUSTWithPostfixUnits,
   formatVeAnc,
 } from '@anchor-protocol/notation';
-import {
-  useGovConfigQuery,
-  useGovCreatePollTx,
-} from '@anchor-protocol/app-provider';
+import { useGovCreatePollTx } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
@@ -41,6 +38,7 @@ import { FormLayout } from './FormLayout';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { VStack } from '@libs/ui/Stack';
 import { veANC } from '@anchor-protocol/types';
+import { useGovConfigQuery } from 'queries';
 
 export interface PollCreateBaseProps {
   pollTitle: ReactNode;
@@ -82,7 +80,7 @@ export function PollCreateBase({
   // ---------------------------------------------
   const bank = useAnchorBank();
 
-  const { data: { govConfig: pollConfig } = {} } = useGovConfigQuery();
+  const { data: govConfig } = useGovConfigQuery();
 
   // ---------------------------------------------
   // logics
@@ -101,14 +99,14 @@ export function PollCreateBase({
   const invalidLinkProtocol = useMemo(() => validateLinkAddress(link), [link]);
 
   const invalidUserBalance = useMemo(() => {
-    if (!pollConfig || !connected) {
+    if (!govConfig || !connected) {
       return undefined;
     }
 
-    return big(bank.tokenBalances.uANC).lt(pollConfig.proposal_deposit)
+    return big(bank.tokenBalances.uANC).lt(govConfig.proposal_deposit)
       ? `Not enough ${VEANC_SYMBOL}`
       : undefined;
-  }, [bank.tokenBalances.uANC, pollConfig, connected]);
+  }, [bank.tokenBalances.uANC, govConfig, connected]);
 
   // ---------------------------------------------
   // callbacks
@@ -263,8 +261,8 @@ export function PollCreateBase({
               readOnly: true,
             }}
             value={
-              pollConfig
-                ? formatVeAnc(demicrofy(pollConfig.proposal_deposit))
+              govConfig
+                ? formatVeAnc(demicrofy(govConfig.proposal_deposit))
                 : '0'
             }
             error={!!invalidUserBalance}
@@ -296,12 +294,12 @@ export function PollCreateBase({
               !!invalidLinkProtocol
             }
             onClick={() =>
-              pollConfig &&
+              govConfig &&
               submit(
                 title,
                 description,
                 link,
-                demicrofy(pollConfig.proposal_deposit).toString() as veANC,
+                demicrofy(govConfig.proposal_deposit).toString() as veANC,
               )
             }
           >

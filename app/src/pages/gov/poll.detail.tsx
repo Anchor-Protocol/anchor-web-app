@@ -5,7 +5,6 @@ import {
   useAnchorWebapp,
   useDeploymentTarget,
   useGovPollQuery,
-  useGovStateQuery,
   useGovVoteAvailableQuery,
   useGovVotersQuery,
   useLastSyncedHeightQuery,
@@ -41,6 +40,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { UIElementProps } from '@libs/ui';
 import { useEstimatedBlockTime } from 'queries/useEstimatedBlockTime';
+import { useGovStateQuery, useGovConfigQuery } from 'queries';
 
 function PollDetailBase({ className }: UIElementProps) {
   const {
@@ -61,7 +61,9 @@ function PollDetailBase({ className }: UIElementProps) {
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.gov,
   );
-  const { data: { govState, govConfig } = {} } = useGovStateQuery();
+
+  const { data: govState } = useGovStateQuery();
+  const { data: govConfig } = useGovConfigQuery();
 
   const canIVote = useGovVoteAvailableQuery(poll?.id);
 

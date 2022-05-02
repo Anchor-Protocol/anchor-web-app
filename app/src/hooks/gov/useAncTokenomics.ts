@@ -2,11 +2,11 @@ import {
   useAncBalanceQuery,
   useAnchorWebapp,
   useAncTokenInfoQuery,
-  useGovStateQuery,
 } from '@anchor-protocol/app-provider';
 import { ANC } from '@anchor-protocol/types';
 import { HumanAddr, u } from '@libs/types';
 import big, { Big } from 'big.js';
+import { useGovStateQuery, useGovConfigQuery } from 'queries';
 import { useMemo } from 'react';
 
 export interface AncTokenomics {
@@ -45,7 +45,8 @@ export const useAncTokenomics = (): AncTokenomics | undefined => {
       'terra1dp0taj85ruc299rkdvzp4z5pfg6z6swaed74e6' as HumanAddr,
     );
 
-  const { data: { govState, govConfig } = {} } = useGovStateQuery();
+  const { data: govState } = useGovStateQuery();
+  const { data: govConfig } = useGovConfigQuery();
 
   return useMemo(() => {
     if (

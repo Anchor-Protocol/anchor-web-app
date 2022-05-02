@@ -10,7 +10,6 @@ import {
   useAncBalanceQuery,
   useAncGovernanceUnstakeTx,
   useAnchorWebapp,
-  useGovStateQuery,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/app-provider';
 import { useFixedFee } from '@libs/app-provider';
@@ -29,7 +28,7 @@ import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useBalances } from 'contexts/balances';
-import { useMyVotingLockPeriodEndsAtQuery } from 'queries';
+import { useGovStateQuery, useMyVotingLockPeriodEndsAtQuery } from 'queries';
 
 export function AncUnstake() {
   const { availablePost, connected } = useAccount();
@@ -55,7 +54,7 @@ export function AncUnstake() {
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.gov,
   );
-  const { data: { govState } = {} } = useGovStateQuery();
+  const { data: govState } = useGovStateQuery();
 
   const unstakableBalance = useMemo<u<ANC<Big>> | undefined>(() => {
     if (!govANCBalance || !userGovStakingInfo || !govState) return undefined;

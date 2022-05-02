@@ -16,3 +16,5 @@ export * from './gov/useAncStakingAPRQuery';
 export * from './gov/useMyAncStakedQuery';
 export * from './gov/useMyVotingLockPeriodEndsAtQuery';
 export * from './useLocalAnchorContractAddressQuery';
+export * from './gov/useGovStateQuery';
+export * from './gov/useGovConfigQuery';

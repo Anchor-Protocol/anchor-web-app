@@ -101,6 +101,15 @@ export namespace anchorToken {
       snapshot_period: number;
     }
 
+    export interface State {}
+
+    export interface StateResponse {
+      pending_voting_rewards: u<ANC>;
+      poll_count: number;
+      total_deposit: u<ANC>;
+      total_share: u<ANC>;
+    }
+
     export type PollStatus = 'in_progress' | 'passed' | 'rejected' | 'executed';
 
     export interface ExecuteMsg {

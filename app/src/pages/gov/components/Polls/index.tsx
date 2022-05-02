@@ -4,7 +4,6 @@ import {
   useAnchorWebapp,
   useDeploymentTarget,
   useGovPollsQuery,
-  useGovStateQuery,
 } from '@anchor-protocol/app-provider';
 import { List, ViewModule } from '@material-ui/icons';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
@@ -21,6 +20,7 @@ import styled from 'styled-components';
 import { Grid as GridView } from './Grid';
 import { List as ListView } from './List';
 import { useLocalStorage } from 'usehooks-ts';
+import { useGovStateQuery, useGovConfigQuery } from 'queries';
 
 export interface PollsProps {
   className?: string;
@@ -57,7 +57,8 @@ function PollsBase({ className }: PollsProps) {
     contractAddress.anchorToken.gov,
   );
 
-  const { data: { govState, govConfig } = {} } = useGovStateQuery();
+  const { data: govState } = useGovStateQuery();
+  const { data: govConfig } = useGovConfigQuery();
 
   const [view, setView] = useLocalStorage<'grid' | 'list'>(
     '__anchor_polls_view__',
