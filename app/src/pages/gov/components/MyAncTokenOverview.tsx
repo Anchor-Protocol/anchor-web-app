@@ -2,7 +2,6 @@ import { AnimateNumber, UIElementProps } from '@libs/ui';
 import { Divider } from 'components/primitives/Divider';
 import React from 'react';
 import styled from 'styled-components';
-import { CardSubHeading, CardSubHeadingProps } from './Card';
 import { formatUTokenDecimal2 } from '@anchor-protocol/notation';
 import { ANC, u, veANC } from '@anchor-protocol/types';
 import { Sub } from 'components/Sub';
@@ -23,19 +22,8 @@ import { HStack, VStack } from '@libs/ui/Stack';
 import { TitledCard } from '@libs/ui/cards/TitledCard';
 import { ImportantStatistic } from '@libs/ui/text/ImportantStatistic';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
-
-interface LabelWithValueProps extends CardSubHeadingProps {}
-
-const LabelWithValue = (props: LabelWithValueProps) => {
-  const { title, tooltip, children } = props;
-
-  return (
-    <>
-      <CardSubHeading className="subHeading" title={title} tooltip={tooltip} />
-      <Amount>{children}</Amount>
-    </>
-  );
-};
+import { InlineStatistic } from '@libs/ui/text/InlineStatistic';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 
 export const MyAncTokenOverview = (props: UIElementProps) => {
   const { uANC } = useBalances();
@@ -95,23 +83,27 @@ export const MyAncTokenOverview = (props: UIElementProps) => {
           </Tooltip>
         </ManageStake>
         <Divider />
-        {unlockAt && (
-          <LabelWithValue
-            title="Unlock time"
-            tooltip="The amount of ANC held in your Wallet"
-          >
-            {formatTimestamp(unlockAt)}
-          </LabelWithValue>
-        )}
-        <LabelWithValue
-          title="Voting Power"
-          tooltip="The amount of ANC that you are currently Staking in the Governance contract"
-        >
-          <AnimateNumber format={formatUTokenDecimal2}>
-            {votingPower ? votingPower : (0 as u<veANC<BigSource>>)}
-          </AnimateNumber>{' '}
-          <Sub>veANC</Sub>
-        </LabelWithValue>
+        <VStack fullWidth gap={20}>
+          {unlockAt !== undefined && (
+            <InlineStatistic
+              name="UNLOCK TIME"
+              value={formatTimestamp(unlockAt)}
+            />
+          )}
+          {votingPower !== undefined && (
+            <InlineStatistic
+              name="VOTING POWER"
+              value={
+                <>
+                  <AnimateNumber format={formatUTokenDecimal2}>
+                    {votingPower ? votingPower : (0 as u<veANC<BigSource>>)}
+                  </AnimateNumber>{' '}
+                  <Sub>{VEANC_SYMBOL}</Sub>
+                </>
+              }
+            />
+          )}
+        </VStack>
         <HStack fullWidth>
           <ExtendAncLockPeriod />
         </HStack>

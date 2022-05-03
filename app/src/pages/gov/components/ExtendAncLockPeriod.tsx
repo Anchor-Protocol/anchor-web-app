@@ -26,7 +26,11 @@ export const ExtendAncLockPeriod = () => {
     currentPeriod > lockConfig.maxLockTime - lockConfig.periodDuration;
 
   const button = (
-    <BorderButton disabled={isMaxedOut} onClick={openExtendAncLockPeriodDialog}>
+    <BorderButton
+      style={{ flex: 1 }}
+      disabled={isMaxedOut}
+      onClick={openExtendAncLockPeriodDialog}
+    >
       Extend
     </BorderButton>
   );
