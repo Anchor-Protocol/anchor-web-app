@@ -9,7 +9,7 @@ import { VStack } from '@libs/ui/Stack';
 
 export function Overview() {
   return (
-    <Container gap={40}>
+    <VStack gap={40}>
       <PrimaryContent>
         <AncTokenOverview />
         <MyAncTokenOverview />
@@ -18,34 +18,9 @@ export function Overview() {
         <AncTrade />
         <AncUstLp />
       </SecondaryContent>
-    </Container>
+    </VStack>
   );
 }
-
-// TODO: move responsive styles to the card itself
-const Container = styled(VStack)`
-  // tablet
-  @media (min-width: ${screen.tablet.min}px) and (max-width: ${screen.tablet
-      .max}px) {
-    .NeuSection-root {
-      .NeuSection-content {
-        padding: 30px;
-      }
-    }
-  }
-
-  // mobile
-  @media (max-width: ${screen.mobile.max}px) {
-    .NeuSection-root {
-      margin-bottom: 20px;
-
-      .NeuSection-content {
-        padding: 20px;
-      }
-    }
-  }
-`;
-
 const PrimaryContent = styled.div`
   display: grid;
   grid-template-columns: 5fr 9fr;
