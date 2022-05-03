@@ -136,7 +136,7 @@ export function useProvideCollateralTx(collateral: WhitelistCollateral) {
   const streamReturn = useRenderedTx({
     sendTx,
     renderResults,
-    network: connectedWallet!.network,
+    network: connectedWallet?.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
     message: `Providing your ${collateral.symbol}`,

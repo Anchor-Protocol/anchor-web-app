@@ -39,7 +39,7 @@ export function useClaimRewardsTx() {
         },
       );
 
-      refetchQueries(ANCHOR_TX_KEY.REWARDS_UST_BORROW_CLAIM);
+      refetchQueries(ANCHOR_TX_KEY.REWARDS_ALL_CLAIM);
 
       return result;
     },
@@ -90,7 +90,7 @@ export function useClaimRewardsTx() {
   const streamReturn = useRenderedTx({
     sendTx,
     renderResults,
-    network: connectedWallet!.network,
+    network: connectedWallet?.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
     message: 'Claiming rewards',

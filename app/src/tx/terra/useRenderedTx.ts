@@ -1,3 +1,4 @@
+import { TESTNET } from '@anchor-protocol/app-provider';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { _catchTxError } from '@libs/app-fns/tx/internal';
 import { StreamReturn, useStream } from '@rx-stream/react';
@@ -15,7 +16,7 @@ export function useRenderedTx<TxParams>($: {
     writer: TerraTxProgressWriter,
     params: TxParams,
   ) => Promise<TxResultRendering>;
-  network: NetworkInfo;
+  network?: NetworkInfo;
   txFee: string;
   message?: string;
   txErrorReporter?: (error: unknown) => string;
@@ -31,14 +32,13 @@ export function useRenderedTx<TxParams>($: {
   );
 
   const writer = useMemo(
-    () => new TerraTxProgressWriter(subject, $.network, $.txFee),
+    () => new TerraTxProgressWriter(subject, $.network ?? TESTNET, $.txFee),
     [$.network, $.txFee, subject],
   );
 
   const send = useCallback(
     async (params: TxParams, writer: TerraTxProgressWriter) => {
       const result = await $.sendTx(params, writer);
-      writer.writeTxHash(result.txhash);
       return result;
     },
     [$],
@@ -51,7 +51,10 @@ export function useRenderedTx<TxParams>($: {
       merge(
         subject,
         from(withTimer(params, writer)).pipe(
-          mergeMap((txInfo) => $.renderResults(txInfo, writer, params)),
+          mergeMap((txInfo) => {
+            subject.complete();
+            return $.renderResults(txInfo, writer, params);
+          }),
         ),
       ).pipe(_catchTxError({ helper: writer, ...$ })),
     [$, writer, subject, withTimer],

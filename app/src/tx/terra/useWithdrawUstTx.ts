@@ -124,7 +124,7 @@ export function useWithdrawUstTx() {
   const streamReturn = useRenderedTx({
     sendTx,
     renderResults,
-    network: connectedWallet!.network,
+    network: connectedWallet?.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
     message: 'Withdrawing your UST',

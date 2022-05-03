@@ -116,7 +116,7 @@ export function useBurnbLunaTx(onSuccess?: RefCallback<() => void>) {
   const streamReturn = useRenderedTx({
     sendTx,
     renderResults,
-    network: connectedWallet!.network,
+    network: connectedWallet?.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
     message: 'Burning your bLuna',

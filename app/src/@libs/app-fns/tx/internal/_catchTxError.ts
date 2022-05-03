@@ -22,7 +22,6 @@ export function _catchTxError({
 
     return Promise.resolve<TxResultRendering>({
       value: null,
-
       phase: TxStreamPhase.FAILED,
       failedReason: { error, errorId },
       receipts: [helper.txHashReceipt()],
