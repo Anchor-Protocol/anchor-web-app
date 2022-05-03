@@ -15,11 +15,11 @@ export const useSAnc = () => {
       return undefined;
     }
 
-    return (amount: ANC): ANC => {
+    return (amount: ANC): ANC<Big> => {
       const totalShare = demicrofy(govState.total_share);
       const totalStaked = demicrofy(ancTokenomics.totalStaked);
 
-      return Big(amount).mul(totalShare).div(totalStaked).toString() as ANC;
+      return Big(amount).mul(totalShare).div(totalStaked) as ANC<Big>;
     };
   }, [ancTokenomics, govState, lockConfig]);
 
