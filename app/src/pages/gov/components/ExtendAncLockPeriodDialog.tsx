@@ -2,7 +2,7 @@ import { Second } from '@libs/types';
 import { DialogProps } from '@libs/use-dialog';
 import { Modal } from '@material-ui/core';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import { useFixedFee } from '@libs/app-provider';
@@ -24,9 +24,10 @@ import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import { DialogTitle } from '@libs/ui/text/DialogTitle';
 import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
 import { VStack } from '@libs/ui/Stack';
-import { useMyAncStakedQuery } from 'queries';
+import { useMyAncStakedQuery, useMyVotingLockPeriodEndsAtQuery } from 'queries';
 import { ANC } from '@anchor-protocol/types';
 import { EstimatedVeAncAmount } from './EstimatedVeAncAmount';
+import { millisecondsInSecond } from 'date-fns';
 
 type ExtendAncLockPeriodDialogProps = DialogProps<{}>;
 
@@ -43,10 +44,44 @@ export const ExtendAncLockPeriodDialog = ({
   const [period, setPeriod] = useState<Second | undefined>();
 
   const { data: lockInfo } = useMyLockInfoQuery();
-  const currentPeriod = lockInfo?.period;
+  const { data: lockPeriodEndsAt } = useMyVotingLockPeriodEndsAtQuery();
+
+  const minPeriod = useMemo(() => {
+    if (
+      lockConfig !== undefined &&
+      (lockPeriodEndsAt === undefined || lockPeriodEndsAt < Date.now())
+    ) {
+      return lockConfig.minLockTime as Second;
+    }
+
+    if (
+      lockPeriodEndsAt !== undefined &&
+      lockPeriodEndsAt > Date.now() &&
+      lockConfig !== undefined
+    ) {
+      const minPeriod =
+        Math.round((lockPeriodEndsAt - Date.now()) / millisecondsInSecond) +
+        lockConfig.periodDuration;
+
+      return minPeriod as Second;
+    }
+  }, [lockConfig, lockPeriodEndsAt]);
+
+  const maxPeriod = lockConfig?.maxLockTime;
+
   useEffect(() => {
-    setPeriod(currentPeriod);
-  }, [currentPeriod]);
+    if (minPeriod === undefined || maxPeriod === undefined) {
+      return;
+    }
+
+    if (period === undefined) {
+      setPeriod(minPeriod);
+    } else if (period < minPeriod) {
+      setPeriod(minPeriod);
+    } else if (period > maxPeriod) {
+      setPeriod(maxPeriod);
+    }
+  }, [maxPeriod, minPeriod, period]);
 
   const isSubmitDisabled =
     !availablePost || invalidTxFee || lockInfo?.period === period;
@@ -55,10 +90,15 @@ export const ExtendAncLockPeriodDialog = ({
 
   const { data: staked } = useMyAncStakedQuery();
 
-  const extendForPeriod =
-    period && lockInfo?.period
-      ? ((period - lockInfo?.period) as Second)
-      : undefined;
+  const extendForPeriod = useMemo(() => {
+    if (lockPeriodEndsAt === undefined || lockPeriodEndsAt < Date.now()) {
+      return period;
+    } else if (period !== undefined) {
+      const currentPeriod =
+        (lockPeriodEndsAt - Date.now()) / millisecondsInSecond;
+      return (period - currentPeriod) as Second;
+    }
+  }, [lockPeriodEndsAt, period]);
 
   const proceed = useCallback(() => {
     if (
@@ -112,12 +152,13 @@ export const ExtendAncLockPeriodDialog = ({
 
         <VStack gap={8} fullWidth>
           {period !== undefined &&
-          lockInfo?.period !== undefined &&
-          lockConfig !== undefined ? (
+          minPeriod !== undefined &&
+          maxPeriod !== undefined &&
+          lockConfig ? (
             <DurationSlider
               value={period}
-              min={lockInfo?.period}
-              max={lockConfig.maxLockTime}
+              min={minPeriod}
+              max={maxPeriod}
               step={lockConfig.periodDuration}
               onChange={setPeriod}
             />
