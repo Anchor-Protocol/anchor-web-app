@@ -8,13 +8,10 @@ export const useTerraSdk = () => {
   const { lcdClient, network } = useNetwork();
 
   return useMemo(() => {
-    const postAvailable =
-      connectedWallet && connectedWallet.availablePost && connectedWallet.post;
-
     return new TerraSdk(network.name as Network, {
       connectedWallet: {
         lcd: lcdClient,
-        post: postAvailable ? connectedWallet.post : undefined,
+        wallet: connectedWallet,
       },
     });
   }, [connectedWallet, lcdClient, network.name]);

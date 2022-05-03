@@ -32,13 +32,12 @@ export const useRestoreTx = ():
       writer.timer.start();
 
       try {
-        const result = await xAnchor.restoreTx(
-          txParams.txHash,
-          (event) => {
+        const result = await xAnchor.restoreTx(txParams.txHash, {
+          manualRedemption: true,
+          handleEvent: (event) => {
             writer.restoreTx(event);
           },
-          { manualRedemption: true },
-        );
+        });
 
         removeTransaction(txParams.txHash);
         return result;

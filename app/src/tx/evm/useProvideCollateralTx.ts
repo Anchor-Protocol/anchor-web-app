@@ -46,18 +46,18 @@ export function useProvideCollateralTx():
 
       try {
         await xAnchor.approveLimit(
+          address!,
           { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
-          address!,
         );
 
         writer.provideCollateral(symbol);
         writer.timer.reset();
 
         const response = await xAnchor.lockCollateral(
+          address!,
           { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
-          address!,
           {
             handleEvent: (event) => {
               writer.provideCollateral(symbol, event);

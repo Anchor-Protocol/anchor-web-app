@@ -44,12 +44,12 @@ export function useWithdrawUstTx():
       writer.timer.start();
 
       try {
-        await xAnchor.approveLimit({ token: 'aUST' }, withdrawAmount, address!);
+        await xAnchor.approveLimit(address!, { token: 'aUST' }, withdrawAmount);
 
         writer.withdrawUST();
         writer.timer.reset();
 
-        const result = await xAnchor.redeemStable(withdrawAmount, address!, {
+        const result = await xAnchor.redeemStable(address!, withdrawAmount, {
           handleEvent: (event) => {
             writer.withdrawUST(event);
             handleEvent(event);

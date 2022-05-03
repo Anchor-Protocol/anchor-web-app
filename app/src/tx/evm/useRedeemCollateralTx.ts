@@ -44,9 +44,9 @@ export function useRedeemCollateralTx():
 
       try {
         const result = await xAnchor.unlockCollateral(
+          address!,
           { contract: collateral_token },
           microfy(amount, decimals),
-          address!,
           {
             handleEvent: (event) => {
               writer.withdrawCollateral(symbol, event);

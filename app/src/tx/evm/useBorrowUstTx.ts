@@ -68,9 +68,9 @@ export function useBorrowUstTx():
           );
 
           await sdk.approveLimit(
+            address!,
             { contract: collateral.bridgedAddress as ERC20Addr },
             nativeCollateralAmount.toString(),
-            address!,
           );
 
           writer.borrowUST();
@@ -78,10 +78,10 @@ export function useBorrowUstTx():
 
           // borrowing based on additional collateral being locked
           const lockAndBorrowResult = await sdk.lockAndBorrow(
+            address!,
             { contract: collateral.bridgedAddress as ERC20Addr },
             nativeCollateralAmount.toString(),
             borrowAmount,
-            address!,
             {
               handleEvent: (event) => {
                 writer.borrowUST(event, collateral.symbol);

@@ -23,8 +23,8 @@ export const useWithdrawAssetTx = () => {
     ) => {
       try {
         const result = await xAnchor.withdrawAsset(
-          { contract: txParams.tokenContract },
           address!,
+          { contract: txParams.tokenContract },
           { handleEvent },
         );
         return result;

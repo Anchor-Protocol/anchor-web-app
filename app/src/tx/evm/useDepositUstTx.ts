@@ -43,12 +43,12 @@ export function useDepositUstTx():
       writer.timer.start();
 
       try {
-        await xAnchor.approveLimit({ token: 'UST' }, depositAmount, address!);
+        await xAnchor.approveLimit(address!, { token: 'UST' }, depositAmount);
 
         writer.depositUST();
         writer.timer.reset();
 
-        const response = await xAnchor.depositStable(depositAmount, address!, {
+        const response = await xAnchor.depositStable(address!, depositAmount, {
           handleEvent: (event) => {
             handleEvent(event);
             writer.depositUST(event);
