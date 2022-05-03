@@ -7,16 +7,11 @@ import { wasmFetch, WasmQuery, QueryClient } from '@libs/query-client';
 import { useAccount } from 'contexts/account';
 import { useAnchorQuery } from 'queries/useAnchorQuery';
 import { createQueryFn } from '@libs/react-query-utils';
-import { Second } from '@libs/types';
 
 interface UserLockInfoWasmQuery {
   lockInfo: WasmQuery<
     anchorToken.votingEscrow.LockInfo,
     anchorToken.votingEscrow.LockInfoResponse
-  >;
-  config: WasmQuery<
-    anchorToken.votingEscrow.Config,
-    anchorToken.votingEscrow.ConfigResponse
   >;
 }
 
@@ -25,7 +20,7 @@ const userLockInfoQuery = async (
   user: HumanAddr,
   queryClient: QueryClient,
 ) => {
-  const { lockInfo, config } = await wasmFetch<UserLockInfoWasmQuery>({
+  const { lockInfo } = await wasmFetch<UserLockInfoWasmQuery>({
     ...queryClient,
     id: 'user-lock-info',
     wasmQuery: {
@@ -37,18 +32,10 @@ const userLockInfoQuery = async (
           },
         },
       },
-      config: {
-        contractAddress: votingEscrowContract,
-        query: { config: {} },
-      },
     },
   });
 
-  return {
-    ...lockInfo,
-    period: ((lockInfo.end - lockInfo.start) *
-      config.period_duration) as Second,
-  };
+  return lockInfo;
 };
 
 const userLockInfoQueryFn = createQueryFn(userLockInfoQuery);

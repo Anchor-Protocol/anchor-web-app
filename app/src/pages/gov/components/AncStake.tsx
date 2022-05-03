@@ -27,7 +27,6 @@ import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQue
 import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import styled from 'styled-components';
 import { VStack } from '@libs/ui/Stack';
-import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { UIElementProps } from '@libs/ui';
@@ -46,7 +45,6 @@ function AncStakeBase(props: UIElementProps) {
 
   const [amount, setAmount] = useState<ANC>('' as ANC);
 
-  const { data: lockInfo, isFetched: isLockInfoFetched } = useMyLockInfoQuery();
   const { data: lockPeriodEndsAt, isFetched: isLockPeriodEndsAtFetched } =
     useMyVotingLockPeriodEndsAtQuery();
 
@@ -54,29 +52,18 @@ function AncStakeBase(props: UIElementProps) {
 
   const [period, setPeriod] = useState<Second | undefined>();
   useEffect(() => {
-    if (period) {
+    if (!isLockPeriodEndsAtFetched) {
       return;
     }
 
-    if (!isLockInfoFetched || !isLockPeriodEndsAtFetched) {
+    if (lockPeriodEndsAt !== undefined && lockPeriodEndsAt > Date.now()) {
       return;
     }
 
-    const now = Date.now();
-    if (lockPeriodEndsAt === undefined || lockPeriodEndsAt < now) {
-      setPeriod(lockConfig?.minLockTime);
-      return;
+    if (period === undefined && lockConfig) {
+      setPeriod(lockConfig.minLockTime);
     }
-
-    setPeriod(lockInfo?.period);
-  }, [
-    isLockInfoFetched,
-    isLockPeriodEndsAtFetched,
-    lockConfig?.minLockTime,
-    lockInfo?.period,
-    lockPeriodEndsAt,
-    period,
-  ]);
+  }, [isLockPeriodEndsAtFetched, lockConfig, lockPeriodEndsAt, period]);
 
   const { uUST } = useBalances();
 
@@ -184,7 +171,6 @@ function AncStakeBase(props: UIElementProps) {
                   </InfoTooltip>
                 </IconSpan>
               </h3>
-              {/* <Label>Lock Period</Label> */}
               {period !== undefined && lockConfig !== undefined ? (
                 <DurationSlider
                   value={period}
@@ -243,8 +229,3 @@ export const AncStake = styled(AncStakeBase)`
     }
   }
 `;
-
-// const Label = styled.p`
-//   font-size: 16px;
-//   color: ${({ theme }) => theme.dimTextColor};
-// `;
