@@ -9,10 +9,9 @@ export const useTxTimer = <TxParams>(
   return useCallback(
     async (txParams: TxParams, writer: TerraTxProgressWriter) => {
       try {
-        const result = await sendTx(txParams, writer);
-
         writer.writeStatus(statusMessage);
         writer.timer.start();
+        const result = await sendTx(txParams, writer);
         return result;
       } finally {
         writer.timer.stop();

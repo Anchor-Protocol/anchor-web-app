@@ -65,7 +65,7 @@ export class TerraTxProgressWriter extends TxProgressWriter<TxResultRendering> {
       return {
         ...current,
         description: this._description,
-        receipts: this.merge(current.receipts, 'Tx Hash', txHash),
+        receipts: this.merge(current.receipts, 'Tx Hash', truncate(txHash)),
       };
     });
   }
@@ -121,11 +121,11 @@ export class TerraTxProgressWriter extends TxProgressWriter<TxResultRendering> {
   };
 }
 
-function truncate(
+export const truncate = (
   text: string = '',
   [h, t]: [number, number] = [6, 6],
-): string {
+): string => {
   const head = text.slice(0, h);
   const tail = text.slice(-1 * t, text.length);
   return text.length > h + t ? [head, tail].join('...') : text;
-}
+};
