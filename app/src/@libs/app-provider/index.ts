@@ -26,6 +26,3 @@ export * from './queries/terra/treasuryTaxCap';
 export * from './queries/terra/treasuryTaxRate';
 export * from './queries/terraswap/pair';
 export * from './queries/terraswap/pool';
-export * from './tx/cw20/buyToken';
-export * from './tx/cw20/sellToken';
-export * from './tx/send/send';

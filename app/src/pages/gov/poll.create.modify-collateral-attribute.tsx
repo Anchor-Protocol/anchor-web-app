@@ -1,4 +1,3 @@
-import { ExecuteMsg } from '@anchor-protocol/app-fns';
 import { anchorToken, Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { formatExecuteMsgNumber } from '@libs/formatter';
@@ -17,6 +16,7 @@ import React, {
   useState,
 } from 'react';
 import { useWhitelistCollateralQuery } from 'queries';
+import { ExecuteMsg } from 'tx/terra';
 
 export function PollCreateModifyCollateralAttribute() {
   // ---------------------------------------------

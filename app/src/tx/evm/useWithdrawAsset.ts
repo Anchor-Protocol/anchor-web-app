@@ -1,6 +1,6 @@
 import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { useBackgroundTx } from './useBackgroundTx';
@@ -14,7 +14,7 @@ export interface WithdrawAssetTxParams {
 
 export const useWithdrawAssetTx = () => {
   const { provider, address, connectionType, chainId } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
 
   const withdrawTx = useCallback(
     async (
@@ -23,8 +23,8 @@ export const useWithdrawAssetTx = () => {
     ) => {
       try {
         const result = await xAnchor.withdrawAsset(
-          { contract: txParams.tokenContract },
           address!,
+          { contract: txParams.tokenContract },
           { handleEvent },
         );
         return result;

@@ -1,5 +1,5 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import { useAnchorBank, useBAssetClaimTx } from '@anchor-protocol/app-provider';
+import { useAnchorBank } from '@anchor-protocol/app-provider';
 import { formatUST } from '@anchor-protocol/notation';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
@@ -19,6 +19,7 @@ import { fixHMR } from 'fix-hmr';
 import React, { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useClaimWhAssetRewardsTx } from 'tx/terra';
 import { useClaimableRewardsBreakdown } from './hooks/useRewardsBreakdown';
 
 export interface BAssetClaimProps {
@@ -34,7 +35,7 @@ function Component({ className }: BAssetClaimProps) {
 
   const fixedFee = useFixedFee();
 
-  const [claim, claimResult] = useBAssetClaimTx();
+  const [claim, claimResult] = useClaimWhAssetRewardsTx();
 
   // ---------------------------------------------
   // queries

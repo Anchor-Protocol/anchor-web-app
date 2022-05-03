@@ -1,4 +1,4 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { TxKind } from './utils';
@@ -19,7 +19,7 @@ export function useRepayUstTx():
   | BackgroundTxResult<RepayUstTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
   } = useFormatters();
@@ -41,12 +41,12 @@ export function useRepayUstTx():
       writer.timer.start();
 
       try {
-        await xAnchor.approveLimit({ token: 'UST' }, amount, address!);
+        await xAnchor.approveLimit(address!, { token: 'UST' }, amount);
 
         writer.repayUST();
         writer.timer.reset();
 
-        const result = await xAnchor.repayStable(amount, address!, {
+        const result = await xAnchor.repayStable(address!, amount, {
           handleEvent: (event) => {
             writer.repayUST(event);
             handleEvent(event);

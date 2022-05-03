@@ -2,7 +2,6 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useAnchorBank,
   useBLunaWithdrawableAmount,
-  useBondWithdrawTx,
 } from '@anchor-protocol/app-provider';
 import { formatLuna, formatUST } from '@anchor-protocol/notation';
 import { useFixedFee } from '@libs/app-provider';
@@ -27,6 +26,7 @@ import { WithdrawHistory } from 'pages/basset/components/WithdrawHistory';
 import { withdrawAllHistory } from 'pages/basset/logics/withdrawAllHistory';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
+import { useWithdrawbLunaTx } from 'tx/terra/bluna';
 
 export interface BlunaWithdrawProps {
   className?: string;
@@ -40,7 +40,7 @@ function Component({ className }: BlunaWithdrawProps) {
 
   const fixedFee = useFixedFee();
 
-  const [withdraw, withdrawResult] = useBondWithdrawTx();
+  const [withdraw, withdrawResult] = useWithdrawbLunaTx();
 
   // ---------------------------------------------
   // queries

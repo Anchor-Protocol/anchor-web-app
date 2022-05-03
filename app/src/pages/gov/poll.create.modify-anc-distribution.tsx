@@ -1,4 +1,4 @@
-import { ExecuteMsg } from '@anchor-protocol/app-fns';
+import { ExecuteMsg } from 'tx/terra';
 import {
   useAnchorWebapp,
   useGovDistributionModelUpdateConfigQuery,

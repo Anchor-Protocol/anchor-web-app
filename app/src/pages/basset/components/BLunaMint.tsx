@@ -3,7 +3,6 @@ import {
   useAnchorBank,
   useAnchorWebapp,
   useBLunaExchangeRateQuery,
-  useBondMintTx,
 } from '@anchor-protocol/app-provider';
 import {
   formatLuna,
@@ -26,7 +25,7 @@ import {
   SelectAndTextInputContainerLabel,
 } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
-import { Luna, Rate } from '@libs/types';
+import { Luna } from '@libs/types';
 import { StreamStatus } from '@rx-stream/react';
 import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
 import big, { Big } from 'big.js';
@@ -49,6 +48,8 @@ import styled from 'styled-components';
 import { pegRecovery } from '../logics/pegRecovery';
 import { validateBondAmount } from '../logics/validateBondAmount';
 import { ConvertSymbols, ConvertSymbolsContainer } from './ConvertSymbols';
+import { useMintbLunaTx } from 'tx/terra/bluna';
+import { useRefCallback } from 'hooks';
 
 export interface BLunaMintProps {
   className?: string;
@@ -65,8 +66,6 @@ function Component({ className }: BLunaMintProps) {
   const fixedFee = useFixedFee();
 
   const estimateFee = useEstimateFee(terraWalletAddress);
-
-  const [mint, mintResult] = useBondMintTx();
 
   const [openAlert, alertElement] = useAlert();
 
@@ -218,6 +217,12 @@ function Component({ className }: BLunaMintProps) {
     setMintAmount('' as bLuna);
   }, []);
 
+  const onMintSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [mint, mintResult] = useMintbLunaTx(onMintSuccess);
+
   const proceed = useCallback(
     async (bondAmount: Luna) => {
       if (!connected || !terraWalletAddress || !mint) {
@@ -239,15 +244,7 @@ function Component({ className }: BLunaMintProps) {
 
       if (estimated) {
         mint({
-          bondAmount,
-          gasWanted: estimated.gasWanted,
-          txFee: big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
-          exchangeRate: big(1)
-            .div(exchangeRate?.exchange_rate ?? '1')
-            .toString() as Rate<string>,
-          onTxSucceed: () => {
-            init();
-          },
+          mintAmount: bondAmount,
         });
       } else {
         await openAlert({
@@ -266,9 +263,6 @@ function Component({ className }: BLunaMintProps) {
       connected,
       contractAddress.bluna.hub,
       estimateFee,
-      exchangeRate,
-      gasPrice.uusd,
-      init,
       mint,
       openAlert,
       terraWalletAddress,

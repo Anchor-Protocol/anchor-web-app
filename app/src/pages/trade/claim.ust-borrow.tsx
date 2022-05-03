@@ -3,10 +3,7 @@ import {
   formatUST,
 } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
-import {
-  useRewardsClaimableUstBorrowRewardsQuery,
-  useRewardsUstBorrowClaimTx,
-} from '@anchor-protocol/app-provider';
+import { useRewardsClaimableUstBorrowRewardsQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
@@ -25,6 +22,7 @@ import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useClaimRewardsTx } from 'tx/terra';
 
 export interface ClaimUstBorrowProps {
   className?: string;
@@ -38,7 +36,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
 
   const fixedFee = useFixedFee();
 
-  const [claim, claimResult] = useRewardsUstBorrowClaimTx();
+  const [claim, claimResult] = useClaimRewardsTx();
 
   const navigate = useNavigate();
 

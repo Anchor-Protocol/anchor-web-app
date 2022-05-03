@@ -1,4 +1,4 @@
-import { ExecuteMsg } from '@anchor-protocol/app-fns';
+import { ExecuteMsg } from 'tx/terra';
 import { moneyMarket, Rate } from '@anchor-protocol/types';
 import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import {

@@ -1,15 +1,14 @@
-import { u, UST } from '@anchor-protocol/types';
+import { UST } from '@anchor-protocol/types';
 import { useEarnDepositForm } from '@anchor-protocol/app-provider';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useConfirm } from '@libs/neumorphism-ui/components/useConfirm';
-import { BigSource } from 'big.js';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import type { ReactNode } from 'react';
 import React, { useCallback } from 'react';
 import { useAccount } from 'contexts/account';
-import { useEarnDepositTx } from '@anchor-protocol/app-provider/tx/earn/deposit';
 import { DepositDialog } from '../DepositDialog';
 import { DialogProps } from '@libs/use-dialog';
+import { useDepositUstTx } from 'tx/terra';
 
 export function TerraDepositDialog(props: DialogProps<{}, void>) {
   const account = useAccount();
@@ -18,16 +17,12 @@ export function TerraDepositDialog(props: DialogProps<{}, void>) {
 
   const state = useEarnDepositForm();
 
-  const [deposit, depositTxResult] = useEarnDepositTx();
+  const { depositAmount, invalidNextTxFee, availablePost } = state;
 
-  const { depositAmount, txFee, invalidNextTxFee, availablePost } = state;
+  const [deposit, depositTxResult] = useDepositUstTx();
 
   const proceed = useCallback(
-    async (
-      depositAmount: UST,
-      txFee: u<UST<BigSource>> | undefined,
-      confirm: ReactNode,
-    ) => {
+    async (depositAmount: UST, confirm: ReactNode) => {
       if (!account.connected || !deposit) {
         return;
       }
@@ -46,7 +41,6 @@ export function TerraDepositDialog(props: DialogProps<{}, void>) {
 
       deposit({
         depositAmount,
-        txFee: txFee!.toString() as u<UST>,
       });
     },
     [account.connected, deposit, openConfirm],
@@ -71,7 +65,7 @@ export function TerraDepositDialog(props: DialogProps<{}, void>) {
               !deposit ||
               !availablePost
             }
-            onClick={() => proceed(depositAmount, txFee, invalidNextTxFee)}
+            onClick={() => proceed(depositAmount, invalidNextTxFee)}
           >
             Proceed
           </ActionButton>
