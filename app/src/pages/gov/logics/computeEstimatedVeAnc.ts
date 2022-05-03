@@ -6,7 +6,7 @@ export const computeEstimatedVeAnc = (
   boostCoefficient: number,
   period: Second,
   maxLockTime: Second,
-  amount: ANC,
+  amount: ANC<BigSource>,
 ): veANC<BigSource> => {
   return (((boostCoefficient * period) / maxLockTime) *
     Number(amount)) as veANC<BigSource>;

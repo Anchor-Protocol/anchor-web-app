@@ -88,7 +88,7 @@ export const FlexTitleContainer = styled.div`
 `;
 
 export const TitleContainer = styled.div`
-  margin-bottom: 25px;
+  margin-bottom: 44px;
 
   @media (max-width: ${screen.mobile.max}px) {
     margin-bottom: 15px;
