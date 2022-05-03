@@ -6,10 +6,7 @@ import {
   formatUST,
 } from '@anchor-protocol/notation';
 import { AncUstLP } from '@anchor-protocol/types';
-import {
-  useAncAncUstLpStakeTx,
-  useRewardsAncUstLpRewardsQuery,
-} from '@anchor-protocol/app-provider';
+import { useRewardsAncUstLpRewardsQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
@@ -25,6 +22,8 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { useRefCallback } from 'hooks';
+import { useStakeAncLpTx } from 'tx/terra';
 
 export function AncUstLpStake() {
   // ---------------------------------------------
@@ -33,8 +32,6 @@ export function AncUstLpStake() {
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
-
-  const [stake, stakeResult] = useAncAncUstLpStakeTx();
 
   // ---------------------------------------------
   // states
@@ -68,6 +65,12 @@ export function AncUstLpStake() {
     setLpAmount('' as AncUstLP);
   }, []);
 
+  const onStakeSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [stake, stakeResult] = useStakeAncLpTx(onStakeSuccess);
+
   const proceed = useCallback(
     async (lpAmount: AncUstLP) => {
       if (!connected || !stake) {
@@ -76,12 +79,9 @@ export function AncUstLpStake() {
 
       stake({
         lpAmount,
-        onTxSucceed: () => {
-          init();
-        },
       });
     },
-    [connected, init, stake],
+    [connected, stake],
   );
 
   // ---------------------------------------------

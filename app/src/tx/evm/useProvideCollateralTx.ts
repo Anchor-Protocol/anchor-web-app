@@ -1,4 +1,4 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import { TxKind } from './utils';
@@ -22,7 +22,7 @@ export function useProvideCollateralTx():
   | BackgroundTxResult<ProvideCollateralTxParams>
   | undefined {
   const { address, connectionType } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const renderTxResultsRef =
     useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
 
@@ -46,18 +46,18 @@ export function useProvideCollateralTx():
 
       try {
         await xAnchor.approveLimit(
+          address!,
           { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
-          address!,
         );
 
         writer.provideCollateral(symbol);
         writer.timer.reset();
 
         const response = await xAnchor.lockCollateral(
+          address!,
           { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
-          address!,
           {
             handleEvent: (event) => {
               writer.provideCollateral(symbol, event);

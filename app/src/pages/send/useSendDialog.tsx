@@ -2,7 +2,6 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
   useBAssetInfoAndBalanceTotalQuery,
-  useTerraSendTx,
 } from '@anchor-protocol/app-provider';
 import {
   AnchorBank,
@@ -54,6 +53,7 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
+import { useSendTx } from 'tx/terra';
 
 interface FormParams {
   className?: string;
@@ -86,7 +86,7 @@ function ComponentBase({
   const { data: { infoAndBalances = [] } = {} } =
     useBAssetInfoAndBalanceTotalQuery();
 
-  const [send, sendResult] = useTerraSendTx();
+  const [send, sendResult] = useSendTx();
 
   const currencies = useMemo<CurrencyInfo[]>(
     () => [
@@ -277,7 +277,6 @@ function ComponentBase({
         toWalletAddress: toAddress as HumanAddr,
         amount,
         currency,
-        txFee,
         memo,
       });
     },

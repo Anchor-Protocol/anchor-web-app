@@ -1,7 +1,4 @@
-import {
-  CrossChainEventHandler,
-  CrossChainTxResponse,
-} from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainEventHandler } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { useCallback, useMemo, useRef } from 'react';
 import { createTx } from './createTx';
@@ -21,7 +18,7 @@ export const useBackgroundTx = <TxParams>(
   sendTx: (
     txParams: TxParams,
     handleEvent: CrossChainEventHandler<ContractReceipt>,
-  ) => Promise<CrossChainTxResponse<ContractReceipt>>,
+  ) => Promise<ContractReceipt>,
   displayTx: (txParams: TxParams) => TransactionDisplay,
 ): BackgroundTxResult<TxParams> => {
   const backgroundTxManager = useBackgroundTxManager();

@@ -1,4 +1,4 @@
-import { EvmCrossAnchorSdk } from '@anchor-protocol/crossanchor-sdk/lib/esm/crossanchor/evm/sdk';
+import { EvmSdk } from '@anchor-protocol/crossanchor-sdk/lib/esm/crossanchor/evm/sdk';
 import {
   CollateralAmount,
   ERC20Addr,
@@ -9,7 +9,7 @@ import Big from 'big.js';
 import { WhitelistCollateral } from 'queries';
 
 declare module '@anchor-protocol/crossanchor-sdk/lib/esm/crossanchor/evm/sdk' {
-  export interface EvmCrossAnchorSdk {
+  export interface EvmSdk {
     fetchWalletBalance(
       walletAddr: HumanAddr,
       collateral: WhitelistCollateral,
@@ -29,7 +29,7 @@ const extractTokenAddr = (
   return address;
 };
 
-EvmCrossAnchorSdk.prototype.fetchWalletBalance = async function (
+EvmSdk.prototype.fetchWalletBalance = async function (
   walletAddr: HumanAddr,
   collateral: WhitelistCollateral,
 ): Promise<u<CollateralAmount<Big>>> {
@@ -54,7 +54,7 @@ export interface ERC20Token {
   decimals: number;
 }
 
-EvmCrossAnchorSdk.prototype.fetchERC20Token = async function (
+EvmSdk.prototype.fetchERC20Token = async function (
   addressOrCollateral: ERC20Addr | WhitelistCollateral,
 ): Promise<ERC20Token> {
   const address = extractTokenAddr(addressOrCollateral);

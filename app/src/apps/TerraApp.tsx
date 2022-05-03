@@ -1,7 +1,6 @@
 import { WalletControllerChainOptions } from '@terra-money/wallet-provider';
 import { AstroportGuideBanner } from 'components/AstroportGuideBanner';
 import { Header } from 'components/Header';
-import { Airdrop } from 'pages/airdrop';
 import { Claim as AncVestingClaim } from 'pages/anc/vesting';
 import { BlunaConvert, BLunaMint, BLunaBurn } from 'pages/basset/bluna.convert';
 import { BlunaWithdraw } from 'pages/basset/bluna.withdraw';
@@ -74,8 +73,6 @@ export function TerraApp({ chainOptions }: TerraAppProps) {
               <Route path="to-wbasset" element={<WormholeConvertToWBAsset />} />
               <Route path="*" element={<Navigate to="to-basset" />} />
             </Route>
-
-            <Route path="/airdrop" element={<Airdrop />} />
 
             <Route path={`/anc/vesting/claim`} element={<AncVestingClaim />} />
 

@@ -1,9 +1,8 @@
-import { ExecuteMsg } from '@anchor-protocol/app-fns';
+import { ExecuteMsg } from 'tx/terra';
 import {
   formatUSTWithPostfixUnits,
   formatVeAnc,
 } from '@anchor-protocol/notation';
-import { useGovCreatePollTx } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
@@ -39,6 +38,7 @@ import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { VStack } from '@libs/ui/Stack';
 import { veANC } from '@anchor-protocol/types';
 import { useGovConfigQuery } from 'queries';
+import { useCreatePollTx } from 'tx/terra';
 
 export interface PollCreateBaseProps {
   pollTitle: ReactNode;
@@ -62,7 +62,7 @@ export function PollCreateBase({
 
   const navigate = useNavigate();
 
-  const [createPoll, createPollResult] = useGovCreatePollTx();
+  const [createPoll, createPollResult] = useCreatePollTx();
 
   // ---------------------------------------------
   // states

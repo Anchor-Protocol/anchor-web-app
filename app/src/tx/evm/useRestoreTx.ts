@@ -1,6 +1,6 @@
 import { TxResultRendering } from '@libs/app-fns';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback, useRef } from 'react';
 import { Subject } from 'rxjs';
@@ -17,7 +17,7 @@ export const useRestoreTx = ():
   | RenderedTxResult<RestoreTxParams>
   | undefined => {
   const { provider, connectionType } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const { removeTransaction } = useTransactions();
   const renderTxResultsRef =
     useRef<Subject<TxResultRendering<ContractReceipt | null>>>();
@@ -32,13 +32,12 @@ export const useRestoreTx = ():
       writer.timer.start();
 
       try {
-        const result = await xAnchor.restoreTx(
-          txParams.txHash,
-          (event) => {
+        const result = await xAnchor.restoreTx(txParams.txHash, {
+          manualRedemption: true,
+          handleEvent: (event) => {
             writer.restoreTx(event);
           },
-          { manualRedemption: true },
-        );
+        });
 
         removeTransaction(txParams.txHash);
         return result;

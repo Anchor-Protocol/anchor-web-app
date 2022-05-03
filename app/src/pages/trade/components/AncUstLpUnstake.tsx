@@ -1,8 +1,5 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import {
-  useAncAncUstLpUnstakeTx,
-  useAnchorWebapp,
-} from '@anchor-protocol/app-provider';
+import { useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
@@ -24,7 +21,9 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
+import { useRefCallback } from 'hooks';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { useUnstakeAncLpTx } from 'tx/terra';
 
 export function AncUstLpUnstake() {
   // ---------------------------------------------
@@ -35,8 +34,6 @@ export function AncUstLpUnstake() {
   const fixedFee = useFixedFee();
 
   const { contractAddress } = useAnchorWebapp();
-
-  const [unstake, unstakeResult] = useAncAncUstLpUnstakeTx();
 
   // ---------------------------------------------
   // states
@@ -70,6 +67,12 @@ export function AncUstLpUnstake() {
     setLpAmount('' as AncUstLP);
   }, []);
 
+  const onUnstakeSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [unstake, unstakeResult] = useUnstakeAncLpTx(onUnstakeSuccess);
+
   const proceed = useCallback(
     (lpAmount: AncUstLP) => {
       if (!connected || !unstake) {
@@ -78,12 +81,9 @@ export function AncUstLpUnstake() {
 
       unstake({
         lpAmount,
-        onTxSucceed: () => {
-          init();
-        },
       });
     },
-    [connected, init, unstake],
+    [connected, unstake],
   );
 
   // ---------------------------------------------

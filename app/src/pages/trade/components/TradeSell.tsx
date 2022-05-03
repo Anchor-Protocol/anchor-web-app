@@ -2,7 +2,6 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
   useAnchorWebapp,
   useAncPriceQuery,
-  useAncSellTx,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import {
@@ -34,6 +33,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
+import { useRefCallback } from 'hooks';
 import { sellFromSimulation } from 'pages/trade/logics/sellFromSimulation';
 import { sellToSimulation } from 'pages/trade/logics/sellToSimulation';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
@@ -44,6 +44,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useSellAncTx } from 'tx/terra';
 
 interface Item {
   label: string;
@@ -68,8 +69,6 @@ export function TradeSell() {
   const { queryClient, contractAddress: address } = useAnchorWebapp();
 
   const bank = useAnchorBank();
-
-  const [sell, sellResult] = useAncSellTx();
 
   // ---------------------------------------------
   // states
@@ -259,6 +258,12 @@ export function TradeSell() {
     setFromAmount('' as ANC);
   }, []);
 
+  const onSellSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [sell, sellResult] = useSellAncTx(onSellSuccess);
+
   const proceed = useCallback(
     (burnAmount: ANC, maxSpread: number) => {
       if (!connected || !sell) {
@@ -268,12 +273,9 @@ export function TradeSell() {
       sell({
         burnAmount,
         maxSpread,
-        onTxSucceed: () => {
-          init();
-        },
       });
     },
-    [connected, sell, init],
+    [connected, sell],
   );
 
   // ---------------------------------------------

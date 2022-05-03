@@ -1,6 +1,5 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
-  useAncBuyTx,
   useAnchorWebapp,
   useAncPriceQuery,
 } from '@anchor-protocol/app-provider';
@@ -43,6 +42,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
+import { useRefCallback } from 'hooks';
 import { buyFromSimulation } from 'pages/trade/logics/buyFromSimulation';
 import { buyToSimulation } from 'pages/trade/logics/buyToSimulation';
 import { TradeSimulation } from 'pages/trade/models/tradeSimulation';
@@ -54,6 +54,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useBuyAncTx } from 'tx/terra';
 
 interface Item {
   label: string;
@@ -80,8 +81,6 @@ export function TradeBuy() {
   const { queryClient, contractAddress: address } = useAnchorWebapp();
 
   const bank = useAnchorBank();
-
-  const [buy, buyResult] = useAncBuyTx();
 
   // ---------------------------------------------
   // states
@@ -325,6 +324,12 @@ export function TradeBuy() {
     setFromAmount('' as UST);
   }, []);
 
+  const onBuySuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [buy, buyResult] = useBuyAncTx(onBuySuccess);
+
   const proceed = useCallback(
     async (
       fromAmount: UST,
@@ -349,15 +354,11 @@ export function TradeBuy() {
       }
 
       buy({
-        fromAmount,
-        txFee,
-        maxSpread,
-        onTxSucceed: () => {
-          init();
-        },
+        amount: fromAmount,
+        maxSpread: maxSpread.toString(),
       });
     },
-    [buy, connected, init, openConfirm],
+    [buy, connected, openConfirm],
   );
 
   // ---------------------------------------------

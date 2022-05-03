@@ -6,10 +6,7 @@ import {
   formatVeAncInput,
 } from '@anchor-protocol/notation';
 import { veANC } from '@anchor-protocol/types';
-import {
-  useGovVoteAvailableQuery,
-  useGovVoteTx,
-} from '@anchor-protocol/app-provider';
+import { useGovVoteAvailableQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy, microfy } from '@libs/formatter';
@@ -40,6 +37,7 @@ import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { useMyVotingPowerQuery } from 'queries';
 import { VStack } from '@libs/ui/Stack';
 import { AmountSlider, SliderPlaceholder } from 'components/sliders';
+import { useVoteTx } from 'tx/terra';
 
 interface FormParams {
   className?: string;
@@ -60,7 +58,7 @@ function ComponentBase({
   closeDialog,
   pollId,
 }: DialogProps<FormParams, FormReturn>) {
-  const [vote, voteResult] = useGovVoteTx();
+  const [vote, voteResult] = useVoteTx();
 
   const { connected } = useAccount();
 

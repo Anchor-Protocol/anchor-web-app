@@ -1,7 +1,4 @@
-import {
-  CrossChainEvent,
-  CrossChainTxResponse,
-} from '@anchor-protocol/crossanchor-sdk';
+import { CrossChainEvent } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from 'ethers';
 import { RefCallback } from 'hooks';
 import { Observable } from 'rxjs';
@@ -16,7 +13,7 @@ export type TxAction = {
   events: Observable<CrossChainEvent<ContractReceipt>>;
   display: TransactionDisplay;
   kind: TxKind;
-  request: Promise<CrossChainTxResponse<ContractReceipt>>;
+  request: Promise<ContractReceipt>;
 };
 
 export type TxStorage = {
@@ -26,9 +23,7 @@ export type TxStorage = {
 };
 
 export type TxHandlers = {
-  createRestoreTx: RefCallback<
-    () => CreateTxResult<string, CrossChainTxResponse<ContractReceipt>>
-  >;
+  createRestoreTx: RefCallback<() => CreateTxResult<string, ContractReceipt>>;
   refetch: RefCallback<(kind: TxKind) => void>;
   pushNotification: RefCallback<(tx: Transaction) => void>;
 };

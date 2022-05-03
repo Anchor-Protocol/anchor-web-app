@@ -1,9 +1,9 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEffect, useState } from 'react';
 
 export const useERC20Decimals = (tokenContract: string | undefined) => {
   const [decimals, setDecimals] = useState<number | undefined>(undefined);
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
 
   useEffect(() => {
     async function fetchDecimals() {

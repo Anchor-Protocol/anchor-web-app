@@ -1,4 +1,3 @@
-import { ExecuteMsg } from '@anchor-protocol/app-fns';
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
@@ -17,6 +16,7 @@ import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
 import { AccAddress } from '@terra-money/terra.js';
 import { PollCreateBase } from 'pages/gov/components/PollCreateBase';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { ExecuteMsg } from 'tx/terra';
 
 export function PollCreateSpendCommunityPool() {
   // ---------------------------------------------

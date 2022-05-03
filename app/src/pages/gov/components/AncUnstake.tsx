@@ -8,7 +8,6 @@ import {
 import { ANC, u } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
-  useAncGovernanceUnstakeTx,
   useAnchorWebapp,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/app-provider';
@@ -29,6 +28,8 @@ import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { useGovStateQuery, useMyVotingLockPeriodEndsAtQuery } from 'queries';
+import { useRefCallback } from 'hooks';
+import { useUnstakeAncTx } from 'tx/terra';
 
 export function AncUnstake() {
   const { availablePost, connected } = useAccount();
@@ -41,8 +42,6 @@ export function AncUnstake() {
     myLockPeriodEndsAt === undefined ? true : myLockPeriodEndsAt < now;
 
   const { contractAddress } = useAnchorWebapp();
-
-  const [unstake, unstakeResult] = useAncGovernanceUnstakeTx();
 
   const [ancAmount, setANCAmount] = useState<ANC>('' as ANC);
 
@@ -80,6 +79,16 @@ export function AncUnstake() {
       ? 'Not enough assets'
       : undefined;
 
+  const init = useCallback(() => {
+    setANCAmount('' as ANC);
+  }, []);
+
+  const onUnstakeSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [unstake, unstakeResult] = useUnstakeAncTx(onUnstakeSuccess);
+
   const proceed = useCallback(
     async (ancAmount: ANC) => {
       if (!connected || !unstake) {
@@ -87,13 +96,10 @@ export function AncUnstake() {
       }
 
       unstake({
-        ancAmount,
-        onTxSucceed: () => {
-          setANCAmount('' as ANC);
-        },
+        amount: ancAmount,
       });
     },
-    [connected, setANCAmount, unstake],
+    [connected, unstake],
   );
 
   if (
