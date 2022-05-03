@@ -2,9 +2,9 @@ import { useFormatters } from '@anchor-protocol/formatter';
 import { ANC, Rate, u } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
 import { AnimateNumber, UIElementProps } from '@libs/ui';
+import { TitledCard } from '@libs/ui/cards/TitledCard';
 import { VStack } from '@libs/ui/Stack';
 import Big from 'big.js';
-import { TitledCard } from 'components/cards/TitledCard';
 import { Divider } from 'components/primitives/Divider';
 import { Sub } from 'components/Sub';
 import { AncTokenomics, useAncTokenomics } from 'hooks';
@@ -45,7 +45,7 @@ export const AncTokenOverview = (props: UIElementProps) => {
 
   return (
     <TitledCard title="ANC">
-      <VStack gap={20}>
+      <VStack gap={40}>
         <section>
           <LabelWithValue
             title="TOTAL SUPPLY"

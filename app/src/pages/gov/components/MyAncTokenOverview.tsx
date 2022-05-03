@@ -2,7 +2,7 @@ import { AnimateNumber, UIElementProps } from '@libs/ui';
 import { Divider } from 'components/primitives/Divider';
 import React from 'react';
 import styled from 'styled-components';
-import { Card, CardHeading, CardSubHeading, CardSubHeadingProps } from './Card';
+import { CardSubHeading, CardSubHeadingProps } from './Card';
 import { formatUTokenDecimal2 } from '@anchor-protocol/notation';
 import { ANC, u, veANC } from '@anchor-protocol/types';
 import { Sub } from 'components/Sub';
@@ -19,6 +19,9 @@ import {
 import { BigSource } from 'big.js';
 import { ExtendAncLockPeriod } from './ExtendAncLockPeriod';
 import { formatTimestamp } from '@libs/formatter';
+import { HStack, VStack } from '@libs/ui/Stack';
+import { TitledCard } from '@libs/ui/cards/TitledCard';
+import { ImportantStatistic } from '@libs/ui/text/ImportantStatistic';
 
 interface LabelWithValueProps extends CardSubHeadingProps {}
 
@@ -28,14 +31,12 @@ const LabelWithValue = (props: LabelWithValueProps) => {
   return (
     <>
       <CardSubHeading className="subHeading" title={title} tooltip={tooltip} />
-      <p className="amount">{children}</p>
+      <Amount>{children}</Amount>
     </>
   );
 };
 
-const MyAncTokenOverviewBase = (props: UIElementProps) => {
-  const { className } = props;
-
+export const MyAncTokenOverview = (props: UIElementProps) => {
   const { uANC } = useBalances();
 
   const { data: staked } = useMyAncStakedQuery();
@@ -45,26 +46,33 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
   const { data: unlockAt } = useMyVotingLockPeriodEndsAtQuery();
 
   return (
-    <Card className={className}>
-      <CardHeading title="My ANC" />
-      <section>
-        <LabelWithValue
-          title="Balance"
-          tooltip="The amount of ANC held in your Wallet"
-        >
-          <AnimateNumber format={formatUTokenDecimal2}>{uANC}</AnimateNumber>{' '}
-          <Sub>ANC</Sub>
-        </LabelWithValue>
-        <LabelWithValue
-          title="Staking"
-          tooltip="The amount of ANC that you are currently Staking in the Governance contract"
-        >
-          <AnimateNumber format={formatUTokenDecimal2}>
-            {staked ? staked : (0 as u<ANC<BigSource>>)}
-          </AnimateNumber>{' '}
-          <Sub>ANC</Sub>
-        </LabelWithValue>
-        <div className="buttons">
+    <TitledCard title="My ANC">
+      <VStack fullWidth gap={40}>
+        <HStack gap={60}>
+          <ImportantStatistic
+            name="balance"
+            value={
+              <>
+                <AnimateNumber format={formatUTokenDecimal2}>
+                  {uANC}
+                </AnimateNumber>{' '}
+                <Sub>ANC</Sub>
+              </>
+            }
+          />
+          <ImportantStatistic
+            name="staking"
+            value={
+              <>
+                <AnimateNumber format={formatUTokenDecimal2}>
+                  {staked ? staked : (0 as u<ANC<BigSource>>)}
+                </AnimateNumber>{' '}
+                <Sub>ANC</Sub>
+              </>
+            }
+          />
+        </HStack>
+        <HStack fullWidth>
           <Tooltip
             title="Stake ANC to enable vote locking or to obtain governance rewards"
             placement="top"
@@ -84,10 +92,8 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
               Unstake
             </BorderButton>
           </Tooltip>
-        </div>
-      </section>
-      <Divider />
-      <section>
+        </HStack>
+        <Divider />
         {unlockAt && (
           <LabelWithValue
             title="Unlock time"
@@ -105,41 +111,20 @@ const MyAncTokenOverviewBase = (props: UIElementProps) => {
           </AnimateNumber>{' '}
           <Sub>veANC</Sub>
         </LabelWithValue>
-        <div className="buttons">
+        <HStack fullWidth>
           <ExtendAncLockPeriod />
-        </div>
-      </section>
-    </Card>
+        </HStack>
+      </VStack>
+    </TitledCard>
   );
 };
 
-export const MyAncTokenOverview = styled(MyAncTokenOverviewBase)`
-  height: 100%;
+export const Amount = styled.p`
+  font-size: 32px;
+  font-weight: 500;
 
-  hr {
-    margin: 40px 0;
-  }
-
-  .subHeading {
-    margin-top: 30px;
-  }
-
-  .amount {
-    font-size: 32px;
-    font-weight: 500;
-
-    span:last-child {
-      margin-left: 8px;
-      font-size: 0.55em;
-    }
-  }
-
-  .buttons {
-    margin-top: 40px;
-    flex-grow: 1;
-    align-content: flex-end;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 20px;
+  span:last-child {
+    margin-left: 8px;
+    font-size: 0.55em;
   }
 `;
