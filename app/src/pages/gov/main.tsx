@@ -15,6 +15,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { Gauges } from 'pages/gauges';
+import { VStack } from '@libs/ui/Stack';
 
 interface Item {
   label: string;
@@ -65,29 +66,33 @@ function GovernanceMainBase({ className }: GovernanceMainProps) {
 
   return (
     <PaddedLayout className={className}>
-      <TitleContainer className="title">
-        <PageTitle title="GOVERNANCE" docs={links.docs.gov} />
-      </TitleContainer>
-      <Tab
-        className="tabs"
-        items={TAB_ITEMS}
-        selectedItem={tab}
-        onChange={onTabChange}
-        labelFunction={({ label }) => label}
-        keyFunction={({ value }) => value}
-        height={46}
-        borderRadius={30}
-        fontSize={12}
-      />
-      <div className="outlet">
-        <Routes>
-          <Route index={true} element={<Overview />} />
-          <Route path="/polls" element={<Polls />} />
-          <Route path="/gauges" element={<Gauges />} />
-          <Route path="*" element={<Navigate to={`/gov`} />} />
-        </Routes>
-        <Outlet />
-      </div>
+      <VStack gap={76}>
+        <VStack>
+          <TitleContainer>
+            <PageTitle title="GOVERNANCE" docs={links.docs.gov} />
+          </TitleContainer>
+          <Tab
+            className="tabs"
+            items={TAB_ITEMS}
+            selectedItem={tab}
+            onChange={onTabChange}
+            labelFunction={({ label }) => label}
+            keyFunction={({ value }) => value}
+            height={46}
+            borderRadius={30}
+            fontSize={12}
+          />
+        </VStack>
+        <div className="outlet">
+          <Routes>
+            <Route index={true} element={<Overview />} />
+            <Route path="/polls" element={<Polls />} />
+            <Route path="/gauges" element={<Gauges />} />
+            <Route path="*" element={<Navigate to={`/gov`} />} />
+          </Routes>
+          <Outlet />
+        </div>
+      </VStack>
     </PaddedLayout>
   );
 }
