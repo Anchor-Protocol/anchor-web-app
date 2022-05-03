@@ -2,7 +2,6 @@ import { Rate, Token, u } from '@anchor-protocol/types';
 import { AnimateNumber, UIElementProps } from '@libs/ui';
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
-import { ButtonCard } from './ButtonCard';
 import { Circles } from 'components/primitives/Circles';
 import { anc160gif, GifIcon, TokenIcon } from '@anchor-protocol/token-icons';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
@@ -14,11 +13,13 @@ import {
 } from '@anchor-protocol/app-provider';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from 'pages/trade/env';
-import { CardHeading } from './Card';
 import Big from 'big.js';
 import { demicrofy, formatRate, formatUTokenDecimal2 } from '@libs/formatter';
 import { formatOutput } from '@anchor-protocol/formatter';
 import { Sub } from 'components/Sub';
+import { TitledCard } from '@libs/ui/cards/TitledCard';
+import { HStack } from '@libs/ui/Stack';
+import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 
 interface LabelWithValueProps {
   label: string;
@@ -65,20 +66,25 @@ const AncUstLpBase = (props: UIElementProps) => {
   const hasRewards = hasAstroRewards || hasAncRewards;
 
   return (
-    <ButtonCard onClick={onClick}>
+    <TitledCard
+      title={
+        <HStack alignItems="center" gap={24}>
+          <Circles
+            className="icon"
+            backgroundColors={['#ffffff', '#2C2C2C']}
+            radius={24}
+          >
+            <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
+            <GifIcon
+              src={anc160gif}
+              style={{ fontSize: '2em', borderRadius: '50%' }}
+            />
+          </Circles>
+          <p>ANC-UST LP</p>
+        </HStack>
+      }
+    >
       <div className={className}>
-        <Circles
-          className="icon"
-          backgroundColors={['#ffffff', '#2C2C2C']}
-          radius={24}
-        >
-          <TokenIcon token="ust" style={{ fontSize: '1.1em' }} />
-          <GifIcon
-            src={anc160gif}
-            style={{ fontSize: '2em', borderRadius: '50%' }}
-          />
-        </Circles>
-        <CardHeading className="heading" title="ANC-UST LP" />
         <div className="values">
           {hasRewards && (
             <LabelWithValue label="Rewards" tooltip="Your pending rewards">
@@ -116,7 +122,8 @@ const AncUstLpBase = (props: UIElementProps) => {
           </LabelWithValue>
         </div>
       </div>
-    </ButtonCard>
+      <BorderButton onClick={onClick}>ANC-UST LP Stake</BorderButton>
+    </TitledCard>
   );
 };
 
