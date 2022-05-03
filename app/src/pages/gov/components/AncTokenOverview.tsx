@@ -4,6 +4,7 @@ import { formatRate } from '@libs/formatter';
 import { AnimateNumber, UIElementProps } from '@libs/ui';
 import { TitledCard } from '@libs/ui/cards/TitledCard';
 import { VStack } from '@libs/ui/Stack';
+import { ImportantStatistic } from '@libs/ui/text/ImportantStatistic';
 import Big from 'big.js';
 import { Divider } from 'components/primitives/Divider';
 import { Sub } from 'components/Sub';
@@ -76,17 +77,17 @@ export const AncTokenOverview = (props: UIElementProps) => {
           </LabelWithValue>
         </section>
         <Divider />
-        <section>
-          <LabelWithValue
-            title="STAKING APR"
-            tooltip="Total quantity of ANC tokens staked to the governance contract"
-          >
-            <AnimateNumber format={formatRate}>
-              {stakingAPR ?? (0 as Rate<number>)}
-            </AnimateNumber>
-            <span>%</span>
-          </LabelWithValue>
-        </section>
+        <ImportantStatistic
+          name="ANC Staking APR"
+          value={
+            <APR>
+              <AnimateNumber format={formatRate}>
+                {stakingAPR ?? (0 as Rate<number>)}
+              </AnimateNumber>
+              <span>%</span>
+            </APR>
+          }
+        />
       </VStack>
     </TitledCard>
   );
@@ -100,4 +101,8 @@ const Amount = styled.p`
     margin-left: 8px;
     font-size: 0.55em;
   }
+`;
+
+const APR = styled.span`
+  color: ${({ theme }) => theme.colors.positive};
 `;
