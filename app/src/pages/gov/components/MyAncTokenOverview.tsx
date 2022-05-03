@@ -22,6 +22,7 @@ import { formatTimestamp } from '@libs/formatter';
 import { HStack, VStack } from '@libs/ui/Stack';
 import { TitledCard } from '@libs/ui/cards/TitledCard';
 import { ImportantStatistic } from '@libs/ui/text/ImportantStatistic';
+import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 
 interface LabelWithValueProps extends CardSubHeadingProps {}
 
@@ -72,17 +73,17 @@ export const MyAncTokenOverview = (props: UIElementProps) => {
             }
           />
         </HStack>
-        <HStack fullWidth>
+        <ManageStake>
           <Tooltip
             title="Stake ANC to enable vote locking or to obtain governance rewards"
             placement="top"
           >
-            <BorderButton
+            <ActionButton
               component={Link}
               to={`/${ROUTES.ANC_GOVERNANCE}/stake`}
             >
               Stake
-            </BorderButton>
+            </ActionButton>
           </Tooltip>
           <Tooltip title="Partially or fully unstake your ANC" placement="top">
             <BorderButton
@@ -92,7 +93,7 @@ export const MyAncTokenOverview = (props: UIElementProps) => {
               Unstake
             </BorderButton>
           </Tooltip>
-        </HStack>
+        </ManageStake>
         <Divider />
         {unlockAt && (
           <LabelWithValue
@@ -127,4 +128,11 @@ export const Amount = styled.p`
     margin-left: 8px;
     font-size: 0.55em;
   }
+`;
+
+const ManageStake = styled.div`
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
 `;
