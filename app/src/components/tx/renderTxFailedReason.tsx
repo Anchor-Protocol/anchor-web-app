@@ -1,3 +1,4 @@
+import { TerraTxError } from '@anchor-protocol/crossanchor-sdk/lib/esm/crossanchor/terra';
 import { PollingTimeout, TxErrorRendering } from '@libs/app-fns';
 import {
   CreateTxFailed,
@@ -110,7 +111,9 @@ export function renderTxFailedReason({
     );
   } else if (
     error instanceof TxFailed ||
-    instanceofWithName<TxFailed>(error, 'TxFailed')
+    instanceofWithName<TxFailed>(error, 'TxFailed') ||
+    error instanceof TerraTxError ||
+    instanceofWithName<TerraTxError>(error, 'TerraTxError')
   ) {
     return (
       <>

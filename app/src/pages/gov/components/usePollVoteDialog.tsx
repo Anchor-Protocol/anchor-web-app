@@ -8,7 +8,6 @@ import {
 import { ANC, u } from '@anchor-protocol/types';
 import {
   useGovVoteAvailableQuery,
-  useGovVoteTx,
   useRewardsAncGovernanceRewardsQuery,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
@@ -37,6 +36,7 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
+import { useVoteTx } from 'tx/terra';
 
 interface FormParams {
   className?: string;
@@ -57,7 +57,7 @@ function ComponentBase({
   closeDialog,
   pollId,
 }: DialogProps<FormParams, FormReturn>) {
-  const [vote, voteResult] = useGovVoteTx();
+  const [vote, voteResult] = useVoteTx();
 
   const { connected } = useAccount();
 

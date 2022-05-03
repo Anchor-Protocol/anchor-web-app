@@ -8,7 +8,6 @@ import {
 import { ANC, u } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
-  useAncGovernanceUnstakeTx,
   useAnchorWebapp,
   useGovStateQuery,
   useRewardsAncGovernanceRewardsQuery,
@@ -29,6 +28,8 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { useRefCallback } from 'hooks';
+import { useUnstakeAncTx } from 'tx/terra';
 
 export function AncGovernanceUnstake() {
   // ---------------------------------------------
@@ -39,8 +40,6 @@ export function AncGovernanceUnstake() {
   const fixedFee = useFixedFee();
 
   const { contractAddress } = useAnchorWebapp();
-
-  const [unstake, unstakeResult] = useAncGovernanceUnstakeTx();
 
   // ---------------------------------------------
   // states
@@ -95,6 +94,12 @@ export function AncGovernanceUnstake() {
     setANCAmount('' as ANC);
   }, []);
 
+  const onUnstakeSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [unstake, unstakeResult] = useUnstakeAncTx(onUnstakeSuccess);
+
   const proceed = useCallback(
     async (ancAmount: ANC) => {
       if (!connected || !unstake) {
@@ -102,13 +107,10 @@ export function AncGovernanceUnstake() {
       }
 
       unstake({
-        ancAmount,
-        onTxSucceed: () => {
-          init();
-        },
+        amount: ancAmount,
       });
     },
-    [connected, init, unstake],
+    [connected, unstake],
   );
 
   // ---------------------------------------------

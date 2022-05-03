@@ -8,7 +8,7 @@ import { TokenList, TokenListType } from '../TokenList';
 import { Link } from 'react-router-dom';
 import { WithdrawableAssets } from './WithdrawableAssets';
 import { useFormatters } from '@anchor-protocol/formatter';
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 
 type Action = () => void;
 
@@ -28,7 +28,7 @@ const ContentBase = (props: ContentProps) => {
   const [adding, setAdding] = useState(false);
 
   const formatters = useFormatters();
-  const evmSdk = useEvmCrossAnchorSdk();
+  const evmSdk = useEvmSdk();
 
   const onAddToken = (token: TokenListType) => {
     if (chainId) {

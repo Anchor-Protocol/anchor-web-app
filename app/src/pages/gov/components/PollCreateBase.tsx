@@ -1,13 +1,10 @@
-import { ExecuteMsg } from '@anchor-protocol/app-fns';
+import { ExecuteMsg } from 'tx/terra';
 import {
   formatANC,
   formatUSTWithPostfixUnits,
 } from '@anchor-protocol/notation';
 import { ANC } from '@anchor-protocol/types';
-import {
-  useGovConfigQuery,
-  useGovCreatePollTx,
-} from '@anchor-protocol/app-provider';
+import { useGovConfigQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
@@ -39,6 +36,7 @@ import React, {
 import { useNavigate } from 'react-router-dom';
 import { validateLinkAddress } from '../logics/validateLinkAddress';
 import { FormLayout } from './FormLayout';
+import { useCreatePollTx } from 'tx/terra';
 
 export interface PollCreateBaseProps {
   pollTitle: ReactNode;
@@ -62,7 +60,7 @@ export function PollCreateBase({
 
   const navigate = useNavigate();
 
-  const [createPoll, createPollResult] = useGovCreatePollTx();
+  const [createPoll, createPollResult] = useCreatePollTx();
 
   // ---------------------------------------------
   // states

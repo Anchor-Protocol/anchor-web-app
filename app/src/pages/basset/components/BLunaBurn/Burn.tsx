@@ -3,7 +3,6 @@ import {
   useAnchorBank,
   useAnchorWebapp,
   useBLunaExchangeRateQuery,
-  useBondBurnTx,
 } from '@anchor-protocol/app-provider';
 import {
   formatLuna,
@@ -27,7 +26,7 @@ import {
   SelectAndTextInputContainerLabel,
 } from '@libs/neumorphism-ui/components/SelectAndTextInputContainer';
 import { useAlert } from '@libs/neumorphism-ui/components/useAlert';
-import { Gas, Luna, Rate, u, UST } from '@libs/types';
+import { Gas, Luna, u, UST } from '@libs/types';
 import { InfoOutlined } from '@material-ui/icons';
 import { StreamStatus } from '@rx-stream/react';
 import { Msg, MsgExecuteContract } from '@terra-money/terra.js';
@@ -53,6 +52,8 @@ import { ConvertSymbols, ConvertSymbolsContainer } from '../ConvertSymbols';
 import { BurnComponent } from './types';
 import styled from 'styled-components';
 import { fixHMR } from 'fix-hmr';
+import { useBurnbLunaTx } from 'tx/terra/bluna';
+import { useRefCallback } from 'hooks';
 
 export interface BurnProps extends BurnComponent {
   className?: string;
@@ -76,8 +77,6 @@ export function Component({
   const { contractAddress, gasPrice, constants } = useAnchorWebapp();
 
   const estimateFee = useEstimateFee(terraWalletAddress);
-
-  const [burn, burnResult] = useBondBurnTx();
 
   const [openAlert, alertElement] = useAlert();
 
@@ -181,6 +180,12 @@ export function Component({
     setBurnAmount('' as bLuna);
   }, [setBurnAmount, setGetAmount]);
 
+  const onBurnSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [burn, burnResult] = useBurnbLunaTx(onBurnSuccess);
+
   const proceed = useCallback(
     async (burnAmount: bLuna) => {
       if (!connected || !terraWalletAddress || !burn) {
@@ -202,12 +207,6 @@ export function Component({
       if (estimated) {
         burn({
           burnAmount,
-          gasWanted: estimated.gasWanted,
-          txFee: big(estimated.txFee).mul(gasPrice.uusd).toFixed() as u<UST>,
-          exchangeRate: exchangeRate?.exchange_rate ?? ('1' as Rate<string>),
-          onTxSucceed: () => {
-            init();
-          },
         });
       } else {
         await openAlert({
@@ -227,10 +226,7 @@ export function Component({
       connected,
       contractAddress.bluna.hub,
       contractAddress.cw20.bLuna,
-      exchangeRate,
       estimateFee,
-      gasPrice.uusd,
-      init,
       openAlert,
       terraWalletAddress,
     ],

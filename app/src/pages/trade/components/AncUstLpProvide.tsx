@@ -1,8 +1,5 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import {
-  useAncAncUstLpProvideTx,
-  useAncPriceQuery,
-} from '@anchor-protocol/app-provider';
+import { useAncPriceQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { Plus } from '@anchor-protocol/icons';
 import {
@@ -33,6 +30,7 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { SwapListItem, TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
+import { useRefCallback } from 'hooks';
 import { formatShareOfPool } from 'pages/gov/components/formatShareOfPool';
 import { ancUstLpAncSimulation } from 'pages/trade/logics/ancUstLpAncSimulation';
 import { ancUstLpUstSimulation } from 'pages/trade/logics/ancUstLpUstSimulation';
@@ -44,6 +42,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useProvideAncLpTx } from 'tx/terra';
 
 export function AncUstLpProvide() {
   // ---------------------------------------------
@@ -71,11 +70,6 @@ export function AncUstLpProvide() {
   const bank = useAnchorBank();
 
   const { data: { ancPrice } = {} } = useAncPriceQuery();
-
-  // ---------------------------------------------
-  // transaction
-  // ---------------------------------------------
-  const [provide, provideResult] = useAncAncUstLpProvideTx();
 
   // ---------------------------------------------
   // logics
@@ -215,6 +209,12 @@ export function AncUstLpProvide() {
     setSimulation(null);
   }, []);
 
+  const onProvideSuccess = useRefCallback(() => {
+    init();
+  }, [init]);
+
+  const [provide, provideResult] = useProvideAncLpTx(onProvideSuccess);
+
   const proceed = useCallback(
     async (
       //walletReady: ConnectedWallet,
@@ -242,13 +242,9 @@ export function AncUstLpProvide() {
       provide({
         ancAmount,
         ustAmount,
-        txFee,
-        onTxSucceed: () => {
-          init();
-        },
       });
     },
-    [connected, init, openConfirm, provide],
+    [connected, openConfirm, provide],
   );
 
   // ---------------------------------------------

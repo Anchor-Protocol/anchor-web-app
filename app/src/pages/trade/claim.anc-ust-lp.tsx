@@ -1,8 +1,5 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import {
-  useRewardsAncUstLpClaimTx,
-  useRewardsAncUstLpRewardsQuery,
-} from '@anchor-protocol/app-provider';
+import { useRewardsAncUstLpRewardsQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { formatUST } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
@@ -21,6 +18,7 @@ import { useAccount } from 'contexts/account';
 import React, { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useClaimAncLpRewardsTx } from 'tx/terra';
 
 export interface ClaimAncUstLpProps {
   className?: string;
@@ -34,7 +32,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
 
   const fixedFee = useFixedFee();
 
-  const [claim, claimResult] = useRewardsAncUstLpClaimTx();
+  const [claim, claimResult] = useClaimAncLpRewardsTx();
 
   const navigate = useNavigate();
 
@@ -144,17 +142,13 @@ export const ClaimAncUstLp = styled(ClaimAncUstLpBase)`
     font-size: 27px;
     text-align: center;
     font-weight: 300;
-
     margin-bottom: 50px;
   }
-
   .receipt {
     margin-top: 30px;
   }
-
   .proceed {
     margin-top: 40px;
-
     width: 100%;
     height: 60px;
   }
