@@ -22,7 +22,6 @@ import { StreamStatus } from '@rx-stream/react';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import { DialogTitle } from '@libs/ui/text/DialogTitle';
-import { useMyLockInfoQuery } from 'queries/gov/useMyLockInfoQuery';
 import { VStack } from '@libs/ui/Stack';
 import { useMyAncStakedQuery, useMyVotingLockPeriodEndsAtQuery } from 'queries';
 import { ANC } from '@anchor-protocol/types';
@@ -43,7 +42,6 @@ export const ExtendAncLockPeriodDialog = ({
   const { data: lockConfig } = useVotingEscrowConfigQuery();
   const [period, setPeriod] = useState<Second | undefined>();
 
-  const { data: lockInfo } = useMyLockInfoQuery();
   const { data: lockPeriodEndsAt } = useMyVotingLockPeriodEndsAtQuery();
 
   const minPeriod = useMemo(() => {
@@ -83,9 +81,6 @@ export const ExtendAncLockPeriodDialog = ({
     }
   }, [maxPeriod, minPeriod, period]);
 
-  const isSubmitDisabled =
-    !availablePost || invalidTxFee || lockInfo?.period === period;
-
   const [extendPeriod, extendPeriodResult] = useExtendAncLockPeriodTx();
 
   const { data: staked } = useMyAncStakedQuery();
@@ -96,9 +91,11 @@ export const ExtendAncLockPeriodDialog = ({
     } else if (period !== undefined) {
       const currentPeriod =
         (lockPeriodEndsAt - Date.now()) / millisecondsInSecond;
-      return (period - currentPeriod) as Second;
+      return Math.round(period - currentPeriod) as Second;
     }
   }, [lockPeriodEndsAt, period]);
+
+  const isSubmitDisabled = !availablePost || invalidTxFee || !extendForPeriod;
 
   const proceed = useCallback(() => {
     if (
