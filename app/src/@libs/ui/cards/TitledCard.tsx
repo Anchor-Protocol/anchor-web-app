@@ -12,9 +12,9 @@ interface TitledCardProps extends UIElementProps {
 export const TitledCard = ({ children, title, className }: TitledCardProps) => {
   return (
     <Container className={className}>
-      <VStack fullWidth gap={40}>
-        <Title>{title}</Title>
-        <VStack fullWidth>{children}</VStack>
+      <Title>{title}</Title>
+      <VStack fullHeight fullWidth>
+        {children}
       </VStack>
     </Container>
   );
@@ -29,6 +29,9 @@ const Title = styled.div`
 const Container = styled.section`
   padding: 60px;
   border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
 
   ${({ theme }) =>
     flat({

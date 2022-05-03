@@ -1,5 +1,4 @@
-import React from 'react';
-import { ReactNode } from 'react-markdown/lib/react-markdown';
+import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import { VStack } from '../Stack';
 
