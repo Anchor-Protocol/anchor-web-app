@@ -44,7 +44,7 @@ export function useRenderedTx<TxParams>($: {
     [$],
   );
 
-  const withTimer = useTxTimer(send, $.message ?? 'Default message');
+  const withTimer = useTxTimer(send, $.message ?? 'Executing transaction');
 
   const txCallback = useCallback(
     (params: TxParams) =>

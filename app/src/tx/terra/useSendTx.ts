@@ -31,13 +31,13 @@ export function useSendTx(onSuccess?: RefCallback<() => void>) {
       const { currency, amount, toWalletAddress, memo } = txParams;
 
       const result = await terraSdk.send(
+        connectedWallet!.walletAddress,
         currency.cw20Address
           ? { token: currency.cw20Address }
           : {
               utoken: `u${currency.value}`,
             },
         formatTokenInput(amount),
-        connectedWallet!.walletAddress,
         toWalletAddress,
         memo,
         {
@@ -94,6 +94,7 @@ export function useSendTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Sending your tokens',
   });
 
   return connectedWallet ? streamReturn : [null, null];

@@ -118,6 +118,7 @@ export function useExportWhAssetTx(
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: `Exporting your ${bAssetInfo?.tokenDisplay.anchor.symbol}`,
   });
 
   return connectedWallet && bAssetInfo ? streamReturn : [null, null];

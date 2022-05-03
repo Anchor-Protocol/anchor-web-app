@@ -38,8 +38,8 @@ export function useDepositUstTx() {
   const sendTx = useCallback(
     async (txParams: DepositUstTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.depositStable(
-        formatTokenInput(txParams.depositAmount),
         connectedWallet!.walletAddress,
+        formatTokenInput(txParams.depositAmount),
         {
           handleEvent: (event) => {
             writer.writeTxHash(event.payload.txHash);
@@ -116,6 +116,7 @@ export function useDepositUstTx() {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Depositing your UST',
   });
 
   return connectedWallet ? streamReturn : [null, null];

@@ -95,6 +95,7 @@ export function useStakeAncLpTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Staking your ANC-UST LP',
   });
 
   return connectedWallet ? streamReturn : [null, null];

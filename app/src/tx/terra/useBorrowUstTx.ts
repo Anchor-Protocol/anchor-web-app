@@ -43,8 +43,8 @@ export function useBorrowUstTx() {
   const sendTx = useCallback(
     async (txParams: BorrowUstTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.borrowStable(
-        formatTokenInput(txParams.borrowAmount),
         connectedWallet!.walletAddress,
+        formatTokenInput(txParams.borrowAmount),
         {
           handleEvent: (event) => {
             writer.writeTxHash(event.payload.txHash);
@@ -132,6 +132,7 @@ export function useBorrowUstTx() {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Borrowing UST',
   });
 
   return connectedWallet ? streamReturn : [null, null];

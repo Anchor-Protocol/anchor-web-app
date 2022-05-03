@@ -43,7 +43,7 @@ export const BackgroundTxProvider = ({ children }: UIElementProps) => {
 
   const createRestoreTx = useRefCallback(() => {
     return createTx((txHash: string, handleEvent) =>
-      xAnchor.restoreTx(txHash, handleEvent),
+      xAnchor.restoreTx(txHash, { handleEvent }),
     );
   }, [xAnchor]);
 

@@ -39,8 +39,8 @@ export function useWithdrawUstTx() {
   const sendTx = useCallback(
     async (txParams: WithdrawUstTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.redeemStable(
-        formatTokenInput(txParams.withdrawAmount),
         connectedWallet!.walletAddress,
+        formatTokenInput(txParams.withdrawAmount),
         {
           handleEvent: (event) => {
             writer.writeTxHash(event.payload.txHash);
@@ -127,6 +127,7 @@ export function useWithdrawUstTx() {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Withdrawing your UST',
   });
 
   return connectedWallet ? streamReturn : [null, null];

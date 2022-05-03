@@ -149,6 +149,7 @@ export function useProvideAncLpTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Providing your ANC-UST LP',
   });
 
   return connectedWallet ? streamReturn : [null, null];

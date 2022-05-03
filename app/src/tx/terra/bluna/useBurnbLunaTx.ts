@@ -119,6 +119,7 @@ export function useBurnbLunaTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Burning your bLuna',
   });
 
   return connectedWallet ? streamReturn : [null, null];

@@ -61,7 +61,7 @@ export function useClaimWhAssetRewardsTx(onSuccess?: RefCallback<() => void>) {
   const renderResults = useCallback(
     async (
       txInfo: TxInfo,
-      helper: TxHelper,
+      writer: TerraTxProgressWriter,
       txParams: ClaimWhAssetRewardsTxParams,
     ) => {
       const rawLogs = txInfo.logs ?? [];
@@ -136,6 +136,7 @@ export function useClaimWhAssetRewardsTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Claiming rewards',
   });
 
   return connectedWallet ? streamReturn : [null, null];

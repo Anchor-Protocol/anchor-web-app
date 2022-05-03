@@ -161,6 +161,7 @@ export function useSellAncTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Selling ANC for UST',
   });
 
   return connectedWallet ? streamReturn : [null, null];

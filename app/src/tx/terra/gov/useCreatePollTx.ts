@@ -80,6 +80,7 @@ export function useCreatePollTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Creating poll',
   });
 
   return connectedWallet ? streamReturn : [null, null];

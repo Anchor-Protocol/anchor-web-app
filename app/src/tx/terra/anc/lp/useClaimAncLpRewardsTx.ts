@@ -106,6 +106,7 @@ export function useClaimAncLpRewardsTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Claiming rewards',
   });
 
   return connectedWallet ? streamReturn : [null, null];

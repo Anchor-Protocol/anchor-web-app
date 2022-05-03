@@ -95,6 +95,7 @@ export function useUnstakeAncLpTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Unstaking your ANC-UST LP',
   });
 
   return connectedWallet ? streamReturn : [null, null];

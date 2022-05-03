@@ -118,6 +118,7 @@ export function useImportWhAssetTx(
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: `Importing your ${bAssetInfo?.tokenDisplay.wormhole.symbol}`,
   });
 
   return connectedWallet && bAssetInfo ? streamReturn : [null, null];

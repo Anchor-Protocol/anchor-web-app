@@ -93,6 +93,7 @@ export function useClaimRewardsTx() {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Claiming rewards',
   });
 
   return connectedWallet ? streamReturn : [null, null];

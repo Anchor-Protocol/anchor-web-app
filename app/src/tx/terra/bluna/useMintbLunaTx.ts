@@ -114,6 +114,7 @@ export function useMintbLunaTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Minting your bLuna',
   });
 
   return connectedWallet ? streamReturn : [null, null];

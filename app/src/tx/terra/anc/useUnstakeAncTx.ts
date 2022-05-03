@@ -92,6 +92,7 @@ export function useUnstakeAncTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Unstaking your ANC',
   });
 
   return connectedWallet ? streamReturn : [null, null];

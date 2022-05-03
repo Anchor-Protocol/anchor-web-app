@@ -15,6 +15,7 @@ export const useEvmSdk = () => {
       provider instanceof StaticJsonRpcProvider ? undefined : provider,
       {
         unlimitedAllowance: true,
+        manualRedemption: false,
       },
     );
   }, [chainId, provider, lcdClient]);

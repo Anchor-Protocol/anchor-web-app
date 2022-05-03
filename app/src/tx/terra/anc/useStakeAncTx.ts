@@ -92,6 +92,7 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Staking your ANC',
   });
 
   return connectedWallet ? streamReturn : [null, null];

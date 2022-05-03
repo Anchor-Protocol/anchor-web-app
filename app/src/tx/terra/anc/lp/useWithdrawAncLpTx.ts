@@ -130,6 +130,7 @@ export function useWithdrawAncLpTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Withdrawing your ANC-UST LP',
   });
 
   return connectedWallet ? streamReturn : [null, null];

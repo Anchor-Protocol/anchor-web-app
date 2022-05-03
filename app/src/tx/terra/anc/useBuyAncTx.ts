@@ -157,6 +157,7 @@ export function useBuyAncTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Buying ANC for UST',
   });
 
   return connectedWallet ? streamReturn : [null, null];

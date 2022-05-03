@@ -43,8 +43,8 @@ export function useRepayUstTx() {
   const sendTx = useCallback(
     async (txParams: RepayUstTxParams, writer: TerraTxProgressWriter) => {
       const result = await terraSdk.repayStable(
-        formatTokenInput(txParams.repayAmount),
         connectedWallet!.walletAddress,
+        formatTokenInput(txParams.repayAmount),
         {
           handleEvent: (event) => {
             writer.writeTxHash(event.payload.txHash);
@@ -132,6 +132,7 @@ export function useRepayUstTx() {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: 'Repaying your loan',
   });
 
   return connectedWallet ? streamReturn : [null, null];

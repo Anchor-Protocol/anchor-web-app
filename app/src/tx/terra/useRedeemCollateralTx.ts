@@ -47,13 +47,13 @@ export function useRedeemCollateralTx(collateral: WhitelistCollateral) {
       writer: TerraTxProgressWriter,
     ) => {
       const result = await terraSdk.unlockCollateral(
+        connectedWallet!.walletAddress,
         collateral.collateral_token,
         collateral.custody_contract,
         formatInput(
           microfy(txParams.amount, collateral.decimals),
           collateral.decimals,
         ),
-        connectedWallet!.walletAddress,
         {
           handleEvent: (event) => {
             writer.writeTxHash(event.payload.txHash);
@@ -136,6 +136,7 @@ export function useRedeemCollateralTx(collateral: WhitelistCollateral) {
     network: connectedWallet!.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
+    message: `Withdrawing your ${collateral.symbol}`,
   });
 
   return connectedWallet ? streamReturn : [null, null];
