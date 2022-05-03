@@ -31,10 +31,6 @@ const PrimaryContent = styled.div`
   }
 
   @media (max-width: ${screen.tablet.max}px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @media (max-width: ${screen.mobile.max}px) {
     grid-template-columns: 1fr;
   }
 `;

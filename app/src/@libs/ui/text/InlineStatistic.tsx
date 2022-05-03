@@ -20,10 +20,10 @@ const Name = styled.p`
   font-weight: 500;
   font-size: 13px;
   color: ${({ theme }) => theme.dimTextColor};
-  text-transform: uppercase;
 `;
 
 const Value = styled.p`
   font-weight: 500;
   font-size: 14px;
+  text-align: end;
 `;
