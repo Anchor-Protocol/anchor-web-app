@@ -18,3 +18,4 @@ export * from './gov/useMyVotingLockPeriodEndsAtQuery';
 export * from './useLocalAnchorContractAddressQuery';
 export * from './gov/useGovStateQuery';
 export * from './gov/useGovConfigQuery';
+export * from './gov/useVotingEscrowConfigQuery';

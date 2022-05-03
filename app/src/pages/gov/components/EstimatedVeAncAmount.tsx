@@ -7,10 +7,7 @@ import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQue
 import React from 'react';
 import { computeEstimatedVeAnc } from '../logics/computeEstimatedVeAnc';
 import { SwishSpinner } from 'react-spinners-kit';
-import { useGovStateQuery } from 'queries';
-import { demicrofy } from '@libs/formatter';
-import Big from 'big.js';
-import { useAncTokenomics } from 'hooks';
+import { useSAnc } from '../hooks/useSAnc';
 
 interface EstimatedVeAncAmountProps {
   period?: Second;
@@ -21,29 +18,23 @@ export const EstimatedVeAncAmount = ({
   period,
   amount,
 }: EstimatedVeAncAmountProps) => {
+  const { convertAncToSAnc } = useSAnc();
   const { data: lockConfig } = useVotingEscrowConfigQuery();
-  const { data: govState } = useGovStateQuery();
-  const ancTokenomics = useAncTokenomics();
 
   const renderVeAncAmount = () => {
     if (!period || !amount) {
       return `-`;
     }
 
-    if (!lockConfig || !govState || !ancTokenomics) {
+    if (!convertAncToSAnc || !lockConfig) {
       return <SwishSpinner size={12} />;
     }
-
-    const totalShare = demicrofy(govState.total_share);
-    const totalStaked = demicrofy(ancTokenomics.totalStaked);
-
-    const sAncAmount = Big(amount).mul(totalShare).div(totalStaked);
 
     const estimatedVeAnc = computeEstimatedVeAnc(
       lockConfig.boostCoefficient,
       period,
       lockConfig.maxLockTime,
-      sAncAmount.toString() as ANC,
+      convertAncToSAnc(amount),
     );
 
     return `${formatVeAnc(estimatedVeAnc)} ${VEANC_SYMBOL}`;
