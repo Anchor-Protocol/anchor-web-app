@@ -15,7 +15,9 @@ export const useEvmSdk = () => {
       provider instanceof StaticJsonRpcProvider ? undefined : provider,
       {
         unlimitedAllowance: true,
-        manualRedemption: false,
+        manualRedemption:
+          chainId === EvmChainId.ETHEREUM ||
+          chainId === EvmChainId.ETHEREUM_ROPSTEN,
       },
     );
   }, [chainId, provider, lcdClient]);
