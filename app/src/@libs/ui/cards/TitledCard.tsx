@@ -23,7 +23,6 @@ export const TitledCard = ({ children, title, className }: TitledCardProps) => {
 const Title = styled.div`
   font-size: 18px;
   font-weight: 700;
-  margin-bottom: 30px;
 `;
 
 const Container = styled.section`

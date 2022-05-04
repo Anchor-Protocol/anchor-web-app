@@ -40,7 +40,7 @@ export const AncTrade = () => {
     >
       <VStack fullHeight justifyContent="end" fullWidth gap={40}>
         <InlineStatistic
-          name="ANC PRICE"
+          name="ANC Price"
           value={
             <>
               <AnimateNumber format={formatUSTWithPostfixUnits}>

@@ -1,4 +1,4 @@
-import { AnimateNumber, UIElementProps } from '@libs/ui';
+import { AnimateNumber } from '@libs/ui';
 import { Divider } from 'components/primitives/Divider';
 import React from 'react';
 import styled from 'styled-components';
@@ -15,7 +15,7 @@ import {
   useMyVotingLockPeriodEndsAtQuery,
   useMyVotingPowerQuery,
 } from 'queries';
-import { BigSource } from 'big.js';
+import Big, { BigSource } from 'big.js';
 import { ExtendAncLockPeriod } from './ExtendAncLockPeriod';
 import { formatTimestamp } from '@libs/formatter';
 import { HStack, VStack } from '@libs/ui/Stack';
@@ -25,7 +25,7 @@ import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { InlineStatistic } from '@libs/ui/text/InlineStatistic';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 
-export const MyAncTokenOverview = (props: UIElementProps) => {
+export const MyAncTokenOverview = () => {
   const { uANC } = useBalances();
 
   const { data: staked } = useMyAncStakedQuery();
@@ -33,6 +33,8 @@ export const MyAncTokenOverview = (props: UIElementProps) => {
   const { data: votingPower } = useMyVotingPowerQuery();
 
   const { data: unlockAt } = useMyVotingLockPeriodEndsAtQuery();
+
+  const hasVotingPower = votingPower && Big(votingPower).gt(0);
 
   return (
     <TitledCard title="My ANC">
@@ -83,44 +85,65 @@ export const MyAncTokenOverview = (props: UIElementProps) => {
           </Tooltip>
         </ManageStake>
         <Divider />
-        <VStack fullWidth gap={20}>
-          {unlockAt !== undefined && (
-            <InlineStatistic
-              name="UNLOCK TIME"
-              value={formatTimestamp(unlockAt)}
-            />
-          )}
-          {votingPower !== undefined && (
-            <InlineStatistic
-              name="VOTING POWER"
-              value={
-                <>
-                  <AnimateNumber format={formatUTokenDecimal2}>
-                    {votingPower ? votingPower : (0 as u<veANC<BigSource>>)}
-                  </AnimateNumber>{' '}
-                  <Sub>{VEANC_SYMBOL}</Sub>
-                </>
-              }
-            />
-          )}
-        </VStack>
-        <HStack fullWidth>
-          <ExtendAncLockPeriod />
-        </HStack>
+        {hasVotingPower ? (
+          <>
+            <VStack fullWidth gap={20}>
+              {unlockAt !== undefined && (
+                <InlineStatistic
+                  name="UNLOCK TIME"
+                  value={formatTimestamp(unlockAt)}
+                />
+              )}
+              {votingPower !== undefined && (
+                <InlineStatistic
+                  name="VOTING POWER"
+                  value={
+                    <>
+                      <AnimateNumber format={formatUTokenDecimal2}>
+                        {votingPower ? votingPower : (0 as u<veANC<BigSource>>)}
+                      </AnimateNumber>{' '}
+                      <Sub>{VEANC_SYMBOL}</Sub>
+                    </>
+                  }
+                />
+              )}
+            </VStack>
+            <HStack fullWidth>
+              <ExtendAncLockPeriod />
+            </HStack>
+          </>
+        ) : (
+          <NoVotingPower>
+            <h4>No voting power</h4>
+            <p>Stake &amp; lock your ANC to gain voting power for polls.</p>
+          </NoVotingPower>
+        )}
       </VStack>
     </TitledCard>
   );
 };
 
-export const Amount = styled.p`
-  font-size: 32px;
-  font-weight: 500;
-
-  span:last-child {
-    margin-left: 8px;
-    font-size: 0.55em;
+const NoVotingPower = styled.div`
+  h4 {
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  p {
+    margin: 0;
   }
 `;
+
+// const Amount = styled.p`
+//   font-size: 32px;
+//   font-weight: 500;
+
+//   span:last-child {
+//     margin-left: 8px;
+//     font-size: 0.55em;
+//   }
+// `;
 
 const ManageStake = styled.div`
   display: grid;
