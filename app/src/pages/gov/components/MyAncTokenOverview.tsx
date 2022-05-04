@@ -135,16 +135,6 @@ const NoVotingPower = styled.div`
   }
 `;
 
-// const Amount = styled.p`
-//   font-size: 32px;
-//   font-weight: 500;
-
-//   span:last-child {
-//     margin-left: 8px;
-//     font-size: 0.55em;
-//   }
-// `;
-
 const ManageStake = styled.div`
   display: grid;
   gap: 12px;

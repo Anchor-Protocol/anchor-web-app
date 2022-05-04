@@ -61,7 +61,7 @@ export function GovernanceMain() {
 
   return (
     <PaddedLayout>
-      <VStack gap={76}>
+      <VStack gap={40}>
         <VStack>
           <TitleContainer>
             <PageTitle title="GOVERNANCE" docs={links.docs.gov} />
