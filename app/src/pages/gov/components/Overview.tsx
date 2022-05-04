@@ -27,7 +27,7 @@ const PrimaryContent = styled.div`
   gap: 40px;
 
   @media (max-width: ${screen.pc.max}px) {
-    grid-template-columns: 6fr 8fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   @media (max-width: ${screen.tablet.max}px) {
@@ -39,6 +39,7 @@ const SecondaryContent = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
+  width: 100%;
 
   @media (max-width: ${screen.tablet.max}px) {
     grid-template-columns: 1fr;

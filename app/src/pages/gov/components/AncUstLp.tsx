@@ -66,6 +66,7 @@ export const AncUstLp = () => {
         <VStack fullWidth gap={12}>
           <InlineStatistic
             name="APR"
+            kind="secondary"
             value={
               <>
                 <AnimateNumber format={formatRate}>
@@ -79,6 +80,7 @@ export const AncUstLp = () => {
           />
           <InlineStatistic
             name="Total staked"
+            kind="secondary"
             value={
               <AnimateNumber format={formatUTokenDecimal2}>
                 {lpStakingState?.total_bond_amount
@@ -90,6 +92,7 @@ export const AncUstLp = () => {
           {hasAncRewards && (
             <InlineStatistic
               name="ANC Rewards"
+              kind="secondary"
               value={
                 <>
                   {formatOutput(demicrofy(ancRewards))} <Sub>ANC</Sub>
@@ -100,6 +103,7 @@ export const AncUstLp = () => {
           {hasAstroRewards && (
             <InlineStatistic
               name="ASTRO Rewards"
+              kind="secondary"
               value={
                 <>
                   {formatOutput(demicrofy(astroRewards))} <Sub>ASTRO</Sub>
