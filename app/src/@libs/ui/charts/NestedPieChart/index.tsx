@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// WIP
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { BoundingBoxAware } from '../boundingBox/BoundingBoxAware';
+import { BoundingBoxAware } from '../../boundingBox/BoundingBoxAware';
+import { SvgArc } from './SvgArc';
+import { SvgDisk } from './SvgDisk';
 
 export interface NestedPieChartData {
   color: string;
@@ -14,22 +14,7 @@ interface NestedPieChartProps {
 }
 
 const pieChartWidthInPx = 33;
-
-const getCoordFromDegrees = (
-  angle: number,
-  radius: number,
-  svgSize: number,
-) => {
-  const x = Math.cos((angle * Math.PI) / 180);
-  const y = Math.sin((angle * Math.PI) / 180);
-  const coordX = x * radius + svgSize / 2;
-  const coordY = y * -radius + svgSize / 2;
-
-  return {
-    x: coordX,
-    y: coordY,
-  };
-};
+const pieChartWidthDecrementInPx = 7;
 
 export const NestedPieChart = ({ data }: NestedPieChartProps) => {
   const total = useMemo(
@@ -47,26 +32,42 @@ export const NestedPieChart = ({ data }: NestedPieChartProps) => {
 
           const { width, height } = boundingBox;
           const size = Math.min(width, height);
-          const radius = size / 2;
 
           return (
             <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size}>
               {data
                 .sort((a, b) => b.value - a.value)
                 .map(({ value, color }, index) => {
-                  if (index === 0) {
+                  const widthDecrement = pieChartWidthDecrementInPx * index;
+                  const radius = size / 2 - widthDecrement;
+                  const transform = `translate(${widthDecrement},${widthDecrement})`;
+
+                  if (value === 0) {
+                    return null;
+                  }
+
+                  if (value === total) {
                     return (
-                      <circle
-                        stroke={color}
-                        stroke-width={pieChartWidthInPx}
-                        fill="transparent"
-                        r={radius - pieChartWidthInPx / 2}
-                        cx={radius}
-                        cy={radius}
+                      <SvgDisk
+                        key={index}
+                        color={color}
+                        width={pieChartWidthInPx}
+                        radius={radius}
+                        transform={transform}
                       />
                     );
                   }
-                  return null;
+
+                  return (
+                    <SvgArc
+                      key={index}
+                      color={color}
+                      width={pieChartWidthInPx - widthDecrement}
+                      radius={radius}
+                      share={value / total}
+                      transform={transform}
+                    />
+                  );
                 })}
             </svg>
           );

@@ -37,8 +37,8 @@ export const AncTokenOverview = () => {
 
   const theme = useTheme();
   const totalSupplyColor = theme.textColor;
-  const circulatingSupplyColor = theme.colors.primaryDark;
-  const totalStakedColor = theme.colors.primary;
+  const circulatingSupplyColor = theme.chart[2];
+  const totalStakedColor = theme.chart[0];
 
   const chartData: NestedPieChartData[] = useMemo(() => {
     return [
