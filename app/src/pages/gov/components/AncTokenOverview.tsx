@@ -1,19 +1,18 @@
 import { useFormatters } from '@anchor-protocol/formatter';
 import { ANC, Rate, u } from '@anchor-protocol/types';
 import { formatRate } from '@libs/formatter';
-import { AnimateNumber, UIElementProps } from '@libs/ui';
+import { AnimateNumber } from '@libs/ui';
 import { TitledCard } from '@libs/ui/cards/TitledCard';
+import { PieChartValue } from '@libs/ui/charts/PieChartValue';
 import { VStack } from '@libs/ui/Stack';
 import { ImportantStatistic } from '@libs/ui/text/ImportantStatistic';
 import { TagWithColor } from '@libs/ui/text/TagWithColor';
 import Big from 'big.js';
 import { Divider } from 'components/primitives/Divider';
-import { Sub } from 'components/Sub';
 import { AncTokenomics, useAncTokenomics } from 'hooks';
 import { useAncStakingAPRQuery } from 'queries';
 import React from 'react';
 import styled, { useTheme } from 'styled-components';
-import { CardSubHeading, CardSubHeadingProps } from './Card';
 
 const EMPTY_ANC_TOKENOMICS: AncTokenomics = {
   totalSupply: Big(0) as u<ANC<Big>>,
@@ -21,22 +20,9 @@ const EMPTY_ANC_TOKENOMICS: AncTokenomics = {
   totalStaked: Big(0) as u<ANC<Big>>,
 };
 
-interface LabelWithValueProps extends CardSubHeadingProps {}
-
-const LabelWithValue = (props: LabelWithValueProps) => {
-  const { title, tooltip, children } = props;
-
-  return (
-    <>
-      <CardSubHeading className="subHeading" title={title} tooltip={tooltip} />
-      <Amount>{children}</Amount>
-    </>
-  );
-};
-
-export const AncTokenOverview = (props: UIElementProps) => {
+export const AncTokenOverview = () => {
   const {
-    anc: { formatOutput, demicrofy, symbol },
+    anc: { formatOutput, demicrofy },
   } = useFormatters();
 
   const formatter = (value: u<ANC<Big>>) => formatOutput(demicrofy(value));
@@ -50,38 +36,40 @@ export const AncTokenOverview = (props: UIElementProps) => {
   return (
     <TitledCard title="ANC">
       <VStack gap={40}>
-        <ImportantStatistic
-          name={
-            <TagWithColor color={theme.textColor}>
-              <p>TOTAL SUPPLY</p>
-            </TagWithColor>
-          }
-          value={
-            <AnimateNumber format={formatter}>
-              {ancTokenomics.totalSupply}
-            </AnimateNumber>
-          }
-        />
-        <section>
-          <LabelWithValue
-            title="CIRCULATING SUPPLY"
-            tooltip="Total supply of ANC tokens that are currently in circulation"
-          >
-            <AnimateNumber format={formatter}>
-              {ancTokenomics.circulatingSupply}
-            </AnimateNumber>
-            <Sub>{` ${symbol}`}</Sub>
-          </LabelWithValue>
-          <LabelWithValue
-            title="TOTAL STAKED"
-            tooltip="Total amount of ANC tokens that are currently staked in the governance contract"
-          >
-            <AnimateNumber format={formatter}>
-              {ancTokenomics.totalStaked}
-            </AnimateNumber>
-            <Sub>{` ${symbol}`}</Sub>
-          </LabelWithValue>
-        </section>
+        <VStack gap={28}>
+          <ImportantStatistic
+            name={
+              <TagWithColor color={theme.textColor}>
+                <p>TOTAL SUPPLY</p>
+              </TagWithColor>
+            }
+            value={
+              <AnimateNumber format={formatter}>
+                {ancTokenomics.totalSupply}
+              </AnimateNumber>
+            }
+          />
+          <VStack gap={36}>
+            <PieChartValue
+              name="Total staked"
+              color={theme.colors.primary}
+              value={
+                <AnimateNumber format={formatter}>
+                  {ancTokenomics.circulatingSupply}
+                </AnimateNumber>
+              }
+            />
+            <PieChartValue
+              name="Circulating Supply"
+              color={theme.colors.primaryDark}
+              value={
+                <AnimateNumber format={formatter}>
+                  {ancTokenomics.circulatingSupply}
+                </AnimateNumber>
+              }
+            />
+          </VStack>
+        </VStack>
         <Divider />
         <ImportantStatistic
           name="ANC Staking APR"
@@ -98,16 +86,6 @@ export const AncTokenOverview = (props: UIElementProps) => {
     </TitledCard>
   );
 };
-
-const Amount = styled.p`
-  font-size: 32px;
-  font-weight: 500;
-
-  span:last-child {
-    margin-left: 8px;
-    font-size: 0.55em;
-  }
-`;
 
 const APR = styled.span`
   color: ${({ theme }) => theme.colors.positive};
