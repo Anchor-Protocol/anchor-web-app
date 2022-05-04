@@ -5,13 +5,14 @@ import { AnimateNumber, UIElementProps } from '@libs/ui';
 import { TitledCard } from '@libs/ui/cards/TitledCard';
 import { VStack } from '@libs/ui/Stack';
 import { ImportantStatistic } from '@libs/ui/text/ImportantStatistic';
+import { TagWithColor } from '@libs/ui/text/TagWithColor';
 import Big from 'big.js';
 import { Divider } from 'components/primitives/Divider';
 import { Sub } from 'components/Sub';
 import { AncTokenomics, useAncTokenomics } from 'hooks';
 import { useAncStakingAPRQuery } from 'queries';
 import React from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { CardSubHeading, CardSubHeadingProps } from './Card';
 
 const EMPTY_ANC_TOKENOMICS: AncTokenomics = {
@@ -44,19 +45,24 @@ export const AncTokenOverview = (props: UIElementProps) => {
 
   const { data: stakingAPR } = useAncStakingAPRQuery();
 
+  const theme = useTheme();
+
   return (
     <TitledCard title="ANC">
       <VStack gap={40}>
-        <section>
-          <LabelWithValue
-            title="TOTAL SUPPLY"
-            tooltip="Total maximum supply of ANC tokens"
-          >
+        <ImportantStatistic
+          name={
+            <TagWithColor color={theme.textColor}>
+              <p>TOTAL SUPPLY</p>
+            </TagWithColor>
+          }
+          value={
             <AnimateNumber format={formatter}>
               {ancTokenomics.totalSupply}
             </AnimateNumber>
-            <Sub>{` ${symbol}`}</Sub>
-          </LabelWithValue>
+          }
+        />
+        <section>
           <LabelWithValue
             title="CIRCULATING SUPPLY"
             tooltip="Total supply of ANC tokens that are currently in circulation"
