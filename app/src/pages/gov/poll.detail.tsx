@@ -1,5 +1,5 @@
 import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
-import { Rate } from '@anchor-protocol/types';
+import { Rate, u, veANC } from '@anchor-protocol/types';
 import {
   useAncBalanceQuery,
   useAnchorWebapp,
@@ -40,7 +40,12 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { UIElementProps } from '@libs/ui';
 import { useEstimatedBlockTime } from 'queries/useEstimatedBlockTime';
-import { useGovStateQuery, useGovConfigQuery } from 'queries';
+import {
+  useGovStateQuery,
+  useGovConfigQuery,
+  useMyVotingPowerQuery,
+} from 'queries';
+import Big from 'big.js';
 
 function PollDetailBase({ className }: UIElementProps) {
   const {
@@ -58,11 +63,14 @@ function PollDetailBase({ className }: UIElementProps) {
       'https://forum.anchorprotocol.com/t/proposal-redirect-remaining-anc-lp-incentives-anc-buybacks-to-astroport/1971';
   }
 
+  const { data: votingPower = '0' as u<veANC> } = useMyVotingPowerQuery();
+
   const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
     contractAddress.anchorToken.gov,
   );
 
   const { data: govState } = useGovStateQuery();
+
   const { data: govConfig } = useGovConfigQuery();
 
   const canIVote = useGovVoteAvailableQuery(poll?.id);
@@ -125,6 +133,7 @@ function PollDetailBase({ className }: UIElementProps) {
                 !canIVote ||
                 !poll ||
                 !lastSyncedHeight ||
+                Big(votingPower).lte(0) ||
                 poll.status !== 'in_progress' ||
                 poll.end_height < lastSyncedHeight
               }

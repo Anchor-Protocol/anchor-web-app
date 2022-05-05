@@ -2,8 +2,9 @@ import { AnimateNumber } from '@libs/ui';
 import { Divider } from 'components/primitives/Divider';
 import React from 'react';
 import styled from 'styled-components';
-import { formatUTokenDecimal2 } from '@anchor-protocol/notation';
+import { formatUTokenDecimal2, formatVeAnc } from '@anchor-protocol/notation';
 import { ANC, u, veANC } from '@anchor-protocol/types';
+import { demicrofy } from '@anchor-protocol/formatter';
 import { Sub } from 'components/Sub';
 import { useBalances } from 'contexts/balances';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
@@ -99,8 +100,10 @@ export const MyAncTokenOverview = () => {
                   name="VOTING POWER"
                   value={
                     <>
-                      <AnimateNumber format={formatUTokenDecimal2}>
-                        {votingPower ? votingPower : (0 as u<veANC<BigSource>>)}
+                      <AnimateNumber format={formatVeAnc}>
+                        {votingPower
+                          ? demicrofy(votingPower, 6)
+                          : (0 as veANC<BigSource>)}
                       </AnimateNumber>{' '}
                       <Sub>{VEANC_SYMBOL}</Sub>
                     </>

@@ -8,8 +8,6 @@ import {
 import { List, ViewModule } from '@material-ui/icons';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
-import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { NativeSelect } from '@libs/neumorphism-ui/components/NativeSelect';
 import { links } from 'env';
 import { pollStatusLabels } from 'pages/gov/components/formatPollStatus';
@@ -76,15 +74,20 @@ function PollsBase({ className }: PollsProps) {
     <section className={className}>
       <SubHeader breakPoints={900}>
         <div>
-          <h2>
-            <IconSpan>
-              Polls{' '}
-              <InfoTooltip>
-                Staked ANC can be used to exercise voting power in polls that
-                are currently in progress
-              </InfoTooltip>
-            </IconSpan>
-          </h2>
+          <NativeSelect
+            className="filter"
+            value={option}
+            style={{ width: 150, height: 40 }}
+            onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
+              setOption(target.value as anchorToken.gov.PollStatus)
+            }
+          >
+            {options.map(({ label, value }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </NativeSelect>
 
           <button
             className="icon-button"
@@ -101,22 +104,6 @@ function PollsBase({ className }: PollsProps) {
           >
             <List />
           </button>
-
-          <div />
-
-          <NativeSelect
-            value={option}
-            style={{ width: 150, height: 40, marginLeft: 10 }}
-            onChange={({ target }: ChangeEvent<HTMLSelectElement>) =>
-              setOption(target.value as anchorToken.gov.PollStatus)
-            }
-          >
-            {options.map(({ label, value }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </NativeSelect>
         </div>
 
         <div className="buttons">
@@ -162,7 +149,7 @@ function PollsBase({ className }: PollsProps) {
 }
 
 export const Polls = styled(PollsBase)`
-  h2 {
+  .filter {
     margin-right: 20px;
   }
 

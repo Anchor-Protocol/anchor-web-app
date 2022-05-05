@@ -5,7 +5,7 @@ import {
   formatVeAnc,
   formatVeAncInput,
 } from '@anchor-protocol/notation';
-import { veANC } from '@anchor-protocol/types';
+import { u, veANC } from '@anchor-protocol/types';
 import { useGovVoteAvailableQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
@@ -66,12 +66,13 @@ function ComponentBase({
 
   const bank = useAnchorBank();
 
-  const { data: votingPower } = useMyVotingPowerQuery();
+  const { data: votingPower = '0' as u<veANC> } = useMyVotingPowerQuery();
 
   const canIVote = useGovVoteAvailableQuery(pollId);
 
   const [voteFor, setVoteFor] = useState<null | 'yes' | 'no'>(null);
-  const [amount, setAmount] = useState<veANC>('' as veANC);
+
+  const [amount, setAmount] = useState<veANC>('0' as veANC);
 
   const invalidTxFee = useMemo(
     () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),

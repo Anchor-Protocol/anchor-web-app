@@ -74,7 +74,7 @@ export const AmountSlider = ({
   symbol,
 }: AmountSliderProps) => {
   const theme = useTheme();
-  const valueRatio = Math.min(1, value / max);
+  const valueRatio = Math.min(1, max === 0 ? 0 : value / max);
   const allowed = max - txFee * 1.1;
 
   const amountSliderLabelRenderer = useCallback(

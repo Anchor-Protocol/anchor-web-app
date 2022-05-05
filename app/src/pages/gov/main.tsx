@@ -24,7 +24,7 @@ interface Item {
 const TAB_ITEMS: Item[] = [
   { label: 'OVERVIEW', value: 'overview' },
   { label: 'POLLS', value: 'polls' },
-  { label: 'GAUGES', value: 'gauges' },
+  //{ label: 'GAUGES', value: 'gauges' },
 ];
 
 type TabReturn = [Item, (next: Item) => void];
