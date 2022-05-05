@@ -41,7 +41,7 @@ export const MyAncTokenOverview = () => {
       <VStack fullWidth gap={40}>
         <HStack gap={60}>
           <ImportantStatistic
-            name="balance"
+            name="wallet"
             value={
               <>
                 <AnimateNumber format={formatUTokenDecimal2}>
