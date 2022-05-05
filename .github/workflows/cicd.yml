@@ -197,4 +197,14 @@ jobs:
             Successfully deployed `web-app` to IPFS 🚀
 
             **CID:** ${{ steps.ipfs.outputs.cid }}
-            **URL**: ${{ steps.ipfs.outputs.url }}
+            **Preview URL**: ${{ steps.ipfs.outputs.url }}
+
+      - name: Update CloudFlare DNSLink with new IPFS CID
+        uses: textileio/cloudflare-update-dnslink@v2
+        env:
+          CLOUDFLARE_ZONE_ID: ${{ secrets.APP_ZONE_ID }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          RECORD_DOMAIN: anchorprotocol.com
+          RECORD_NAME: '_dnslink.ipfs'
+        with:
+          cid: ${{ steps.ipfs.outputs.cid }}
