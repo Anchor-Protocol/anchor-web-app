@@ -27,6 +27,10 @@ const TAB_ITEMS: Item[] = [
   //{ label: 'GAUGES', value: 'gauges' },
 ];
 
+if (process.env.NODE_ENV === 'development') {
+  TAB_ITEMS.push({ label: 'GAUGES', value: 'gauges' });
+}
+
 type TabReturn = [Item, (next: Item) => void];
 
 const useTab = (): TabReturn => {

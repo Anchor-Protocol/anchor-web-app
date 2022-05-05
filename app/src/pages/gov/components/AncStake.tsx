@@ -20,7 +20,13 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useBalances } from 'contexts/balances';
 import { useLockAncTx } from 'tx/gov/useLockAncTx';
 import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQuery';
@@ -33,6 +39,7 @@ import { UIElementProps } from '@libs/ui';
 import { Divider } from 'components/primitives/Divider';
 import { EstimatedVeAncAmount } from './EstimatedVeAncAmount';
 import { useMyVotingLockPeriodEndsAtQuery } from 'queries';
+import { millisecondsInSecond } from 'date-fns';
 
 function AncStakeBase(props: UIElementProps) {
   const { className } = props;
@@ -51,6 +58,15 @@ function AncStakeBase(props: UIElementProps) {
   const { data: lockConfig } = useVotingEscrowConfigQuery();
 
   const [period, setPeriod] = useState<Second | undefined>();
+  const currentPeriod = useMemo(() => {
+    const now = Date.now();
+    if (lockPeriodEndsAt === undefined || lockPeriodEndsAt < now) {
+      return;
+    }
+
+    return ((lockPeriodEndsAt - now) / millisecondsInSecond) as Second;
+  }, [lockPeriodEndsAt]);
+
   useEffect(() => {
     if (!isLockPeriodEndsAtFetched) {
       return;
@@ -79,8 +95,16 @@ function AncStakeBase(props: UIElementProps) {
       ? 'Not enough assets'
       : undefined;
 
+  const isSubmitEnabled =
+    (availablePost &&
+      connected &&
+      lock &&
+      (period || currentPeriod) &&
+      !invalidTxFee) ||
+    !invalidANCAmount;
+
   const proceed = useCallback(() => {
-    if (!connected || !lock || period === undefined) {
+    if (!isSubmitEnabled || !lock) {
       return;
     }
 
@@ -91,7 +115,7 @@ function AncStakeBase(props: UIElementProps) {
         setAmount('' as ANC);
       },
     });
-  }, [amount, connected, lock, period]);
+  }, [amount, isSubmitEnabled, lock, period]);
 
   if (
     lockResult?.status === StreamStatus.IN_PROGRESS ||
@@ -192,23 +216,17 @@ function AncStakeBase(props: UIElementProps) {
           <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
-          <EstimatedVeAncAmount period={period} amount={amount} />
+          <EstimatedVeAncAmount
+            period={period || currentPeriod}
+            amount={amount}
+          />
         </TxFeeList>
       )}
 
       <ViewAddressWarning>
         <ActionButton
           className="submit"
-          disabled={
-            !availablePost ||
-            !connected ||
-            !lock ||
-            period === undefined ||
-            amount.length === 0 ||
-            big(amount).lte(0) ||
-            !!invalidTxFee ||
-            !!invalidANCAmount
-          }
+          disabled={!isSubmitEnabled}
           onClick={proceed}
         >
           Stake
