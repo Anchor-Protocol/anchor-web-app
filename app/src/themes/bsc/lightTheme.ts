@@ -1,12 +1,7 @@
 import type { DefaultTheme } from 'styled-components';
-import {
-  defaultLightTheme,
-  LIGHT_GRAY_300,
-  BLACK,
-  WHITE,
-} from '../lightThemeDefault';
+import { defaultLightTheme, LIGHT_GRAY_300, BLACK } from '../lightThemeDefault';
 
-// const PRIMARY_1000 = '#1E1702';
+const PRIMARY_1000 = '#1E1702';
 const PRIMARY_900 = '#453603';
 const PRIMARY_800 = '#765A04';
 const PRIMARY_700 = '#A88000';
@@ -56,7 +51,7 @@ export const lightTheme: DefaultTheme = {
   ],
   header: {
     backgroundColor: PRIMARY_500,
-    textColor: WHITE,
+    textColor: PRIMARY_1000,
     navigationTextColor: 'hsla(0, 0%, 8%, 0.4)',
   },
   messageBox: {

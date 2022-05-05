@@ -6,10 +6,11 @@ interface DeploymentSwitchProps {
   terra: FunctionComponent | ReactNode;
   ethereum: FunctionComponent | ReactNode;
   avalanche?: FunctionComponent | ReactNode;
+  bsc?: FunctionComponent | ReactNode;
 }
 
 export function DeploymentSwitch(props: DeploymentSwitchProps) {
-  const { terra, ethereum, avalanche } = props;
+  const { terra, ethereum, avalanche, bsc } = props;
   const {
     target: { chain },
   } = useDeploymentTarget();
@@ -24,6 +25,9 @@ export function DeploymentSwitch(props: DeploymentSwitchProps) {
       break;
     case Chain.Avalanche:
       content = avalanche ?? ethereum;
+      break;
+    case Chain.BSC:
+      content = bsc;
       break;
     default:
       content = <></>;
