@@ -97,7 +97,17 @@ async function whitelistCollateralQuery(
 
 const queryFn = createQueryFn(whitelistCollateralQuery);
 
-export function useWhitelistCollateralQuery(): UseQueryResult<
+interface WhitelistCollateralQueryParams {
+  enabled?: boolean;
+}
+
+const defaultWhitelistCollateralQueryParams: WhitelistCollateralQueryParams = {
+  enabled: true,
+};
+
+export function useWhitelistCollateralQuery({
+  enabled,
+}: WhitelistCollateralQueryParams = defaultWhitelistCollateralQueryParams): UseQueryResult<
   WhitelistCollateral[]
 > {
   const { target } = useDeploymentTarget();
@@ -121,6 +131,7 @@ export function useWhitelistCollateralQuery(): UseQueryResult<
     {
       refetchOnMount: false,
       keepPreviousData: true,
+      enabled,
     },
   );
 
