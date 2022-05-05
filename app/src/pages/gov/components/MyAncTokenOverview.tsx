@@ -3,7 +3,7 @@ import { Divider } from 'components/primitives/Divider';
 import React from 'react';
 import styled from 'styled-components';
 import { formatUTokenDecimal2, formatVeAnc } from '@anchor-protocol/notation';
-import { ANC, u, veANC } from '@anchor-protocol/types';
+import { ANC, MillisTimestamp, u, veANC } from '@anchor-protocol/types';
 import { demicrofy } from '@anchor-protocol/formatter';
 import { Sub } from 'components/Sub';
 import { useBalances } from 'contexts/balances';
@@ -29,13 +29,11 @@ import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 export const MyAncTokenOverview = () => {
   const { uANC } = useBalances();
 
-  const { data: staked } = useMyAncStakedQuery();
+  const { data: staked = 0 as u<ANC<number>> } = useMyAncStakedQuery();
 
-  const { data: votingPower } = useMyVotingPowerQuery();
+  const { data: votingPower = 0 as u<veANC<number>> } = useMyVotingPowerQuery();
 
   const { data: unlockAt } = useMyVotingLockPeriodEndsAtQuery();
-
-  const hasVotingPower = votingPower && Big(votingPower).gt(0);
 
   return (
     <TitledCard title="My ANC">
@@ -86,43 +84,82 @@ export const MyAncTokenOverview = () => {
           </Tooltip>
         </ManageStake>
         <Divider />
-        {hasVotingPower ? (
-          <>
-            <VStack fullWidth gap={20}>
-              {unlockAt !== undefined && (
-                <InlineStatistic
-                  name="UNLOCK TIME"
-                  value={formatTimestamp(unlockAt)}
-                />
-              )}
-              {votingPower !== undefined && (
-                <InlineStatistic
-                  name="VOTING POWER"
-                  value={
-                    <>
-                      <AnimateNumber format={formatVeAnc}>
-                        {votingPower
-                          ? demicrofy(votingPower, 6)
-                          : (0 as veANC<BigSource>)}
-                      </AnimateNumber>{' '}
-                      <Sub>{VEANC_SYMBOL}</Sub>
-                    </>
-                  }
-                />
-              )}
-            </VStack>
-            <HStack fullWidth>
-              <ExtendAncLockPeriod />
-            </HStack>
-          </>
-        ) : (
-          <NoVotingPower>
-            <h4>No voting power</h4>
-            <p>Stake &amp; lock your ANC to gain voting power for polls.</p>
-          </NoVotingPower>
-        )}
+        <VotingPower
+          staked={staked}
+          votingPower={votingPower}
+          unlockAt={unlockAt}
+        />
       </VStack>
     </TitledCard>
+  );
+};
+
+interface VotingPowerProps {
+  staked: u<ANC<BigSource>>;
+  votingPower: u<veANC<BigSource>>;
+  unlockAt: MillisTimestamp | undefined;
+}
+
+const VotingPower = (props: VotingPowerProps) => {
+  const { staked, votingPower, unlockAt } = props;
+
+  if (Big(staked).lte(0) && Big(votingPower).lte(0)) {
+    return (
+      <NoVotingPower>
+        <h4>No voting power</h4>
+        <p>Stake &amp; lock your ANC to gain voting power for polls.</p>
+      </NoVotingPower>
+    );
+  }
+
+  if (Big(staked).gt(0) && Big(votingPower).lte(0)) {
+    return (
+      <>
+        <VStack fullWidth gap={20}>
+          <NoVotingPower>
+            <h4>No voting power</h4>
+            <p>
+              Extend the lock period for your staked ANC to gain voting power
+              for polls.
+            </p>
+          </NoVotingPower>
+        </VStack>
+        <HStack fullWidth gap={20}>
+          <ExtendAncLockPeriod />
+        </HStack>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <VStack fullWidth gap={20}>
+        {unlockAt !== undefined && (
+          <InlineStatistic
+            name="UNLOCK TIME"
+            value={formatTimestamp(unlockAt)}
+          />
+        )}
+        {votingPower !== undefined && (
+          <InlineStatistic
+            name="VOTING POWER"
+            value={
+              <>
+                <AnimateNumber format={formatVeAnc}>
+                  {votingPower
+                    ? demicrofy(votingPower, 6)
+                    : (0 as veANC<BigSource>)}
+                </AnimateNumber>{' '}
+                <Sub>{VEANC_SYMBOL}</Sub>
+              </>
+            }
+          />
+        )}
+      </VStack>
+      <HStack fullWidth>
+        <ExtendAncLockPeriod />
+      </HStack>
+    </>
   );
 };
 
