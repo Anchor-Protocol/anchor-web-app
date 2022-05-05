@@ -114,6 +114,7 @@ export const defaultDarkTheme = {
     borderHoverColor: DARK_BLUE_500,
     textColor: WHITE,
     hoverTextColor: WHITE,
+    hoverBackgroundColor: DARK_BLUE_400,
   },
 
   selector: {

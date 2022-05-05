@@ -86,6 +86,7 @@ export const lightTheme: DefaultTheme = {
     borderHoverColor: GRAY_600,
     textColor: GRAY_700,
     hoverTextColor: GRAY_600,
+    hoverBackgroundColor: defaultLightTheme.hoverBackgroundColor,
   },
   tooltip: {
     ...defaultLightTheme.tooltip,

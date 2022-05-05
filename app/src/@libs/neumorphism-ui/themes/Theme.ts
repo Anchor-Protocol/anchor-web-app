@@ -78,6 +78,7 @@ export interface NeumorphismTheme extends Theme {
     borderHoverColor: string;
     textColor: string;
     hoverTextColor: string;
+    hoverBackgroundColor: string;
   };
 
   // selector
