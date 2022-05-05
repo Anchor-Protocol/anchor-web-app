@@ -20,6 +20,6 @@ export const BorderButton = styled(ButtonBase).attrs({ disableRipple: true })`
   }
 
   &:disabled {
-    opacity: 0.3;
+    opacity: 0.4;
   }
 `;
