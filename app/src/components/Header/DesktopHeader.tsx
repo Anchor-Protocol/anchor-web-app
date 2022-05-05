@@ -99,7 +99,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
       align-items: center;
 
       a {
-        color: rgba(255, 255, 255, 0.4);
+        color: ${({ theme }) => theme.header.navigationTextColor};
         font-size: 18px;
         font-weight: 900;
 

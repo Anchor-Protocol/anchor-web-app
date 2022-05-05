@@ -35,6 +35,7 @@ export interface NeumorphismTheme extends Theme {
   header: {
     backgroundColor: string;
     textColor: string;
+    navigationTextColor: string;
   };
 
   // level
