@@ -62,9 +62,9 @@ export const lightTheme: DefaultTheme = {
     GRAY_400,
   ],
   header: {
+    ...defaultLightTheme.header,
     backgroundColor: GRAY_700,
     textColor: PRIMARY_500,
-    navigationTextColor: 'hsla(0, 0%, 100%, 0.4)',
   },
   messageBox: {
     borderColor: SECONDARY_500,

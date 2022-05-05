@@ -1,5 +1,6 @@
 import { muiThemeBase } from '@libs/neumorphism-ui/themes/muiThemeBase';
 import { createMuiTheme } from '@material-ui/core/styles';
+import { DefaultTheme } from 'styled-components';
 
 // TERRA THEME TO FILL IN VARIABLE THEME
 const GREEN_100 = '#15cc93';
@@ -34,7 +35,7 @@ export const DARK_GRAY_400 = 'rgba(255, 255, 255, 0.2)';
 export const BLACK = '#000000';
 export const WHITE = '#FFFFFF';
 
-export const defaultDarkTheme = {
+export const defaultDarkTheme: DefaultTheme = {
   ...createMuiTheme({
     ...muiThemeBase,
     palette: {
@@ -66,6 +67,7 @@ export const defaultDarkTheme = {
   header: {
     backgroundColor: BLACK,
     textColor: GREEN_200,
+    navigationTextColor: 'hsla(0, 0%, 100%, 0.4)',
   },
 
   messageBox: {

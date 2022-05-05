@@ -52,6 +52,12 @@ const useFormatters = (): Formatters => {
           ...tokens,
           native: createFormatter<Native>('AVAX', 18),
         };
+      // TODO: updated on BSC integration
+      case Chain.BSC:
+        return {
+          ...tokens,
+          native: createFormatter<Native>('BSC', 18),
+        };
     }
   }, [chain]);
 };

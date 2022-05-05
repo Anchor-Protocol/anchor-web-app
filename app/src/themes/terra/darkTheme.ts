@@ -37,9 +37,9 @@ export const darkTheme: DefaultTheme = {
   },
 
   header: {
+    ...defaultDarkTheme.header,
     backgroundColor: BLACK,
     textColor: GREEN_200,
-    navigationTextColor: 'hsla(0, 0%, 100%, 0.4)',
   },
 
   messageBox: {
