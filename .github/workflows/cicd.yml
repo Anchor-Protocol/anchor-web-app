@@ -209,4 +209,4 @@ jobs:
           aws_route53_rr_name: '_dnslink.ipfs.anchorprotocol.com'
           aws_route53_rr_type: 'TXT'
           aws_route53_rr_ttl: '1'
-          aws_route53_rr_value: 'dnslink=/ipfs/${{ steps.ipfs.outputs.cid }}'
+          aws_route53_rr_value: '"dnslink=/ipfs/${{ steps.ipfs.outputs.cid }}"'
