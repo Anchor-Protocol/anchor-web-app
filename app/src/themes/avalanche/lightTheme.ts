@@ -1,4 +1,6 @@
 import type { DefaultTheme } from 'styled-components';
+import merge from 'lodash.merge';
+
 import {
   defaultLightTheme,
   LIGHT_GRAY_300,
@@ -9,35 +11,30 @@ import {
   GRAY_700,
 } from '../lightThemeDefault';
 
-/* eslint-disable */
-const PRIMARY_1000 = '#2F2003';
-const PRIMARY_900 = '#513705';
-const PRIMARY_800 = '#855908';
-const PRIMARY_700 = '#A16C09';
-const PRIMARY_600 = '#B57B0E';
+// const PRIMARY_1000 = '#2F2003';
+// const PRIMARY_900 = '#513705';
+// const PRIMARY_800 = '#855908';
+// const PRIMARY_700 = '#A16C09';
+// const PRIMARY_600 = '#B57B0E';
 const PRIMARY_500 = '#F4A81A';
 const PRIMARY_400 = '#F8B22F';
-const PRIMARY_300 = '#F8BB4A';
+// const PRIMARY_300 = '#F8BB4A';
 const PRIMARY_200 = '#FBC869';
-const PRIMARY_100 = '#FFD890';
+// const PRIMARY_100 = '#FFD890';
 
 const SECONDARY_900 = '#661515';
 const SECONDARY_800 = '#8B1010';
 const SECONDARY_700 = '#A50C0C';
 const SECONDARY_600 = '#D11516';
 const SECONDARY_500 = '#E84142';
-const SECONDARY_400 = '#FF5F60';
-const SECONDARY_300 = '#FF9394';
-const SECONDARY_200 = '#FFB4B5';
+// const SECONDARY_400 = '#FF5F60';
+// const SECONDARY_300 = '#FF9394';
+// const SECONDARY_200 = '#FFB4B5';
 const SECONDARY_100 = '#FAD7D8';
 
 const BLUE_100 = '#561DF4';
 
-/* eslint-enable */
-
-export const lightTheme: DefaultTheme = {
-  ...defaultLightTheme,
-
+export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
   colors: {
     ...defaultLightTheme.colors,
     positive: BLUE_100,
@@ -83,4 +80,4 @@ export const lightTheme: DefaultTheme = {
       textColor: LIGHT_GRAY_300,
     },
   },
-};
+});

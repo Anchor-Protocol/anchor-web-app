@@ -71,6 +71,7 @@ __metadata:
     "@types/d3-timer": ^2.0.1
     "@types/jest": ^26.0.24
     "@types/lodash.debounce": ^4.0.6
+    "@types/lodash.merge": ^4.6.2
     "@types/node": ^16.3.1
     "@types/numeral": ^2.0.1
     "@types/puppeteer": ^5.4.5
@@ -111,6 +112,7 @@ __metadata:
     graphql-request: ^3.4.0
     graphql-tag: ^2.12.5
     lodash.debounce: ^4.0.8
+    lodash.merge: ^4.6.2
     multiplerun: ^2.0.1
     numeral: ^2.0.6
     puppeteer: ^13.5.1
@@ -6490,6 +6492,15 @@ __metadata:
   dependencies:
     "@types/lodash": "*"
   checksum: 54b181c65009d2523ad13a608e1db22950467573bf6e10adaccdf46b5c2c68e7d109ff352e7e95c0035a6dd30eafd06f59356c893373098c4fb60db368158595
+  languageName: node
+  linkType: hard
+
+"@types/lodash.merge@npm:^4.6.2":
+  version: 4.6.7
+  resolution: "@types/lodash.merge@npm:4.6.7"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 94cd6fb8e606756a28f45d63c658aacfbce11a151f7fa322c4a3e87aa50d8bf26e0ae8cba0250070a7c5a6792fc51f79abf4c648bbb1850692be386cd76cd0ca
   languageName: node
   linkType: hard
 
