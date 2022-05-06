@@ -4,8 +4,6 @@ import {
   LIGHT_GRAY_300,
   BLACK,
   GRAY_400,
-  GRAY_500,
-  GRAY_700,
 } from '../lightThemeDefault';
 
 const PRIMARY_950 = '#1E1702';
@@ -27,8 +25,6 @@ const NEGATIVE = '#EC6597';
 export const lightTheme: DefaultTheme = {
   ...defaultLightTheme,
 
-  textColor: GRAY_700,
-  dimTextColor: GRAY_500,
   colors: {
     ...defaultLightTheme.colors,
     positive: POSITIVE,

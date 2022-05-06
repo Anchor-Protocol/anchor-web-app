@@ -5,7 +5,6 @@ import {
   BLACK,
   GRAY_100,
   GRAY_400,
-  GRAY_500,
   GRAY_600,
   GRAY_700,
 } from '../lightThemeDefault';
@@ -39,8 +38,6 @@ const BLUE_100 = '#561DF4';
 export const lightTheme: DefaultTheme = {
   ...defaultLightTheme,
 
-  textColor: GRAY_700,
-  dimTextColor: GRAY_500,
   colors: {
     ...defaultLightTheme.colors,
     positive: BLUE_100,
