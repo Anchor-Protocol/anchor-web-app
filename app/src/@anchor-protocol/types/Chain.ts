@@ -3,4 +3,5 @@ export enum Chain {
   Ethereum = 'Ethereum',
   Avalanche = 'Avalanche',
   BSC = 'BSC',
+  Aurora = 'Aurora',
 }

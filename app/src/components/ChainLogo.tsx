@@ -2,6 +2,7 @@ import React from 'react';
 import LogoAvax from './Header/assets//LogoAvax.svg';
 import LogoEth from './Header/assets/LogoEth.svg';
 import LogoBsc from './Header/assets/LogoBsc.svg';
+import LogoAurora from './Header/assets/LogoAurora.svg';
 import LogoTerra from './Header/assets//LogoTerra.svg';
 import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
 import { UIElementProps } from '@libs/ui';
@@ -18,6 +19,9 @@ export const ChainLogo = (props: UIElementProps) => {
         <img className={className} src={LogoAvax} alt="avaxLogo" />
       )}
       bsc={() => <img className={className} src={LogoBsc} alt="bscLogo" />}
+      aurora={() => (
+        <img className={className} src={LogoAurora} alt="auroraLogo" />
+      )}
     />
   );
 };
