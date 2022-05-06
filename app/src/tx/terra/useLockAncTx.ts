@@ -45,7 +45,7 @@ export function useLockAncTx() {
         },
       );
 
-      refetchQueries(ANCHOR_TX_KEY.BORROW_BORROW);
+      refetchQueries(ANCHOR_TX_KEY.LOCK_ANC);
 
       return result;
     },

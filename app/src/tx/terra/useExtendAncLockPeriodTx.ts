@@ -35,7 +35,7 @@ export function useExtendAncLockPeriodTx() {
         },
       );
 
-      refetchQueries(ANCHOR_TX_KEY.BORROW_BORROW);
+      refetchQueries(ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD);
 
       return result;
     },
