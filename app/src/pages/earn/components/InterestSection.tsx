@@ -15,6 +15,7 @@ import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { TooltipLabel } from '@libs/neumorphism-ui/components/TooltipLabel';
 import { AnimateNumber } from '@libs/ui';
+import { isSameDay } from 'date-fns';
 import { useDepositApy } from 'hooks/useDepositApy';
 import { useEarnApyProjectionQuery } from 'queries';
 import React, { useMemo } from 'react';
@@ -50,10 +51,14 @@ export function InterestSection({ className }: InterestSectionProps) {
     return history && overseerEpochState
       ? [
           ...history,
-          {
-            date: new Date(),
-            value: apy.toNumber() as Rate<number>,
-          },
+          ...(history.length === 0 || isSameDay(history[0].date, new Date())
+            ? [
+                {
+                  date: new Date(),
+                  value: apy.toNumber() as Rate<number>,
+                },
+              ]
+            : []),
         ]
       : undefined;
   }, [
