@@ -1,5 +1,14 @@
 import type { DefaultTheme } from 'styled-components';
-import { defaultLightTheme, LIGHT_GRAY_300, BLACK } from '../lightThemeDefault';
+import {
+  defaultLightTheme,
+  LIGHT_GRAY_300,
+  BLACK,
+  GRAY_100,
+  GRAY_400,
+  GRAY_500,
+  GRAY_600,
+  GRAY_700,
+} from '../lightThemeDefault';
 
 /* eslint-disable */
 const PRIMARY_1000 = '#2F2003';
@@ -22,14 +31,6 @@ const SECONDARY_400 = '#FF5F60';
 const SECONDARY_300 = '#FF9394';
 const SECONDARY_200 = '#FFB4B5';
 const SECONDARY_100 = '#FAD7D8';
-
-const GRAY_700 = '#151515';
-const GRAY_600 = '#707070';
-const GRAY_500 = '#A4A4A4';
-const GRAY_400 = '#B7B7B7';
-const GRAY_300 = '#DFDFDF';
-const GRAY_200 = '#F0F0F0';
-const GRAY_100 = '#F7F7F7';
 
 const BLUE_100 = '#561DF4';
 

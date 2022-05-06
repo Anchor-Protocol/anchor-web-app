@@ -34,7 +34,6 @@ const GRAY_600 = '#5B5E80';
 const GRAY_500 = '#9E9FB3';
 const GRAY_400 = '#B9BAC9';
 const GRAY_300 = '#E3E4E5';
-const GRAY_200 = '#F0F0F0';
 const GRAY_100 = '#F6F6F7';
 /* eslint-enable */
 

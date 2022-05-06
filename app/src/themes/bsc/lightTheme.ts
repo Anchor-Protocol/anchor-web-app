@@ -1,5 +1,12 @@
 import type { DefaultTheme } from 'styled-components';
-import { defaultLightTheme, LIGHT_GRAY_300, BLACK } from '../lightThemeDefault';
+import {
+  defaultLightTheme,
+  LIGHT_GRAY_300,
+  BLACK,
+  GRAY_400,
+  GRAY_500,
+  GRAY_700,
+} from '../lightThemeDefault';
 
 const PRIMARY_950 = '#1E1702';
 const PRIMARY_900 = '#453603';
@@ -11,14 +18,6 @@ const PRIMARY_400 = '#FFCD2A';
 // const PRIMARY_300 = '#FFD857';
 const PRIMARY_200 = '#FFE388';
 const PRIMARY_100 = '#FFEFBB';
-
-const GRAY_700 = '#151515';
-// const GRAY_600 = '#707070';
-const GRAY_500 = '#A4A4A4';
-const GRAY_400 = '#B7B7B7';
-// const GRAY_300 = '#DFDFDF';
-// const GRAY_200 = '#F0F0F0';
-// const GRAY_100 = '#F7F7F7';
 
 const POSITIVE = '#4BCA6C';
 const NEGATIVE = '#EC6597';

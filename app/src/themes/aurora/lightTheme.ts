@@ -1,24 +1,33 @@
 import type { DefaultTheme } from 'styled-components';
-import { defaultLightTheme, LIGHT_GRAY_300, BLACK } from '../lightThemeDefault';
+import {
+  defaultLightTheme,
+  LIGHT_GRAY_300,
+  BLACK,
+  GRAY_400,
+  GRAY_500,
+  GRAY_700,
+} from '../lightThemeDefault';
 
-const PRIMARY_950 = '#1E1702';
-const PRIMARY_900 = '#453603';
-const PRIMARY_800 = '#765A04';
-const PRIMARY_700 = '#A88000';
-const PRIMARY_600 = '#D0980B';
-const PRIMARY_500 = '#F0B909';
-const PRIMARY_400 = '#FFCD2A';
-// const PRIMARY_300 = '#FFD857';
-const PRIMARY_200 = '#FFE388';
-const PRIMARY_100 = '#FFEFBB';
+const PRIMARY_950 = '#120523';
+const PRIMARY_900 = '#3B0A4A';
+const PRIMARY_800 = '#781276';
+const PRIMARY_700 = '#A51A89';
+const PRIMARY_600 = '#DD25A4';
+const PRIMARY_500 = '#F82EAE';
+const PRIMARY_400 = '#FD49BE';
+// const PRIMARY_300 = '#FE71DD';
+const PRIMARY_200 = '#FF9CED';
+const PRIMARY_100 = '#FED2FF';
 
-const GRAY_700 = '#151515';
-// const GRAY_600 = '#707070';
-const GRAY_500 = '#A4A4A4';
-const GRAY_400 = '#B7B7B7';
-// const GRAY_300 = '#DFDFDF';
-// const GRAY_200 = '#F0F0F0';
-// const GRAY_100 = '#F7F7F7';
+// const SECONDARY_900 = '#083006';
+// const SECONDARY_800 = '#246405';
+// const SECONDARY_700 = '#498E1A';
+// const SECONDARY_600 = '#71B642';
+// const SECONDARY_500 = '#8FD460';
+// const SECONDARY_400 = '#A3E874';
+// const SECONDARY_300 = '#C1F592';
+// const SECONDARY_200 = '#D1FAA2';
+// const SECONDARY_100 = '#E4FFCC';
 
 const POSITIVE = '#4BCA6C';
 const NEGATIVE = '#EC6597';
