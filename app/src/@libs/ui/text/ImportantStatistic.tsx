@@ -17,7 +17,7 @@ export const ImportantStatistic = ({
   </VStack>
 );
 
-const Name = styled.p`
+const Name = styled.div`
   font-weight: 500;
   font-size: 12px;
   text-transform: uppercase;

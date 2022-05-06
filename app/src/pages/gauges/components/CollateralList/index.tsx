@@ -41,7 +41,7 @@ export const CollateralList = () => {
               <p>{VEANC_SYMBOL}</p>
             </th>
             <th>
-              <p>Total votes</p>
+              <p>Your votes</p>
               <p>{VEANC_SYMBOL}</p>
             </th>
             <th>Actions</th>

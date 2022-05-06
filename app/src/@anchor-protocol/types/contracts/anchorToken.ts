@@ -6,7 +6,9 @@ import {
   Rate,
   u,
   Second,
+  CW20Addr,
 } from '@libs/types';
+import { BigSource } from 'big.js';
 import { ANC, AncUstLP, veANC } from '../currencies';
 import { moneyMarket } from './moneyMarket';
 
@@ -380,7 +382,17 @@ export namespace anchorToken {
     export interface AllGaugeAddr {}
 
     export interface AllGaugeAddrResponse {
-      all_gauge_addr: HumanAddr[];
+      all_gauge_addr: CW20Addr[];
+    }
+
+    export interface GaugeWeight {
+      gauge_weight: {
+        gauge_addr: CW20Addr[];
+      };
+    }
+
+    export interface GaugeWeightResponse {
+      gauge_weight: u<veANC<BigSource>>;
     }
   }
 }

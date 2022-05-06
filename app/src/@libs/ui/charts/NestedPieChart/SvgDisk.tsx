@@ -10,7 +10,7 @@ interface SvgDiskProps {
 export const SvgDisk = ({ color, width, radius, transform }: SvgDiskProps) => (
   <circle
     stroke={color}
-    stroke-width={width}
+    strokeWidth={width}
     fill="transparent"
     r={radius - width / 2}
     cx={radius}
