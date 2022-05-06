@@ -59,6 +59,10 @@ export const lightTheme: DefaultTheme = {
     BLACK,
     GRAY_400,
   ],
+  header: {
+    ...defaultLightTheme.header,
+    backgroundColor: SECONDARY_500,
+  },
   messageBox: {
     borderColor: SECONDARY_500,
     backgroundColor: SECONDARY_100,
