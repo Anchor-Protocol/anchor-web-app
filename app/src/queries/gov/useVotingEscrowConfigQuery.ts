@@ -2,7 +2,7 @@ import {
   ANCHOR_QUERY_KEY,
   useAnchorWebapp,
 } from '@anchor-protocol/app-provider';
-import { anchorToken } from '@anchor-protocol/types';
+import { anchorToken, Second } from '@anchor-protocol/types';
 import { wasmFetch, WasmQuery, QueryClient } from '@libs/query-client';
 import { useAnchorQuery } from 'queries/useAnchorQuery';
 import { createQueryFn } from '@libs/react-query-utils';
@@ -14,10 +14,17 @@ interface VotingEscrowConfigWasmQuery {
   >;
 }
 
+export interface VotingEscrowConfig {
+  minLockTime: Second;
+  maxLockTime: Second;
+  periodDuration: Second;
+  boostCoefficient: number;
+}
+
 const VotingEscrowConfigQuery = async (
   votingEscrowContract: string,
   queryClient: QueryClient,
-) => {
+): Promise<VotingEscrowConfig> => {
   const {
     config: {
       min_lock_time,
@@ -42,6 +49,13 @@ const VotingEscrowConfigQuery = async (
     periodDuration: period_duration,
     boostCoefficient: boost_coefficient,
   };
+
+  // return {
+  //   minLockTime: (86400 * 30) as Second,
+  //   maxLockTime: (86400 * 365 * 4) as Second,
+  //   periodDuration: (86400 * 7) as Second,
+  //   boostCoefficient: boost_coefficient,
+  // };
 };
 
 const VotingEscrowConfigQueryFn = createQueryFn(VotingEscrowConfigQuery);

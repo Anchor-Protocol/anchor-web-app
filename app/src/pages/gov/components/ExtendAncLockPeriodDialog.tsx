@@ -1,119 +1,67 @@
 import { Second } from '@libs/types';
 import { DialogProps } from '@libs/use-dialog';
-import { Modal } from '@material-ui/core';
+import { InputAdornment, Modal } from '@material-ui/core';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useBalances } from 'contexts/balances';
-import { validateTxFee } from '@anchor-protocol/app-fns';
-import { useFixedFee } from '@libs/app-provider';
+import React, { ChangeEvent, useCallback } from 'react';
 import { MessageBox } from 'components/MessageBox';
 import big from 'big.js';
-import { UST_SYMBOL } from '@anchor-protocol/token-symbols';
-import { demicrofy } from '@libs/formatter';
 import styled from 'styled-components';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
-import { formatOutput } from '@anchor-protocol/formatter';
+import { useFormatters } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQuery';
 import { useExtendAncLockPeriodTx } from 'tx/gov/useExtendAncLockPeriodTx';
-import { useAccount } from 'contexts/account';
 import { StreamStatus } from '@rx-stream/react';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
-import { DurationSlider, SliderPlaceholder } from 'components/sliders';
+import { WeeklyDurationSlider, SliderPlaceholder } from 'components/sliders';
 import { DialogTitle } from '@libs/ui/text/DialogTitle';
 import { VStack } from '@libs/ui/Stack';
-import { useMyAncStakedQuery, useMyVotingLockPeriodEndsAtQuery } from 'queries';
-import { ANC } from '@anchor-protocol/types';
 import { EstimatedVeAncAmount } from './EstimatedVeAncAmount';
-import { millisecondsInSecond } from 'date-fns';
+import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
+import { IconLineSeparator } from 'components/primitives/IconLineSeparator';
+import { TextInput } from '@libs/neumorphism-ui/components/TextInput';
+import { formatTimestamp, getCurrentTimeZone } from '@libs/formatter';
+import classNames from 'classnames';
+import { computeLockPeriod } from '../logics/computeLockPeriod';
+import { useExtendAncLockForm } from '../forms/useExtendAncLockForm';
 
 type ExtendAncLockPeriodDialogProps = DialogProps<{}>;
 
 export const ExtendAncLockPeriodDialog = ({
   closeDialog,
 }: ExtendAncLockPeriodDialogProps) => {
-  const { availablePost, connected } = useAccount();
-
-  const { uUST } = useBalances();
-  const fixedFee = useFixedFee();
-  const invalidTxFee = validateTxFee(uUST, fixedFee);
+  const { ust, anc } = useFormatters();
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
-  const [period, setPeriod] = useState<Second | undefined>();
 
-  const { data: lockPeriodEndsAt } = useMyVotingLockPeriodEndsAtQuery();
-
-  const minPeriod = useMemo(() => {
-    if (
-      lockConfig !== undefined &&
-      (lockPeriodEndsAt === undefined || lockPeriodEndsAt < Date.now())
-    ) {
-      return lockConfig.minLockTime as Second;
-    }
-
-    if (
-      lockPeriodEndsAt !== undefined &&
-      lockPeriodEndsAt > Date.now() &&
-      lockConfig !== undefined
-    ) {
-      const minPeriod =
-        Math.round((lockPeriodEndsAt - Date.now()) / millisecondsInSecond) +
-        lockConfig.periodDuration;
-
-      return minPeriod as Second;
-    }
-  }, [lockConfig, lockPeriodEndsAt]);
-
-  const maxPeriod = lockConfig?.maxLockTime;
-
-  useEffect(() => {
-    if (minPeriod === undefined || maxPeriod === undefined) {
-      return;
-    }
-
-    if (period === undefined) {
-      setPeriod(minPeriod);
-    } else if (period < minPeriod) {
-      setPeriod(minPeriod);
-    } else if (period > maxPeriod) {
-      setPeriod(maxPeriod);
-    }
-  }, [maxPeriod, minPeriod, period]);
+  const [input, state] = useExtendAncLockForm();
 
   const [extendPeriod, extendPeriodResult] = useExtendAncLockPeriodTx();
 
-  const { data: staked } = useMyAncStakedQuery();
+  const isSubmitDisabled =
+    !state.availablePost ||
+    state.invalidLockPeriod ||
+    !state.lockPeriod ||
+    state.invalidTxFee;
 
-  const extendForPeriod = useMemo(() => {
-    if (lockPeriodEndsAt === undefined || lockPeriodEndsAt < Date.now()) {
-      return period;
-    } else if (period !== undefined) {
-      const currentPeriod =
-        (lockPeriodEndsAt - Date.now()) / millisecondsInSecond;
-      return Math.round(period - currentPeriod) as Second;
-    }
-  }, [lockPeriodEndsAt, period]);
-
-  const isSubmitDisabled = !availablePost || invalidTxFee || !extendForPeriod;
+  const updateLockAmount = useCallback(
+    (amount?: number) => {
+      input({ lockPeriod: amount });
+    },
+    [input],
+  );
 
   const proceed = useCallback(() => {
-    if (
-      !connected ||
-      !extendPeriod ||
-      isSubmitDisabled ||
-      extendForPeriod === undefined
-    ) {
-      return;
+    if (extendPeriod && state.lockPeriod && lockConfig) {
+      extendPeriod({
+        period: computeLockPeriod(lockConfig, state.lockPeriod),
+        onTxSucceed: () => {
+          closeDialog();
+        },
+      });
     }
-
-    extendPeriod({
-      period: extendForPeriod,
-      onTxSucceed: () => {
-        closeDialog();
-      },
-    });
-  }, [closeDialog, connected, extendForPeriod, extendPeriod, isSubmitDisabled]);
+  }, [closeDialog, extendPeriod, state.lockPeriod, lockConfig]);
 
   if (
     extendPeriodResult?.status === StreamStatus.IN_PROGRESS ||
@@ -144,20 +92,67 @@ export const ExtendAncLockPeriodDialog = ({
   return (
     <Modal open onClose={() => closeDialog()}>
       <Container onClose={() => closeDialog()}>
-        <DialogTitle>Extend lock period</DialogTitle>
-        {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
+        <DialogTitle>Lock Period</DialogTitle>
+        {!!state.invalidTxFee && <MessageBox>{state.invalidTxFee}</MessageBox>}
 
-        <VStack gap={8} fullWidth>
-          {period !== undefined &&
-          minPeriod !== undefined &&
-          maxPeriod !== undefined &&
-          lockConfig ? (
-            <DurationSlider
-              value={period}
-              min={minPeriod}
-              max={maxPeriod}
-              step={lockConfig.periodDuration}
-              onChange={setPeriod}
+        <NumberInput
+          className="input"
+          value={state.lockPeriod}
+          maxDecimalPoints={0}
+          label="LOCK PERIOD"
+          error={!!state.invalidLockPeriod}
+          onChange={({ target }: ChangeEvent<HTMLInputElement>) => {
+            const amount =
+              target.value?.length === 0 ? undefined : Number(target.value);
+            updateLockAmount(amount);
+          }}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">WEEKS</InputAdornment>,
+          }}
+        />
+
+        {state.invalidLockPeriod && (
+          <span className="error-text">{state.invalidLockPeriod}</span>
+        )}
+
+        <IconLineSeparator style={{ margin: '10px 0' }} />
+
+        <TextInput
+          className="input"
+          value={
+            state.estimatedLockPeriodEndsAt
+              ? formatTimestamp(state.estimatedLockPeriodEndsAt, false)
+              : ''
+          }
+          label="APPROX UNLOCK TIME"
+          readOnly
+          InputProps={{
+            readOnly: true,
+            endAdornment: (
+              <InputAdornment position="end">
+                {getCurrentTimeZone()}
+              </InputAdornment>
+            ),
+          }}
+          style={{ pointerEvents: 'none' }}
+        />
+
+        <VStack
+          className={classNames('duration-slider', {
+            'duration-slider--error': state.invalidLockPeriod,
+          })}
+          gap={8}
+          fullWidth
+        >
+          {lockConfig ? (
+            <WeeklyDurationSlider
+              value={state.lockPeriod ?? state.minLockPeriod}
+              min={0}
+              max={state.maxLockPeriod}
+              errored={Boolean(state.invalidLockPeriod)}
+              onChange={(value: number) => {
+                updateLockAmount(value);
+              }}
             />
           ) : (
             <SliderPlaceholder />
@@ -165,16 +160,22 @@ export const ExtendAncLockPeriodDialog = ({
         </VStack>
 
         <TxFeeList className="receipt">
-          {big(fixedFee).gt(0) && (
+          {big(state.txFee).gt(0) && (
             <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
-              {`${formatOutput(demicrofy(fixedFee))} ${UST_SYMBOL}`}
+              {`${ust.formatOutput(ust.demicrofy(state.txFee))} ${ust.symbol}`}
             </TxFeeListItem>
           )}
-          {extendForPeriod !== undefined && (
+          {lockConfig && (
             <EstimatedVeAncAmount
-              period={extendForPeriod}
+              period={
+                state.lockPeriod
+                  ? computeLockPeriod(lockConfig, state.lockPeriod)
+                  : (0 as Second)
+              }
               amount={
-                staked ? (demicrofy(staked).toString() as ANC) : undefined
+                state.totalAncStaked
+                  ? anc.demicrofy(state.totalAncStaked)
+                  : undefined
               }
             />
           )}
@@ -200,24 +201,30 @@ export const Container = styled(Dialog)`
     margin-bottom: 50px;
   }
 
-  .amount {
+  .input {
     width: 100%;
-    margin-bottom: 5px;
 
     .MuiTypography-colorTextSecondary {
       color: currentColor;
     }
   }
 
-  .wallet {
-    display: flex;
-    justify-content: space-between;
-
+  .error-text {
     font-size: 12px;
-    color: ${({ theme }) => theme.dimTextColor};
+    color: ${({ theme }) => theme.colors.negative};
+  }
 
-    &[aria-invalid='true'] {
-      color: ${({ theme }) => theme.colors.negative};
+  .duration-slider {
+    margin-top: 20px;
+  }
+
+  .duration-slider--error {
+    .thumb-label {
+      background-color: ${({ theme }) => theme.colors.negative};
+      &::after {
+        border-color: ${({ theme }) => theme.colors.negative} transparent
+          transparent transparent;
+      }
     }
   }
 
