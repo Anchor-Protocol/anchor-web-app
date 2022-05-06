@@ -40,6 +40,7 @@ export const lightTheme: DefaultTheme = {
     GRAY_400,
   ],
   header: {
+    ...defaultLightTheme.header,
     backgroundColor: BLACK,
     textColor: SECONDARY_400,
   },

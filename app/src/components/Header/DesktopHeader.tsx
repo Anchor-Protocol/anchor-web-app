@@ -1,12 +1,10 @@
+import { ChainLogo } from 'components/ChainLogo';
 import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
 import { useMenus, RouteMenu } from 'configurations/menu';
 import { screen } from 'env';
 import React from 'react';
 import { Link, useMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
-import LogoAvax from './assets/LogoAvax.svg';
-import LogoEth from './assets/LogoEth.svg';
-import LogoTerra from './assets/LogoTerra.svg';
 import { ChainSelector } from './chain/ChainSelector';
 import { DesktopNotification } from './desktop/DesktopNotification';
 import { TransactionWidget } from './transactions/TransactionWidget';
@@ -27,11 +25,7 @@ function DesktopHeaderBase({ className }: DesktopHeaderProps) {
         target="_blank"
         rel="noreferrer"
       >
-        <DeploymentSwitch
-          terra={() => <img src={LogoTerra} alt="terraLogo" />}
-          ethereum={() => <img src={LogoEth} alt="ethLogo" />}
-          avalanche={() => <img src={LogoAvax} alt="avaxLogo" />}
-        />
+        <ChainLogo />
       </a>
 
       <nav className="menu">
@@ -99,7 +93,7 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
       align-items: center;
 
       a {
-        color: rgba(255, 255, 255, 0.4);
+        color: ${({ theme }) => theme.header.navigationTextColor};
         font-size: 18px;
         font-weight: 900;
 

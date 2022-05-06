@@ -1,5 +1,6 @@
 import { muiThemeBase } from '@libs/neumorphism-ui/themes/muiThemeBase';
 import { createMuiTheme } from '@material-ui/core/styles';
+import { DefaultTheme } from 'styled-components';
 
 // AVAX THEME TO FILL IN VARIABLE THEME
 const PRIMARY_500 = '#F4A81A';
@@ -41,7 +42,7 @@ export const LIGHT_GREEN_100 = '#94f3b8';
 export const LIGHT_ORANGE_100 = '#dd8f5c';
 export const LIGHT_YELLOW_100 = '#FF9A63';
 
-export const defaultLightTheme = {
+export const defaultLightTheme: DefaultTheme = {
   ...createMuiTheme({
     ...muiThemeBase,
     palette: {
@@ -73,6 +74,7 @@ export const defaultLightTheme = {
   header: {
     backgroundColor: SECONDARY_500,
     textColor: WHITE,
+    navigationTextColor: 'hsla(0, 0%, 100%, 0.4)',
   },
   messageBox: {
     borderColor: SECONDARY_500,
@@ -105,6 +107,7 @@ export const defaultLightTheme = {
     borderHoverColor: LIGHT_GRAY_1100,
     textColor: LIGHT_GRAY_300,
     hoverTextColor: LIGHT_GRAY_700,
+    hoverBackgroundColor: LIGHT_BLUE_100,
   },
   selector: {
     backgroundColor: LIGHT_GRAY_100,

@@ -1,10 +1,5 @@
 import type { DefaultTheme } from 'styled-components';
-import {
-  defaultLightTheme,
-  LIGHT_GRAY_300,
-  BLACK,
-  WHITE,
-} from '../lightThemeDefault';
+import { defaultLightTheme, LIGHT_GRAY_300, BLACK } from '../lightThemeDefault';
 
 /* eslint-disable */
 const PRIMARY_1000 = '#2F2003';
@@ -64,10 +59,6 @@ export const lightTheme: DefaultTheme = {
     BLACK,
     GRAY_400,
   ],
-  header: {
-    backgroundColor: SECONDARY_500,
-    textColor: WHITE,
-  },
   messageBox: {
     borderColor: SECONDARY_500,
     backgroundColor: SECONDARY_100,
@@ -85,6 +76,7 @@ export const lightTheme: DefaultTheme = {
     borderHoverColor: GRAY_600,
     textColor: GRAY_700,
     hoverTextColor: GRAY_600,
+    hoverBackgroundColor: defaultLightTheme.hoverBackgroundColor,
   },
   tooltip: {
     ...defaultLightTheme.tooltip,
