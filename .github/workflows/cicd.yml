@@ -199,12 +199,14 @@ jobs:
             **CID:** ${{ steps.ipfs.outputs.cid }}
             **Preview URL**: ${{ steps.ipfs.outputs.url }}
 
-      - name: Update CloudFlare DNSLink with new IPFS CID
-        uses: textileio/cloudflare-update-dnslink@v2
-        env:
-          CLOUDFLARE_ZONE_ID: ${{ secrets.APP_ZONE_ID }}
-          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-          RECORD_DOMAIN: anchorprotocol.com
-          RECORD_NAME: '_dnslink.ipfs'
-        with:
-          cid: ${{ steps.ipfs.outputs.cid }}
+      - name: Update Route53 DNSLink with new IPFS CID
+        uses: Anchor-Protocol/route53-record-set-action@master
+        with: 
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_route53_hosted_zone_id: ${{ secrets.AWS_ROUTE53_HOSTED_ZONE_ID }}
+          aws_route53_rr_action: UPSERT
+          aws_route53_rr_name: _dnslink.ipfs
+          aws_route53_rr_type: TXT
+          aws_route53_rr_ttl: 1
+          aws_route53_rr_value: dnslink=/ipfs/${{ steps.ipfs.outputs.cid }}
