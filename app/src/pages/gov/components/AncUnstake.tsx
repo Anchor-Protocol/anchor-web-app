@@ -1,19 +1,11 @@
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
-  formatANC,
-  formatANCInput,
-  formatUST,
 } from '@anchor-protocol/notation';
 import { ANC, u } from '@anchor-protocol/types';
-import {
-  useAncBalanceQuery,
-  useAnchorWebapp,
-  useRewardsAncGovernanceRewardsQuery,
-} from '@anchor-protocol/app-provider';
+import { useRewardsAncGovernanceRewardsQuery } from '@anchor-protocol/app-provider';
 import { useFixedFee } from '@libs/app-provider';
-import { max } from '@libs/big-math';
-import { demicrofy, formatTimestamp, microfy } from '@libs/formatter';
+import { formatTimestamp, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { InputAdornment } from '@material-ui/core';
@@ -25,11 +17,12 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import { useBalances } from 'contexts/balances';
-import { useGovStateQuery, useMyVotingLockPeriodEndsAtQuery } from 'queries';
+import { useMyVotingLockPeriodEndsAtQuery } from 'queries';
 import { useRefCallback } from 'hooks';
 import { useUnstakeAncTx } from 'tx/terra';
+import { useFormatters } from '@anchor-protocol/formatter';
 
 export function AncUnstake() {
   const { availablePost, connected } = useAccount();
@@ -41,34 +34,18 @@ export function AncUnstake() {
   const isLockPeriodOver =
     myLockPeriodEndsAt === undefined ? true : myLockPeriodEndsAt < now;
 
-  const { contractAddress } = useAnchorWebapp();
-
   const [ancAmount, setANCAmount] = useState<ANC>('' as ANC);
 
   const { uUST } = useBalances();
 
+  const { ust, anc } = useFormatters();
+
   const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
 
-  const { data: { ancBalance: govANCBalance } = {} } = useAncBalanceQuery(
-    contractAddress.anchorToken.gov,
-  );
-  const { data: govState } = useGovStateQuery();
-
-  const unstakableBalance = useMemo<u<ANC<Big>> | undefined>(() => {
-    if (!govANCBalance || !userGovStakingInfo || !govState) return undefined;
-
-    const lockedANC = max(
-      0,
-      ...userGovStakingInfo.locked_balance.map(([_, { balance }]) => balance),
-    );
-
-    const unstakable = big(userGovStakingInfo.balance).minus(lockedANC) as u<
-      ANC<Big>
-    >;
-
-    return unstakable;
-  }, [govANCBalance, govState, userGovStakingInfo]);
+  const unstakableBalance = (
+    userGovStakingInfo ? big(userGovStakingInfo.balance) : Big(0)
+  ) as u<ANC<Big>>;
 
   const invalidTxFee = connected && validateTxFee(uUST, fixedFee);
 
@@ -171,10 +148,12 @@ export function AncUnstake() {
             }}
             onClick={() =>
               unstakableBalance &&
-              setANCAmount(formatANCInput(demicrofy(unstakableBalance)))
+              setANCAmount(anc.demicrofy(unstakableBalance))
             }
           >
-            {unstakableBalance ? formatANC(demicrofy(unstakableBalance)) : 0}{' '}
+            {unstakableBalance
+              ? anc.formatOutput(anc.demicrofy(unstakableBalance))
+              : 0}{' '}
             ANC
           </span>
         </span>
@@ -183,7 +162,7 @@ export function AncUnstake() {
       {ancAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedFee))} UST
+            {ust.formatOutput(ust.demicrofy(fixedFee))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}

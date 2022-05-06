@@ -12,7 +12,6 @@ import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { ROUTES } from 'pages/trade/env';
 import { Link } from 'react-router-dom';
 import {
-  useMyAncStakedQuery,
   useMyVotingLockPeriodEndsAtQuery,
   useMyVotingPowerQuery,
 } from 'queries';
@@ -25,11 +24,12 @@ import { ImportantStatistic } from '@libs/ui/text/ImportantStatistic';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { InlineStatistic } from '@libs/ui/text/InlineStatistic';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { useMyAncStaked } from 'hooks';
 
 export const MyAncTokenOverview = () => {
   const { uANC } = useBalances();
 
-  const { data: staked = 0 as u<ANC<number>> } = useMyAncStakedQuery();
+  const staked = useMyAncStaked() ?? (0 as u<ANC<number>>);
 
   const { data: votingPower = 0 as u<veANC<number>> } = useMyVotingPowerQuery();
 

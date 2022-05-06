@@ -7,7 +7,7 @@ import { wasmFetch, WasmQuery, QueryClient } from '@libs/query-client';
 import { useAnchorQuery } from 'queries/useAnchorQuery';
 import { createQueryFn } from '@libs/react-query-utils';
 
-interface govConfigWasmQuery {
+interface GovConfigWasmQuery {
   config: WasmQuery<anchorToken.gov.Config, anchorToken.gov.ConfigResponse>;
 }
 
@@ -15,7 +15,7 @@ const govConfigQuery = async (
   govContract: string,
   queryClient: QueryClient,
 ) => {
-  const { config } = await wasmFetch<govConfigWasmQuery>({
+  const { config } = await wasmFetch<GovConfigWasmQuery>({
     ...queryClient,
     id: 'gov-config',
     wasmQuery: {
@@ -41,7 +41,6 @@ export const useGovConfigQuery = () => {
     govConfigQueryFn,
     {
       refetchOnMount: false,
-      refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
       enabled: !!govContract,
     },

@@ -6,10 +6,10 @@ import { FormReturn, useForm } from '@libs/use-form';
 import { BigSource } from 'big.js';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
+import { useMyAncStaked } from 'hooks/gov/useMyAncStaked';
 import {
   VotingEscrowConfig,
   useVotingEscrowConfigQuery,
-  useMyAncStakedQuery,
   useMyVotingPowerQuery,
   useMyVotingLockPeriodEndsAtQuery,
 } from 'queries';
@@ -114,7 +114,7 @@ export const useExtendAncLockForm = () => {
 
   const { data: lockConfig } = useVotingEscrowConfigQuery();
 
-  const { data: totalAncStaked = 0 as u<ANC<number>> } = useMyAncStakedQuery();
+  const totalAncStaked = useMyAncStaked() ?? (0 as u<ANC<number>>);
 
   const { data: totalVeAnc = 0 as u<veANC<number>> } = useMyVotingPowerQuery();
 
