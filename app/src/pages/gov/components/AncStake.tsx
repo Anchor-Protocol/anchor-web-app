@@ -28,7 +28,6 @@ import React, {
   useState,
 } from 'react';
 import { useBalances } from 'contexts/balances';
-import { useLockAncTx } from 'tx/gov/useLockAncTx';
 import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQuery';
 import { DurationSlider, SliderPlaceholder } from 'components/sliders';
 import styled from 'styled-components';
@@ -40,11 +39,12 @@ import { Divider } from 'components/primitives/Divider';
 import { EstimatedVeAncAmount } from './EstimatedVeAncAmount';
 import { useMyVotingLockPeriodEndsAtQuery } from 'queries';
 import { millisecondsInSecond } from 'date-fns';
+import { useLockAncTx } from 'tx/terra';
 
 function AncStakeBase(props: UIElementProps) {
   const { className } = props;
 
-  const { availablePost, connected } = useAccount();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -96,25 +96,16 @@ function AncStakeBase(props: UIElementProps) {
       : undefined;
 
   const isSubmitEnabled =
-    (availablePost &&
-      connected &&
-      lock &&
-      (period || currentPeriod) &&
-      !invalidTxFee) ||
+    (connected && lock && (period || currentPeriod) && !invalidTxFee) ||
     !invalidANCAmount;
 
   const proceed = useCallback(() => {
-    if (!isSubmitEnabled || !lock) {
-      return;
+    if (isSubmitEnabled && lock) {
+      lock({
+        amount,
+        period,
+      });
     }
-
-    lock({
-      amount,
-      period,
-      onTxSucceed: () => {
-        setAmount('' as ANC);
-      },
-    });
   }, [amount, isSubmitEnabled, lock, period]);
 
   if (

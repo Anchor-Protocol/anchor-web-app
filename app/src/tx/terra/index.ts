@@ -12,3 +12,5 @@ export * from './gov';
 export * from './whbasset';
 export * from './useTxTimer';
 export * from './TerraTxProgressWriter';
+export * from './useLockAncTx';
+export * from './useExtendAncLockPeriodTx';
