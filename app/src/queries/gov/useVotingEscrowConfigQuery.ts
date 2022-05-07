@@ -63,7 +63,7 @@ export const useVotingEscrowConfigQuery = () => {
     VotingEscrowConfigQueryFn,
     {
       refetchOnMount: false,
-      refetchInterval: 1000 * 60 * 5,
+      //refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
       enabled: !!votingEscrowContract,
     },

@@ -17,9 +17,10 @@ import { useTerraSdk } from 'crossanchor';
 import { useCallback } from 'react';
 import { useRenderedTx } from './useRenderedTx';
 import { ANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { BigSource } from 'big.js';
 
 export interface LockAncTxParams {
-  amount: ANC;
+  amount: ANC<BigSource>;
   period?: Second;
 }
 

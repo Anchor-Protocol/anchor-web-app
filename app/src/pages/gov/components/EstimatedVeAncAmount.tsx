@@ -8,10 +8,11 @@ import React from 'react';
 import { computeEstimatedVeAnc } from '../logics/computeEstimatedVeAnc';
 import { SwishSpinner } from 'react-spinners-kit';
 import { useSAnc } from '../hooks/useSAnc';
+import { BigSource } from 'big.js';
 
 interface EstimatedVeAncAmountProps {
   period?: Second;
-  amount?: ANC;
+  amount?: ANC<BigSource>;
 }
 
 export const EstimatedVeAncAmount = ({

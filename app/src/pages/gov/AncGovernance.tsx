@@ -15,9 +15,9 @@ import {
   Outlet,
 } from 'react-router-dom';
 import styled from 'styled-components';
-import { AncStake } from 'pages/gov/components/AncStake';
 import { AncUnstake } from 'pages/gov/components/AncUnstake';
 import { UIElementProps } from '@libs/ui';
+import { AncStake2 } from './components/AncStake2';
 
 interface Item {
   label: string;
@@ -89,7 +89,7 @@ const AncGovernanceBase = (props: UIElementProps) => {
 
         <div className="form">
           <Routes>
-            <Route path="/stake" element={<AncStake />} />
+            <Route path="/stake" element={<AncStake2 />} />
             <Route path="/unstake" element={<AncUnstake />} />
             <Route
               path="*"

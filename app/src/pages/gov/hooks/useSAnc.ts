@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useVotingEscrowConfigQuery, useGovStateQuery } from 'queries';
 import { ANC } from '@anchor-protocol/types';
 import { demicrofy } from '@libs/formatter';
-import Big from 'big.js';
+import Big, { BigSource } from 'big.js';
 import { useAncTokenomics } from 'hooks';
 
 export const useSAnc = () => {
@@ -15,7 +15,7 @@ export const useSAnc = () => {
       return undefined;
     }
 
-    return (amount: ANC): ANC<Big> => {
+    return (amount: ANC<BigSource>): ANC<Big> => {
       const totalShare = demicrofy(govState.total_share);
       const totalStaked = demicrofy(ancTokenomics.totalStaked);
 

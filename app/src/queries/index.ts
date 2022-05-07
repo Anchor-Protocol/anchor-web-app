@@ -14,6 +14,7 @@ export * from './astroport/useAssetPriceInUstQuery';
 export * from './gov/useMyVotingPowerQuery';
 export * from './gov/useAncStakingAPRQuery';
 export * from './gov/useMyVotingLockPeriodEndsAtQuery';
+export * from './gov/useMyAncBalanceQuery';
 export * from './useLocalAnchorContractAddressQuery';
 export * from './gov/useGovStateQuery';
 export * from './gov/useGovConfigQuery';
