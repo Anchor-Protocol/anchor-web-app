@@ -3,7 +3,6 @@ import merge from 'lodash.merge';
 
 import {
   defaultLightTheme,
-  LIGHT_GRAY_300,
   BLACK,
   GRAY_100,
   GRAY_400,
@@ -36,7 +35,6 @@ const BLUE_100 = '#561DF4';
 
 export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
   colors: {
-    ...defaultLightTheme.colors,
     positive: BLUE_100,
     negative: PRIMARY_500,
     primary: PRIMARY_400,
@@ -54,6 +52,9 @@ export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
     BLACK,
     GRAY_400,
   ],
+  header: {
+    backgroundColor: SECONDARY_500,
+  },
   messageBox: {
     borderColor: SECONDARY_500,
     backgroundColor: SECONDARY_100,
@@ -71,13 +72,10 @@ export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
     borderHoverColor: GRAY_600,
     textColor: GRAY_700,
     hoverTextColor: GRAY_600,
-    hoverBackgroundColor: defaultLightTheme.hoverBackgroundColor,
   },
   tooltip: {
-    ...defaultLightTheme.tooltip,
     normal: {
       backgroundColor: PRIMARY_200,
-      textColor: LIGHT_GRAY_300,
     },
   },
 });
