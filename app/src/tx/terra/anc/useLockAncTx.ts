@@ -1,6 +1,6 @@
 import { ANCHOR_TX_KEY, useAnchorWebapp } from '@anchor-protocol/app-provider';
 import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
-import { ANC, u } from '@anchor-protocol/types';
+import { u, Second, ANC } from '@anchor-protocol/types';
 import {
   pickAttributeValueByKey,
   pickEvent,
@@ -14,25 +14,31 @@ import { demicrofy, formatTokenInput } from '@libs/formatter';
 import { TxInfo } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useTerraSdk } from 'crossanchor';
-import { RefCallback } from 'hooks';
 import { useCallback } from 'react';
 import { useRenderedTx } from '../useRenderedTx';
+import { ANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { BigSource } from 'big.js';
 
-export interface StakeAncTxParams {
-  amount: ANC;
+export interface LockAncTxParams {
+  amount: ANC<BigSource>;
+  period?: Second;
 }
 
-export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
+export function useLockAncTx() {
   const connectedWallet = useConnectedWallet();
   const { txErrorReporter } = useAnchorWebapp();
   const refetchQueries = useRefetchQueries();
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: StakeAncTxParams, writer: TerraTxProgressWriter) => {
-      const result = await terraSdk.anc.staking.stake(
+    async (
+      { amount, period }: LockAncTxParams,
+      writer: TerraTxProgressWriter,
+    ) => {
+      const result = await terraSdk.anc.lock(
         connectedWallet!.walletAddress,
-        formatTokenInput(txParams.amount),
+        formatTokenInput(amount),
+        period ?? 0,
         {
           handleEvent: (event) => {
             writer.writeTxHash(event.payload.txHash);
@@ -40,13 +46,11 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
         },
       );
 
-      onSuccess?.();
-
-      refetchQueries(ANCHOR_TX_KEY.ANC_GOVERNANCE_STAKE);
+      refetchQueries(ANCHOR_TX_KEY.LOCK_ANC);
 
       return result;
     },
-    [connectedWallet, refetchQueries, terraSdk, onSuccess],
+    [connectedWallet, refetchQueries, terraSdk],
   );
 
   const renderResults = useCallback(
@@ -73,7 +77,9 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
           receipts: [
             amount && {
               name: 'Amount',
-              value: formatANCWithPostfixUnits(demicrofy(amount)) + ' ANC',
+              value: `${formatANCWithPostfixUnits(
+                demicrofy(amount),
+              )} ${ANC_SYMBOL}`,
             },
             writer.txHashReceipt(),
             writer.txFeeReceipt(),
@@ -92,7 +98,7 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet?.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
-    message: 'Staking your ANC',
+    message: `Staking ${ANC_SYMBOL}`,
   });
 
   return connectedWallet ? streamReturn : [null, null];

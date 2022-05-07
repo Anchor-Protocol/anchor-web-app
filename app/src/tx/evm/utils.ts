@@ -106,6 +106,9 @@ export enum TxKind {
   BorrowUst,
   WithdrawAsset,
   ProvideAndBorrow,
+  ExtendAncLockPeriod,
+  WithdrawAnc,
+  LockAnc,
 }
 
 export const formatTxKind = (txKind: TxKind) => {
@@ -128,6 +131,12 @@ export const formatTxKind = (txKind: TxKind) => {
       return 'Withdraw';
     case TxKind.ProvideAndBorrow:
       return 'Borrow';
+    case TxKind.ExtendAncLockPeriod:
+      return 'Extend lock period';
+    case TxKind.WithdrawAnc:
+      return 'Withdraw';
+    case TxKind.LockAnc:
+      return 'Lock';
   }
 };
 
@@ -151,6 +160,12 @@ export const refetchQueryByTxKind = (txKind: TxKind): ANCHOR_TX_KEY => {
       return ANCHOR_TX_KEY.EARN_WITHDRAW;
     case TxKind.ProvideAndBorrow:
       return ANCHOR_TX_KEY.BORROW_PROVIDE_COLLATERAL;
+    case TxKind.ExtendAncLockPeriod:
+      return ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD;
+    case TxKind.WithdrawAnc:
+      return ANCHOR_TX_KEY.ANC_GOVERNANCE_UNSTAKE;
+    case TxKind.LockAnc:
+      return ANCHOR_TX_KEY.LOCK_ANC;
   }
 };
 
@@ -193,6 +208,21 @@ export const EVM_ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
   ],
   [ANCHOR_TX_KEY.EARN_WITHDRAW]: [
     ...ANCHOR_TX_REFETCH_MAP[ANCHOR_TX_KEY.EARN_WITHDRAW],
+    EVM_QUERY_KEY.ERC20_BALANCE,
+    EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
+  ],
+  [ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD]: [
+    ...ANCHOR_TX_REFETCH_MAP[ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD],
+    EVM_QUERY_KEY.ERC20_BALANCE,
+    EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
+  ],
+  [ANCHOR_TX_KEY.ANC_GOVERNANCE_UNSTAKE]: [
+    ...ANCHOR_TX_REFETCH_MAP[ANCHOR_TX_KEY.ANC_GOVERNANCE_UNSTAKE],
+    EVM_QUERY_KEY.ERC20_BALANCE,
+    EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
+  ],
+  [ANCHOR_TX_KEY.LOCK_ANC]: [
+    ...ANCHOR_TX_REFETCH_MAP[ANCHOR_TX_KEY.LOCK_ANC],
     EVM_QUERY_KEY.ERC20_BALANCE,
     EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
   ],

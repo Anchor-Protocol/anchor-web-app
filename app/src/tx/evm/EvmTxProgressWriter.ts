@@ -2,6 +2,7 @@ import {
   CrossChainEvent,
   CrossChainEventKind,
 } from '@anchor-protocol/crossanchor-sdk';
+import { ANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { TxReceiptLike, TxResultRendering } from '@libs/app-fns';
 import { ConnectType } from '@libs/evm-wallet';
 import { truncateEvm } from '@libs/formatter';
@@ -253,6 +254,72 @@ export class EvmTxProgressWriter<
       return {
         ...current,
         message: `Withdrawing your ${symbol}`,
+        description: this._description,
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
+      };
+    });
+  }
+
+  public extendAncLockPeriod(event?: CrossChainEvent<ContractReceipt>) {
+    const map = new Map<CrossChainEventKind, string>([
+      ...DEFAULT_STATUS,
+      [
+        CrossChainEventKind.OutgoingTxSubmitted,
+        `Extending ${ANC_SYMBOL} lock period`,
+      ],
+      [
+        CrossChainEventKind.OutgoingTxRequested,
+        `Extending ${ANC_SYMBOL} lock period`,
+      ],
+    ]);
+    this.write((current) => {
+      return {
+        ...current,
+        message: `Extending ${ANC_SYMBOL} lock period`,
+        description: this._description,
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
+      };
+    });
+  }
+
+  public lockAnc(event?: CrossChainEvent<ContractReceipt>) {
+    const map = new Map<CrossChainEventKind, string>([
+      ...DEFAULT_STATUS,
+      [CrossChainEventKind.IncomingTxSubmitted, `Locking ${ANC_SYMBOL}`],
+      [CrossChainEventKind.IncomingTxExecuted, `Locking ${ANC_SYMBOL}`],
+    ]);
+    this.write((current) => {
+      return {
+        ...current,
+        message: `Locking your ${ANC_SYMBOL}`,
+        description: this._description,
+        receipts: this.mergeEventKind(
+          this.mergeTxHash(current.receipts, event),
+          map,
+          event,
+        ),
+      };
+    });
+  }
+
+  public withdrawAnc(event?: CrossChainEvent<ContractReceipt>) {
+    const map = new Map<CrossChainEventKind, string>([
+      ...DEFAULT_STATUS,
+      [CrossChainEventKind.IncomingTxSubmitted, `Withdrawing ${ANC_SYMBOL}`],
+      [CrossChainEventKind.IncomingTxExecuted, `Withdrawing ${ANC_SYMBOL}`],
+    ]);
+    this.write((current) => {
+      return {
+        ...current,
+        message: `Withdrawing your ${ANC_SYMBOL}`,
         description: this._description,
         receipts: this.mergeEventKind(
           this.mergeTxHash(current.receipts, event),
