@@ -30,9 +30,9 @@ export function AncUnstake() {
   const fixedFee = useFixedFee();
 
   const { data: myLockPeriodEndsAt = 0 } = useMyVotingLockPeriodEndsAtQuery();
-  const now = Date.now();
+
   const isLockPeriodOver =
-    myLockPeriodEndsAt === undefined ? true : myLockPeriodEndsAt < now;
+    myLockPeriodEndsAt === undefined ? true : myLockPeriodEndsAt < Date.now();
 
   const [ancAmount, setANCAmount] = useState<ANC>('' as ANC);
 
@@ -44,7 +44,9 @@ export function AncUnstake() {
     useRewardsAncGovernanceRewardsQuery();
 
   const unstakableBalance = (
-    userGovStakingInfo ? big(userGovStakingInfo.balance) : Big(0)
+    userGovStakingInfo && isLockPeriodOver
+      ? big(userGovStakingInfo.balance)
+      : Big(0)
   ) as u<ANC<Big>>;
 
   const invalidTxFee = connected && validateTxFee(uUST, fixedFee);
