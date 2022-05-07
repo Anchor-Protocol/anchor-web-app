@@ -81,11 +81,6 @@ export const WeeklyDurationSlider = ({
     return [
       {
         variant: 'label',
-        label: '',
-        value: 4,
-      },
-      {
-        variant: 'label',
         label: '1 year',
         value: 52,
       },
@@ -133,7 +128,7 @@ export const WeeklyDurationSlider = ({
             end={max}
             value={value}
             onChange={handleValueChange}
-            label={`${value} weeks`}
+            label={`${value} week${value !== 1 ? 's' : ''}`}
           />
         )}
       </HorizontalGraphBar>

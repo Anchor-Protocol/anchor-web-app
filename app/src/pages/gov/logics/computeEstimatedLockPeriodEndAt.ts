@@ -4,7 +4,7 @@ export const computeEstimatedLockPeriodEndAt = (
   period: Second,
   currentLockPeriodEndsAt: MillisTimestamp,
 ) => {
-  const now = new Date().getTime() / 1000;
+  const now = new Date().getTime();
 
   return (Math.max(currentLockPeriodEndsAt, now) +
     period * 1000) as MillisTimestamp;

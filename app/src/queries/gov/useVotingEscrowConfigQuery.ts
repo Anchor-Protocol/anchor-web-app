@@ -43,26 +43,12 @@ const VotingEscrowConfigQuery = async (
     },
   });
 
-  console.log({
-    min_lock_time,
-    max_lock_time,
-    period_duration,
-    boost_coefficient,
-  });
-
   return {
     minLockTime: min_lock_time,
     maxLockTime: max_lock_time,
     periodDuration: period_duration,
     boostCoefficient: boost_coefficient,
   };
-
-  // return {
-  //   minLockTime: (86400 * 30) as Second,
-  //   maxLockTime: (86400 * 365 * 4) as Second,
-  //   periodDuration: (86400 * 7) as Second,
-  //   boostCoefficient: boost_coefficient,
-  // };
 };
 
 const VotingEscrowConfigQueryFn = createQueryFn(VotingEscrowConfigQuery);
