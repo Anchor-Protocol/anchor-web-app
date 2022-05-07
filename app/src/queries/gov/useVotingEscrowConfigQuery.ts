@@ -43,6 +43,13 @@ const VotingEscrowConfigQuery = async (
     },
   });
 
+  console.log({
+    min_lock_time,
+    max_lock_time,
+    period_duration,
+    boost_coefficient,
+  });
+
   return {
     minLockTime: min_lock_time,
     maxLockTime: max_lock_time,

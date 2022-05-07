@@ -180,7 +180,7 @@ export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
   astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
   vesting: 'terra15rq8j7auyyd6ydcfkktm3kdagcg56228uclkzy',
   astroUstPair: 'terra1ec0fnjk2u6mms05xyyrte44jfdgdaqnx0upesr',
-  anchorVotingEscrow: 'terra1g54zpg3tjkrxp267z0y3mm60fdf2fhtmmtgm36',
+  anchorVotingEscrow: 'terra19lup90r3jchxplf2c943ujv8g6qtkygmak9c0x',
   anchorGaugeController: 'terra17z55ul9r5edhsejs8fukj9089s403larl76unc',
 };
 
