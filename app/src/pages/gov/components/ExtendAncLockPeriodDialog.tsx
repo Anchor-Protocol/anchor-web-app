@@ -11,7 +11,7 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { useFormatters } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useVotingEscrowConfigQuery } from 'queries/gov/useVotingEscrowConfigQuery';
-import { useExtendAncLockPeriodTx } from 'tx/gov/useExtendAncLockPeriodTx';
+import { useExtendAncLockPeriodTx } from 'tx/terra';
 import { StreamStatus } from '@rx-stream/react';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { WeeklyDurationSlider, SliderPlaceholder } from 'components/sliders';
@@ -56,12 +56,9 @@ export const ExtendAncLockPeriodDialog = ({
     if (extendPeriod && state.lockPeriod && lockConfig) {
       extendPeriod({
         period: computeLockPeriod(lockConfig, state.lockPeriod),
-        onTxSucceed: () => {
-          closeDialog();
-        },
       });
     }
-  }, [closeDialog, extendPeriod, state.lockPeriod, lockConfig]);
+  }, [extendPeriod, lockConfig, state.lockPeriod]);
 
   if (
     extendPeriodResult?.status === StreamStatus.IN_PROGRESS ||
