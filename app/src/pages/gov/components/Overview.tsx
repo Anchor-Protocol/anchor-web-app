@@ -21,6 +21,7 @@ export function Overview() {
     </VStack>
   );
 }
+
 const PrimaryContent = styled.div`
   display: grid;
   grid-template-columns: 5fr 9fr;
