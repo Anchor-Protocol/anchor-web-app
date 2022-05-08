@@ -1,73 +1,13 @@
 import { ANCHOR_TX_KEY } from '@anchor-protocol/app-provider';
-import {
-  CrossChainEvent,
-  CrossChainEventKind,
-  EvmChainId,
-} from '@anchor-protocol/crossanchor-sdk';
-import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
+import { EvmChainId } from '@anchor-protocol/crossanchor-sdk';
+import { TxResultRendering } from '@libs/app-fns';
 import { EVM_QUERY_KEY, TxRefetchMap } from '@libs/app-provider';
-import { ConnectType } from '@libs/evm-wallet';
 import { StreamReturn } from '@rx-stream/react';
 import { ANCHOR_TX_REFETCH_MAP } from 'env';
-import { ContractReceipt } from 'ethers';
 
 export type UseTxReturn<T, V> =
   | StreamReturn<T, TxResultRendering<V>>
   | [null, null];
-
-export const txResult = (
-  event: CrossChainEvent<ContractReceipt>,
-  connnectType: ConnectType,
-  chainId: EvmChainId,
-  txKind: TxKind,
-) => {
-  return {
-    value: null,
-    message: txResultMessage(event.kind, connnectType, chainId, txKind),
-    phase: TxStreamPhase.BROADCAST,
-    receipts: [
-      //{ name: "Status", value: txResultMessage(event, connnectType, chainId, action) }
-    ],
-  };
-};
-
-export const txResultMessage = (
-  eventKind: CrossChainEventKind,
-  connnectType: ConnectType,
-  chainId: EvmChainId,
-  txKind: TxKind,
-) => {
-  switch (eventKind) {
-    case CrossChainEventKind.CrossChainTxCompleted:
-      return `Cross chain transaction completed.`;
-    case CrossChainEventKind.IncomingTxRequested:
-      return `${capitalize(formatTxKind(txKind))} requested. ${capitalize(
-        connnectType,
-      )} notification should appear soon...`;
-    case CrossChainEventKind.IncomingTxExecuted:
-      return `${capitalize(
-        chain(chainId),
-      )} transaction successful, waiting for Wormhole bridge...`;
-    case CrossChainEventKind.IncomingVAAsRetrieved:
-      return `Entering Wormhole bridge on ${capitalize(chain(chainId))}...`;
-    case CrossChainEventKind.OutgoingSequenceRetrieved:
-      return `Entering Terra, executing ${formatTxKind(txKind)} action...`;
-    case CrossChainEventKind.OutgoingVAAsRetrieved:
-      return `Terra action executed, exiting Wormhole bridge on Terra...`;
-    case CrossChainEventKind.IncomingTxSubmitted:
-      return `Waiting for ${formatTxKind(txKind)} transaction on ${capitalize(
-        chain(chainId),
-      )}...`;
-    case CrossChainEventKind.OutgoingTxRequested:
-      return `Deposit requested. ${capitalize(
-        connnectType,
-      )} notification should appear soon...`;
-    case CrossChainEventKind.OutgoingTxSubmitted:
-      return `Waiting for finalize transaction on ${capitalize(
-        chain(chainId),
-      )}...`;
-  }
-};
 
 export const capitalize = (word: string) => {
   const str = word.toLowerCase();
@@ -106,6 +46,9 @@ export enum TxKind {
   BorrowUst,
   WithdrawAsset,
   ProvideAndBorrow,
+  ExtendAncLockPeriod,
+  WithdrawAnc,
+  LockAnc,
 }
 
 export const formatTxKind = (txKind: TxKind) => {
@@ -128,6 +71,12 @@ export const formatTxKind = (txKind: TxKind) => {
       return 'Withdraw';
     case TxKind.ProvideAndBorrow:
       return 'Borrow';
+    case TxKind.ExtendAncLockPeriod:
+      return 'Extend lock period';
+    case TxKind.WithdrawAnc:
+      return 'Unstake';
+    case TxKind.LockAnc:
+      return 'Stake';
   }
 };
 
@@ -151,6 +100,12 @@ export const refetchQueryByTxKind = (txKind: TxKind): ANCHOR_TX_KEY => {
       return ANCHOR_TX_KEY.EARN_WITHDRAW;
     case TxKind.ProvideAndBorrow:
       return ANCHOR_TX_KEY.BORROW_PROVIDE_COLLATERAL;
+    case TxKind.ExtendAncLockPeriod:
+      return ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD;
+    case TxKind.WithdrawAnc:
+      return ANCHOR_TX_KEY.ANC_GOVERNANCE_UNSTAKE;
+    case TxKind.LockAnc:
+      return ANCHOR_TX_KEY.LOCK_ANC;
   }
 };
 
@@ -193,6 +148,21 @@ export const EVM_ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
   ],
   [ANCHOR_TX_KEY.EARN_WITHDRAW]: [
     ...ANCHOR_TX_REFETCH_MAP[ANCHOR_TX_KEY.EARN_WITHDRAW],
+    EVM_QUERY_KEY.ERC20_BALANCE,
+    EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
+  ],
+  [ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD]: [
+    ...ANCHOR_TX_REFETCH_MAP[ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD],
+    EVM_QUERY_KEY.ERC20_BALANCE,
+    EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
+  ],
+  [ANCHOR_TX_KEY.ANC_GOVERNANCE_UNSTAKE]: [
+    ...ANCHOR_TX_REFETCH_MAP[ANCHOR_TX_KEY.ANC_GOVERNANCE_UNSTAKE],
+    EVM_QUERY_KEY.ERC20_BALANCE,
+    EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
+  ],
+  [ANCHOR_TX_KEY.LOCK_ANC]: [
+    ...ANCHOR_TX_REFETCH_MAP[ANCHOR_TX_KEY.LOCK_ANC],
     EVM_QUERY_KEY.ERC20_BALANCE,
     EVM_QUERY_KEY.EVM_NATIVE_BALANCES,
   ],

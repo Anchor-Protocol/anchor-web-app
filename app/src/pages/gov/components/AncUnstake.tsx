@@ -21,7 +21,7 @@ import React, { ChangeEvent, useCallback, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { useMyVotingLockPeriodEndsAtQuery } from 'queries';
 import { useRefCallback } from 'hooks';
-import { useUnstakeAncTx } from 'tx/terra';
+import { useWithdrawAncTx } from 'tx/terra';
 import { useFormatters } from '@anchor-protocol/formatter';
 
 export function AncUnstake() {
@@ -66,7 +66,7 @@ export function AncUnstake() {
     init();
   }, [init]);
 
-  const [unstake, unstakeResult] = useUnstakeAncTx(onUnstakeSuccess);
+  const [unstake, unstakeResult] = useWithdrawAncTx(onUnstakeSuccess);
 
   const proceed = useCallback(
     async (ancAmount: ANC) => {

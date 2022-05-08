@@ -18,19 +18,19 @@ import { RefCallback } from 'hooks';
 import { useCallback } from 'react';
 import { useRenderedTx } from '../useRenderedTx';
 
-export interface UnstakeAncTxParams {
+export interface WithdrawAncTxParams {
   amount: ANC;
 }
 
-export function useUnstakeAncTx(onSuccess?: RefCallback<() => void>) {
+export function useWithdrawAncTx(onSuccess?: RefCallback<() => void>) {
   const connectedWallet = useConnectedWallet();
   const { txErrorReporter } = useAnchorWebapp();
   const refetchQueries = useRefetchQueries();
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: UnstakeAncTxParams, writer: TerraTxProgressWriter) => {
-      const result = await terraSdk.anc.staking.unstake(
+    async (txParams: WithdrawAncTxParams, writer: TerraTxProgressWriter) => {
+      const result = await terraSdk.anc.withdraw(
         connectedWallet!.walletAddress,
         formatTokenInput(txParams.amount),
         {
