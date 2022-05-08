@@ -15,11 +15,11 @@ export const BorderButton = styled(ButtonBase).attrs({ disableRipple: true })`
 
   &:hover {
     border: 1px solid ${({ theme }) => theme.borderButton.borderHoverColor};
-    background-color: ${({ theme }) => theme.hoverBackgroundColor};
+    background-color: ${({ theme }) => theme.borderButton.hoverBackgroundColor};
     color: ${({ theme }) => theme.borderButton.hoverTextColor};
   }
 
   &:disabled {
-    opacity: 0.3;
+    opacity: 0.4;
   }
 `;

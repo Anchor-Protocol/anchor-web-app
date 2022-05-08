@@ -37,6 +37,7 @@ export const darkTheme: DefaultTheme = {
   },
 
   header: {
+    ...defaultDarkTheme.header,
     backgroundColor: BLACK,
     textColor: GREEN_200,
   },

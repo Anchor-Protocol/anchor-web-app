@@ -62,6 +62,7 @@ export const lightTheme: DefaultTheme = {
     GRAY_400,
   ],
   header: {
+    ...defaultLightTheme.header,
     backgroundColor: GRAY_700,
     textColor: PRIMARY_500,
   },
@@ -82,6 +83,7 @@ export const lightTheme: DefaultTheme = {
     borderHoverColor: GRAY_600,
     textColor: GRAY_700,
     hoverTextColor: GRAY_600,
+    hoverBackgroundColor: defaultLightTheme.hoverBackgroundColor,
   },
   tooltip: {
     ...defaultLightTheme.tooltip,
