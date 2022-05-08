@@ -17,7 +17,7 @@ import {
 import styled from 'styled-components';
 import { AncUnstake } from 'pages/gov/components/AncUnstake';
 import { UIElementProps } from '@libs/ui';
-import { AncStake2 } from './components/AncStake2';
+import { AncStake } from './components/AncStake';
 
 interface Item {
   label: string;
@@ -89,7 +89,7 @@ const AncGovernanceBase = (props: UIElementProps) => {
 
         <div className="form">
           <Routes>
-            <Route path="/stake" element={<AncStake2 />} />
+            <Route path="/stake" element={<AncStake />} />
             <Route path="/unstake" element={<AncUnstake />} />
             <Route
               path="*"
