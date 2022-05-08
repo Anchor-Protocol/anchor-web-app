@@ -14,7 +14,7 @@ export function computeApy(
     Math.pow(perCompound.add(1).toNumber(), compoundTimes) - 1,
   ) as Rate<Big>;
 
-  if (apy.toNumber() >= 0.21) {
+  if (apy.toNumber() >= 0.2) {
     return computeApr(depositRate, blocksPerYear);
   }
 
