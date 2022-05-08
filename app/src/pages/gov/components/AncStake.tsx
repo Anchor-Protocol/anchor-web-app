@@ -186,8 +186,8 @@ function AncStakeBase(props: UIElementProps) {
           )}
 
           {state.requiresLockPeriod && state.estimatedLockPeriodEndsAt && (
-            <TxFeeListItem label="Approx Unlock Time">
-              {formatTimestamp(state.estimatedLockPeriodEndsAt)}
+            <TxFeeListItem label="Unlock Time">
+              &asymp; {formatTimestamp(state.estimatedLockPeriodEndsAt)}
             </TxFeeListItem>
           )}
 
