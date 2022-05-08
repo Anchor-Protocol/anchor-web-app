@@ -293,13 +293,13 @@ export class EvmTxProgressWriter<
   public lockAnc(event?: CrossChainEvent<ContractReceipt>) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [CrossChainEventKind.IncomingTxSubmitted, `Locking ${ANC_SYMBOL}`],
-      [CrossChainEventKind.IncomingTxExecuted, `Locking ${ANC_SYMBOL}`],
+      [CrossChainEventKind.IncomingTxSubmitted, `Staking ${ANC_SYMBOL}`],
+      [CrossChainEventKind.IncomingTxExecuted, `Staking ${ANC_SYMBOL}`],
     ]);
     this.write((current) => {
       return {
         ...current,
-        message: `Locking your ${ANC_SYMBOL}`,
+        message: `Staking your ${ANC_SYMBOL}`,
         description: this._description,
         receipts: this.mergeEventKind(
           this.mergeTxHash(current.receipts, event),
@@ -313,13 +313,13 @@ export class EvmTxProgressWriter<
   public withdrawAnc(event?: CrossChainEvent<ContractReceipt>) {
     const map = new Map<CrossChainEventKind, string>([
       ...DEFAULT_STATUS,
-      [CrossChainEventKind.IncomingTxSubmitted, `Withdrawing ${ANC_SYMBOL}`],
-      [CrossChainEventKind.IncomingTxExecuted, `Withdrawing ${ANC_SYMBOL}`],
+      [CrossChainEventKind.IncomingTxSubmitted, `Unstaking ${ANC_SYMBOL}`],
+      [CrossChainEventKind.IncomingTxExecuted, `Unstaking ${ANC_SYMBOL}`],
     ]);
     this.write((current) => {
       return {
         ...current,
-        message: `Withdrawing your ${ANC_SYMBOL}`,
+        message: `Unstaking your ${ANC_SYMBOL}`,
         description: this._description,
         receipts: this.mergeEventKind(
           this.mergeTxHash(current.receipts, event),
