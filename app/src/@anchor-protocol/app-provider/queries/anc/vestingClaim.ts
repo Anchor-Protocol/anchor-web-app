@@ -28,8 +28,8 @@ export function useAncVestingAccountQuery(): UseQueryResult<
     ],
     queryFn,
     {
+      refetchOnMount: false,
       enabled: !!contractAddress.anchorToken.vesting,
-      refetchInterval: 1000 * 60 * 2,
       keepPreviousData: true,
       onError: queryErrorReporter,
     },

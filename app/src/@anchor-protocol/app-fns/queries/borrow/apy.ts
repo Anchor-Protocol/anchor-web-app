@@ -8,12 +8,6 @@ export interface BorrowAPYData {
     Timestamp: DateTime;
   }>;
 
-  govRewards: Array<{
-    CurrentAPY: Rate;
-    Timestamp: DateTime;
-    Height: number;
-  }>;
-
   lpRewards: Array<LPReward>;
 }
 
@@ -69,26 +63,6 @@ export async function borrowAPYQuery(
       },
     );
 
-  const govRewards = await fetch(`${endpoint}/v2/gov-reward`)
-    .then((res) => res.json())
-    .then(
-      ({
-        height,
-        timestamp,
-        current_apy,
-      }: {
-        height: number;
-        timestamp: DateTime;
-        current_apy: Rate;
-      }) => {
-        return {
-          CurrentAPY: current_apy,
-          Timestamp: timestamp,
-          Height: height,
-        };
-      },
-    );
-
   const ancAstroLPRewards = await hiveFetch<any, {}, LpRewardsQueryResult>({
     hiveEndpoint: 'https://api.astroport.fi/graphql',
     variables: {
@@ -105,7 +79,6 @@ export async function borrowAPYQuery(
 
   return {
     borrowerDistributionAPYs: [borrowerDistributionAPYs],
-    govRewards: [govRewards],
     lpRewards: [ancAstroLPRewards as LPReward],
   };
 }

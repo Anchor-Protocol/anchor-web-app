@@ -1,5 +1,5 @@
 import { ANCHOR_TX_KEY, useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { ANC } from '@anchor-protocol/types';
+import { veANC } from '@anchor-protocol/types';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
@@ -12,7 +12,7 @@ import { useCallback } from 'react';
 import { useRenderedTx } from '../useRenderedTx';
 
 export interface VoteTxParams {
-  amount: ANC;
+  amount: veANC;
   voteFor: 'yes' | 'no';
   pollId: number;
 }

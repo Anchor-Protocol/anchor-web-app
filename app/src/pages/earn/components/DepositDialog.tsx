@@ -16,12 +16,13 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import React, { ChangeEvent, useMemo } from 'react';
 import styled from 'styled-components';
 import { useAccount } from 'contexts/account';
-import { AmountSlider } from './AmountSlider';
 import { UIElementProps } from '@libs/ui';
 import { TxResultRendering } from '@libs/app-fns';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { BroadcastTxStreamResult } from './types';
 import big from 'big.js';
+import { UST_SYMBOL } from '@anchor-protocol/token-symbols';
+import { SliderPlaceholder, AmountSlider } from 'components/sliders';
 
 interface DepositDialogParams extends UIElementProps, EarnDepositFormReturn {
   txResult: StreamResult<TxResultRendering> | null;
@@ -128,15 +129,19 @@ function DepositDialogBase(props: DepositDialogProps) {
         </div>
 
         <figure className="graph">
-          <AmountSlider
-            disabled={!account.connected}
-            max={Number(demicrofy(maxAmount))}
-            txFee={Number(demicrofy(txFee ?? ('0' as UST)))}
-            value={Number(depositAmount)}
-            onChange={(value) => {
-              updateDepositAmount(formatInput(value.toString() as UST));
-            }}
-          />
+          {account.connected ? (
+            <AmountSlider
+              max={Number(demicrofy(maxAmount))}
+              txFee={Number(demicrofy(txFee ?? ('0' as UST)))}
+              value={Number(depositAmount)}
+              onChange={(value) => {
+                updateDepositAmount(formatInput(value.toString() as UST));
+              }}
+              symbol={UST_SYMBOL}
+            />
+          ) : (
+            <SliderPlaceholder />
+          )}
         </figure>
 
         {txFee && sendAmount && (
@@ -198,7 +203,7 @@ export const DepositDialog = styled(DepositDialogBase)`
   }
 
   .graph {
-    margin-top: 80px;
+    margin-top: 20px;
     margin-bottom: 40px;
   }
 

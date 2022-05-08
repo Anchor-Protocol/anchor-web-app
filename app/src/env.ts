@@ -40,6 +40,7 @@ export const links = {
     borrow: 'https://docs.anchorprotocol.com/user-guide/webapp/borrow',
     bond: 'https://docs.anchorprotocol.com/user-guide/webapp/bond',
     gov: 'https://docs.anchorprotocol.com/user-guide/webapp/govern',
+    gauges: 'https://docs.anchorprotocol.com/user-guide/webapp/gauges',
   },
 } as const;
 
@@ -103,7 +104,9 @@ type ContractAddressMapKey =
   | 'terraswapFactory'
   | 'astroportGenerator'
   | 'anchorVesting'
-  | 'astroUstPair';
+  | 'astroUstPair'
+  | 'anchorVotingEscrow'
+  | 'anchorGaugeController';
 
 export type ContractAddressMap = Partial<Record<ContractAddressMapKey, string>>;
 
@@ -177,6 +180,8 @@ export const BOMBAY_CONTRACT_ADDRESS: ContractAddressMap = {
   astroportGenerator: 'terra1gjm7d9nmewn27qzrvqyhda8zsfl40aya7tvaw5',
   vesting: 'terra15rq8j7auyyd6ydcfkktm3kdagcg56228uclkzy',
   astroUstPair: 'terra1ec0fnjk2u6mms05xyyrte44jfdgdaqnx0upesr',
+  anchorVotingEscrow: 'terra19lup90r3jchxplf2c943ujv8g6qtkygmak9c0x',
+  anchorGaugeController: 'terra17z55ul9r5edhsejs8fukj9089s403larl76unc',
 };
 
 const anchorIndexerEndpointRecord: Record<NetworkMoniker, string> = {
@@ -348,13 +353,29 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
     ANCHOR_QUERY_KEY.ANC_BALANCE,
   ],
-  [ANCHOR_TX_KEY.ANC_GOVERNANCE_STAKE]: [
+  [ANCHOR_TX_KEY.LOCK_ANC]: [
     TERRA_QUERY_KEY.TOKEN_BALANCES,
     TERRA_QUERY_KEY.CW20_BALANCE,
     TERRA_QUERY_KEY.TERRA_BALANCES,
     TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
     ANCHOR_QUERY_KEY.ANC_BALANCE,
     ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
+    ANCHOR_QUERY_KEY.ANC_MY_VOTING_POWER,
+    ANCHOR_QUERY_KEY.MY_LOCK_INFO,
+    ANCHOR_QUERY_KEY.UNLOCK_PERIOD,
+    ANCHOR_QUERY_KEY.ANC_MY_VOTING_POWER,
+  ],
+  [ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD]: [
+    TERRA_QUERY_KEY.TOKEN_BALANCES,
+    TERRA_QUERY_KEY.CW20_BALANCE,
+    TERRA_QUERY_KEY.TERRA_BALANCES,
+    TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
+    ANCHOR_QUERY_KEY.ANC_BALANCE,
+    ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
+    ANCHOR_QUERY_KEY.ANC_MY_VOTING_POWER,
+    ANCHOR_QUERY_KEY.MY_LOCK_INFO,
+    ANCHOR_QUERY_KEY.UNLOCK_PERIOD,
+    ANCHOR_QUERY_KEY.ANC_MY_VOTING_POWER,
   ],
   [ANCHOR_TX_KEY.ANC_GOVERNANCE_UNSTAKE]: [
     TERRA_QUERY_KEY.TOKEN_BALANCES,
@@ -363,6 +384,7 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
     ANCHOR_QUERY_KEY.ANC_BALANCE,
     ANCHOR_QUERY_KEY.REWARDS_ANC_GOVERNANCE_REWARDS,
+    ANCHOR_QUERY_KEY.ANC_MY_VOTING_POWER,
   ],
   [ANCHOR_TX_KEY.GOV_CREATE_POLL]: [
     TERRA_QUERY_KEY.TOKEN_BALANCES,
@@ -371,7 +393,8 @@ export const ANCHOR_TX_REFETCH_MAP: TxRefetchMap = {
     TERRA_QUERY_KEY.TERRA_NATIVE_BALANCES,
     ANCHOR_QUERY_KEY.ANC_BALANCE,
     ANCHOR_QUERY_KEY.GOV_POLLS,
-    ANCHOR_QUERY_KEY.GOV_MYPOLLS,
+    ANCHOR_QUERY_KEY.GOV_MY_POLLS,
+    ANCHOR_QUERY_KEY.GOV_MY_ANC_STAKED,
   ],
   [ANCHOR_TX_KEY.GOV_VOTE]: [
     TERRA_QUERY_KEY.TOKEN_BALANCES,

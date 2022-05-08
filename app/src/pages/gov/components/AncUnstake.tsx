@@ -1,109 +1,102 @@
 import {
   ANC_INPUT_MAXIMUM_DECIMAL_POINTS,
   ANC_INPUT_MAXIMUM_INTEGER_POINTS,
-  formatANC,
-  formatANCInput,
-  formatUST,
 } from '@anchor-protocol/notation';
-import { ANC } from '@anchor-protocol/types';
+import { ANC, u } from '@anchor-protocol/types';
 import { useRewardsAncGovernanceRewardsQuery } from '@anchor-protocol/app-provider';
-import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
-import { demicrofy, microfy } from '@libs/formatter';
+import { formatTimestamp, microfy } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { NumberInput } from '@libs/neumorphism-ui/components/NumberInput';
 import { InputAdornment } from '@material-ui/core';
 import { StreamStatus } from '@rx-stream/react';
-import big from 'big.js';
+import big, { Big } from 'big.js';
 import { MessageBox } from 'components/MessageBox';
 import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
-import { useStakeAncTx } from 'tx/terra';
+import React, { ChangeEvent, useCallback, useState } from 'react';
+import { useBalances } from 'contexts/balances';
+import { useMyVotingLockPeriodEndsAtQuery } from 'queries';
 import { useRefCallback } from 'hooks';
+import { useUnstakeAncTx } from 'tx/terra';
+import { useFormatters } from '@anchor-protocol/formatter';
 
-export function AncGovernanceStake() {
-  // ---------------------------------------------
-  // dependencies
-  // ---------------------------------------------
+export function AncUnstake() {
   const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
-  // ---------------------------------------------
-  // states
-  // ---------------------------------------------
+  const { data: myLockPeriodEndsAt = 0 } = useMyVotingLockPeriodEndsAtQuery();
+
+  const isLockPeriodOver =
+    myLockPeriodEndsAt === undefined ? true : myLockPeriodEndsAt < Date.now();
+
   const [ancAmount, setANCAmount] = useState<ANC>('' as ANC);
 
-  // ---------------------------------------------
-  // queries
-  // ---------------------------------------------
-  const bank = useAnchorBank();
+  const { uUST } = useBalances();
 
-  const { data: { userANCBalance } = {} } =
+  const { ust, anc } = useFormatters();
+
+  const { data: { userGovStakingInfo } = {} } =
     useRewardsAncGovernanceRewardsQuery();
 
-  // ---------------------------------------------
-  // logics
-  // ---------------------------------------------
-  const invalidTxFee = useMemo(
-    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connected],
-  );
+  const unstakableBalance = (
+    userGovStakingInfo && isLockPeriodOver
+      ? big(userGovStakingInfo.balance)
+      : Big(0)
+  ) as u<ANC<Big>>;
 
-  const invalidANCAmount = useMemo(() => {
-    if (ancAmount.length === 0 || !userANCBalance) return undefined;
+  const invalidTxFee = connected && validateTxFee(uUST, fixedFee);
 
-    return big(microfy(ancAmount)).gt(userANCBalance.balance)
+  const invalidANCAmount =
+    ancAmount.length === 0 || !unstakableBalance
+      ? undefined
+      : big(microfy(ancAmount)).gt(unstakableBalance)
       ? 'Not enough assets'
       : undefined;
-  }, [ancAmount, userANCBalance]);
 
   const init = useCallback(() => {
     setANCAmount('' as ANC);
   }, []);
 
-  const onStakeSuccess = useRefCallback(() => {
+  const onUnstakeSuccess = useRefCallback(() => {
     init();
   }, [init]);
 
-  const [stake, stakeResult] = useStakeAncTx(onStakeSuccess);
+  const [unstake, unstakeResult] = useUnstakeAncTx(onUnstakeSuccess);
 
   const proceed = useCallback(
-    (ancAmount: ANC) => {
-      if (!connected || !stake) {
+    async (ancAmount: ANC) => {
+      if (!connected || !unstake) {
         return;
       }
 
-      stake({
+      unstake({
         amount: ancAmount,
       });
     },
-    [connected, stake],
+    [connected, unstake],
   );
 
-  // ---------------------------------------------
-  // presentation
-  // ---------------------------------------------
   if (
-    stakeResult?.status === StreamStatus.IN_PROGRESS ||
-    stakeResult?.status === StreamStatus.DONE
+    unstakeResult?.status === StreamStatus.IN_PROGRESS ||
+    unstakeResult?.status === StreamStatus.DONE
   ) {
     return (
       <TxResultRenderer
-        resultRendering={stakeResult.value}
+        resultRendering={unstakeResult.value}
         onExit={() => {
-          init();
+          setANCAmount('' as ANC);
 
-          switch (stakeResult.status) {
+          switch (unstakeResult.status) {
             case StreamStatus.IN_PROGRESS:
-              stakeResult.abort();
+              unstakeResult.abort();
               break;
             case StreamStatus.DONE:
-              stakeResult.clear();
+              unstakeResult.clear();
               break;
           }
         }}
@@ -111,9 +104,25 @@ export function AncGovernanceStake() {
     );
   }
 
+  const renderMessage = () => {
+    if (!!invalidTxFee) {
+      return <MessageBox>{invalidTxFee}</MessageBox>;
+    }
+
+    if (!isLockPeriodOver && myLockPeriodEndsAt) {
+      return (
+        <MessageBox>
+          Your ANC is locked until {formatTimestamp(myLockPeriodEndsAt)}
+        </MessageBox>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <>
-      {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
+      {renderMessage()}
 
       <NumberInput
         className="amount"
@@ -140,11 +149,13 @@ export function AncGovernanceStake() {
               cursor: 'pointer',
             }}
             onClick={() =>
-              userANCBalance &&
-              setANCAmount(formatANCInput(demicrofy(userANCBalance.balance)))
+              unstakableBalance &&
+              setANCAmount(anc.demicrofy(unstakableBalance))
             }
           >
-            {userANCBalance ? formatANC(demicrofy(userANCBalance.balance)) : 0}{' '}
+            {unstakableBalance
+              ? anc.formatOutput(anc.demicrofy(unstakableBalance))
+              : 0}{' '}
             ANC
           </span>
         </span>
@@ -153,27 +164,27 @@ export function AncGovernanceStake() {
       {ancAmount.length > 0 && (
         <TxFeeList className="receipt">
           <TxFeeListItem label="Tx Fee">
-            {formatUST(demicrofy(fixedFee))} UST
+            {ust.formatOutput(ust.demicrofy(fixedFee))} UST
           </TxFeeListItem>
         </TxFeeList>
       )}
 
-      {/* Submit */}
       <ViewAddressWarning>
         <ActionButton
           className="submit"
           disabled={
             !availablePost ||
             !connected ||
-            !stake ||
+            !unstake ||
             ancAmount.length === 0 ||
             big(ancAmount).lte(0) ||
             !!invalidTxFee ||
+            !isLockPeriodOver ||
             !!invalidANCAmount
           }
           onClick={() => proceed(ancAmount)}
         >
-          Stake
+          Unstake
         </ActionButton>
       </ViewAddressWarning>
     </>

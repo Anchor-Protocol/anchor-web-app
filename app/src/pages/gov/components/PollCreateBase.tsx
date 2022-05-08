@@ -1,10 +1,8 @@
 import { ExecuteMsg } from 'tx/terra';
 import {
-  formatANC,
   formatUSTWithPostfixUnits,
+  formatVeAnc,
 } from '@anchor-protocol/notation';
-import { ANC } from '@anchor-protocol/types';
-import { useGovConfigQuery } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
 import { useFixedFee } from '@libs/app-provider';
 import { demicrofy } from '@libs/formatter';
@@ -36,6 +34,10 @@ import React, {
 import { useNavigate } from 'react-router-dom';
 import { validateLinkAddress } from '../logics/validateLinkAddress';
 import { FormLayout } from './FormLayout';
+import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
+import { VStack } from '@libs/ui/Stack';
+import { veANC } from '@anchor-protocol/types';
+import { useGovConfigQuery } from 'queries';
 import { useCreatePollTx } from 'tx/terra';
 
 export interface PollCreateBaseProps {
@@ -78,7 +80,7 @@ export function PollCreateBase({
   // ---------------------------------------------
   const bank = useAnchorBank();
 
-  const { data: { govConfig: pollConfig } = {} } = useGovConfigQuery();
+  const { data: govConfig } = useGovConfigQuery();
 
   // ---------------------------------------------
   // logics
@@ -96,15 +98,15 @@ export function PollCreateBase({
 
   const invalidLinkProtocol = useMemo(() => validateLinkAddress(link), [link]);
 
-  const invalidUserANCBalance = useMemo(() => {
-    if (!pollConfig || !connected) {
+  const invalidUserBalance = useMemo(() => {
+    if (!govConfig || !connected) {
       return undefined;
     }
 
-    return big(bank.tokenBalances.uANC).lt(pollConfig.proposal_deposit)
-      ? `Not enough ANC`
+    return big(bank.tokenBalances.uANC).lt(govConfig.proposal_deposit)
+      ? `Not enough ${VEANC_SYMBOL}`
       : undefined;
-  }, [bank.tokenBalances.uANC, pollConfig, connected]);
+  }, [bank.tokenBalances.uANC, govConfig, connected]);
 
   // ---------------------------------------------
   // callbacks
@@ -119,7 +121,7 @@ export function PollCreateBase({
       title: string,
       description: string,
       link: string,
-      amount: ANC,
+      amount: veANC,
     ) => {
       if (!connected || !createPoll) {
         return;
@@ -249,18 +251,24 @@ export function PollCreateBase({
           <p />
         </div>
 
-        <TextInput
-          placeholder="0.000"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">ANC</InputAdornment>,
-            readOnly: true,
-          }}
-          value={
-            pollConfig ? formatANC(demicrofy(pollConfig.proposal_deposit)) : '0'
-          }
-          error={!!invalidUserANCBalance}
-          helperText={invalidUserANCBalance}
-        />
+        <VStack gap={20}>
+          <TextInput
+            placeholder="0.000"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">{VEANC_SYMBOL}</InputAdornment>
+              ),
+              readOnly: true,
+            }}
+            value={
+              govConfig
+                ? formatVeAnc(demicrofy(govConfig.proposal_deposit))
+                : '0'
+            }
+            error={!!invalidUserBalance}
+            helperText={invalidUserBalance}
+          />
+        </VStack>
 
         <TxFeeList className="receipt">
           <TxFeeListItem label={<IconSpan>Tx Fee</IconSpan>}>
@@ -278,7 +286,7 @@ export function PollCreateBase({
               !createPoll ||
               title.length === 0 ||
               description.length === 0 ||
-              !!invalidUserANCBalance ||
+              !!invalidUserBalance ||
               !!invalidTxFee ||
               !!invalidTitleBytes ||
               !!invalidDescriptionBytes ||
@@ -286,12 +294,12 @@ export function PollCreateBase({
               !!invalidLinkProtocol
             }
             onClick={() =>
-              pollConfig &&
+              govConfig &&
               submit(
                 title,
                 description,
                 link,
-                demicrofy(pollConfig.proposal_deposit).toString() as ANC,
+                demicrofy(govConfig.proposal_deposit).toString() as veANC,
               )
             }
           >

@@ -5,8 +5,11 @@ import {
   Num,
   Rate,
   u,
+  Second,
+  CW20Addr,
 } from '@libs/types';
-import { ANC, AncUstLP } from '../currencies';
+import { BigSource } from 'big.js';
+import { ANC, AncUstLP, veANC } from '../currencies';
 import { moneyMarket } from './moneyMarket';
 
 export namespace anchorToken {
@@ -96,8 +99,17 @@ export namespace anchorToken {
       voting_period: number;
       timelock_period: number;
       expiration_period: number;
-      proposal_deposit: u<ANC>;
+      proposal_deposit: u<veANC>;
       snapshot_period: number;
+    }
+
+    export interface State {}
+
+    export interface StateResponse {
+      pending_voting_rewards: u<ANC>;
+      poll_count: number;
+      total_deposit: u<ANC>;
+      total_share: u<ANC>;
     }
 
     export type PollStatus = 'in_progress' | 'passed' | 'rejected' | 'executed';
@@ -319,6 +331,68 @@ export namespace anchorToken {
       address: HumanAddr;
       info: VestingInfo;
       accrued_anc: u<ANC>;
+    }
+  }
+
+  export namespace votingEscrow {
+    export interface UserVotingPower {
+      user_voting_power: {
+        user: HumanAddr;
+      };
+    }
+
+    export interface UserVotingPowerResponse {
+      voting_power: u<veANC>;
+    }
+
+    export interface Config {}
+
+    export interface ConfigResponse {
+      min_lock_time: Second;
+      max_lock_time: Second;
+      period_duration: Second;
+      boost_coefficient: number;
+    }
+
+    export interface UserUnlockPeriod {
+      user_unlock_period: {
+        user: HumanAddr;
+      };
+    }
+
+    export interface UserUnlockPeriodResponse {
+      unlock_period: Second;
+    }
+
+    export interface LockInfo {
+      lock_info: {
+        user: HumanAddr;
+      };
+    }
+
+    export interface LockInfoResponse {
+      start: number;
+      end: number;
+      coefficient: string;
+      amount: string;
+    }
+  }
+
+  export namespace gaugeController {
+    export interface AllGaugeAddr {}
+
+    export interface AllGaugeAddrResponse {
+      all_gauge_addr: CW20Addr[];
+    }
+
+    export interface GaugeWeight {
+      gauge_weight: {
+        gauge_addr: CW20Addr[];
+      };
+    }
+
+    export interface GaugeWeightResponse {
+      gauge_weight: u<veANC<BigSource>>;
     }
   }
 }

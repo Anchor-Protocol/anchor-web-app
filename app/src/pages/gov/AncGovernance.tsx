@@ -4,10 +4,8 @@ import { Section } from '@libs/neumorphism-ui/components/Section';
 import { Circles } from 'components/primitives/Circles';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { screen } from 'env';
-import { AncGovernanceStake } from 'pages/trade/components/AncGovernanceStake';
-import { AncGovernanceUnstake } from 'pages/trade/components/AncGovernanceUnstake';
-import { ancGovernancePathname } from 'pages/trade/env';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import { ROUTES } from 'pages/trade/env';
+import React, { ReactNode, useCallback } from 'react';
 import {
   Navigate,
   Route,
@@ -17,44 +15,52 @@ import {
   Outlet,
 } from 'react-router-dom';
 import styled from 'styled-components';
-
-export interface RewardsAncUstLpProps {
-  className?: string;
-}
+import { AncUnstake } from 'pages/gov/components/AncUnstake';
+import { UIElementProps } from '@libs/ui';
+import { AncStake } from './components/AncStake';
 
 interface Item {
   label: string;
   value: string;
-  tooltip: ReactNode;
+  tooltip?: ReactNode;
 }
 
-const stakeItems: Item[] = [
-  { label: 'Stake', value: 'stake', tooltip: '' },
-  { label: 'Unstake', value: 'unstake', tooltip: '' },
+const TAB_ITEMS: Item[] = [
+  { label: 'Stake', value: 'stake' },
+  { label: 'Unstake', value: 'unstake' },
 ];
 
-function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
+type TabReturn = [Item, (next: Item) => void];
+
+const useTab = (): TabReturn => {
   const navigate = useNavigate();
 
-  const pageMatch = useMatch(`/${ancGovernancePathname}/:view`);
+  const pageMatch = useMatch(`/${ROUTES.ANC_GOVERNANCE}/:view`);
 
-  const subTab = useMemo<Item | undefined>(() => {
-    switch (pageMatch?.params.view) {
-      case 'stake':
-        return stakeItems[0];
-      case 'unstake':
-        return stakeItems[1];
-    }
-  }, [pageMatch?.params.view]);
-
-  const subTabChange = useCallback(
+  const tabChange = useCallback(
     (nextTab: Item) => {
-      navigate({
-        pathname: `/${ancGovernancePathname}/${nextTab.value}`,
-      });
+      navigate(
+        nextTab.value === 'stake'
+          ? `/${ROUTES.ANC_GOVERNANCE}/stake`
+          : `/${ROUTES.ANC_GOVERNANCE}/unstake`,
+      );
     },
     [navigate],
   );
+
+  switch (pageMatch?.params.view) {
+    case 'stake':
+      return [TAB_ITEMS[0], tabChange];
+    case 'unstake':
+      return [TAB_ITEMS[1], tabChange];
+  }
+  return [TAB_ITEMS[0], tabChange];
+};
+
+const AncGovernanceBase = (props: UIElementProps) => {
+  const { className } = props;
+
+  const [tab, tabChange] = useTab();
 
   return (
     <CenteredLayout className={className}>
@@ -73,9 +79,9 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
       <Section>
         <RulerTab
           className="subtab"
-          items={stakeItems}
-          selectedItem={subTab ?? stakeItems[0]}
-          onChange={subTabChange}
+          items={TAB_ITEMS}
+          selectedItem={tab}
+          onChange={tabChange}
           labelFunction={({ label }) => label}
           keyFunction={({ value }) => value}
           tooltipFunction={({ tooltip }) => tooltip}
@@ -83,15 +89,11 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
 
         <div className="form">
           <Routes>
-            <Route path="/stake" element={<AncGovernanceStake />} />
-            <Route path="unstake" element={<AncGovernanceUnstake />} />
-            <Route
-              index={true}
-              element={<Navigate to={`/${ancGovernancePathname}/stake`} />}
-            />
+            <Route path="/stake" element={<AncStake />} />
+            <Route path="/unstake" element={<AncUnstake />} />
             <Route
               path="*"
-              element={<Navigate to={`/${ancGovernancePathname}/stake`} />}
+              element={<Navigate to={`/${ROUTES.ANC_GOVERNANCE}/stake`} />}
             />
           </Routes>
           <Outlet />
@@ -99,9 +101,9 @@ function RewardsAncUstLpBase({ className }: RewardsAncUstLpProps) {
       </Section>
     </CenteredLayout>
   );
-}
+};
 
-export const RewardsAncGovernance = styled(RewardsAncUstLpBase)`
+export const AncGovernance = styled(AncGovernanceBase)`
   header {
     display: grid;
     grid-template-columns: 1fr 375px;
@@ -125,7 +127,7 @@ export const RewardsAncGovernance = styled(RewardsAncUstLpBase)`
   }
 
   .subtab {
-    margin-bottom: 70px;
+    margin-bottom: 50px;
   }
 
   .form {

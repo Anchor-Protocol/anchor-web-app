@@ -22,7 +22,7 @@ const localAnchorContractAddressesQuery = async (): Promise<
       const flatAddressMap = Object.entries(contractAddress).reduce(
         (acc, [namespace, addresses]) => {
           Object.entries(addresses).forEach(([key, value]) => {
-            acc.push([`${namespace}.${key}`, value]);
+            acc.push([`${namespace}.${key}`, value as string]);
           });
 
           return acc;

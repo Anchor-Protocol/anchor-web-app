@@ -46,9 +46,9 @@ import { BorrowCollateralInput } from './BorrowCollateralInput';
 import { EstimatedLiquidationPrice } from './EstimatedLiquidationPrice';
 import { LTVGraph } from './LTVGraph';
 import { BorrowFormParams } from './types';
-import { PageDivider } from './PageDivider';
 import { WhitelistCollateral } from 'queries';
 import { useBalances } from 'contexts/balances';
+import { Divider } from 'components/primitives/Divider';
 
 export interface BorrowDialogParams extends UIElementProps, BorrowFormParams {
   txResult: StreamResult<TxResultRendering> | null;
@@ -296,22 +296,22 @@ function BorrowDialogBase(props: BorrowDialogProps) {
         )}
 
         {isNative === false && (
-            <>
-              <PageDivider />
-              <BorrowCollateralInput
-                collateral={states.collateral}
-                onCollateralChange={onCollateralChanged}
-                maxCollateralAmount={states.maxCollateralAmount}
-                warningMessage={states.invalidCollateralAmount}
-                amount={states.collateralAmount}
-                onAmountChange={(collateralAmount) => {
-                  input({
-                    collateralAmount,
-                  });
-                }}
-              />
-            </>
-          )}
+          <>
+            <Divider />
+            <BorrowCollateralInput
+              collateral={states.collateral}
+              onCollateralChange={onCollateralChanged}
+              maxCollateralAmount={states.maxCollateralAmount}
+              warningMessage={states.invalidCollateralAmount}
+              amount={states.collateralAmount}
+              onAmountChange={(collateralAmount) => {
+                input({
+                  collateralAmount,
+                });
+              }}
+            />
+          </>
+        )}
 
         {states.txFee &&
           states.txFee.gt(0) &&

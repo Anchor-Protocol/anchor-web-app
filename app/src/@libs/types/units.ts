@@ -11,3 +11,7 @@ export type JSDateTime = number & NominalType<'jsdatetime'>;
 export type DateTime = number & NominalType<'datetime'>;
 
 export type ISODateFormat = string & NominalType<'isodateformat'>;
+
+export type Second = number & NominalType<'second'>;
+
+export type MillisTimestamp = number & NominalType<'millistimestamp'>;

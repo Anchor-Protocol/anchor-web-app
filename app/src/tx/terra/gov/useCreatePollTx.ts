@@ -1,5 +1,5 @@
 import { ANCHOR_TX_KEY, useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { ANC } from '@anchor-protocol/types';
+import { veANC } from '@anchor-protocol/types';
 import { TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
@@ -18,7 +18,7 @@ export type ExecuteMsg = {
 };
 
 export interface CreatePollTxParams {
-  amount: ANC;
+  amount: veANC;
   title: string;
   description: string;
   link: string | undefined;
