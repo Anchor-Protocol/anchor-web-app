@@ -11,6 +11,7 @@ import LogoTerra from '../assets/LogoTerra.svg';
 import { DeploymentSwitch } from 'components/layouts/DeploymentSwitch';
 import { TransactionWidget } from '../transactions/TransactionWidget';
 import { ChainSelector } from '../chain/ChainSelector';
+import { HeaderBackgroundGradient } from '../HeaderBackgroundGradient/HeaderBackgroundGradient';
 
 export interface MobileHeaderProps {
   open: boolean;
@@ -37,7 +38,8 @@ function MobileHeaderBase({
   const theme = useTheme();
 
   return (
-    <>
+    <Container>
+      <HeaderBackgroundGradient />
       <header className={className} data-open={open}>
         {open && (
           <nav>
@@ -95,7 +97,7 @@ function MobileHeaderBase({
       </header>
 
       {open && <div style={{ height: mobileHeaderHeight }} />}
-    </>
+    </Container>
   );
 }
 
@@ -131,6 +133,12 @@ const slide = keyframes`
   }
 `;
 
+const Container = styled.div`
+  width: 100%;
+  height: ${mobileHeaderHeight}px;
+  position: relative;
+`;
+
 export const MobileHeader = styled(MobileHeaderBase)`
   // ---------------------------------------------
   // style
@@ -141,6 +149,12 @@ export const MobileHeader = styled(MobileHeaderBase)`
     justify-content: space-between;
 
     background-color: ${({ theme }) => theme.header.backgroundColor};
+
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
 
     a {
       text-decoration: none;

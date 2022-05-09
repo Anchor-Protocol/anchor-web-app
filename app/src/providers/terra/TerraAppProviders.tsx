@@ -10,7 +10,8 @@ import { TerraAccountProvider } from './TerraAccountProvider';
 import { TerraBalancesProvider } from './TerraBalancesProvider';
 import { TerraNetworkProvider } from './TerraNetworkProvider';
 import { ThemeProvider } from 'contexts/theme';
-import { darkTheme, lightTheme } from 'themes/terra';
+import { darkTheme } from 'themes/terra';
+import { lightTheme } from 'themes/aurora';
 import { QueryProvider } from 'providers/QueryProvider';
 import { useCreateReadOnlyWallet } from 'components/dialogs/CreateReadOnlyWallet/terra/useCreateReadOnlyWallet';
 

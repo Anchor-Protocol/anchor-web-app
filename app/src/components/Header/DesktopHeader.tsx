@@ -7,6 +7,7 @@ import { Link, useMatch } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import { ChainSelector } from './chain/ChainSelector';
 import { DesktopNotification } from './desktop/DesktopNotification';
+import { HeaderBackgroundGradient } from './HeaderBackgroundGradient/HeaderBackgroundGradient';
 import { TransactionWidget } from './transactions/TransactionWidget';
 import { EvmWalletSelector } from './wallet/evm/EvmWalletSelector';
 import { TerraWalletSelector } from './wallet/terra/TerraWalletSelector';
@@ -18,37 +19,40 @@ export interface DesktopHeaderProps {
 function DesktopHeaderBase({ className }: DesktopHeaderProps) {
   const menus = useMenus();
   return (
-    <header className={className}>
-      <a
-        className="logo"
-        href="https://anchorprotocol.com/"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <ChainLogo />
-      </a>
+    <Container>
+      <HeaderBackgroundGradient />
+      <header className={className}>
+        <a
+          className="logo"
+          href="https://anchorprotocol.com/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <ChainLogo />
+        </a>
 
-      <nav className="menu">
-        {menus.map((itemMenu) => (
-          <NavMenu key={'menu-' + itemMenu.to} {...itemMenu} />
-        ))}
-      </nav>
+        <nav className="menu">
+          {menus.map((itemMenu) => (
+            <NavMenu key={'menu-' + itemMenu.to} {...itemMenu} />
+          ))}
+        </nav>
 
-      <div />
+        <div />
 
-      <DesktopNotification className="notification" />
+        <DesktopNotification className="notification" />
 
-      <section className="wallet">
-        <TransactionWidget className="transaction-widget" />
-        <ChainSelector className="chain-selector" />
-        <DeploymentSwitch
-          terra={() => <TerraWalletSelector />}
-          ethereum={() => <EvmWalletSelector />}
-        />
-      </section>
+        <section className="wallet">
+          <TransactionWidget className="transaction-widget" />
+          <ChainSelector className="chain-selector" />
+          <DeploymentSwitch
+            terra={() => <TerraWalletSelector />}
+            ethereum={() => <EvmWalletSelector />}
+          />
+        </section>
 
-      <GlobalStyle />
-    </header>
+        <GlobalStyle />
+      </header>
+    </Container>
   );
 }
 
@@ -75,11 +79,23 @@ const GlobalStyle = createGlobalStyle`
 const desktopLayoutBreak = 1180;
 const mobileLayoutBreak = 950;
 
+const Container = styled.div`
+  width: 100%;
+  height: 88px;
+  position: relative;
+`;
+
 export const DesktopHeader = styled(DesktopHeaderBase)`
   // ---------------------------------------------
   // style
   // ---------------------------------------------
   background-color: ${({ theme }) => theme.header.backgroundColor};
+
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
 
   a {
     text-decoration: none;
@@ -120,8 +136,6 @@ export const DesktopHeader = styled(DesktopHeaderBase)`
   display: flex;
   //justify-content: space-between;
   align-items: flex-end;
-
-  height: 88px;
 
   .menu {
     word-break: keep-all;
