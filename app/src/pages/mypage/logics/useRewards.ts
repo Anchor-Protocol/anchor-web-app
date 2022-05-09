@@ -90,6 +90,7 @@ export function useRewards() {
     const stakableValue = big(stakable).mul(LPValue) as u<UST<Big>>;
 
     const ancReward = userLPPendingToken.pending_on_proxy as u<Token>;
+
     const astroReward = userLPPendingToken.pending as u<Token>;
 
     const rewards: Reward[] = [
@@ -99,8 +100,9 @@ export function useRewards() {
         amountInUst: getRewardAmountInUst(astroReward, astroPrice),
       },
     ];
+
     // ANC rewards are no longer being issued
-    if (!big(ancReward).eq(0)) {
+    if (big(ancReward).gt(0)) {
       rewards.push({
         symbol: 'ANC',
         amount: ancReward,
@@ -158,7 +160,7 @@ export function useRewards() {
   }, [borrowerInfo, marketState, ancPrice]);
 
   const rewards = useMemo(() => {
-    if (!ustBorrow || !ancUstLp || !ancPrice) {
+    if (!ustBorrow || !ancUstLp || !ancPrice || !userGovStakingInfo) {
       return undefined;
     }
 
@@ -168,6 +170,7 @@ export function useRewards() {
 
     const ancRewardAmount = big(ancRewardFromLP?.amount || 0)
       .plus(ustBorrow.reward)
+      .plus(userGovStakingInfo.pending_voting_rewards)
       .toString() as u<Token>;
 
     const ancReward: Reward = {
@@ -180,7 +183,7 @@ export function useRewards() {
       ancReward,
       ...ancUstLp.rewards.filter(({ symbol }) => symbol !== 'ANC'),
     ];
-  }, [ancPrice, ancUstLp, ustBorrow]);
+  }, [ancPrice, ancUstLp, ustBorrow, userGovStakingInfo]);
 
   const rewardsAmountInUst = useMemo(
     () =>

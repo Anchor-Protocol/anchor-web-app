@@ -207,6 +207,8 @@ export namespace anchorToken {
           },
         ]
       >;
+      pending_voting_rewards: u<ANC>;
+      withdrawable_polls: Array<[number, u<ANC>]>;
     }
 
     /**

@@ -1,5 +1,6 @@
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
+  useRewardsAncGovernanceRewardsQuery,
   useRewardsAncUstLpRewardsQuery,
   useRewardsClaimableUstBorrowRewardsQuery,
 } from '@anchor-protocol/app-provider';
@@ -17,7 +18,7 @@ import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import { useCheckTerraswapLpRewards } from 'queries/checkTerraswapLpBalance';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useClaimRewardsTx } from 'tx/terra';
 import { ClaimAll } from '../ClaimAll';
 
@@ -30,54 +31,39 @@ export const TerraClaimAll = () => {
 
   const bank = useAnchorBank();
 
-  const { data: { borrowerInfo } = {} } =
+  const { data: { borrowerInfo } = {}, isFetched: borrowerInfoIsFetched } =
     useRewardsClaimableUstBorrowRewardsQuery();
 
-  const { data: { userLPPendingToken } = {} } =
-    useRewardsAncUstLpRewardsQuery();
+  const {
+    data: { userLPPendingToken } = {},
+    isFetched: userLPPendingTokenIsFetched,
+  } = useRewardsAncUstLpRewardsQuery();
+
+  const {
+    data: { userGovStakingInfo } = {},
+    isFetched: userGovStakingInfoIsFetched,
+  } = useRewardsAncGovernanceRewardsQuery();
 
   const rewards = useCheckTerraswapLpRewards();
 
-  const claimingBorrowerInfoPendingRewards = useMemo(() => {
-    if (!borrowerInfo) return undefined;
-    return big(borrowerInfo.pending_rewards) as u<ANC<Big>>;
-  }, [borrowerInfo]);
+  const ancRewards = big(borrowerInfo?.pending_rewards ?? 0)
+    .plus(userLPPendingToken?.pending_on_proxy ?? 0)
+    .plus(userGovStakingInfo?.pending_voting_rewards ?? 0);
 
-  const claimingLpStakingInfoPendingRewards = useMemo(() => {
-    if (!userLPPendingToken) return undefined;
-    return big(userLPPendingToken.pending_on_proxy) as u<ANC<Big>>;
-  }, [userLPPendingToken]);
-
-  const ancRewards = useMemo(() => {
-    if (
-      !claimingBorrowerInfoPendingRewards ||
-      !claimingLpStakingInfoPendingRewards
-    ) {
-      return undefined;
-    }
-
-    return claimingLpStakingInfoPendingRewards.plus(
-      claimingBorrowerInfoPendingRewards,
-    ) as u<ANC<Big>>;
-  }, [claimingBorrowerInfoPendingRewards, claimingLpStakingInfoPendingRewards]);
-
-  const invalidTxFee = useMemo(
-    () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
-    [bank, fixedFee, connected],
-  );
+  const invalidTxFee =
+    connected && validateTxFee(bank.tokenBalances.uUST, fixedFee);
 
   const proceed = useCallback(() => {
     if (!connected || !claim) {
       return;
     }
-
     claim({ includeLp: true });
   }, [claim, connected]);
 
   const astroRewards = userLPPendingToken?.pending;
 
-  const hasAstroRewards = astroRewards && !big(astroRewards).eq(0);
-  const hasAncRewards = ancRewards && !ancRewards.eq(0);
+  const hasAstroRewards = astroRewards && big(astroRewards).gt(0);
+  const hasAncRewards = ancRewards && ancRewards.gt(0);
   const hasRewards = hasAstroRewards || hasAncRewards;
 
   return (
@@ -132,17 +118,13 @@ export const TerraClaimAll = () => {
               !availablePost ||
               !connected ||
               !claim ||
-              !claimingLpStakingInfoPendingRewards ||
-              !claimingBorrowerInfoPendingRewards ||
+              !userLPPendingTokenIsFetched ||
+              !userGovStakingInfoIsFetched ||
+              !borrowerInfoIsFetched ||
               !hasRewards ||
-              (claimingBorrowerInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE) &&
-                claimingLpStakingInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE))
+              ancRewards.lt(MINIMUM_CLAIM_BALANCE)
             }
-            onClick={() =>
-              claimingBorrowerInfoPendingRewards &&
-              claimingLpStakingInfoPendingRewards &&
-              proceed()
-            }
+            onClick={() => proceed()}
           >
             Claim
           </ActionButton>
