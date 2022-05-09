@@ -1,5 +1,4 @@
 import type { DefaultTheme } from 'styled-components';
-import merge from 'lodash.merge';
 
 import { defaultLightTheme, BLACK, GRAY_400 } from '../lightThemeDefault';
 
@@ -19,8 +18,11 @@ const NEGATIVE = '#EC6597';
 
 /* eslint-enable */
 
-export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
+export const lightTheme: DefaultTheme = {
+  ...defaultLightTheme,
+
   colors: {
+    ...defaultLightTheme.colors,
     positive: POSITIVE,
     negative: NEGATIVE,
     primary: PRIMARY_500,
@@ -63,8 +65,10 @@ export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
     hoverBackgroundColor: 'transparent',
   },
   tooltip: {
+    ...defaultLightTheme.tooltip,
     normal: {
+      ...defaultLightTheme.tooltip.normal,
       backgroundColor: PRIMARY_200,
     },
   },
-});
+};

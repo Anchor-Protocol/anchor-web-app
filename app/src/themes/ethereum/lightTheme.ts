@@ -1,5 +1,4 @@
 import type { DefaultTheme } from 'styled-components';
-import merge from 'lodash.merge';
 
 import { defaultLightTheme, BLACK, WHITE } from '../lightThemeDefault';
 
@@ -31,8 +30,11 @@ const GRAY_400 = '#B9BAC9';
 // const GRAY_300 = '#E3E4E5';
 // const GRAY_100 = '#F6F6F7';
 
-export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
+export const lightTheme: DefaultTheme = {
+  ...defaultLightTheme,
+
   colors: {
+    ...defaultLightTheme.colors,
     positive: PRIMARY_500,
     primary: PRIMARY_400,
     primaryDark: PRIMARY_500,
@@ -50,6 +52,7 @@ export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
     GRAY_400,
   ],
   header: {
+    ...defaultLightTheme.header,
     backgroundColor: GRAY_700,
     textColor: PRIMARY_500,
   },
@@ -73,8 +76,10 @@ export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
     hoverBackgroundColor: defaultLightTheme.hoverBackgroundColor,
   },
   tooltip: {
+    ...defaultLightTheme.tooltip,
     normal: {
+      ...defaultLightTheme.tooltip.normal,
       backgroundColor: PRIMARY_200,
     },
   },
-});
+};
