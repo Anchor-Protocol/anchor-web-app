@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": false,
+    "baseUrl": ".",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext",
+      "ES2020",
+      "ES2020.Promise"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "target": "ES2020",
+  },
+  "paths": {
+    "@anchor-protocol/*": ["app/src/@anchor-protocol/*"],
+    "@libs/*": ["app/src/@libs/*"]
+  }
+}

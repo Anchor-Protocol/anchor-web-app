@@ -1,12 +1,8 @@
 {
-  "extends": "./tsconfig.paths.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "rootDir": "./",
+    "outDir": "./lib",
     "downlevelIteration": true,
     "allowJs": true,
     "skipLibCheck": true,
@@ -25,5 +21,13 @@
   },
   "include": [
     "src"
+  ],
+  "references": [
+    {
+      "path": "../app/src/@anchor-protocol/*"
+    },
+    {
+      "path": "../app/src/@libs/*"
+    }
   ]
 }
