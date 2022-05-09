@@ -7,8 +7,6 @@ services:
     build:
       context: ./modules/web-app/app/build
       dockerfile: ../../docker/Dockerfile
-      args:
-        BUILD_ENV: ci
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --fail localhost:80 || exit 1"]

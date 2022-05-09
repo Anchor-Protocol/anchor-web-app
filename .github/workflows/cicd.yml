@@ -161,8 +161,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           platforms: ${{ env.PLATFORMS }}
-          build-args: |
-            BUILD_ENV=ci
 
   deploy:
     name: Deploy build
