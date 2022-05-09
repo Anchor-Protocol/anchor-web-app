@@ -113,7 +113,7 @@ export const TerraClaimAll = () => {
 
         <ViewAddressWarning>
           <ActionButton
-            className="button"
+            className="button d"
             disabled={
               !availablePost ||
               !connected ||
