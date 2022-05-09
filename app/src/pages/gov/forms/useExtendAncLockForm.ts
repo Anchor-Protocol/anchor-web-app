@@ -6,6 +6,7 @@ import { FormReturn, useForm } from '@libs/use-form';
 import { BigSource } from 'big.js';
 import { useAccount } from 'contexts/account';
 import { useBalances } from 'contexts/balances';
+import { millisecondsInSecond } from 'date-fns';
 import { useMyAncStaked } from 'hooks/gov/useMyAncStaked';
 import {
   VotingEscrowConfig,
@@ -65,6 +66,17 @@ const extendAncLockPeriodForm = (props: ExtendAncLockPeriodFormDependency) => {
     ? computeLockAmount(lockConfig, lockConfig.maxLockTime)
     : 0;
 
+  const now = Date.now();
+
+  const period =
+    lockConfig && lockPeriodEndsAt && lockPeriodEndsAt > now
+      ? Math.ceil(
+          (lockPeriodEndsAt - now) /
+            millisecondsInSecond /
+            lockConfig.periodDuration,
+        )
+      : 0;
+
   return ({
     lockPeriod,
   }: ExtendAncLockPeriodFormInput): FormReturn<
@@ -77,7 +89,7 @@ const extendAncLockPeriodForm = (props: ExtendAncLockPeriodFormDependency) => {
 
     const invalidLockPeriod =
       lockPeriod !== undefined
-        ? validateLockPeriod(lockPeriod, minLockPeriod, maxLockPeriod)
+        ? validateLockPeriod(lockPeriod, minLockPeriod, maxLockPeriod - period)
         : undefined;
 
     const estimatedLockPeriodEndsAt = lockConfig

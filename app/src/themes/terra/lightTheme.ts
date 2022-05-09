@@ -54,5 +54,3 @@ export const lightTheme: DefaultTheme = {
   // positiveTextColor: SECONDARY_400,
   // pointColor: SECONDARY_400,
 };
-
-console.log(lightTheme);

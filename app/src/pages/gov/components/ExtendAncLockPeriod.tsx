@@ -1,6 +1,6 @@
 import { BorderButton } from '@libs/neumorphism-ui/components/BorderButton';
 import { Tooltip } from '@libs/neumorphism-ui/components/Tooltip';
-import { VStack } from '@libs/ui/Stack';
+import { HStack } from '@libs/ui/Stack';
 import { useDialog } from '@libs/use-dialog';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { millisecondsInSecond } from 'date-fns';
@@ -45,7 +45,7 @@ export const ExtendAncLockPeriod = () => {
             title="You already have a maximum lock period"
             placement="bottom"
           >
-            <VStack>{button}</VStack>
+            <HStack fullWidth>{button}</HStack>
           </Tooltip>
         ) : (
           button
