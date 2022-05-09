@@ -194,12 +194,14 @@ __metadata:
     dat.gui: ^0.7.7
     date-fns: ^2.22.1
     downshift: ^6.1.3
+    eslint: ^7.11.0
     fastdom: ^1.0.10
     gl-matrix: ^3.3.0
     glslify: ^7.1.1
     glslify-loader: ^2.0.0
     graphql: ^15.5.1
     graphql-tag: ^2.12.5
+    jest: ^26.6.0
     multiplerun: ^2.0.1
     puppeteer: ^13.5.1
     raw-loader: ^4.0.2
@@ -221,7 +223,7 @@ __metadata:
     styled-components: ^5.3.0
     ts-node: ^10.1.0
     tsconfig-paths: ^3.10.1
-    typescript: 4.5.5
+    typescript: ^4.6
     use-resize-observer: ^7.0.0
     web-vitals: ^2.1.0
   languageName: unknown
@@ -4539,13 +4541,6 @@ __metadata:
   version: 2.0.0
   resolution: "@ssen/jxa@npm:2.0.0"
   checksum: 54704f3ed28124e4d10e70f2cdbf2b92bce76c4688e51dd52271c4217820b78d1ae8bde3060a87c5106c066e1c5628d0a8adc5561268c10ea21548244a86657b
-  languageName: node
-  linkType: hard
-
-"@ssen/prettier-config@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@ssen/prettier-config@npm:2.0.1"
-  checksum: ef3628102a9ec72cdd69df66de406b4c3dfce0a0fd7b402a97d077c5357321881173fbd9fe2a3d401127448d487b826ef145564f3ed1824de9df81253bd75243
   languageName: node
   linkType: hard
 
@@ -13366,7 +13361,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.11.0, eslint@npm:^7.27.0, eslint@npm:^7.32.0":
+"eslint@npm:^7.11.0, eslint@npm:^7.27.0":
   version: 7.32.0
   resolution: "eslint@npm:7.32.0"
   dependencies:
@@ -17073,7 +17068,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-cli@npm:^26.6.0":
+"jest-cli@npm:^26.6.0, jest-cli@npm:^26.6.3":
   version: 26.6.3
   resolution: "jest-cli@npm:26.6.3"
   dependencies:
@@ -17591,6 +17586,19 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: e0d3efff0dc2a31c453a3f7d87586e5d6c0f008c9b827bb9204edde09288f922ddfb3a8917480bf68f4ac0298be28637daef98ebaaac65ea23d3cb754a6620c4
+  languageName: node
+  linkType: hard
+
+"jest@npm:^26.6.0":
+  version: 26.6.3
+  resolution: "jest@npm:26.6.3"
+  dependencies:
+    "@jest/core": ^26.6.3
+    import-local: ^3.0.2
+    jest-cli: ^26.6.3
+  bin:
+    jest: bin/jest.js
+  checksum: 3a9b4c70e9bd5391e7367a0036045c1d3545c2a39e1439a71fb4b59b1748bc34e2ccb324faa1046b99bffc8dc2ed7b3c59016c462255b2646f5fa9300351f914
   languageName: node
   linkType: hard
 
@@ -23782,19 +23790,20 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@handbook/markdown-source-import": ^1.1.0
-    "@ssen/prettier-config": ^2.0.1
     "@types/eslint": ^7.2.14
     "@types/prettier": ^2.3.2
     "@typescript-eslint/parser": ^5.16.0
     apollo: ^2.33.9
-    eslint: ^7.32.0
+    babel-jest: "npm:^26.6.0"
+    eslint: ^7.11.0
     eslint-config-prettier: ^8.3.0
     eslint-config-react-app: ^7.0.0
     husky: ^7.0.1
+    jest: 26.6.0
     jest-bin: ^0.3.0
     lint-staged: ^11.0.0
     prettier: ^2.3.2
-    typescript: ^4.6.2
+    typescript: ^4.6
   peerDependencies:
     eslint-config-react-app: 6.0.0
   languageName: unknown
@@ -26222,13 +26231,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.1.3, typescript@npm:^4.6.2":
+"typescript@npm:^4.1.3":
   version: 4.6.2
   resolution: "typescript@npm:4.6.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 8a44ed7e6f6c4cb1ebe8cf236ecda2fb119d84dcf0fbd77e707b2dfea1bbcfc4e366493a143513ce7f57203c75da9d4e20af6fe46de89749366351046be7577c
+  languageName: node
+  linkType: hard
+
+"typescript@npm:^4.6":
+  version: 4.6.4
+  resolution: "typescript@npm:4.6.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: e7bfcc39cd4571a63a54e5ea21f16b8445268b9900bf55aee0e02ad981be576acc140eba24f1af5e3c1457767c96cea6d12861768fb386cf3ffb34013718631a
   languageName: node
   linkType: hard
 
@@ -26242,13 +26261,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.1.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.6.2#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.1.3#~builtin<compat/typescript>":
   version: 4.6.2
   resolution: "typescript@patch:typescript@npm%3A4.6.2#~builtin<compat/typescript>::version=4.6.2&hash=bda367"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 40b493a71747fb89fa70df104e2c4a5e284b43750af5bea024090a5261cefa387f7a9372411b13030f7bf5555cee4275443d08805642ae5c74ef76740854a4c7
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^4.6#~builtin<compat/typescript>":
+  version: 4.6.4
+  resolution: "typescript@patch:typescript@npm%3A4.6.4#~builtin<compat/typescript>::version=4.6.4&hash=bda367"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 1cb434fbc637d347be90e3a0c6cd05e33c38f941713c8786d3031faf1842c2c148ba91d2fac01e7276b0ae3249b8633f1660e32686cc7a8c6a8fd5361dc52c66
   languageName: node
   linkType: hard
 

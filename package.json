@@ -45,18 +45,19 @@
   },
   "devDependencies": {
     "@handbook/markdown-source-import": "^1.1.0",
-    "@ssen/prettier-config": "^2.0.1",
     "@types/eslint": "^7.2.14",
     "@types/prettier": "^2.3.2",
     "@typescript-eslint/parser": "^5.16.0",
     "apollo": "^2.33.9",
-    "eslint": "^7.32.0",
+    "babel-jest": "npm:^26.6.0",
+    "eslint": "^7.11.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^7.0.0",
     "husky": "^7.0.1",
+    "jest": "26.6.0",
     "jest-bin": "^0.3.0",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.2",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6"
   }
 }
