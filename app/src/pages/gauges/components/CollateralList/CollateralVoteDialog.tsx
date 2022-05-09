@@ -61,7 +61,6 @@ export const CollateralVoteDialog = ({
     veANC<BigSource>
   >;
 
-  console.log(myVotes, availableExtraAmount);
   const totalVotingPower = useMemo(() => {
     if (myVotes === undefined || availableExtraAmount === undefined) {
       return;

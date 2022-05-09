@@ -37,7 +37,7 @@ export function useVoteForGaugeWeightTx() {
         },
       );
 
-      refetchQueries(ANCHOR_TX_KEY.LOCK_ANC);
+      refetchQueries(ANCHOR_TX_KEY.VOTE_FOR_GAUGE_WEIGHT);
 
       return result;
     },
