@@ -5,6 +5,7 @@ import {
   BLACK,
   DARK_GRAY_100,
 } from '../darkThemeDefault';
+import merge from 'lodash.merge';
 
 // TERRA THEME
 const GREEN_100 = '#15cc93';
@@ -20,8 +21,7 @@ const RED_100 = '#e95979';
 const YELLOW_100 = '#ff9a63';
 const GRAY_200 = '#101010';
 
-export const darkTheme: DefaultTheme = {
-  ...defaultDarkTheme,
+export const darkTheme: DefaultTheme = merge(defaultDarkTheme, {
   // VARIABLES (SHOULD BE CHANGED)
   textColor: WHITE,
   dimTextColor: DARK_GRAY_100,
@@ -37,7 +37,6 @@ export const darkTheme: DefaultTheme = {
   },
 
   header: {
-    ...defaultDarkTheme.header,
     backgroundColor: BLACK,
     textColor: GREEN_200,
   },
@@ -58,4 +57,4 @@ export const darkTheme: DefaultTheme = {
     GREEN_900,
     GRAY_200,
   ],
-};
+});

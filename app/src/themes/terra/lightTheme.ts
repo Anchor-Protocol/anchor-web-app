@@ -5,6 +5,7 @@ import {
   LIGHT_GRAY_600,
   BLACK,
 } from '../lightThemeDefault';
+import merge from 'lodash.merge';
 
 const SECONDARY_200 = '#285e28';
 const SECONDARY_300 = 'rgba(75, 219, 75, 0.1)';
@@ -17,13 +18,10 @@ const SECONDARY_900 = '#0e3311';
 
 const GRAY_400 = '#101010';
 
-export const lightTheme: DefaultTheme = {
-  ...defaultLightTheme,
-
+export const lightTheme: DefaultTheme = merge(defaultLightTheme, {
   textColor: LIGHT_GRAY_300,
   dimTextColor: LIGHT_GRAY_600,
   colors: {
-    ...defaultLightTheme.colors,
     positive: SECONDARY_400,
     primary: SECONDARY_400,
     primaryDark: SECONDARY_400,
@@ -40,7 +38,6 @@ export const lightTheme: DefaultTheme = {
     GRAY_400,
   ],
   header: {
-    ...defaultLightTheme.header,
     backgroundColor: BLACK,
     textColor: SECONDARY_400,
   },
@@ -53,4 +50,4 @@ export const lightTheme: DefaultTheme = {
   // errorTextColor: BASE_RED_200,
   // positiveTextColor: SECONDARY_400,
   // pointColor: SECONDARY_400,
-};
+});
