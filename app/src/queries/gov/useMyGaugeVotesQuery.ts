@@ -20,8 +20,8 @@ interface GaugeVote {
 
 interface UserVotesWasmQuery {
   voter: WasmQuery<
-    anchorToken.votingEscrow.Voter,
-    anchorToken.votingEscrow.VoterResponse
+    anchorToken.gaugeController.Voter,
+    anchorToken.gaugeController.VoterResponse
   >;
 }
 
@@ -32,7 +32,7 @@ interface UserGaugeVotes {
 }
 
 const userGaugeVotesQuery = async (
-  votingEscrowContract: string,
+  gaugeControllerContract: string,
   user: HumanAddr,
   queryClient: QueryClient,
 ): Promise<UserGaugeVotes> => {
@@ -41,7 +41,7 @@ const userGaugeVotesQuery = async (
     id: 'gauge-votes',
     wasmQuery: {
       voter: {
-        contractAddress: votingEscrowContract,
+        contractAddress: gaugeControllerContract,
         query: {
           voter: {
             address: user,
@@ -83,12 +83,12 @@ export const useMyGaugeVotesQuery = () => {
 
   const { terraWalletAddress } = useAccount();
 
-  const votingEscrowContract = contractAddress.anchorToken.votingEscrow;
+  const gaugeControllerContract = contractAddress.anchorToken.gaugeController;
 
   return useQuery(
     [
       ANCHOR_QUERY_KEY.MY_GAUGE_VOTES,
-      votingEscrowContract,
+      gaugeControllerContract,
       terraWalletAddress as HumanAddr,
       queryClient,
     ],
@@ -97,7 +97,7 @@ export const useMyGaugeVotesQuery = () => {
       refetchOnMount: false,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
-      enabled: !!terraWalletAddress && !!votingEscrowContract,
+      enabled: !!terraWalletAddress && !!gaugeControllerContract,
       onError: queryErrorReporter,
     },
   );

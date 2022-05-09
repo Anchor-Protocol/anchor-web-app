@@ -2,7 +2,7 @@ import { CW20Addr, u } from '@libs/types';
 import { DialogProps } from '@libs/use-dialog';
 import { Modal } from '@material-ui/core';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import { useFixedFee } from '@libs/app-provider';
@@ -32,6 +32,7 @@ import { useVoteForGaugeWeightTx } from 'tx/terra/useVoteForGaugeWeightTx';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { StreamStatus } from '@rx-stream/react';
 import { computeGaugeVoteRatio } from 'pages/gauges/logics/computeGaugeVoteRatio';
+import { sum } from '@libs/big-math';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
@@ -55,10 +56,19 @@ export const CollateralVoteDialog = ({
     () => demicrofy(currentAmount).toString() as veANC,
   );
 
-  const { data: availableExtraAmount = 0 } = useMyVotingPowerQuery();
-  const maxAmount = big(availableExtraAmount).add(currentAmount) as u<
+  const { data: availableExtraAmount } = useMyVotingPowerQuery();
+  const maxAmount = big(availableExtraAmount || 0).add(currentAmount) as u<
     veANC<BigSource>
   >;
+
+  console.log(myVotes, availableExtraAmount);
+  const totalVotingPower = useMemo(() => {
+    if (myVotes === undefined || availableExtraAmount === undefined) {
+      return;
+    }
+
+    return sum(myVotes.total, availableExtraAmount) as u<veANC<BigSource>>;
+  }, [availableExtraAmount, myVotes]);
 
   const [voteForGaugeWeight, voteForGaugeWeightResult] =
     useVoteForGaugeWeightTx();
@@ -71,19 +81,19 @@ export const CollateralVoteDialog = ({
       : undefined;
 
   const proceed = useCallback(() => {
-    if (voteForGaugeWeight) {
+    if (voteForGaugeWeight && totalVotingPower !== undefined) {
       voteForGaugeWeight({
         gaugeAddr: tokenAddress,
-        ratio: computeGaugeVoteRatio(
-          amount,
-          demicrofy(availableExtraAmount as u<veANC<BigSource>>),
-        ),
+        ratio: computeGaugeVoteRatio(amount, demicrofy(totalVotingPower)),
       });
     }
-  }, [amount, availableExtraAmount, tokenAddress, voteForGaugeWeight]);
+  }, [amount, tokenAddress, totalVotingPower, voteForGaugeWeight]);
 
   const isSubmitDisabled =
-    invalidTxFee || invalidAmount || big(currentAmount).eq(microfy(amount));
+    invalidTxFee ||
+    invalidAmount ||
+    big(currentAmount).eq(microfy(amount)) ||
+    totalVotingPower === undefined;
 
   if (
     voteForGaugeWeightResult?.status === StreamStatus.IN_PROGRESS ||

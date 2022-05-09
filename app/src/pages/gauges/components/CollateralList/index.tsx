@@ -14,6 +14,7 @@ import { useAccount } from 'contexts/account';
 import { InfoTooltip } from '@libs/neumorphism-ui/components/InfoTooltip';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { formatTimestamp } from '@libs/formatter';
+import Big from 'big.js';
 
 export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
@@ -52,9 +53,10 @@ export const CollateralList = () => {
             ({ symbol, icon, name, votes, share, tokenAddress }) => {
               const myVotes = myGaugeVotes?.votesRecord[tokenAddress];
 
-              const isLocked =
+              const isLocked = !!(
                 myVotes?.lockPeriodEndsAt &&
-                myVotes?.lockPeriodEndsAt > Date.now();
+                myVotes?.lockPeriodEndsAt > Date.now()
+              );
               const isVoteEnabled = isInteractive && votingPower && !isLocked;
               const isCancelVoteEnabled = isInteractive && myVotes && !isLocked;
 
@@ -77,7 +79,7 @@ export const CollateralList = () => {
                   </td>
                   <td>
                     <div className="value">
-                      {myVotes
+                      {myVotes && !Big(myVotes.amount).eq(0)
                         ? `${formatUTokenIntegerWithoutPostfixUnits(
                             myVotes.amount,
                           )}`
