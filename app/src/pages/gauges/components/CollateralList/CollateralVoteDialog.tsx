@@ -26,7 +26,7 @@ import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { formatOutput } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useMutation } from 'react-query';
-import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
+import { useMyGaugeVotesQuery } from 'queries/gov/useMyGaugeVotesQuery';
 import { AmountSlider } from 'components/sliders';
 import { DialogTitle } from '@libs/ui/text/DialogTitle';
 
@@ -44,9 +44,10 @@ export const CollateralVoteDialog = ({
   const fixedFee = useFixedFee();
   const invalidTxFee = validateTxFee(uUST, fixedFee);
 
-  const { data: userCollateralRecord = {} } = useMyGaugeVotingQuery();
+  const { data: myVotes = [] } = useMyGaugeVotesQuery();
   const currentAmount =
-    userCollateralRecord[tokenAddress]?.amount || (0 as u<veANC<BigSource>>);
+    myVotes.find(({ address }) => address === tokenAddress)?.amount ||
+    (0 as u<veANC<BigSource>>);
 
   const [amount, setAmount] = useState<veANC>(
     () => demicrofy(currentAmount).toString() as veANC,

@@ -5,7 +5,7 @@ import { useCollateralGaugeQuery } from 'queries/gov/useCollateralGaugeQuery';
 import React from 'react';
 import styled from 'styled-components';
 import { formatUTokenIntegerWithoutPostfixUnits } from '@anchor-protocol/notation';
-import { useMyGaugeVotingQuery } from 'queries/gov/useMyGaugeVotingQuery';
+import { useMyGaugeVotesQuery } from 'queries/gov/useMyGaugeVotesQuery';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { CancelVote } from './CancelVote';
 import { useMyVotingPowerQuery } from 'queries';
@@ -19,7 +19,7 @@ export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
     useCollateralGaugeQuery();
 
-  const { data: myGaugeVoting = {} } = useMyGaugeVotingQuery();
+  const { data: myGaugeVotes = [] } = useMyGaugeVotesQuery();
   const { data: votingPower } = useMyVotingPowerQuery();
   const { connected, availablePost } = useAccount();
   const isInteractive = connected && availablePost;
@@ -50,9 +50,13 @@ export const CollateralList = () => {
         <tbody>
           {collateral.map(
             ({ symbol, icon, name, votes, share, tokenAddress }) => {
-              const myVotes = myGaugeVoting[tokenAddress];
+              const myVotes = myGaugeVotes.find(
+                ({ address }) => address === tokenAddress,
+              );
 
-              const isLocked = myVotes?.lockPeriodEndsAt > Date.now();
+              const isLocked =
+                myVotes?.lockPeriodEndsAt &&
+                myVotes?.lockPeriodEndsAt > Date.now();
               const isVoteEnabled = isInteractive && votingPower && !isLocked;
               const isCancelVoteEnabled = isInteractive && myVotes && !isLocked;
 
