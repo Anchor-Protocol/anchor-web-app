@@ -17,7 +17,7 @@ export const createContent = (regl, gui) => {
 
   if (gui) {
     const folder = gui.addFolder('Content');
-  
+
     folder.add(CONFIG, 'translateX', -30, 30).step(0.01);
     folder.add(CONFIG, 'translateY', -30, 30).step(0.01);
     folder.add(CONFIG, 'translateZ', -30, 30).step(0.01);

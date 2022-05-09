@@ -1,9 +1,5 @@
 module.exports = {
-  extends: [
-    'react-app',
-    'react-app/jest',
-    'prettier',
-  ],
+  extends: ['react-app', 'react-app/jest', 'prettier'],
   rules: {
     'react-hooks/exhaustive-deps': [
       'warn',

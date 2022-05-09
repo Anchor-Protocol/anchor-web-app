@@ -21,7 +21,7 @@ export const createCube = (regl, gui) => {
 
   if (gui) {
     const folder = gui.addFolder('Cube');
-  
+
     folder.add(CONFIG, 'translateX', -30, 30).step(0.01);
     folder.add(CONFIG, 'translateY', -30, 30).step(0.01);
     folder.add(CONFIG, 'translateZ', -30, 30).step(0.01);
@@ -33,7 +33,7 @@ export const createCube = (regl, gui) => {
     folder.add(CONFIG, 'borderWidth', 0, 0.1).step(0.01);
     folder.add(CONFIG, 'displacementLength', 0, 2).step(0.01);
     folder.add(CONFIG, 'reflectionOpacity', 0, 1).step(0.01);
-    folder.add(CONFIG, 'scene', {Apple: 3, Mask: 2, Displacement: 1});
+    folder.add(CONFIG, 'scene', { Apple: 3, Mask: 2, Displacement: 1 });
   }
 
   const emptyTexture = regl.texture();
