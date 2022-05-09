@@ -80,13 +80,12 @@ const extendAncLockPeriodForm = (props: ExtendAncLockPeriodFormDependency) => {
         ? validateLockPeriod(lockPeriod, minLockPeriod, maxLockPeriod)
         : undefined;
 
-    const estimatedLockPeriodEndsAt =
-      lockConfig && lockPeriodEndsAt
-        ? computeEstimatedLockPeriodEndAt(
-            computeLockPeriod(lockConfig, lockPeriod ?? 0),
-            lockPeriodEndsAt,
-          )
-        : undefined;
+    const estimatedLockPeriodEndsAt = lockConfig
+      ? computeEstimatedLockPeriodEndAt(
+          computeLockPeriod(lockConfig, lockPeriod ?? 0),
+          lockPeriodEndsAt ?? (Date.now() as MillisTimestamp),
+        )
+      : undefined;
 
     return [
       {
