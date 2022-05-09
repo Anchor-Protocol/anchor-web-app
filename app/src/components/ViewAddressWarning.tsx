@@ -23,6 +23,8 @@ export function ViewAddressWarning({ children }: ViewAddressStrikeProps) {
 }
 
 const Warning = styled.div`
+  display: flex;
+  width: 100%;
   button {
     text-decoration: line-through;
   }

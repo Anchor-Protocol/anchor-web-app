@@ -124,7 +124,7 @@ const VotingPower = (props: VotingPowerProps) => {
             </p>
           </NoVotingPower>
         </VStack>
-        <HStack fullWidth gap={20}>
+        <HStack fullWidth>
           <ExtendAncLockPeriod />
         </HStack>
       </>

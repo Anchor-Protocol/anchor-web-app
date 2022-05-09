@@ -14,7 +14,8 @@ export const ExtendAncLockPeriod = () => {
     ExtendAncLockPeriodDialog,
   );
 
-  const { data: unlockAt } = useMyVotingLockPeriodEndsAtQuery();
+  const { data: unlockAt = Date.now() } = useMyVotingLockPeriodEndsAtQuery();
+
   const { data: lockConfig } = useVotingEscrowConfigQuery();
 
   if (!unlockAt || !lockConfig) {
@@ -22,6 +23,7 @@ export const ExtendAncLockPeriod = () => {
   }
 
   const currentPeriod = (unlockAt - Date.now()) / millisecondsInSecond;
+
   const isMaxedOut =
     currentPeriod > lockConfig.maxLockTime - lockConfig.periodDuration;
 
