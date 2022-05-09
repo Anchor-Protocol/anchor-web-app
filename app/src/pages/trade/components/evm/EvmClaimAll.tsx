@@ -9,8 +9,11 @@ import { useAccount } from 'contexts/account';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { useClaimRewardsTx } from 'tx/evm/useClaimRewardsTx';
-import { useRewardsClaimableUstBorrowRewardsQuery } from '@anchor-protocol/app-provider';
-import big from 'big.js';
+import {
+  useRewardsAncGovernanceRewardsQuery,
+  useRewardsClaimableUstBorrowRewardsQuery,
+} from '@anchor-protocol/app-provider';
+import big, { Big } from 'big.js';
 
 export const EvmClaimAll = () => {
   const { connected, availablePost } = useAccount();
@@ -22,7 +25,12 @@ export const EvmClaimAll = () => {
   const { data: { borrowerInfo } = {} } =
     useRewardsClaimableUstBorrowRewardsQuery();
 
-  const anc = borrowerInfo?.pending_rewards ?? ('0' as u<ANC>);
+  const { data: { userGovStakingInfo } = {} } =
+    useRewardsAncGovernanceRewardsQuery();
+
+  const anc = big(borrowerInfo?.pending_rewards ?? 0).plus(
+    userGovStakingInfo?.pending_voting_rewards ?? 0,
+  ) as u<ANC<Big>>;
 
   const claimRewardsTx = useClaimRewardsTx();
   const [claimRewards, claimRewardsTxResult] = claimRewardsTx?.stream ?? [
