@@ -19,7 +19,7 @@ export const CollateralList = () => {
   const { data: { collateral } = { collateral: [] } } =
     useCollateralGaugeQuery();
 
-  const { data: myGaugeVotes = [] } = useMyGaugeVotesQuery();
+  const { data: myGaugeVotes } = useMyGaugeVotesQuery();
   const { data: votingPower } = useMyVotingPowerQuery();
   const { connected, availablePost } = useAccount();
   const isInteractive = connected && availablePost;
@@ -50,9 +50,7 @@ export const CollateralList = () => {
         <tbody>
           {collateral.map(
             ({ symbol, icon, name, votes, share, tokenAddress }) => {
-              const myVotes = myGaugeVotes.find(
-                ({ address }) => address === tokenAddress,
-              );
+              const myVotes = myGaugeVotes?.votesRecord[tokenAddress];
 
               const isLocked =
                 myVotes?.lockPeriodEndsAt &&

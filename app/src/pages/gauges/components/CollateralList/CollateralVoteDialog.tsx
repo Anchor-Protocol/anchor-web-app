@@ -2,7 +2,7 @@ import { CW20Addr, u } from '@libs/types';
 import { DialogProps } from '@libs/use-dialog';
 import { Modal } from '@material-ui/core';
 import { Dialog } from '@libs/neumorphism-ui/components/Dialog';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import { useBalances } from 'contexts/balances';
 import { validateTxFee } from '@anchor-protocol/app-fns';
 import { useFixedFee } from '@libs/app-provider';
@@ -25,10 +25,13 @@ import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { IconSpan } from '@libs/neumorphism-ui/components/IconSpan';
 import { formatOutput } from '@anchor-protocol/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
-import { useMutation } from 'react-query';
 import { useMyGaugeVotesQuery } from 'queries/gov/useMyGaugeVotesQuery';
 import { AmountSlider } from 'components/sliders';
 import { DialogTitle } from '@libs/ui/text/DialogTitle';
+import { useVoteForGaugeWeightTx } from 'tx/terra/useVoteForGaugeWeightTx';
+import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { StreamStatus } from '@rx-stream/react';
+import { computeGaugeVoteRatio } from 'pages/gauges/logics/computeGaugeVoteRatio';
 
 export interface CollateralVoteDialogParams {
   tokenAddress: CW20Addr;
@@ -44,10 +47,9 @@ export const CollateralVoteDialog = ({
   const fixedFee = useFixedFee();
   const invalidTxFee = validateTxFee(uUST, fixedFee);
 
-  const { data: myVotes = [] } = useMyGaugeVotesQuery();
+  const { data: myVotes } = useMyGaugeVotesQuery();
   const currentAmount =
-    myVotes.find(({ address }) => address === tokenAddress)?.amount ||
-    (0 as u<veANC<BigSource>>);
+    myVotes?.votesRecord[tokenAddress]?.amount || (0 as u<veANC<BigSource>>);
 
   const [amount, setAmount] = useState<veANC>(
     () => demicrofy(currentAmount).toString() as veANC,
@@ -58,6 +60,9 @@ export const CollateralVoteDialog = ({
     veANC<BigSource>
   >;
 
+  const [voteForGaugeWeight, voteForGaugeWeightResult] =
+    useVoteForGaugeWeightTx();
+
   const invalidAmount =
     amount.length === 0 || !maxAmount
       ? undefined
@@ -65,17 +70,46 @@ export const CollateralVoteDialog = ({
       ? 'Not enough assets'
       : undefined;
 
-  const { mutate: updateVote } = useMutation(
-    async () => {
-      console.log(`Update a vote of ${tokenAddress} with ${amount}`);
-    },
-    {
-      onSettled: closeDialog,
-    },
-  );
+  const proceed = useCallback(() => {
+    if (voteForGaugeWeight) {
+      voteForGaugeWeight({
+        gaugeAddr: tokenAddress,
+        ratio: computeGaugeVoteRatio(
+          amount,
+          demicrofy(availableExtraAmount as u<veANC<BigSource>>),
+        ),
+      });
+    }
+  }, [amount, availableExtraAmount, tokenAddress, voteForGaugeWeight]);
 
   const isSubmitDisabled =
     invalidTxFee || invalidAmount || big(currentAmount).eq(microfy(amount));
+
+  if (
+    voteForGaugeWeightResult?.status === StreamStatus.IN_PROGRESS ||
+    voteForGaugeWeightResult?.status === StreamStatus.DONE
+  ) {
+    return (
+      <Modal open disableBackdropClick disableEnforceFocus>
+        <Container>
+          <TxResultRenderer
+            resultRendering={voteForGaugeWeightResult.value}
+            onExit={() => {
+              switch (voteForGaugeWeightResult.status) {
+                case StreamStatus.IN_PROGRESS:
+                  voteForGaugeWeightResult.abort();
+                  break;
+                case StreamStatus.DONE:
+                  voteForGaugeWeightResult.clear();
+                  break;
+              }
+              closeDialog();
+            }}
+          />
+        </Container>
+      </Modal>
+    );
+  }
 
   return (
     <Modal open onClose={() => closeDialog()}>
@@ -146,7 +180,7 @@ export const CollateralVoteDialog = ({
         <ActionButton
           className="submit"
           disabled={isSubmitDisabled}
-          onClick={updateVote}
+          onClick={proceed}
         >
           {currentAmount ? 'Update vote' : 'Vote'}
         </ActionButton>

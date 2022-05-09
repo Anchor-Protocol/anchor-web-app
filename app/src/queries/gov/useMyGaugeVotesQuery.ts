@@ -10,6 +10,7 @@ import { veANC } from '@anchor-protocol/types';
 import { createQueryFn } from '@libs/react-query-utils';
 import { wasmFetch, WasmQuery, QueryClient } from '@libs/query-client';
 import { anchorToken } from '@anchor-protocol/types';
+import { sum } from '@libs/big-math';
 
 interface GaugeVote {
   address: CW20Addr;
@@ -24,14 +25,18 @@ interface UserVotesWasmQuery {
   >;
 }
 
+interface UserGaugeVotes {
+  votes: GaugeVote[];
+  votesRecord: Record<CW20Addr, GaugeVote>;
+  total: u<veANC<BigSource>>;
+}
+
 const userGaugeVotesQuery = async (
   votingEscrowContract: string,
   user: HumanAddr,
   queryClient: QueryClient,
-): Promise<GaugeVote[]> => {
-  const {
-    voter: { votes },
-  } = await wasmFetch<UserVotesWasmQuery>({
+): Promise<UserGaugeVotes> => {
+  const { voter } = await wasmFetch<UserVotesWasmQuery>({
     ...queryClient,
     id: 'gauge-votes',
     wasmQuery: {
@@ -47,11 +52,27 @@ const userGaugeVotesQuery = async (
   });
 
   // TODO: convert lockPeriodEndsAt
-  return votes.map(({ gauge_addr, vote_amount, next_vote_time }) => ({
-    address: gauge_addr,
-    amount: vote_amount,
-    lockPeriodEndsAt: next_vote_time as MillisTimestamp,
-  }));
+  const votes: GaugeVote[] = voter.votes.map(
+    ({ gauge_addr, vote_amount, next_vote_time }) => ({
+      address: gauge_addr,
+      amount: vote_amount,
+      lockPeriodEndsAt: next_vote_time as MillisTimestamp,
+    }),
+  );
+
+  const votesRecord = votes.reduce(
+    (acc, vote) => ({
+      ...acc,
+      [vote.address]: vote,
+    }),
+    {} as Record<CW20Addr, GaugeVote>,
+  );
+
+  return {
+    votes,
+    votesRecord,
+    total: sum(...votes.map((vote) => vote.amount)) as u<veANC<BigSource>>,
+  };
 };
 
 const userGaugeVotesQueryFn = createQueryFn(userGaugeVotesQuery);
