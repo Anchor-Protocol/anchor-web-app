@@ -1,5 +1,6 @@
 import type { DefaultTheme } from 'styled-components';
-import { defaultLightTheme, LIGHT_GRAY_300, BLACK } from '../lightThemeDefault';
+
+import { defaultLightTheme, BLACK, GRAY_400 } from '../lightThemeDefault';
 
 const PRIMARY_950 = '#1E1702';
 const PRIMARY_900 = '#453603';
@@ -12,14 +13,6 @@ const PRIMARY_400 = '#FFCD2A';
 const PRIMARY_200 = '#FFE388';
 const PRIMARY_100 = '#FFEFBB';
 
-const GRAY_700 = '#151515';
-// const GRAY_600 = '#707070';
-const GRAY_500 = '#A4A4A4';
-const GRAY_400 = '#B7B7B7';
-// const GRAY_300 = '#DFDFDF';
-// const GRAY_200 = '#F0F0F0';
-// const GRAY_100 = '#F7F7F7';
-
 const POSITIVE = '#4BCA6C';
 const NEGATIVE = '#EC6597';
 
@@ -28,8 +21,6 @@ const NEGATIVE = '#EC6597';
 export const lightTheme: DefaultTheme = {
   ...defaultLightTheme,
 
-  textColor: GRAY_700,
-  dimTextColor: GRAY_500,
   colors: {
     ...defaultLightTheme.colors,
     positive: POSITIVE,
@@ -76,8 +67,8 @@ export const lightTheme: DefaultTheme = {
   tooltip: {
     ...defaultLightTheme.tooltip,
     normal: {
+      ...defaultLightTheme.tooltip.normal,
       backgroundColor: PRIMARY_200,
-      textColor: LIGHT_GRAY_300,
     },
   },
 };

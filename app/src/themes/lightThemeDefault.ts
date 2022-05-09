@@ -11,13 +11,18 @@ const SECONDARY_700 = '#A50C0C';
 const SECONDARY_600 = '#D11516';
 const SECONDARY_500 = '#E84142';
 const SECONDARY_100 = '#FAD7D8';
-const GRAY_700 = '#151515';
-const GRAY_500 = '#A4A4A4';
-const GRAY_400 = '#B7B7B7';
 
 // DEFAULT LIGHT THEME
 export const BLACK = '#000000';
 export const WHITE = '#FFFFFF';
+
+export const GRAY_700 = '#151515';
+export const GRAY_600 = '#707070';
+export const GRAY_500 = '#A4A4A4';
+export const GRAY_400 = '#B7B7B7';
+export const GRAY_300 = '#DFDFDF';
+export const GRAY_200 = '#F0F0F0';
+export const GRAY_100 = '#F7F7F7';
 
 export const LIGHT_GRAY_100 = '#EFEFEF';
 export const LIGHT_GRAY_200 = '#F4F4F5';

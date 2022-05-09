@@ -58,6 +58,12 @@ const useFormatters = (): Formatters => {
           ...tokens,
           native: createFormatter<Native>('BSC', 18),
         };
+      // TODO: updated on Aurora integration
+      case Chain.Aurora:
+        return {
+          ...tokens,
+          native: createFormatter<Native>('AURORA', 18),
+        };
     }
   }, [chain]);
 };
