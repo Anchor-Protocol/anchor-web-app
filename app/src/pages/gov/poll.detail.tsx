@@ -107,6 +107,8 @@ function PollDetailBase({ className }: UIElementProps) {
     return null;
   }
 
+  console.log('pollDetail', pollDetail);
+
   return (
     <PaddedLayout className={className}>
       <Section className="content">
@@ -269,7 +271,7 @@ function PollDetailBase({ className }: UIElementProps) {
             </p>
             <span>
               {poll ? formatANCWithPostfixUnits(demicrofy(poll.yes_votes)) : 0}{' '}
-              ANC
+              veANC
             </span>
           </article>
 
@@ -283,7 +285,7 @@ function PollDetailBase({ className }: UIElementProps) {
             </p>
             <span>
               {poll ? formatANCWithPostfixUnits(demicrofy(poll.no_votes)) : 0}{' '}
-              ANC
+              veANC
             </span>
           </article>
         </section>

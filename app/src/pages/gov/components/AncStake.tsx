@@ -44,6 +44,8 @@ function AncStakeBase(props: UIElementProps) {
     connected &&
     state.amount &&
     state.amount > 0 &&
+    state.lockPeriod &&
+    state.lockPeriod > 0 &&
     state.availablePost &&
     !state.invalidAmount &&
     !state.invalidLockPeriod &&

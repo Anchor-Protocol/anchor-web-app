@@ -45,7 +45,7 @@ function PollVotersBase({
                 {vote === 'yes' ? 'Yes' : 'No'}
               </td>
               <td style={{ textAlign: 'right' }}>
-                {formatANCWithPostfixUnits(demicrofy(balance))} ANC
+                {formatANCWithPostfixUnits(demicrofy(balance))} veANC
               </td>
             </tr>
           ))}
