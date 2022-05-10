@@ -1,16 +1,14 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { UST } from '@libs/types';
@@ -18,7 +16,7 @@ import { TxEvent } from './useTx';
 import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
-type DepositUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type DepositUstTxResult = ContractReceipt | null;
 type DepositUstTxRender = TxResultRendering<DepositUstTxResult>;
 
 export interface DepositUstTxParams {
@@ -29,7 +27,7 @@ export function useDepositUstTx():
   | BackgroundTxResult<DepositUstTxParams, DepositUstTxResult>
   | undefined {
   const { address, connectionType } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const {
     ust: { microfy, formatInput, formatOutput },
   } = useFormatters();
@@ -50,25 +48,17 @@ export function useDepositUstTx():
       writer.timer.start();
 
       try {
-        await xAnchor.approveLimit(
-          { token: 'UST' },
-          depositAmount,
-          address!,
-          TX_GAS_LIMIT,
-        );
+        await xAnchor.approveLimit(address!, { token: 'UST' }, depositAmount);
 
         writer.depositUST();
         writer.timer.reset();
 
-        const response = await xAnchor.depositStable(
-          depositAmount,
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
+        const response = await xAnchor.depositStable(address!, depositAmount, {
+          handleEvent: (event) => {
             txEvents.next({ event, txParams });
             writer.depositUST(event);
           },
-        );
+        });
 
         refetchQueries(refetchQueryByTxKind(TxKind.DepositUst));
 
@@ -97,4 +87,4 @@ export function useDepositUstTx():
   return address ? persistedTxResult : undefined;
 }
 
-const parseTx = (resp: NonNullable<DepositUstTxResult>) => resp.tx;
+const parseTx = (resp: NonNullable<DepositUstTxResult>) => resp;

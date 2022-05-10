@@ -1,7 +1,6 @@
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { TxResultRendering } from '@libs/app-fns';
 import { useRefetchQueries } from '@libs/app-provider';
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
@@ -15,7 +14,7 @@ import {
   TxError,
 } from './utils';
 
-export type ResumeTxResult = CrossChainTxResponse<ContractReceipt> | null;
+export type ResumeTxResult = ContractReceipt | null;
 export type ResumeTxRender = TxResultRendering<ResumeTxResult>;
 
 export interface ResumeTxParams {}
@@ -23,7 +22,7 @@ export interface ResumeTxParams {}
 export const useResumeTx = (
   tx: Transaction,
 ): BackgroundTxResult<ResumeTxParams, ResumeTxResult> | undefined => {
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const { removeTransaction } = useTransactions();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
@@ -34,8 +33,11 @@ export const useResumeTx = (
       txEvents: Subject<TxEvent<ResumeTxParams>>,
     ) => {
       try {
-        const result = await xAnchor.restoreTx(tx.txHash, (event) => {
-          txEvents.next({ event, txParams });
+        const result = await xAnchor.restoreTx(tx.txHash, {
+          handleEvent: (event) => {
+            txEvents.next({ event, txParams });
+          },
+          manualRedemption: false,
         });
         refetchQueries(refetchQueryByTxKind(tx.display.txKind));
         return result;
@@ -65,4 +67,4 @@ export const useResumeTx = (
   return persistedTxResult;
 };
 
-const parseTx = (resp: NonNullable<ResumeTxResult>) => resp.tx;
+const parseTx = (resp: NonNullable<ResumeTxResult>) => resp;

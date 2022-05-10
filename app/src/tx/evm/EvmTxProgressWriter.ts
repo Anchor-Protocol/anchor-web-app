@@ -6,7 +6,7 @@ import { TxReceiptLike, TxResultRendering } from '@libs/app-fns';
 import { ConnectType } from '@libs/evm-wallet';
 import { ContractReceipt } from 'ethers';
 import { Subject } from 'rxjs';
-import { TxProgressWriter } from './TxProgressWriter';
+import { TxProgressWriter } from '../base';
 import { capitalize } from './utils';
 
 const DEFAULT_STATUS = new Map<CrossChainEventKind, string>([

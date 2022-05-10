@@ -1,7 +1,7 @@
 import { LcdFetchError, QueryClient } from '@libs/query-client';
 import { Gas, ISODateFormat, Num } from '@libs/types';
 import { TxFailed } from '@terra-money/use-wallet';
-import { CreateTxOptions } from '@terra-money/terra.js';
+import { CreateTxOptions, TxInfo, TxLog } from '@terra-money/terra.js';
 import { PollingTimeout } from '../errors';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -220,6 +220,10 @@ export function pickRawLog(
   index: number,
 ): RawLogMsg | undefined {
   return Array.isArray(txInfo[0].RawLog) ? txInfo[0].RawLog[index] : undefined;
+}
+
+export function pickLog(txInfo: TxInfo, index: number): TxLog | undefined {
+  return txInfo.logs && txInfo.logs[index];
 }
 
 export function pickRawLogs(txInfo: TxInfoData): RawLogMsg[] {

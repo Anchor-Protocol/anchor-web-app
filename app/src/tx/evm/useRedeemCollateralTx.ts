@@ -1,15 +1,13 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy } from '@anchor-protocol/formatter';
@@ -19,7 +17,7 @@ import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 import { WhitelistCollateral } from 'queries';
 
-type RedeemCollateralTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type RedeemCollateralTxResult = ContractReceipt | null;
 type RedeemCollateralTxRender = TxResultRendering<RedeemCollateralTxResult>;
 
 export interface RedeemCollateralTxParams {
@@ -31,7 +29,7 @@ export function useRedeemCollateralTx():
   | BackgroundTxResult<RedeemCollateralTxParams, RedeemCollateralTxResult>
   | undefined {
   const { address, connectionType } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const redeemTx = useCallback(
@@ -51,13 +49,14 @@ export function useRedeemCollateralTx():
 
       try {
         const result = await xAnchor.unlockCollateral(
+          address!,
           { contract: collateral_token },
           microfy(amount, decimals),
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
-            writer.withdrawCollateral(symbol, event);
-            txEvents.next({ event, txParams });
+          {
+            handleEvent: (event) => {
+              writer.withdrawCollateral(symbol, event);
+              txEvents.next({ event, txParams });
+            },
           },
         );
 
@@ -92,4 +91,4 @@ const displayTx = (txParams: RedeemCollateralTxParams) => {
   };
 };
 
-const parseTx = (resp: NonNullable<RedeemCollateralTxResult>) => resp.tx;
+const parseTx = (resp: NonNullable<RedeemCollateralTxResult>) => resp;

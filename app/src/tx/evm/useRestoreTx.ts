@@ -1,7 +1,6 @@
-import { CrossChainTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { TxResultRendering } from '@libs/app-fns';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
@@ -10,7 +9,7 @@ import { useTransactions } from './storage';
 import { TxEvent, useTx } from './useTx';
 import { errorContains, formatError, TxError } from './utils';
 
-type TxResult = CrossChainTxResponse<ContractReceipt> | null;
+type TxResult = ContractReceipt | null;
 type TxRender = TxResultRendering<TxResult>;
 
 export interface RestoreTxParams {
@@ -19,7 +18,7 @@ export interface RestoreTxParams {
 
 export const useRestoreTx = () => {
   const { provider, connectionType } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const { removeTransaction } = useTransactions();
 
   const restoreTx = useCallback(
@@ -33,14 +32,13 @@ export const useRestoreTx = () => {
       writer.timer.start();
 
       try {
-        const result = await xAnchor.restoreTx(
-          txParams.txHash,
-          (event) => {
+        const result = await xAnchor.restoreTx(txParams.txHash, {
+          handleEvent: (event) => {
             writer.restoreTx(event);
             txEvents.next({ event, txParams });
           },
-          { manualRedemption: true },
-        );
+          manualRedemption: true,
+        });
 
         removeTransaction(txParams.txHash);
         return result;
@@ -68,4 +66,4 @@ export const useRestoreTx = () => {
   return provider && connectionType ? restoreTxStream : [null, null];
 };
 
-const parseTx = (resp: NonNullable<TxResult>) => resp.tx;
+const parseTx = (resp: NonNullable<TxResult>) => resp;

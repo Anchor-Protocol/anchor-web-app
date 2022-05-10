@@ -12,7 +12,7 @@ import {
   ANC,
   CollateralAmount,
 } from '@anchor-protocol/types';
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import Big from 'big.js';
 import { WhitelistCollateral } from 'queries';
 import { useAccount } from 'contexts/account';
@@ -20,7 +20,7 @@ import { useAccount } from 'contexts/account';
 const EvmBalancesProvider = ({ children }: UIElementProps) => {
   const { nativeWalletAddress: walletAddress } = useAccount();
   const native = useEvmNativeBalance();
-  const evmSdk = useEvmCrossAnchorSdk();
+  const evmSdk = useEvmSdk();
 
   const ust = useERC20Balance<UST>(evmSdk.config.token.UST);
 
