@@ -64,7 +64,7 @@ export const useMyVotingPowerQuery = (): UseQueryResult<
     ],
     userVotingPowerQueryFn,
     {
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
       enabled,

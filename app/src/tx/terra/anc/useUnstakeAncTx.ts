@@ -30,7 +30,7 @@ export function useUnstakeAncTx(onSuccess?: RefCallback<() => void>) {
 
   const sendTx = useCallback(
     async (txParams: UnstakeAncTxParams, writer: TerraTxProgressWriter) => {
-      const result = await terraSdk.anc.staking.unstake(
+      const result = await terraSdk.anc.withdraw(
         connectedWallet!.walletAddress,
         formatTokenInput(txParams.amount),
         {

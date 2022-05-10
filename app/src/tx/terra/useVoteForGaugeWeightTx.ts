@@ -1,38 +1,35 @@
 import { ANCHOR_TX_KEY, useAnchorWebapp } from '@anchor-protocol/app-provider';
-import { formatANCWithPostfixUnits } from '@anchor-protocol/notation';
-import { ANC, u } from '@anchor-protocol/types';
-import {
-  pickAttributeValueByKey,
-  pickEvent,
-  TxResultRendering,
-  TxStreamPhase,
-} from '@libs/app-fns';
+import { CW20Addr } from '@anchor-protocol/types';
+import { pickEvent, TxResultRendering, TxStreamPhase } from '@libs/app-fns';
 import { pickLog } from '@libs/app-fns/queries/utils';
 import { TerraTxProgressWriter } from 'tx/terra/TerraTxProgressWriter';
 import { useRefetchQueries } from '@libs/app-provider';
-import { demicrofy, formatTokenInput } from '@libs/formatter';
 import { TxInfo } from '@terra-money/terra.js';
 import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useTerraSdk } from 'crossanchor';
-import { RefCallback } from 'hooks';
 import { useCallback } from 'react';
-import { useRenderedTx } from '../useRenderedTx';
+import { useRenderedTx } from './useRenderedTx';
 
-export interface StakeAncTxParams {
-  amount: ANC;
+export interface VoteForGaugeWeightTxParams {
+  gaugeAddr: CW20Addr;
+  ratio: number;
 }
 
-export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
+export function useVoteForGaugeWeightTx() {
   const connectedWallet = useConnectedWallet();
   const { txErrorReporter } = useAnchorWebapp();
   const refetchQueries = useRefetchQueries();
   const terraSdk = useTerraSdk();
 
   const sendTx = useCallback(
-    async (txParams: StakeAncTxParams, writer: TerraTxProgressWriter) => {
-      const result = await terraSdk.anc.staking.stake(
+    async (
+      { gaugeAddr, ratio }: VoteForGaugeWeightTxParams,
+      writer: TerraTxProgressWriter,
+    ) => {
+      const result = await terraSdk.anc.voteForGaugeWeight(
         connectedWallet!.walletAddress,
-        formatTokenInput(txParams.amount),
+        gaugeAddr,
+        ratio,
         {
           handleEvent: (event) => {
             writer.writeTxHash(event.payload.txHash);
@@ -40,13 +37,11 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
         },
       );
 
-      onSuccess?.();
-
-      refetchQueries(ANCHOR_TX_KEY.ANC_GOVERNANCE_STAKE);
+      refetchQueries(ANCHOR_TX_KEY.VOTE_FOR_GAUGE_WEIGHT);
 
       return result;
     },
-    [connectedWallet, refetchQueries, terraSdk, onSuccess],
+    [connectedWallet, refetchQueries, terraSdk],
   );
 
   const renderResults = useCallback(
@@ -64,20 +59,10 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
       }
 
       try {
-        const amount = pickAttributeValueByKey<u<ANC>>(fromContract, 'amount');
-
         return {
           value: null,
-
           phase: TxStreamPhase.SUCCEED,
-          receipts: [
-            amount && {
-              name: 'Amount',
-              value: formatANCWithPostfixUnits(demicrofy(amount)) + ' ANC',
-            },
-            writer.txHashReceipt(),
-            writer.txFeeReceipt(),
-          ],
+          receipts: [writer.txHashReceipt(), writer.txFeeReceipt()],
         } as TxResultRendering;
       } catch (error) {
         return writer.failedToParseTxResult();
@@ -92,7 +77,7 @@ export function useStakeAncTx(onSuccess?: RefCallback<() => void>) {
     network: connectedWallet?.network,
     txFee: terraSdk.globalOverrides.gasFee.toString(),
     txErrorReporter,
-    message: 'Staking your ANC',
+    message: 'Voting for gauge weight',
   });
 
   return connectedWallet ? streamReturn : [null, null];

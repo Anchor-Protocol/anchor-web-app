@@ -396,5 +396,21 @@ export namespace anchorToken {
     export interface GaugeWeightResponse {
       gauge_weight: u<veANC<BigSource>>;
     }
+
+    export interface Voter {
+      voter: {
+        address: HumanAddr;
+      };
+    }
+
+    export interface Vote {
+      gauge_addr: CW20Addr;
+      vote_amount: u<veANC<BigSource>>;
+      next_vote_time: number;
+    }
+
+    export interface VoterResponse {
+      votes: Vote[];
+    }
   }
 }
