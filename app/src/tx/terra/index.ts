@@ -14,3 +14,4 @@ export * from './useTxTimer';
 export * from './TerraTxProgressWriter';
 export * from './useLockAncTx';
 export * from './useExtendAncLockPeriodTx';
+export * from './useEndPollTx';

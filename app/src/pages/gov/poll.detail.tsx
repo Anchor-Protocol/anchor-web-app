@@ -44,8 +44,11 @@ import {
   useGovStateQuery,
   useGovConfigQuery,
   useMyVotingPowerQuery,
+  useBlockQuery,
 } from 'queries';
 import Big from 'big.js';
+import { HStack } from '@libs/ui/Stack';
+import { EndPoll } from './components/EndPoll';
 
 function PollDetailBase({ className }: UIElementProps) {
   const {
@@ -84,6 +87,7 @@ function PollDetailBase({ className }: UIElementProps) {
   const [openCodeViewer, codeViewerElement] = useCodeViewerDialog();
 
   const blockTime = useEstimatedBlockTime();
+  const { data: latestBlock } = useBlockQuery('latest');
 
   const pollDetail = useMemo(() => {
     return poll &&
@@ -107,8 +111,6 @@ function PollDetailBase({ className }: UIElementProps) {
     return null;
   }
 
-  console.log('pollDetail', pollDetail);
-
   return (
     <PaddedLayout className={className}>
       <Section className="content">
@@ -130,19 +132,27 @@ function PollDetailBase({ className }: UIElementProps) {
             <h2>{pollDetail.poll.title}</h2>
           </div>
           {isNative && (
-            <ActionButton
-              disabled={
-                !canIVote ||
-                !poll ||
-                !lastSyncedHeight ||
-                Big(votingPower).lte(0) ||
-                poll.status !== 'in_progress' ||
-                poll.end_height < lastSyncedHeight
-              }
-              onClick={() => openVoteDialog({ pollId: +id })}
-            >
-              Vote
-            </ActionButton>
+            <HStack alignItems="center" gap={4}>
+              {poll &&
+                latestBlock &&
+                poll.status === 'in_progress' &&
+                poll.end_height < latestBlock.height && (
+                  <EndPoll pollId={poll.id} />
+                )}
+              <ActionButton
+                disabled={
+                  !canIVote ||
+                  !poll ||
+                  !lastSyncedHeight ||
+                  Big(votingPower).lte(0) ||
+                  poll.status !== 'in_progress' ||
+                  poll.end_height < lastSyncedHeight
+                }
+                onClick={() => openVoteDialog({ pollId: +id })}
+              >
+                Vote
+              </ActionButton>
+            </HStack>
           )}
         </div>
 
@@ -236,66 +246,72 @@ function PollDetailBase({ className }: UIElementProps) {
           )}
       </Section>
 
-      <Section className="detail">
-        <h2>VOTE DETAILS</h2>
+      {!Big(pollDetail.vote.total).eq(0) && (
+        <Section className="detail">
+          <h2>VOTE DETAILS</h2>
 
-        <PollGraph
-          total={pollDetail.vote.total}
-          yes={pollDetail.vote.yes}
-          no={pollDetail.vote.no}
-          baseline={pollDetail.baseline.value}
-          baselineLabel={pollDetail.baseline.label}
-          displaySpans={false}
-        />
+          <PollGraph
+            total={pollDetail.vote.total}
+            yes={pollDetail.vote.yes}
+            no={pollDetail.vote.no}
+            baseline={pollDetail.baseline.value}
+            baselineLabel={pollDetail.baseline.label}
+            displaySpans={false}
+          />
 
-        <section className="detail-voted">
-          <article>
-            <h4>VOTED</h4>
-            <p>
-              {formatRate(
-                ((pollDetail.vote.yes + pollDetail.vote.no) /
-                  pollDetail.vote.total) as Rate<number>,
-              )}
-              %
-            </p>
-            <span>Quorum {govConfig ? formatRate(govConfig.quorum) : 0}%</span>
-          </article>
+          <section className="detail-voted">
+            <article>
+              <h4>VOTED</h4>
+              <p>
+                {formatRate(
+                  ((pollDetail.vote.yes + pollDetail.vote.no) /
+                    pollDetail.vote.total) as Rate<number>,
+                )}
+                %
+              </p>
+              <span>
+                Quorum {govConfig ? formatRate(govConfig.quorum) : 0}%
+              </span>
+            </article>
 
-          <article data-vote="yes">
-            <h4>YES</h4>
-            <p>
-              {formatRate(
-                (pollDetail.vote.yes / pollDetail.vote.total) as Rate<number>,
-              )}
-              %
-            </p>
-            <span>
-              {poll ? formatANCWithPostfixUnits(demicrofy(poll.yes_votes)) : 0}{' '}
-              veANC
-            </span>
-          </article>
+            <article data-vote="yes">
+              <h4>YES</h4>
+              <p>
+                {formatRate(
+                  (pollDetail.vote.yes / pollDetail.vote.total) as Rate<number>,
+                )}
+                %
+              </p>
+              <span>
+                {poll
+                  ? formatANCWithPostfixUnits(demicrofy(poll.yes_votes))
+                  : 0}{' '}
+                veANC
+              </span>
+            </article>
 
-          <article data-vote="no">
-            <h4>NO</h4>
-            <p>
-              {formatRate(
-                (pollDetail.vote.no / pollDetail.vote.total) as Rate<number>,
-              )}
-              %
-            </p>
-            <span>
-              {poll ? formatANCWithPostfixUnits(demicrofy(poll.no_votes)) : 0}{' '}
-              veANC
-            </span>
-          </article>
-        </section>
+            <article data-vote="no">
+              <h4>NO</h4>
+              <p>
+                {formatRate(
+                  (pollDetail.vote.no / pollDetail.vote.total) as Rate<number>,
+                )}
+                %
+              </p>
+              <span>
+                {poll ? formatANCWithPostfixUnits(demicrofy(poll.no_votes)) : 0}{' '}
+                veANC
+              </span>
+            </article>
+          </section>
 
-        {!!poll &&
-          poll.status === 'in_progress' &&
-          poll.end_height > lastSyncedHeight && (
-            <PollVoters voters={voters} isLast={isLast} loadMore={loadMore} />
-          )}
-      </Section>
+          {!!poll &&
+            poll.status === 'in_progress' &&
+            poll.end_height > lastSyncedHeight && (
+              <PollVoters voters={voters} isLast={isLast} loadMore={loadMore} />
+            )}
+        </Section>
+      )}
 
       {voteDialogElement}
       {codeViewerElement}
