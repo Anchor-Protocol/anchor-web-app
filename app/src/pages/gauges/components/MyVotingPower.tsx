@@ -1,5 +1,4 @@
 import React from 'react';
-import { useMyVotingPowerQuery } from 'queries';
 import { AmountTitle } from './AmountTitle';
 import { VEANC_SYMBOL } from '@anchor-protocol/token-symbols';
 import { Rate, Token, u } from '@libs/types';
@@ -7,9 +6,10 @@ import Big, { BigSource } from 'big.js';
 import { VStack } from '@libs/ui/Stack';
 import { useMyGaugeVotesQuery } from 'queries/gov/useMyGaugeVotesQuery';
 import { veANC } from '@anchor-protocol/types';
+import { useMyAvailableVotingPowerQuery } from 'queries/gov/useMyAvailableVotingPowerQuery';
 
 export const MyVotingPower = () => {
-  const { data: availableVotingPower = 0 } = useMyVotingPowerQuery();
+  const { data: availableVotingPower = 0 } = useMyAvailableVotingPowerQuery();
   const { data: myVotes = { total: 0 as u<veANC<BigSource>> } } =
     useMyGaugeVotesQuery();
 
