@@ -46,6 +46,8 @@ import {
   useMyVotingPowerQuery,
 } from 'queries';
 import Big from 'big.js';
+import { HStack } from '@libs/ui/Stack';
+import { EndPoll } from './components/EndPoll';
 
 function PollDetailBase({ className }: UIElementProps) {
   const {
@@ -130,19 +132,22 @@ function PollDetailBase({ className }: UIElementProps) {
             <h2>{pollDetail.poll.title}</h2>
           </div>
           {isNative && (
-            <ActionButton
-              disabled={
-                !canIVote ||
-                !poll ||
-                !lastSyncedHeight ||
-                Big(votingPower).lte(0) ||
-                poll.status !== 'in_progress' ||
-                poll.end_height < lastSyncedHeight
-              }
-              onClick={() => openVoteDialog({ pollId: +id })}
-            >
-              Vote
-            </ActionButton>
+            <HStack alignItems="center" gap={4}>
+              {poll?.status === 'passed' && <EndPoll pollId={poll.id} />}
+              <ActionButton
+                disabled={
+                  !canIVote ||
+                  !poll ||
+                  !lastSyncedHeight ||
+                  Big(votingPower).lte(0) ||
+                  poll.status !== 'in_progress' ||
+                  poll.end_height < lastSyncedHeight
+                }
+                onClick={() => openVoteDialog({ pollId: +id })}
+              >
+                Vote
+              </ActionButton>
+            </HStack>
           )}
         </div>
 
