@@ -59,12 +59,8 @@ export function useVoteForGaugeWeightTx() {
       }
 
       try {
-        // TODO: piek info from the contract
-        // const amount = pickAttributeValueByKey<u<ANC>>(fromContract, 'amount');
-
         return {
           value: null,
-
           phase: TxStreamPhase.SUCCEED,
           receipts: [writer.txHashReceipt(), writer.txFeeReceipt()],
         } as TxResultRendering;
