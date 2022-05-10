@@ -1,8 +1,7 @@
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { TxResultRendering } from '@libs/app-fns';
 import { useRefetchQueries } from '@libs/app-provider';
 import { useEvmWallet } from '@libs/evm-wallet';
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { ContractReceipt } from 'ethers';
 import { useCallback } from 'react';
 import { Subject } from 'rxjs';
@@ -13,10 +12,9 @@ import {
   refetchQueryByTxKind,
   TxKind,
   txResult,
-  TX_GAS_LIMIT,
 } from './utils';
 
-type WithdrawAssetsTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type WithdrawAssetsTxResult = ContractReceipt | null;
 type WithdrawAssetsTxRender = TxResultRendering<WithdrawAssetsTxResult>;
 
 export interface WithdrawAssetsTxParams {
@@ -28,7 +26,7 @@ export interface WithdrawAssetsTxParams {
 export const useWithdrawAssetsTx = () => {
   const { provider, address, connectionType, chainId } = useEvmWallet();
 
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const withdrawTx = useCallback(
@@ -38,15 +36,21 @@ export const useWithdrawAssetsTx = () => {
       txEvents: Subject<TxEvent<WithdrawAssetsTxParams>>,
     ) => {
       try {
-        const result = await xAnchor.withdrawAssets(
-          { contract: txParams.tokenContract },
+        const result = await xAnchor.withdrawAsset(
           address!,
-          TX_GAS_LIMIT,
-          (event) => {
-            renderTxResults.next(
-              txResult(event, connectionType, chainId!, TxKind.WithdrawAssets),
-            );
-            txEvents.next({ event, txParams });
+          { contract: txParams.tokenContract },
+          {
+            handleEvent: (event) => {
+              renderTxResults.next(
+                txResult(
+                  event,
+                  connectionType,
+                  chainId!,
+                  TxKind.WithdrawAssets,
+                ),
+              );
+              txEvents.next({ event, txParams });
+            },
           },
         );
         refetchQueries(refetchQueryByTxKind(TxKind.WithdrawAssets));
@@ -75,4 +79,4 @@ const displayTx = (txParams: WithdrawAssetsTxParams) => ({
   timestamp: Date.now(),
 });
 
-const parseTx = (resp: NonNullable<WithdrawAssetsTxResult>) => resp.tx;
+const parseTx = (resp: NonNullable<WithdrawAssetsTxResult>) => resp;

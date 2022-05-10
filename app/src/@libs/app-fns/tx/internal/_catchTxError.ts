@@ -1,11 +1,11 @@
 import { Timeout, UserDenied } from '@terra-money/use-wallet';
 import { OperatorFunction } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { TxResultRendering, TxStreamPhase } from '../../models/tx';
+import { TxReceipt, TxResultRendering, TxStreamPhase } from '../../models/tx';
 import { TxHelper } from './TxHelper';
 
 interface Params {
-  helper: TxHelper;
+  helper: TxHelper | { txHashReceipt: () => TxReceipt | null };
   txErrorReporter?: (error: unknown) => string;
 }
 

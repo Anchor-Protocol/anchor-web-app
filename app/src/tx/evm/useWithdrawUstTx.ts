@@ -1,16 +1,14 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
 import { ContractReceipt } from 'ethers';
-import { TwoWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { useFormatters } from '@anchor-protocol/formatter/useFormatters';
 import { aUST } from '@anchor-protocol/types';
@@ -18,7 +16,7 @@ import { TxEvent } from './useTx';
 import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 
-type WithdrawUstTxResult = TwoWayTxResponse<ContractReceipt> | null;
+type WithdrawUstTxResult = ContractReceipt | null;
 type WithdrawUstTxRender = TxResultRendering<WithdrawUstTxResult>;
 
 export interface WithdrawUstTxParams {
@@ -30,7 +28,7 @@ export function useWithdrawUstTx():
   | undefined {
   const { address, connectionType } = useEvmWallet();
 
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const {
@@ -52,25 +50,17 @@ export function useWithdrawUstTx():
       writer.timer.start();
 
       try {
-        await xAnchor.approveLimit(
-          { token: 'aUST' },
-          withdrawAmount,
-          address!,
-          TX_GAS_LIMIT,
-        );
+        await xAnchor.approveLimit(address!, { token: 'aUST' }, withdrawAmount);
 
         writer.withdrawUST();
         writer.timer.reset();
 
-        const result = await xAnchor.redeemStable(
-          withdrawAmount,
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
+        const result = await xAnchor.redeemStable(address!, withdrawAmount, {
+          handleEvent: (event) => {
             writer.withdrawUST(event);
             txEvents.next({ event, txParams });
           },
-        );
+        });
 
         refetchQueries(refetchQueryByTxKind(TxKind.WithdrawUst));
 
@@ -99,4 +89,4 @@ export function useWithdrawUstTx():
   return address ? persistedTxResult : undefined;
 }
 
-const parseTx = (resp: NonNullable<WithdrawUstTxResult>) => resp.tx;
+const parseTx = (resp: NonNullable<WithdrawUstTxResult>) => resp;

@@ -1,15 +1,13 @@
-import { useEvmCrossAnchorSdk } from 'crossanchor';
+import { useEvmSdk } from 'crossanchor';
 import { useEvmWallet } from '@libs/evm-wallet';
 import { TxResultRendering } from '@libs/app-fns';
 import {
   EVM_ANCHOR_TX_REFETCH_MAP,
   refetchQueryByTxKind,
   TxKind,
-  TX_GAS_LIMIT,
 } from './utils';
 import { Subject } from 'rxjs';
 import { useCallback } from 'react';
-import { OneWayTxResponse } from '@anchor-protocol/crossanchor-sdk';
 import { ContractReceipt } from '@ethersproject/contracts';
 import { BackgroundTxResult, useBackgroundTx } from './useBackgroundTx';
 import { formatOutput, microfy } from '@anchor-protocol/formatter';
@@ -19,7 +17,7 @@ import { useRefetchQueries } from '@libs/app-provider';
 import { EvmTxProgressWriter } from './EvmTxProgressWriter';
 import { WhitelistCollateral } from 'queries';
 
-type ProvideCollateralTxResult = OneWayTxResponse<ContractReceipt> | null;
+type ProvideCollateralTxResult = ContractReceipt | null;
 type ProvideCollateralTxRender = TxResultRendering<ProvideCollateralTxResult>;
 
 export interface ProvideCollateralTxParams {
@@ -32,7 +30,7 @@ export function useProvideCollateralTx():
   | BackgroundTxResult<ProvideCollateralTxParams, ProvideCollateralTxResult>
   | undefined {
   const { address, connectionType } = useEvmWallet();
-  const xAnchor = useEvmCrossAnchorSdk();
+  const xAnchor = useEvmSdk();
   const refetchQueries = useRefetchQueries(EVM_ANCHOR_TX_REFETCH_MAP);
 
   const provideTx = useCallback(
@@ -53,23 +51,23 @@ export function useProvideCollateralTx():
 
       try {
         await xAnchor.approveLimit(
+          address!,
           { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
-          address!,
-          TX_GAS_LIMIT,
         );
 
         writer.provideCollateral(symbol);
         writer.timer.reset();
 
         const response = await xAnchor.lockCollateral(
+          address!,
           { contract: bridgedAddress! },
           microfy(amount, erc20Decimals),
-          address!,
-          TX_GAS_LIMIT,
-          (event) => {
-            writer.provideCollateral(symbol, event);
-            txEvents.next({ event, txParams });
+          {
+            handleEvent: (event) => {
+              writer.provideCollateral(symbol, event);
+              txEvents.next({ event, txParams });
+            },
           },
         );
 
@@ -107,4 +105,4 @@ const displayTx = (txParams: ProvideCollateralTxParams) => {
   };
 };
 
-const parseTx = (resp: NonNullable<ProvideCollateralTxResult>) => resp.tx;
+const parseTx = (resp: NonNullable<ProvideCollateralTxResult>) => resp;
