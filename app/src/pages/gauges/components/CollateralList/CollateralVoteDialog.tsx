@@ -185,7 +185,7 @@ export const CollateralVoteDialog = ({
           disabled={isSubmitDisabled}
           onClick={proceed}
         >
-          {currentAmount ? 'Update vote' : 'Vote'}
+          {big(currentAmount).eq(0) ? 'Vote' : 'Update vote'}
         </ActionButton>
       </Container>
     </Modal>
