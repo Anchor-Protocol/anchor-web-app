@@ -38,7 +38,7 @@ export function useLockAncTx() {
       const result = await terraSdk.anc.lock(
         connectedWallet!.walletAddress,
         formatTokenInput(amount),
-        period,
+        period || 0,
         {
           handleEvent: (event) => {
             writer.writeTxHash(event.payload.txHash);
