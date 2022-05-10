@@ -11,6 +11,7 @@ import { createQueryFn } from '@libs/react-query-utils';
 import { wasmFetch, WasmQuery, QueryClient } from '@libs/query-client';
 import { anchorToken } from '@anchor-protocol/types';
 import { sum } from '@libs/big-math';
+import { millisecondsInSecond } from 'date-fns';
 
 interface GaugeVote {
   address: CW20Addr;
@@ -56,7 +57,8 @@ const userGaugeVotesQuery = async (
     ({ gauge_addr, vote_amount, next_vote_time }) => ({
       address: gauge_addr,
       amount: vote_amount,
-      lockPeriodEndsAt: next_vote_time as MillisTimestamp,
+      lockPeriodEndsAt: (next_vote_time *
+        millisecondsInSecond) as MillisTimestamp,
     }),
   );
 
@@ -94,7 +96,7 @@ export const useMyGaugeVotesQuery = () => {
     ],
     userGaugeVotesQueryFn,
     {
-      refetchOnMount: false,
+      refetchOnMount: true,
       refetchInterval: 1000 * 60 * 5,
       keepPreviousData: false,
       enabled: !!terraWalletAddress && !!gaugeControllerContract,
