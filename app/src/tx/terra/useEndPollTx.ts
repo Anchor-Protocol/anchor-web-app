@@ -31,7 +31,7 @@ export function useEndPollTx() {
         },
       );
 
-      refetchQueries(ANCHOR_TX_KEY.EXTEND_LOCK_PERIOD);
+      refetchQueries(ANCHOR_TX_KEY.END_POLL);
 
       return result;
     },

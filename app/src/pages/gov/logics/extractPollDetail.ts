@@ -40,12 +40,17 @@ export function extractPollDetail(
   currentHeight: number,
   blockTime: number,
 ): PollDetail {
-  const total: number =
-    poll.status !== 'in_progress' && poll.total_balance_at_end_poll
-      ? +poll.total_balance_at_end_poll
-      : poll.staked_amount
-      ? +poll.staked_amount
-      : big(govANCBalance.balance).minus(govState.total_deposit).toNumber();
+  const getTotal = () => {
+    if (poll.status !== 'in_progress' && poll.total_balance_at_end_poll) {
+      return big(poll.total_balance_at_end_poll).toNumber();
+    }
+    if (poll.staked_amount) {
+      return big(poll.staked_amount).toNumber();
+    }
+
+    return big(govANCBalance.balance).minus(govState.total_deposit).toNumber();
+  };
+  const total = getTotal();
 
   const yes: number = +poll.yes_votes;
 
