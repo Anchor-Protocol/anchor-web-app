@@ -1,5 +1,5 @@
 import { txTimeout } from '@libs/tx-helpers';
-import { TxResult } from '@terra-money/use-wallet';
+import { TxResult } from '@terra-money/wallet-provider';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import { TxResultRendering, TxStreamPhase } from '../../models/tx';
 import { TxHelper } from './TxHelper';

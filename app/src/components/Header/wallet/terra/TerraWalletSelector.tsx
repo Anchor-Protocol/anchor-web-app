@@ -9,7 +9,7 @@ import {
   DropdownBox,
 } from 'components/Header/desktop/DropdownContainer';
 import { useBuyUstDialog } from 'pages/earn/components/useBuyUstDialog';
-import { useWallet } from '@terra-money/use-wallet';
+import { useWallet } from '@terra-money/wallet-provider';
 import { useAirdropElement } from 'components/Header/airdrop';
 import { useVestingClaimNotification } from 'components/Header/vesting/VestingClaimNotification';
 

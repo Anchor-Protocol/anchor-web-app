@@ -18,7 +18,7 @@ import { floor } from '@libs/big-math';
 import { demicrofy } from '@libs/formatter';
 import { QueryClient } from '@libs/query-client';
 import { pipe } from '@rx-stream/pipe';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
+import { NetworkInfo, TxResult } from '@terra-money/wallet-provider';
 import {
   CreateTxOptions,
   MsgExecuteContract,

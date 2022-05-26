@@ -1,5 +1,5 @@
 import { LCDClient } from '@terra-money/terra.js';
-import { NetworkInfo } from '@terra-money/use-wallet';
+import { NetworkInfo } from '@terra-money/wallet-provider';
 import { createContext, useContext } from 'react';
 
 export const TESTNET: NetworkInfo = {

@@ -7,7 +7,7 @@ import {
   AncVestingAccount,
   ancVestingAccountQuery,
 } from '@anchor-protocol/app-fns/queries/anc/vesting';
-import { useConnectedWallet } from '@terra-money/use-wallet';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 
 const queryFn = createQueryFn(ancVestingAccountQuery);
 
