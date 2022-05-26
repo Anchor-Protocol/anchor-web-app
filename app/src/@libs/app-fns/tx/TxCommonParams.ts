@@ -1,6 +1,6 @@
 import { QueryClient } from '@libs/query-client';
 import { Gas, Rate, u, UST } from '@libs/types';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
+import { NetworkInfo, TxResult } from '@terra-money/wallet-provider';
 import { CreateTxOptions } from '@terra-money/terra.js';
 
 export interface TxCommonParams {

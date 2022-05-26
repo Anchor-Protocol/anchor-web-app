@@ -1,6 +1,6 @@
 import { formatUToken } from '@libs/formatter';
 import { u, UST } from '@libs/types';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
+import { NetworkInfo, TxResult } from '@terra-money/wallet-provider';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import { BigSource } from 'big.js';
 import { TxReceipt, TxResultRendering, TxStreamPhase } from '../../models/tx';

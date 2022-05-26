@@ -15,7 +15,7 @@ import {
 } from '@certusone/wormhole-sdk';
 import { BaseProvider } from '@ethersproject/providers';
 import { LCDClient } from '@terra-money/terra.js';
-import { NetworkInfo } from '@terra-money/use-wallet';
+import { NetworkInfo } from '@terra-money/wallet-provider';
 import { ethers } from 'ethers';
 import { WhitelistCollateral } from 'queries';
 

@@ -1,4 +1,4 @@
-import { Timeout, UserDenied } from '@terra-money/use-wallet';
+import { Timeout, UserDenied } from '@terra-money/wallet-provider';
 import { OperatorFunction } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TxResultRendering, TxStreamPhase } from '../../models/tx';

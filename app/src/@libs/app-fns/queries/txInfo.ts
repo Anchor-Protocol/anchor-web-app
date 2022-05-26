@@ -1,6 +1,6 @@
 import { LcdFetchError, QueryClient } from '@libs/query-client';
 import { Gas, ISODateFormat, Num } from '@libs/types';
-import { TxFailed } from '@terra-money/use-wallet';
+import { TxFailed } from '@terra-money/wallet-provider';
 import { CreateTxOptions } from '@terra-money/terra.js';
 import { PollingTimeout } from '../errors';
 

@@ -4,7 +4,7 @@ import {
   useConnectedWallet,
   useWallet,
   ConnectType,
-} from '@terra-money/use-wallet';
+} from '@terra-money/wallet-provider';
 import { AccountContext, Account } from 'contexts/account';
 import { WalletStatus } from '@terra-money/wallet-provider';
 import { HumanAddr } from '../../@libs/types';

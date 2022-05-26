@@ -17,7 +17,7 @@ import {
   DeploymentTarget,
   useDeploymentTarget,
 } from '@anchor-protocol/app-provider';
-import { NetworkInfo } from '@terra-money/use-wallet';
+import { NetworkInfo } from '@terra-money/wallet-provider';
 
 const fetchWhitelistCollateral = async (
   overseerContract: HumanAddr,
