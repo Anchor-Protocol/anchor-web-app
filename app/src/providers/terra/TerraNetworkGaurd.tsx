@@ -8,6 +8,7 @@ export const TerraNetworkGuard = (props: UIElementProps) => {
   const { children } = props;
 
   const network = useNetwork();
+  console.log(network);
 
   if (network?.network === undefined || network.network.name !== 'classic') {
     return (
