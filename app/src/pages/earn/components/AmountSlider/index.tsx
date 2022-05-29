@@ -90,6 +90,10 @@ export const AmountSlider = ({
   const threeFourthsValueUST = (0.75 * max).toFixed(2);
   const maxValueUST = max.toFixed(2);
 
+  // console.log('value', value);
+  // console.log('max', max);
+  // console.log('valueRatio', valueRatio);
+
   return (
     <HorizontalGraphBar<Data>
       min={0}

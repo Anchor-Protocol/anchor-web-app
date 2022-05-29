@@ -41,7 +41,7 @@ import {
   Fee,
   MsgExecuteContract,
 } from '@terra-money/terra.js';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
+import { NetworkInfo, TxResult } from '@terra-money/wallet-provider';
 import { WhitelistCollateral } from 'queries';
 import { QueryObserverResult } from 'react-query';
 import { Observable } from 'rxjs';
