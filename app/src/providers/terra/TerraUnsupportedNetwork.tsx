@@ -20,6 +20,8 @@ export const TerraUnsupportedNetwork = styled(TerraUnsupportedNetworkBase)`
     Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   background-color: white;
 
+  text-align: center;
+
   .title {
     margin: 2rem 0 1rem;
   }

@@ -34,36 +34,6 @@ export function TerraAppProviders({
     [openReadonlyWalletSelector],
   );
 
-  // return (
-  //   <WalletProvider
-  //     defaultNetwork={defaultNetwork}
-  //     walletConnectChainIds={walletConnectChainIds}
-  //     connectorOpts={{ bridge: 'https://walletconnect.terra.dev/' }}
-  //     createReadonlyWalletSession={createReadonlyWalletSession}
-  //   >
-  //     <TerraNetworkProvider>
-  //       <TerraNetworkGuard>
-  //         <QueryProvider>
-  //           <TerraAccountProvider>
-  //             <ThemeProvider
-  //               initialTheme="light"
-  //               lightTheme={lightTheme}
-  //               darkTheme={darkTheme}
-  //             >
-  //               <AppProviders dialogs={readonlyWalletSelectorElement}>
-  //                 <TerraBalancesProvider>
-  //                   <RouterWalletStatusRecheck />
-  //                   {children}
-  //                 </TerraBalancesProvider>
-  //               </AppProviders>
-  //             </ThemeProvider>
-  //           </TerraAccountProvider>
-  //         </QueryProvider>
-  //       </TerraNetworkGuard>
-  //     </TerraNetworkProvider>
-  //   </WalletProvider>
-  // );
-
   return (
     <WalletProvider
       defaultNetwork={defaultNetwork}
