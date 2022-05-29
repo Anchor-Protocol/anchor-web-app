@@ -19,6 +19,10 @@ const LCDClients: Record<string, LCDClient> = {
     chainID: TESTNET.chainID,
     URL: TESTNET.lcd,
   }),
+  classic: new LCDClient({
+    chainID: MAINNET.chainID,
+    URL: MAINNET.lcd,
+  }),
   mainnet: new LCDClient({
     chainID: MAINNET.chainID,
     URL: MAINNET.lcd,

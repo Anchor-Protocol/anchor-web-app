@@ -174,6 +174,9 @@ function Component({ className }: BLunaMintProps) {
     terraWalletAddress,
   ]);
 
+  console.log('estimatedGasWanted', estimatedGasWanted);
+  console.log('estimatedFee', estimatedFee);
+
   // ---------------------------------------------
   // callbacks
   // ---------------------------------------------
