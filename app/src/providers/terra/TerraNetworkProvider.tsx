@@ -6,6 +6,8 @@ import { useWallet } from '@terra-money/wallet-provider';
 const TerraNetworkProvider = ({ children }: UIElementProps) => {
   const { network } = useWallet();
 
+  console.log('TerraNetworkProvider:', network);
+
   return (
     <NetworkContext.Provider value={network}>
       {children}
