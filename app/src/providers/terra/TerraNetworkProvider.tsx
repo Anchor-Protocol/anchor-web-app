@@ -1,10 +1,12 @@
 import React from 'react';
 import { UIElementProps } from '@libs/ui';
 import { NetworkContext } from '@anchor-protocol/app-provider/contexts/network';
-import { useWallet } from '@terra-money/wallet-provider';
+import { useWallet } from '@terra-money/use-wallet';
 
 const TerraNetworkProvider = ({ children }: UIElementProps) => {
   const { network } = useWallet();
+
+  console.log(network.name);
 
   return (
     <NetworkContext.Provider value={network}>
