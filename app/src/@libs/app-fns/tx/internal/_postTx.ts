@@ -12,16 +12,19 @@ interface Params {
 export function _postTx({ helper, post }: Params) {
   return ({ value: tx }: TxResultRendering<CreateTxOptions>) => {
     helper.saveTx(tx);
-    return Promise.race<TxResult>([post(tx), txTimeout<TxResult>()]).then(
-      (txResult) => {
-        helper.saveTxResult(txResult);
-        return {
-          value: txResult,
 
-          phase: TxStreamPhase.BROADCAST,
-          receipts: [helper.txHashReceipt()],
-        } as TxResultRendering<TxResult>;
-      },
-    );
+    return Promise.race<TxResult>([
+      //post({ ...tx, isClassic: true } as CreateTxOptions),
+      post(tx),
+      txTimeout<TxResult>(),
+    ]).then((txResult) => {
+      helper.saveTxResult(txResult);
+      return {
+        value: txResult,
+
+        phase: TxStreamPhase.BROADCAST,
+        receipts: [helper.txHashReceipt()],
+      } as TxResultRendering<TxResult>;
+    });
   };
 }

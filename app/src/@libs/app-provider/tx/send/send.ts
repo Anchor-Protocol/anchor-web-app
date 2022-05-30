@@ -1,7 +1,7 @@
 import { sendTx } from '@libs/app-fns';
 import { useFixedFee } from '@libs/app-provider/hooks/useFixedFee';
 import { HumanAddr, terraswap, Token, u, UST } from '@libs/types';
-import { useConnectedWallet } from '@terra-money/use-wallet';
+import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { useCallback } from 'react';
 import { useAccount } from 'contexts/account';
 import { useApp } from '../../contexts/app';

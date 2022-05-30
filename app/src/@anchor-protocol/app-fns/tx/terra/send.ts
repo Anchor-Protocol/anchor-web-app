@@ -18,7 +18,7 @@ import {
   MsgExecuteContract,
   MsgSend,
 } from '@terra-money/terra.js';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
+import { NetworkInfo, TxResult } from '@terra-money/wallet-provider';
 import { CurrencyInfo } from 'pages/send/models/currency';
 import { Observable } from 'rxjs';
 

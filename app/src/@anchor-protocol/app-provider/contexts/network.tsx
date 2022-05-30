@@ -8,6 +8,12 @@ export const TESTNET: NetworkInfo = {
   lcd: 'https://bombay-lcd.terra.dev',
 };
 
+export const CLASSIC: NetworkInfo = {
+  name: 'classic',
+  chainID: 'columbus-5',
+  lcd: 'https://lcd.terra.dev',
+};
+
 export const MAINNET: NetworkInfo = {
   name: 'mainnet',
   chainID: 'columbus-5',
@@ -20,8 +26,8 @@ const LCDClients: Record<string, LCDClient> = {
     URL: TESTNET.lcd,
   }),
   classic: new LCDClient({
-    chainID: MAINNET.chainID,
-    URL: MAINNET.lcd,
+    chainID: CLASSIC.chainID,
+    URL: CLASSIC.lcd,
   }),
   mainnet: new LCDClient({
     chainID: MAINNET.chainID,

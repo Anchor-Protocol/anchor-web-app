@@ -9,7 +9,10 @@ export const TerraNetworkGuard = (props: UIElementProps) => {
 
   const network = useNetwork();
 
-  if (network?.network === undefined || network.network.name !== 'classic') {
+  if (
+    network?.network === undefined ||
+    network.network.chainID !== 'columbus-5'
+  ) {
     return (
       <>
         <GlobalStyle />

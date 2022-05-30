@@ -37,7 +37,7 @@ import {
   Fee,
   MsgExecuteContract,
 } from '@terra-money/terra.js';
-import { NetworkInfo, TxResult } from '@terra-money/use-wallet';
+import { NetworkInfo, TxResult } from '@terra-money/wallet-provider';
 import big, { Big, BigSource } from 'big.js';
 import { Observable } from 'rxjs';
 
