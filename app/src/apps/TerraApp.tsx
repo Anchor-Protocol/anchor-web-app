@@ -47,8 +47,6 @@ type TerraAppProps = {
 };
 
 export function TerraApp({ chainOptions }: TerraAppProps) {
-  console.log('TerraApp:chainOptions', chainOptions);
-
   return (
     chainOptions && (
       <TerraAppProviders {...chainOptions}>
