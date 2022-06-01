@@ -210,7 +210,8 @@ export const ANCHOR_INDEXER_API_ENDPOINTS = (network: NetworkInfo): string => {
   if (network.chainID.startsWith('bombay')) {
     return 'https://api-testnet.anchorprotocol.com/api';
   } else {
-    return 'https://api.anchorprotocol.com/api';
+    //return 'https://api.anchorprotocol.com/api';
+    return 'https://anchor-services-anchor-protocol.vercel.app/api';
   }
 };
 
