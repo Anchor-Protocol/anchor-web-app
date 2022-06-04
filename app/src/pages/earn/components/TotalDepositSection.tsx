@@ -33,7 +33,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
   // ---------------------------------------------
   // queries
   // ---------------------------------------------
-  const { uUST, uaUST } = useBalances();
+  const { uaUST } = useBalances();
 
   const { data: { moneyMarketEpochState } = {} } = useEarnEpochStatesQuery();
 
@@ -91,10 +91,7 @@ export function TotalDepositSection({ className }: TotalDepositSectionProps) {
       </div>
 
       <aside className="total-deposit-buttons">
-        <ActionButton
-          disabled={!connected || !moneyMarketEpochState || Big(uUST).lte(0)}
-          onClick={openDeposit}
-        >
+        <ActionButton disabled={true} onClick={openDeposit}>
           Deposit
         </ActionButton>
         <BorderButton
