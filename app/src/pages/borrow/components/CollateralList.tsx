@@ -209,7 +209,7 @@ export function CollateralList(props: UIElementProps) {
                 </td>
                 <td>
                   <BorderButton
-                    disabled={!connected || !borrowMarket}
+                    disabled={true}
                     onClick={() =>
                       borrowMarket &&
                       borrowBorrower &&
