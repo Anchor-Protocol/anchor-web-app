@@ -88,7 +88,7 @@ function VestingClaimNotificationBase(props: VestingClaimNotificationProps) {
           checked={ignore}
           onChange={() => setIgnore((value) => !value)}
         />
-        <FlatButton component={Link} to="/anc/vesting/claim">
+        <FlatButton disabled component={Link} to="/anc/vesting/claim">
           Claim ANC
         </FlatButton>
         <IconButton
