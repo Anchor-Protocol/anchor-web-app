@@ -1,43 +1,40 @@
+import { validateTxFee } from '@anchor-protocol/app-fns';
 import {
-  formatANCWithPostfixUnits,
-  formatUST,
-} from '@anchor-protocol/notation';
-import { ANC, u } from '@anchor-protocol/types';
-import {
-  useRewardsClaimableUstBorrowRewardsQuery,
-  useRewardsUstBorrowClaimTx,
+  useRewardsAncUstLpClaimTx,
+  useRewardsAncUstLpRewardsQuery,
 } from '@anchor-protocol/app-provider';
 import { useAnchorBank } from '@anchor-protocol/app-provider/hooks/useAnchorBank';
+import { formatUST } from '@anchor-protocol/notation';
+import { ANC, u } from '@anchor-protocol/types';
 import { useFixedFee } from '@libs/app-provider';
-import { demicrofy } from '@libs/formatter';
+import { demicrofy, formatUToken } from '@libs/formatter';
 import { ActionButton } from '@libs/neumorphism-ui/components/ActionButton';
 import { Section } from '@libs/neumorphism-ui/components/Section';
 import { StreamStatus } from '@rx-stream/react';
 import big, { Big } from 'big.js';
 import { CenteredLayout } from 'components/layouts/CenteredLayout';
 import { MessageBox } from 'components/MessageBox';
-import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { TxResultRenderer } from 'components/tx/TxResultRenderer';
+import { TxFeeList, TxFeeListItem } from 'components/TxFeeList';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
-import { validateTxFee } from '@anchor-protocol/app-fns';
 import React, { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-export interface ClaimUstBorrowProps {
+export interface ClaimAncUstLpProps {
   className?: string;
 }
 
-function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
+function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { connected } = useAccount();
+  const { availablePost, connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
-  const [claim, claimResult] = useRewardsUstBorrowClaimTx();
+  const [claim, claimResult] = useRewardsAncUstLpClaimTx();
 
   const navigate = useNavigate();
 
@@ -46,21 +43,18 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   // ---------------------------------------------
   const bank = useAnchorBank();
 
-  const { data: { borrowerInfo, userANCBalance } = {} } =
-    useRewardsClaimableUstBorrowRewardsQuery();
+  const { data: { userLPPendingToken } = {} } =
+    useRewardsAncUstLpRewardsQuery();
+
+  //const rewards = useCheckTerraswapLpRewards();
 
   // ---------------------------------------------
   // logics
   // ---------------------------------------------
-  const claiming = useMemo(() => {
-    if (!borrowerInfo) return undefined;
-    return big(borrowerInfo.pending_rewards) as u<ANC<Big>>;
-  }, [borrowerInfo]);
-
-  const ancAfterTx = useMemo(() => {
-    if (!claiming || !userANCBalance) return undefined;
-    return claiming.plus(userANCBalance.balance) as u<ANC<Big>>;
-  }, [claiming, userANCBalance]);
+  const ancRewards = useMemo(() => {
+    if (!userLPPendingToken) return undefined;
+    return big(userLPPendingToken.pending_on_proxy) as u<ANC<Big>>;
+  }, [userLPPendingToken]);
 
   const invalidTxFee = useMemo(
     () => connected && validateTxFee(bank.tokenBalances.uUST, fixedFee),
@@ -75,6 +69,9 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
     claim({});
   }, [claim, connected]);
 
+  // ---------------------------------------------
+  // presentation
+  // ---------------------------------------------
   // ---------------------------------------------
   // presentation
   // ---------------------------------------------
@@ -99,28 +96,41 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
     );
   }
 
+  const astroRewards = userLPPendingToken?.pending;
+
+  const hasAstroRewards = astroRewards && !big(astroRewards).eq(0);
+  const hasAncRewards = ancRewards && !ancRewards.eq(0);
+  const hasRewards = hasAstroRewards || hasAncRewards;
+
   return (
     <CenteredLayout className={className} maxWidth={800}>
       <Section>
-        <h1>UST Borrow Claim</h1>
+        <h1>ANC-UST LP Claim</h1>
 
         {!!invalidTxFee && <MessageBox>{invalidTxFee}</MessageBox>}
 
         <TxFeeList className="receipt">
-          <TxFeeListItem label="Claiming">
-            {claiming ? formatANCWithPostfixUnits(demicrofy(claiming)) : 0} ANC
-          </TxFeeListItem>
-          <TxFeeListItem label="ANC After Tx">
-            {ancAfterTx ? formatANCWithPostfixUnits(demicrofy(ancAfterTx)) : 0}{' '}
-            ANC
-          </TxFeeListItem>
+          {hasAstroRewards && (
+            <TxFeeListItem label="ASTRO">
+              {formatUToken(astroRewards)} ASTRO
+            </TxFeeListItem>
+          )}
+          {hasAncRewards && (
+            <TxFeeListItem label="ANC">
+              {formatUToken(ancRewards)} ANC
+            </TxFeeListItem>
+          )}
           <TxFeeListItem label="Tx Fee">
             {formatUST(demicrofy(fixedFee))} UST
           </TxFeeListItem>
         </TxFeeList>
 
         <ViewAddressWarning>
-          <ActionButton className="proceed" disabled onClick={() => proceed()}>
+          <ActionButton
+            className="proceed"
+            disabled={!availablePost || !connected || !claim || !hasRewards}
+            onClick={() => proceed()}
+          >
             Claim
           </ActionButton>
         </ViewAddressWarning>
@@ -129,22 +139,18 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   );
 }
 
-export const ClaimUstBorrow = styled(ClaimUstBorrowBase)`
+export const ClaimAncUstLp = styled(ClaimAncUstLpBase)`
   h1 {
     font-size: 27px;
     text-align: center;
     font-weight: 300;
-
     margin-bottom: 50px;
   }
-
   .receipt {
     margin-top: 30px;
   }
-
   .proceed {
     margin-top: 40px;
-
     width: 100%;
     height: 60px;
   }

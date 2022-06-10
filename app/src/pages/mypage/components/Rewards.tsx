@@ -13,7 +13,11 @@ import big from 'big.js';
 import { screen } from 'env';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
 import { useRewards } from 'pages/mypage/logics/useRewards';
-import { ancGovernancePathname, ancUstLpPathname } from 'pages/trade/env';
+import {
+  ancGovernancePathname,
+  ancUstLpPathname,
+  ustBorrowPathname,
+} from 'pages/trade/env';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -257,6 +261,9 @@ export function RewardsBase({ className }: RewardsProps) {
                   >
                     Unstake
                   </MenuItem>
+                  <MenuItem component={Link} to={`/claim/${ancUstLpPathname}`}>
+                    Claim
+                  </MenuItem>
                 </MoreMenu>
               </td>
             </tr>
@@ -289,6 +296,13 @@ export function RewardsBase({ className }: RewardsProps) {
                   </IconSpan>
                 </p>
               </td>
+              <td>
+                <MoreMenu>
+                  <MenuItem component={Link} to={`/claim/${ustBorrowPathname}`}>
+                    Claim
+                  </MenuItem>
+                </MoreMenu>
+              </td>
             </tr>
           </tbody>
         </HorizontalScrollTable>
@@ -303,19 +317,16 @@ export const Rewards = styled(RewardsBase)`
   // ---------------------------------------------
   table {
     min-width: 1000px;
-
     tbody {
       td {
         font-size: 16px;
         letter-spacing: -0.3px;
-
         .subtext {
           font-size: 12px;
           color: ${({ theme }) => theme.dimTextColor};
         }
       }
     }
-
     thead,
     tbody {
       th:nth-child(3),
@@ -326,11 +337,9 @@ export const Rewards = styled(RewardsBase)`
       td:nth-child(5) {
         text-align: right;
       }
-
       .warning {
         color: ${({ theme }) => theme.colors.negative};
       }
-
       th:nth-child(2),
       td:nth-child(2),
       th:nth-child(6),
@@ -339,7 +348,6 @@ export const Rewards = styled(RewardsBase)`
       }
     }
   }
-
   // ---------------------------------------------
   // layout
   // ---------------------------------------------
@@ -348,14 +356,12 @@ export const Rewards = styled(RewardsBase)`
     h3 {
       display: flex;
       flex-direction: column;
-
       > div {
         label {
           display: inline-block;
           width: 150px;
         }
       }
-
       > div:nth-of-type(2) {
         margin-left: 0;
         margin-top: 10px;
