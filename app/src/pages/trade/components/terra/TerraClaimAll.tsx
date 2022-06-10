@@ -22,7 +22,7 @@ import React, { useCallback, useMemo } from 'react';
 import { ClaimAll } from '../ClaimAll';
 
 export const TerraClaimAll = () => {
-  const { availablePost, connected } = useAccount();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -84,7 +84,6 @@ export const TerraClaimAll = () => {
 
   const hasAstroRewards = astroRewards && !big(astroRewards).eq(0);
   const hasAncRewards = ancRewards && !ancRewards.eq(0);
-  const hasRewards = hasAstroRewards || hasAncRewards;
 
   return (
     <ClaimAll txResult={claimResult}>
@@ -134,16 +133,7 @@ export const TerraClaimAll = () => {
         <ViewAddressWarning>
           <ActionButton
             className="button"
-            disabled={
-              !availablePost ||
-              !connected ||
-              !claim ||
-              !claimingLpStakingInfoPendingRewards ||
-              !claimingBorrowerInfoPendingRewards ||
-              !hasRewards ||
-              (claimingBorrowerInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE) &&
-                claimingLpStakingInfoPendingRewards.lt(MINIMUM_CLAIM_BALANCE))
-            }
+            disabled
             onClick={() =>
               claimingBorrowerInfoPendingRewards &&
               claimingLpStakingInfoPendingRewards &&

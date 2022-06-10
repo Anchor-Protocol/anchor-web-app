@@ -21,7 +21,6 @@ import { useNavigate } from 'react-router-dom';
 import { MessageBox } from 'components/MessageBox';
 import { useAncVestingAccountQuery } from '@anchor-protocol/app-provider/queries/anc/vestingClaim';
 import { ANC, u } from '@anchor-protocol/types';
-import { useConnectedWallet } from '@terra-money/wallet-provider';
 import { Dec } from '@terra-money/terra.js';
 import { useVestingClaimNotification } from 'components/Header/vesting/VestingClaimNotification';
 
@@ -52,8 +51,6 @@ function ClaimBase(props: UIElementProps) {
   const { className } = props;
 
   const navigate = useNavigate();
-
-  const connectedWallet = useConnectedWallet();
 
   const fixedFee = useFixedFee();
 
@@ -97,10 +94,6 @@ function ClaimBase(props: UIElementProps) {
     },
     new Dec(0),
   );
-
-  const hasAccruedAnc =
-    vestingAccount && new Dec(vestingAccount.accrued_anc).gt(0);
-
   return (
     <CenteredLayout className={className} maxWidth={800}>
       <Section>
@@ -128,12 +121,7 @@ function ClaimBase(props: UIElementProps) {
         <ViewAddressWarning>
           <ActionButton
             className="submit"
-            disabled={
-              !connectedWallet ||
-              !connectedWallet.availablePost ||
-              !vestingClaim ||
-              !hasAccruedAnc
-            }
+            disabled
             onClick={() => {
               vestingClaim &&
                 vestingClaim({

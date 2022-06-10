@@ -13,11 +13,7 @@ import big from 'big.js';
 import { screen } from 'env';
 import { MoreMenu } from 'pages/gov/components/MoreMenu';
 import { useRewards } from 'pages/mypage/logics/useRewards';
-import {
-  ancGovernancePathname,
-  ancUstLpPathname,
-  ustBorrowPathname,
-} from 'pages/trade/env';
+import { ancGovernancePathname, ancUstLpPathname } from 'pages/trade/env';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -261,9 +257,6 @@ export function RewardsBase({ className }: RewardsProps) {
                   >
                     Unstake
                   </MenuItem>
-                  <MenuItem component={Link} to={`/claim/${ancUstLpPathname}`}>
-                    Claim
-                  </MenuItem>
                 </MoreMenu>
               </td>
             </tr>
@@ -295,13 +288,6 @@ export function RewardsBase({ className }: RewardsProps) {
                     UST
                   </IconSpan>
                 </p>
-              </td>
-              <td>
-                <MoreMenu>
-                  <MenuItem component={Link} to={`/claim/${ustBorrowPathname}`}>
-                    Claim
-                  </MenuItem>
-                </MoreMenu>
               </td>
             </tr>
           </tbody>

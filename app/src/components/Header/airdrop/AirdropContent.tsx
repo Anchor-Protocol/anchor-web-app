@@ -26,7 +26,7 @@ function AirdropBase({
       <div>
         <h2>Airdrop</h2>
         <p>Claim your ANC tokens</p>
-        <FlatButton component={Link} to="/airdrop">
+        <FlatButton disabled component={Link} to="/airdrop">
           Claim
         </FlatButton>
         <IconButton className="close" size="small" onClick={onClose}>

@@ -57,7 +57,7 @@ function Component({ className }: ClaimableProps) {
             <Sub>UST</Sub>
           </p>
         </div>
-        <FlatButton component={Link} to="/basset/claim">
+        <FlatButton disabled component={Link} to="/basset/claim">
           Claim Rewards
         </FlatButton>
       </div>

@@ -21,7 +21,6 @@ import { TxResultRenderer } from 'components/tx/TxResultRenderer';
 import { ViewAddressWarning } from 'components/ViewAddressWarning';
 import { useAccount } from 'contexts/account';
 import { validateTxFee } from '@anchor-protocol/app-fns';
-import { MINIMUM_CLAIM_BALANCE } from 'pages/trade/env';
 import React, { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -34,7 +33,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { availablePost, connected } = useAccount();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -121,17 +120,7 @@ function ClaimUstBorrowBase({ className }: ClaimUstBorrowProps) {
         </TxFeeList>
 
         <ViewAddressWarning>
-          <ActionButton
-            className="proceed"
-            disabled={
-              !availablePost ||
-              !connected ||
-              !claim ||
-              !claiming ||
-              claiming.lte(MINIMUM_CLAIM_BALANCE)
-            }
-            onClick={() => proceed()}
-          >
+          <ActionButton className="proceed" disabled onClick={() => proceed()}>
             Claim
           </ActionButton>
         </ViewAddressWarning>

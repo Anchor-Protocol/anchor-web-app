@@ -30,7 +30,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
   // ---------------------------------------------
   // dependencies
   // ---------------------------------------------
-  const { availablePost, connected } = useAccount();
+  const { connected } = useAccount();
 
   const fixedFee = useFixedFee();
 
@@ -100,7 +100,6 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
 
   const hasAstroRewards = astroRewards && !big(astroRewards).eq(0);
   const hasAncRewards = ancRewards && !ancRewards.eq(0);
-  const hasRewards = hasAstroRewards || hasAncRewards;
 
   return (
     <CenteredLayout className={className} maxWidth={800}>
@@ -126,11 +125,7 @@ function ClaimAncUstLpBase({ className }: ClaimAncUstLpProps) {
         </TxFeeList>
 
         <ViewAddressWarning>
-          <ActionButton
-            className="proceed"
-            disabled={!availablePost || !connected || !claim || !hasRewards}
-            onClick={() => proceed()}
-          >
+          <ActionButton disabled className="proceed" onClick={() => proceed()}>
             Claim
           </ActionButton>
         </ViewAddressWarning>
