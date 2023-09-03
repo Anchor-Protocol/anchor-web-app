@@ -206,7 +206,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_route53_hosted_zone_id: ${{ secrets.AWS_ROUTE53_HOSTED_ZONE_ID }}
           aws_route53_rr_action: 'UPSERT'
-          aws_route53_rr_name: '_dnslink.ipfs.anchorprotocol.com'
+          aws_route53_rr_name: '_dnslink.app.anchorprotocol.com'
           aws_route53_rr_type: 'TXT'
           aws_route53_rr_ttl: '1'
           aws_route53_rr_value: '"dnslink=/ipfs/${{ steps.ipfs.outputs.cid }}"'
